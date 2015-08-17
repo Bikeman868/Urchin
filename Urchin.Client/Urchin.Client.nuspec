@@ -14,4 +14,7 @@
     <copyright>Copyright 2015</copyright>
     <tags>Configuration Enterprise Centralized StronglyTyped JSON</tags>
   </metadata>
+  <files>
+    <file src="..\*.txt" target="" />
+  </files>
 </package>

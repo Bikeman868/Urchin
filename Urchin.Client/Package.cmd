@@ -1,1 +1,1 @@
-..\Tools\nuget.exe pack Urchin.Client.csproj
+..\Tools\nuget.exe pack Urchin.Client.csproj -Prop Configuration=Release
