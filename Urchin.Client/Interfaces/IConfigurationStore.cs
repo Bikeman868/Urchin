@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Urchin.Client.Interfaces
 {
-    public interface IConfigurationSource
+    public interface IConfigurationStore
     {
         void UpdateConfiguration(string jsonText);
         IDisposable Register<T>(string path, Action<T> onChangeAction);

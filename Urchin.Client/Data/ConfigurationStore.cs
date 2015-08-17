@@ -8,13 +8,13 @@ using Urchin.Client.Interfaces;
 
 namespace Urchin.Client.Data
 {
-    public class ConfigurationSource: IConfigurationSource
+    public class ConfigurationStore: IConfigurationStore
     {
         private readonly Dictionary<string, Registration>  _registrations = new Dictionary<string, Registration>();
         private string _originalJsonText;
         private ConfigNode _config = new ConfigNode();
 
-        public IConfigurationSource Initialize()
+        public IConfigurationStore Initialize()
         {
             return this;
         }
@@ -23,7 +23,8 @@ namespace Urchin.Client.Data
         {
             if (onChangeAction == null) return null;
 
-            if (string.IsNullOrEmpty(path)) path = "/";
+            if (string.IsNullOrWhiteSpace(path)) 
+                path = "";
             else
             {
                 path = path.ToLower().Replace("_", "");
@@ -32,6 +33,7 @@ namespace Urchin.Client.Data
 
             var key = Guid.NewGuid().ToString("N");
             var registration = new Registration<T>(this).Initialize(key, path, onChangeAction);
+            registration.Changed();
 
             lock(_registrations)
                 _registrations.Add(key, registration);
@@ -88,10 +90,8 @@ namespace Urchin.Client.Data
             var json = JToken.Parse(jsonText);
             var newConfig = new ConfigNode(json);
 
-            var changedPaths = new List<string> { "/" };
-            //...
-            //...
-            //...
+            var changedPaths = new List<string>();
+            AddChangedPaths(changedPaths, "", newConfig, _config);
 
             _config = newConfig;
             _originalJsonText = jsonText;
@@ -103,6 +103,48 @@ namespace Urchin.Client.Data
             foreach (var registration in activeRegistrations)
                 if (changedPaths.Contains(registration.Path))
                     registration.Changed();
+        }
+
+        private bool AddChangedPaths(List<string> paths, string path, ConfigNode nodeA, ConfigNode nodeB)
+        {
+            var nodesDiffer = false;
+
+            var childNames = new List<string>();
+            if (nodeA.Children != null)
+                childNames.AddRange(nodeA.Children.Values.Select(n => n.Name));
+            if (nodeB.Children != null)
+                childNames.AddRange(nodeB.Children.Values.Select(n => n.Name).Where(n => !childNames.Contains(n)));
+
+            foreach (var childName in childNames)
+            {
+                var childPath = path + "/" + childName;
+                var childA = nodeA.Children == null ? null : nodeA.Children[childName];
+                var childB = nodeB.Children == null ? null : nodeB.Children[childName];
+                if ((childA == null) != (childB == null))
+                {
+                    paths.Add(childPath);
+                    nodesDiffer = true;
+                }
+                else
+                {
+                    var childrenDiffer = AddChangedPaths(paths, childPath, childA, childB);
+                    if (childrenDiffer) nodesDiffer = true;
+                }
+            }
+
+            if (!nodesDiffer)
+            {
+                if ((nodeA.Children == null) != (nodeB.Children == null)) nodesDiffer = true;
+                if ((nodeA.Value == null) != (nodeB.Value == null)) nodesDiffer = true;
+            }
+
+            if (!nodesDiffer && nodeA.Value != null && nodeB.Value != null)
+            {
+                nodesDiffer = nodeA.Value.ToString(Formatting.None) != nodeB.Value.ToString(Formatting.None);
+            }
+
+            if (nodesDiffer) paths.Add(path);
+            return nodesDiffer;
         }
 
         private class ConfigNode
@@ -159,11 +201,11 @@ namespace Urchin.Client.Data
 
         private abstract class Registration: IDisposable
         {
-            protected readonly ConfigurationSource _configurationSource;
+            protected readonly ConfigurationStore _configurationSource;
             private string _key;
             public string Path { get; private set; }
 
-            protected Registration(ConfigurationSource configurationSource)
+            protected Registration(ConfigurationStore configurationSource)
             {
                 _configurationSource = configurationSource;
             }
@@ -186,7 +228,7 @@ namespace Urchin.Client.Data
         {
             private Action<T> _onChangeAction;
 
-            public Registration(ConfigurationSource configurationSource)
+            public Registration(ConfigurationStore configurationSource)
                 : base(configurationSource)
             {
             }
@@ -195,9 +237,6 @@ namespace Urchin.Client.Data
             {
                 base.Initialize(key, path);
                 _onChangeAction = onChangeAction;
-
-                Changed();
-
                 return this;
             }
 
