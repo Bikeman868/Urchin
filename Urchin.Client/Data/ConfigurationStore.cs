@@ -8,6 +8,25 @@ using Urchin.Client.Interfaces;
 
 namespace Urchin.Client.Data
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// This class is designed to be correct, not efficient. Ths
+    /// assumption when building this class is that configuration changes
+    /// infrequently and performance is not an issue. This class also
+    /// asumes that applications will not call the Get method every
+    /// time it wants to know the value of a node in codfig, but will
+    /// register to receive notification of changes instead.
+    /// Calling the Get method is very slow.
+    /// 
+    /// The Get method is thread safe, but the UpdateConfiguration method
+    /// is not. It is assumed that only 1 thread at a time will retrieve
+    /// configuration changes and update them in this store.
+    /// 
+    /// When an application registers for notifications, these notification
+    /// callbacks will happen on the thread that calls UpdateConfiguration()
+    /// </remarks>
     public class ConfigurationStore: IConfigurationStore
     {
         private readonly Dictionary<string, Registration>  _registrations = new Dictionary<string, Registration>();
@@ -55,8 +74,11 @@ namespace Urchin.Client.Data
             {
                 if (node.Children == null)
                     return default(T);
-                if (!node.Children.TryGetValue(segment, out node))
-                    return default(T);
+                lock (node.Children)
+                {
+                    if (!node.Children.TryGetValue(segment, out node))
+                        return default(T);
+                }
             }
 
             var json = node.AsJson();
@@ -186,12 +208,15 @@ namespace Urchin.Client.Data
 
                 if (Children != null)
                 {
-                    var jobject = new JObject();
-                    foreach (var child in Children.Values)
+                    lock (Children)
                     {
-                        jobject.Add(child.Name, child.AsJson());
+                        var jobject = new JObject();
+                        foreach (var child in Children.Values)
+                        {
+                            jobject.Add(child.Name, child.AsJson());
+                        }
+                        return jobject;
                     }
-                    return jobject;
                 }
 
                 return JToken.Parse("null");
