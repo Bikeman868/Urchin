@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Owin", "Urchin.Server.Owin\Urchin.Server.Owin.csproj", "{AE0124A0-75F7-495C-8F5D-FC1DDD10AF6C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client", "Urchin.Client\Urchin.Client.csproj", "{169CA82F-7924-47EE-9705-F333932110F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client.Tests", "Urchin.Client.Tests\Urchin.Client.Tests.csproj", "{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1B03AD33-B681-4A0C-B7B9-961F716C8439}"
+	ProjectSection(SolutionItems) = preProject
+		README.txt = README.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
