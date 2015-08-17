@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 using Urchin.Client.Data;
+using Urchin.Client.Interfaces;
 
 namespace Urchin.Client.Tests
 {
@@ -206,6 +209,108 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(1, configurationStore.Get<int>("/child1/field1"));
         }
 
+        [TestMethod]
+        public void Should_work_with_any_json_type()
+        {
+            var configurationStore = new ConfigurationStore().Initialize();
+
+            const string config = "{children:[{field1:1,field2:2},{field1:99,field2:98}],doubleValue:1.56,stringValue:'my string',dateTimeValue:'2015-08-17T15:45:12'}";
+
+            configurationStore.UpdateConfiguration(config);
+            var root = configurationStore.Get<TestClassC>("");
+
+            Assert.IsNotNull(root);
+            Assert.IsNotNull(root.Children);
+            Assert.AreEqual(1.56, root.DoubleValue, 0.001);
+            Assert.AreEqual("my string", root.StringValue);
+            Assert.AreEqual(DateTime.Parse("2015-08-17T15:45:12"), root.DateTimeValue);
+            Assert.AreEqual(2, root.Children.Count);
+            Assert.IsNotNull(root.Children[0]);
+            Assert.IsNotNull(root.Children[1]);
+            Assert.AreEqual(1, root.Children[0].Field1);
+            Assert.AreEqual(2, root.Children[0].Field2);
+            Assert.AreEqual(99, root.Children[1].Field1);
+            Assert.AreEqual(98, root.Children[1].Field2);
+        }
+
+        [TestMethod]
+        public void Should_not_apply_invalid_configuration()
+        {
+            var validator = new Validator {IsValid = true};
+            var configurationStore = new ConfigurationStore().Initialize(validator);
+
+            const string originalConfig = "{child1:{field1:1,field2:2},child2:{field1:99,field2:98}}";
+            const string updatedConfig = "{child1:{field1:3,field2:2},child2:{field1:99,field2:98}}";
+
+            configurationStore.UpdateConfiguration(originalConfig);
+
+            var child1Field1Value = 0;
+            configurationStore.Register("/child1/field1", (int v) => child1Field1Value = v);
+
+            Assert.AreEqual(1, child1Field1Value);
+
+            validator.IsValid = false;
+            configurationStore.UpdateConfiguration(updatedConfig);
+
+            Assert.AreEqual(1, child1Field1Value);
+        }
+
+        [TestMethod]
+        public void Should_log_configuration_errors()
+        {
+            var validator = new Validator { IsValid = true };
+            var errorLogger = new ErrorLogger();
+            var configurationStore = new ConfigurationStore().Initialize(validator, errorLogger);
+
+            const string config = "{child1:{field1:1,field2:2},child2:{field1:99,field2:98}}";
+            configurationStore.UpdateConfiguration(config);
+
+            Assert.AreEqual(0, errorLogger.Errors.Count);
+
+            var value = configurationStore.Get("child1/field1", new TestClassA{Field1 = 45});
+
+            Assert.AreEqual(1, errorLogger.Errors.Count);
+            Assert.AreEqual(45, value.Field1);
+        }
+
+        [TestMethod]
+        public void Should_return_defaults_for_missing_values()
+        {
+            var validator = new Validator { IsValid = true };
+            var errorLogger = new ErrorLogger();
+            var configurationStore = new ConfigurationStore().Initialize(validator, errorLogger);
+
+            const string config = "{child1:{field1:1,field2:2},child2:{field1:99,field2:98}}";
+            configurationStore.UpdateConfiguration(config);
+
+            Assert.AreEqual(0, errorLogger.Errors.Count);
+
+            var value = configurationStore.Get("child1/missingField", new TestClassA { Field1 = 45 });
+
+            Assert.AreEqual(0, errorLogger.Errors.Count);
+            Assert.AreEqual(45, value.Field1);
+        }
+
+        public class Validator : IConfigurationValidator
+        {
+            public bool IsValid { get; set; }
+
+            public bool IsValidConfiguration(JToken configuration)
+            {
+                return IsValid;
+            }
+        }
+
+        public class ErrorLogger : IErrorLogger
+        {
+            public List<string> Errors = new List<string>();
+
+            public void LogError(string errorMessage)
+            {
+                Errors.Add(errorMessage);
+            }
+        }
+
         public class TestClassA
         {
             public int Field1 { get; set; }
@@ -216,6 +321,14 @@ namespace Urchin.Client.Tests
         {
             public TestClassA Child1 { get; set; }
             public TestClassA Child2 { get; set; }
+        }
+
+        public class TestClassC
+        {
+            public double DoubleValue { get; set; }
+            public DateTime DateTimeValue { get; set; }
+            public string StringValue { get; set; }
+            public List<TestClassA> Children { get; set; }
         }
     }
 }

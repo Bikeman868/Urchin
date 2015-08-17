@@ -32,13 +32,19 @@ namespace Urchin.Client.Data
         private readonly Dictionary<string, Registration>  _registrations = new Dictionary<string, Registration>();
         private string _originalJsonText;
         private ConfigNode _config = new ConfigNode();
+        private IConfigurationValidator _validator;
+        private IErrorLogger _errorLogger;
 
-        public IConfigurationStore Initialize()
+        public IConfigurationStore Initialize(
+            IConfigurationValidator validator = null,
+            IErrorLogger errorLogger = null)
         {
+            _validator = validator;
+            _errorLogger = errorLogger;
             return this;
         }
 
-        public IDisposable Register<T>(string path, Action<T> onChangeAction)
+        public IDisposable Register<T>(string path, Action<T> onChangeAction, T defaultValue)
         {
             if (onChangeAction == null) return null;
 
@@ -51,7 +57,7 @@ namespace Urchin.Client.Data
             }
 
             var key = Guid.NewGuid().ToString("N");
-            var registration = new Registration<T>(this).Initialize(key, path, onChangeAction);
+            var registration = new Registration<T>(this).Initialize(key, path, onChangeAction, defaultValue);
             registration.Changed();
 
             lock(_registrations)
@@ -60,10 +66,14 @@ namespace Urchin.Client.Data
             return registration;
         }
 
-        public T Get<T>(string path)
+        public T Get<T>(string path, T defaultValue)
         {
             var node = _config;
-            if (node == null) return default(T);
+            if (node == null)
+            {
+                LogError("Empty configuration, default value returned for '" + path + "'");
+                return defaultValue;
+            }
 
             var segments = path
                 .ToLower()
@@ -73,11 +83,11 @@ namespace Urchin.Client.Data
             foreach (var segment in segments)
             {
                 if (node.Children == null)
-                    return default(T);
+                    return defaultValue;
                 lock (node.Children)
                 {
                     if (!node.Children.TryGetValue(segment, out node))
-                        return default(T);
+                        return defaultValue;
                 }
             }
 
@@ -89,14 +99,22 @@ namespace Urchin.Client.Data
             if (resultType == typeof (string)) 
                 return (T)(object)jsonText;
 
-            if (resultType.IsValueType)
+            try
             {
-                var jValue = json as JValue;
-                if (jValue == null) return default(T);
-                return (T)Convert.ChangeType(jValue.Value, resultType);
-            }
+                if (resultType.IsValueType)
+                {
+                    var jValue = json as JValue;
+                    if (jValue == null) return default(T);
+                    return (T) Convert.ChangeType(jValue.Value, resultType);
+                }
 
-            return JsonConvert.DeserializeObject<T>(jsonText);
+                return JsonConvert.DeserializeObject<T>(jsonText);
+            }
+            catch (Exception ex)
+            {
+                LogError("Exception getting configuration for '" + path +"' as " + resultType.FullName + ". " + ex.Message);
+                return defaultValue;
+            }
         }
 
         private void Deregister(string key)
@@ -110,6 +128,15 @@ namespace Urchin.Client.Data
             if (jsonText == _originalJsonText) return;
 
             var json = JToken.Parse(jsonText);
+            if (_validator != null)
+            {
+                if (!_validator.IsValidConfiguration(json))
+                {
+                    LogError("Configuration failed validation and will not be updated");
+                    return;
+                }
+            }
+
             var newConfig = new ConfigNode(json);
 
             var changedPaths = new List<string>();
@@ -123,8 +150,19 @@ namespace Urchin.Client.Data
                 activeRegistrations = _registrations.Values.ToList();
 
             foreach (var registration in activeRegistrations)
+            {
                 if (changedPaths.Contains(registration.Path))
-                    registration.Changed();
+                {
+                    try
+                    {
+                        registration.Changed();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError("Exception thrown when notifying application of configuration change in '" + registration.Path + "'. " + ex.Message);
+                    }
+                }
+            }
         }
 
         private bool AddChangedPaths(List<string> paths, string path, ConfigNode nodeA, ConfigNode nodeB)
@@ -167,6 +205,12 @@ namespace Urchin.Client.Data
 
             if (nodesDiffer) paths.Add(path);
             return nodesDiffer;
+        }
+
+        private void LogError(string errorMessage)
+        {
+            if (_errorLogger != null)
+                _errorLogger.LogError(errorMessage);
         }
 
         private class ConfigNode
@@ -235,10 +279,11 @@ namespace Urchin.Client.Data
                 _configurationSource = configurationSource;
             }
 
-            protected void Initialize(string key, string path)
+            protected Registration Initialize(string key, string path)
             {
                 _key = key;
                 Path = path.ToLower();
+                return this;
             }
 
             public void Dispose()
@@ -252,22 +297,24 @@ namespace Urchin.Client.Data
         private class Registration<T> : Registration
         {
             private Action<T> _onChangeAction;
+            private T _defaultValue;
 
             public Registration(ConfigurationStore configurationSource)
                 : base(configurationSource)
             {
             }
 
-            public Registration Initialize(string key, string path, Action<T> onChangeAction)
+            public Registration Initialize(string key, string path, Action<T> onChangeAction, T defaultValue)
             {
-                base.Initialize(key, path);
                 _onChangeAction = onChangeAction;
-                return this;
+                _defaultValue = defaultValue;
+
+                return base.Initialize(key, path);
             }
 
             public override void Changed()
             {
-                var config = _configurationSource.Get<T>(Path);
+                var config = _configurationSource.Get<T>(Path, _defaultValue);
                 _onChangeAction(config);
             }
         }

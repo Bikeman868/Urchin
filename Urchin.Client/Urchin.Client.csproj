@@ -45,7 +45,12 @@
   <ItemGroup>
     <Compile Include="Data\ConfigurationStore.cs" />
     <Compile Include="Interfaces\IConfigurationStore.cs" />
+    <Compile Include="Interfaces\IConfigurationValidator.cs" />
+    <Compile Include="Interfaces\IErrorLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sources\UriSource.cs" />
+    <Compile Include="Sources\Source.cs" />
+    <Compile Include="Sources\FileSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
