@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Owin", "Urchi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client", "Urchin.Client\Urchin.Client.csproj", "{169CA82F-7924-47EE-9705-F333932110F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client.Tests", "Urchin.Client.Tests\Urchin.Client.Tests.csproj", "{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{169CA82F-7924-47EE-9705-F333932110F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{169CA82F-7924-47EE-9705-F333932110F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{169CA82F-7924-47EE-9705-F333932110F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

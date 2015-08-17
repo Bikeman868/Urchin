@@ -11,11 +11,25 @@ namespace Urchin.Client.Data
     public class ConfigurationSource: IConfigurationSource
     {
         private readonly Dictionary<string, Registration>  _registrations = new Dictionary<string, Registration>();
-        private string _originalResponse;
+        private string _originalJsonText;
         private ConfigNode _config = new ConfigNode();
+
+        public IConfigurationSource Initialize()
+        {
+            return this;
+        }
 
         public IDisposable Register<T>(string path, Action<T> onChangeAction)
         {
+            if (onChangeAction == null) return null;
+
+            if (string.IsNullOrEmpty(path)) path = "/";
+            else
+            {
+                path = path.ToLower().Replace("_", "");
+                if (!path.StartsWith("/")) path = "/" + path;
+            }
+
             var key = Guid.NewGuid().ToString("N");
             var registration = new Registration<T>(this).Initialize(key, path, onChangeAction);
 
@@ -30,7 +44,11 @@ namespace Urchin.Client.Data
             var node = _config;
             if (node == null) return default(T);
 
-            var segments = path.ToLower().Replace("_", "").Split(new []{'/'}, StringSplitOptions.RemoveEmptyEntries);
+            var segments = path
+                .ToLower()
+                .Replace("_", "")
+                .Split(new []{'/'}, StringSplitOptions.RemoveEmptyEntries);
+
             foreach (var segment in segments)
             {
                 if (node.Children == null)
@@ -41,6 +59,19 @@ namespace Urchin.Client.Data
 
             var json = node.AsJson();
             var jsonText = json.ToString(Formatting.None);
+
+            var resultType = typeof (T);
+
+            if (resultType == typeof (string)) 
+                return (T)(object)jsonText;
+
+            if (resultType.IsValueType)
+            {
+                var jValue = json as JValue;
+                if (jValue == null) return default(T);
+                return (T)Convert.ChangeType(jValue.Value, resultType);
+            }
+
             return JsonConvert.DeserializeObject<T>(jsonText);
         }
 
@@ -50,15 +81,20 @@ namespace Urchin.Client.Data
                 _registrations.Remove(key);
         }
 
-        private void StoreNewResponse(string response)
+        public void UpdateConfiguration(string jsonText)
         {
-            if (response == _originalResponse) return;
+            if (jsonText == _originalJsonText) return;
 
-            var changedPaths = new List<string>();
-            var newConfig = new ConfigNode();
+            var json = JToken.Parse(jsonText);
+            var newConfig = new ConfigNode(json);
+
+            var changedPaths = new List<string> { "/" };
+            //...
+            //...
+            //...
 
             _config = newConfig;
-            _originalResponse = response;
+            _originalJsonText = jsonText;
 
             List<Registration> activeRegistrations;
             lock(_registrations)
@@ -78,34 +114,45 @@ namespace Urchin.Client.Data
             public ConfigNode()
             {
                 Name = "";
-                Children = new Dictionary<string, ConfigNode>();
             }
 
-            public ConfigNode(string name, JToken value)
+            public ConfigNode(JToken value)
+                : this("", value)
             {
-                Name = name;
-                Value = value;
             }
 
-            public ConfigNode(string name)
+            private ConfigNode(string name, JToken value)
             {
                 Name = name;
-                Children = new Dictionary<string, ConfigNode>();
+                if (value.Type == JTokenType.Object)
+                {
+                    Children = new Dictionary<string, ConfigNode>();
+                    var jobject = (JObject) value;
+                    foreach (var property in jobject.Properties())
+                    {
+                        var childName = property.Name.ToLower();
+                        Children.Add(childName, new ConfigNode(childName, property.Value));
+                    }
+                }
+                else if (value.Type != JTokenType.Null)
+                    Value = value;
             }
 
             public JToken AsJson()
             {
                 if (Value != null) return Value;
 
-                var jobject = new JObject();
                 if (Children != null)
                 {
+                    var jobject = new JObject();
                     foreach (var child in Children.Values)
                     {
                         jobject.Add(child.Name, child.AsJson());
                     }
+                    return jobject;
                 }
-                return jobject;
+
+                return JToken.Parse("null");
             }
 
         }
