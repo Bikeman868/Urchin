@@ -48,19 +48,20 @@ A: No, you can use the client stand alone with a configuration file, or a URI
 Q: How do I get started?
 A: To get started with the client only using IoC and a local configuration file:
    1. Install the NuGet package for Urchin.Client.
-   2. Register a mapping in your favorite IoC for interface IConfigurationStore to 
-      ConfigurationStore as a singleton.
-   3. Create a configuration file in JSON format.
+   2. In your IoC register a mapping to the ConfigurationStore class from the
+      IConfigurationStore interface as a singleton.
+   3. Create a configuration file in JSON format. Structure the JSON however you
+      want including different data types, arrays and objects within objects.
    4. Construct an instance of Urchin.Client.Sources.FileSource and initialize
       it with the location of your file. You will have to pass IConfigurationStore 
-	  to the constructor - you can let IoC do this for you.
-	  You need to keep a reference to FileSource for it to notice config changes.
+	  to the constructor - you can let IoC do this for you!
+	  You need to keep a reference to the FileSource for it to notice config changes.
 	  When you dispose of the FileSource it will stop watching the configuration
 	  file for changes.
-   5. Inject IConfigurationStore into your classes that need to be notified 
-      of configuration changes.
+   5. Inject IConfigurationStore into classes in your application that need 
+      access to configuration data.
    6. Call the Register<T>() method of IConfigurationStore to get notified 
-      when config changes.
+      of the initial config values, and when config changes.
 
 Q: What's the best way to see what I can do with the client?
 A: Take a look at the unit tests for ConfigurationStore in Urchin.Client.Tests
@@ -69,6 +70,12 @@ Q: After I register for configuration changes, how do I get the initial values?
 A: When you register for changes, your change handler will be called right away
    with the current values, then called again if anything changes later.
 
+Q: Do I have to register for changes, or can I just read the configuration?
+A: You can read the configuration, the IConfigurationStore has a Get<T>()
+   method for that purpose, but it is not designed to be called frequently,
+   so call it once only at startup, not every time your code needs the
+   configured value.
+
 Q: How do I know what path to use when I register with IConfigurationStore?
 A: The path parameter is the path to a node in the JSON configuration file.
    Use / separators to go move from a JSON object to one of its properties.
@@ -76,9 +83,10 @@ A: The path parameter is the path to a node in the JSON configuration file.
    A path of /section1/value1 refers to the number 23.
 
 Q: Do I have to register for each configuration value in my JSON?
-A: No, you can register for notifications at any level of the configuration heirachy.
-   When you register a JSON object, specify a .Net class that can be deserialized
-   from this JSON. For example if you have this JSON configuration:
+A: No, you can register for notifications at any level of the configuration heirachy
+   including the root. When you register a JSON object, specify a .Net class 
+   that can be deserialized from this JSON. For example if you have this 
+   JSON configuration:
 
        {
          section1:{value1:23,value2:87},
@@ -98,8 +106,8 @@ A: No, you can register for notifications at any level of the configuration heir
        private readonly IConfigurationStore _config;
        public void Initialize()
        {
-	    _config.Register<SectionConfig>("/section1", Section1Changed);
-		_config.Register<SectionConfig>("/section2", Section2Changed);
+	      _config.Register<SectionConfig>("/section1", Section1Changed);
+		  _config.Register<SectionConfig>("/section2", Section2Changed);
        }
        private void Section1Changed(SectionConfig section1)
        {
