@@ -55,9 +55,9 @@ A: To get started with the client only using IoC and a local configuration file:
    4. Construct an instance of Urchin.Client.Sources.FileSource and initialize
       it with the location of your file. You will have to pass IConfigurationStore 
 	  to the constructor - you can let IoC do this for you!
-	  You need to keep a reference to the FileSource for it to notice config changes.
-	  When you dispose of the FileSource it will stop watching the configuration
-	  file for changes.
+	  You need to keep a reference to the FileSource for it to notice config
+	  changes. When you dispose of the FileSource it will stop watching the 
+	  configuration file for changes.
    5. Inject IConfigurationStore into classes in your application that need 
       access to configuration data.
    6. Call the Register<T>() method of IConfigurationStore to get notified 
@@ -149,7 +149,7 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
    For example if I have this in my web.config file:
 
        <appSettings>
-	     <add key="cacheDuration" value="34"/>
+         <add key="cacheDuration" value="34"/>
        </appSettings>
 
    You can register for changes in cache duration with this code:
@@ -157,11 +157,11 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
        private readonly IConfigurationStore _config;
        public void Initialize()
        {
-	     _config.Register<int>("/appSettings/cacheDuration", CacheDurationChanged);
+         _config.Register<int>("/appSettings/cacheDuration", CacheDurationChanged);
        }
-	   public void CacheDurationChanged(int cacheDuration)
-	   {
-	   }
+       public void CacheDurationChanged(int cacheDuration)
+       {
+       }
 
 Q: Can I specify default values in my application so that I only need to configure
    things that are not the default value?
