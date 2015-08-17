@@ -20,12 +20,12 @@ namespace Urchin.Client.Data
     /// register to receive notification of changes instead.
     /// Calling the Get method is very slow.
     /// 
-    /// The Get method is thread safe, but the UpdateConfiguration method
+    /// The Get method is thread safe, but the LoadConfiguration method
     /// is not. It is assumed that only 1 thread at a time will retrieve
     /// configuration changes and update them in this store.
     /// 
     /// When an application registers for notifications, these notification
-    /// callbacks will happen on the thread that calls UpdateConfiguration()
+    /// callbacks will happen on the thread that calls LoadConfiguration()
     /// </remarks>
     public class ConfigurationStore: IConfigurationStore
     {
@@ -96,8 +96,12 @@ namespace Urchin.Client.Data
 
             var resultType = typeof (T);
 
-            if (resultType == typeof (string)) 
-                return (T)(object)jsonText;
+            if (resultType == typeof (string))
+            {
+                if (json.Type == JTokenType.String)
+                    return (T)(object)json.Value<string>();
+                return (T) (object) jsonText;
+            }
 
             try
             {

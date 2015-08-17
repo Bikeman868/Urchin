@@ -214,7 +214,7 @@ namespace Urchin.Client.Tests
         {
             var configurationStore = new ConfigurationStore().Initialize();
 
-            const string config = "{children:[{field1:1,field2:2},{field1:99,field2:98}],doubleValue:1.56,stringValue:'my string',dateTimeValue:'2015-08-17T15:45:12'}";
+            const string config = "{booleanValue:true,children:[{field1:1,field2:2},{field1:99,field2:98}],doubleValue:1.56,stringValue:'my string',dateTimeValue:'2015-08-17T15:45:12'}";
 
             configurationStore.UpdateConfiguration(config);
             var root = configurationStore.Get<TestClassC>("");
@@ -223,6 +223,7 @@ namespace Urchin.Client.Tests
             Assert.IsNotNull(root.Children);
             Assert.AreEqual(1.56, root.DoubleValue, 0.001);
             Assert.AreEqual("my string", root.StringValue);
+            Assert.AreEqual(true, root.BooleanValue);
             Assert.AreEqual(DateTime.Parse("2015-08-17T15:45:12"), root.DateTimeValue);
             Assert.AreEqual(2, root.Children.Count);
             Assert.IsNotNull(root.Children[0]);
@@ -325,6 +326,7 @@ namespace Urchin.Client.Tests
 
         public class TestClassC
         {
+            public bool BooleanValue { get; set; }
             public double DoubleValue { get; set; }
             public DateTime DateTimeValue { get; set; }
             public string StringValue { get; set; }
