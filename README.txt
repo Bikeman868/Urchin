@@ -54,10 +54,10 @@ A: To get started with the client only using IoC and a local configuration file:
       want including different data types, arrays and objects within objects.
    4. Construct an instance of Urchin.Client.Sources.FileSource and initialize
       it with the location of your file. You will have to pass IConfigurationStore 
-	  to the constructor - you can let IoC do this for you!
-	  You need to keep a reference to the FileSource for it to notice config
-	  changes. When you dispose of the FileSource it will stop watching the 
-	  configuration file for changes.
+      to the constructor - you can let IoC do this for you!
+      You need to keep a reference to the FileSource for it to notice config
+      changes. When you dispose of the FileSource it will stop watching the 
+      configuration file for changes.
    5. Inject IConfigurationStore into classes in your application that need 
       access to configuration data.
    6. Call the Register<T>() method of IConfigurationStore to get notified 
@@ -101,13 +101,13 @@ A: No, you can register for notifications at any level of the configuration heir
          public int Value2 { get; set; }
        }
 
-	Then you can register with the IConfigurationStore like this:
+   Then you can register with the IConfigurationStore like this:
 
        private readonly IConfigurationStore _config;
        public void Initialize()
        {
 	      _config.Register<SectionConfig>("/section1", Section1Changed);
-		  _config.Register<SectionConfig>("/section2", Section2Changed);
+	      _config.Register<SectionConfig>("/section2", Section2Changed);
        }
        private void Section1Changed(SectionConfig section1)
        {
