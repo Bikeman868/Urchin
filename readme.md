@@ -20,11 +20,19 @@ A rules based centralized enterprise configuration management solution for .Net
 * Rules for determining environment from machine so that this is an optional parameter.
 * Variable declaration and substitution.
 
+## Things that Urchin does _not_ do
+* I can't find any way to get ASP.NET to give up on using the web.config file for
+  its configuration settings. Microsoft provide no flexibility or extensibility at
+  all in this area, so fo now, you can only use Urchin for settings specific to
+  your application.
+
 ## Contents
 | Component | Description |
 | --------- | ----------- |
 | `Urchin.Client` | Add this to your application via NuGet to get access to configuration data |
+| `Urchin.Client.Tests` | Unit tests for Urchin.Client |
 | `Urchin.Server.Owin` | Install this on IIS to provide rules based cenrtalized configuration repository |
+| `Urchin.Server.Shared` | Core server-side technology shared by hosting options |
 
 ## Project Status
 The client is complete and fully usable. It has a comprehensive set of unit tests.

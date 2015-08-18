@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Owin", "Urchin.Server.Owin\Urchin.Server.Owin.csproj", "{AE0124A0-75F7-495C-8F5D-FC1DDD10AF6C}"
 EndProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Shared", "Urchin.Server.Shared\Urchin.Server.Shared.csproj", "{372237CE-4202-4882-AD34-02D6493678DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{372237CE-4202-4882-AD34-02D6493678DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{372237CE-4202-4882-AD34-02D6493678DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{372237CE-4202-4882-AD34-02D6493678DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{372237CE-4202-4882-AD34-02D6493678DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

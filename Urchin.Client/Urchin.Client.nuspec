@@ -12,7 +12,7 @@
     <description>$description$</description>
     <releaseNotes>First release</releaseNotes>
     <copyright>Copyright 2015</copyright>
-    <tags>Configuration Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
+    <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
   </metadata>
   <files>
     <file src="..\*.txt" target="" />
