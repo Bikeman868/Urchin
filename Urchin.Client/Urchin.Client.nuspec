@@ -16,5 +16,6 @@
   </metadata>
   <files>
     <file src="..\*.txt" target="" />
+    <file src="..\*.md" target="" />
   </files>
 </package>

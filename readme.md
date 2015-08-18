@@ -1,10 +1,8 @@
-Urchin
-======
+# Urchin
 A rules based centralized enterprise configuration management solution for .Net
 
-Features
-========
-Client
+## Features
+### Client
 * All configuration data is strongly typed and has default values.
 * Configuration is defined in JSON format (not XML).
 * Application code can register for notification when specific configuration
@@ -15,31 +13,28 @@ Client
 * Configuration can be stored in a file, or at a URI.
 * Migration path from exiting .Net ConfigurationManager implementation.
 
-Server
+### Server
 * Rules based configuration based on environment, machine, application and instance.
 * Centralized configuration management with REST API and configuration mananagement UI.
 * Urchin Client can pull config by polling the server at a URL that includes query
   string parameters to specify machine, application, environment and instance.
 * Rules for determining environment from machine so that this is an optional parameter.
 
-Contents
-========
+## Contents
 Urchin.Client
 	Add this to your application via NuGet to get access to configuration data.
 
 Urchin.Server.Owin
 	Install this on IIS to provide rules based cenrtalized configuration repository.
 
-Project Status
-==============
+## Project Status
 The client is complete and fully usable. It has a comprehensive set of unit tests.
 
 The client can retrieve configuration from a file, or a URI. Later the URI will
 be used to retrieve configuration from the Urchin server, but the server is not
 ready yet.
 
-FAQ
-===
+## FAQ
 
 Q: Do I need to use the server component?
 A: No, you can use the client stand alone with a configuration file, or a URI 
