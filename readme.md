@@ -53,7 +53,7 @@ A: To get started with the client only using IoC and a local configuration file:
    4. Construct an instance of `Urchin.Client.Sources.FileSource` and initialize
       it with the location of your file. You will have to pass an
 	  `IConfigurationStore` instance to the constructor - you can let IoC do this
-	  for you! You need to keep a reference to the FileSource for it to notice 
+	  for you! You need to keep a reference to the `FileSource` for it to notice 
 	  config changes. When you `Dispose()` of the `FileSource` it will stop 
 	  watching the configuration file for changes.
    5. Inject `IConfigurationStore` into classes in your application that need 
@@ -88,7 +88,7 @@ A: You can read the configuration, the `IConfigurationStore` has a `Get<T>()`
 Q: How do I know what path to use when I register with IConfigurationStore?
 
 A: The path parameter is the path to a node in the JSON configuration file.
-   Use / separators to go move from a JSON object to one of its properties.
+   Use / separators to go from a JSON object to one of its properties.
    For example in this JSON `{section1:{value1:23,value2:87},section2:{}}`
    A path of /section1/value1 refers to the number 23.
 
@@ -114,7 +114,7 @@ A: No, you can register for notifications at any level of the configuration heir
          public int Value2 { get; set; }
        }
 ````
-   Then you can register with the IConfigurationStore like this:
+   Then you can register with the `IConfigurationStore` like this:
 ````
        private readonly IConfigurationStore _config;
        public void Initialize()
@@ -134,7 +134,7 @@ A: No, you can register for notifications at any level of the configuration heir
 Q: Can I implement my own source of configuration data?
 
 A: Yes, call the `UpdateConfiguration()` method of `IConfigurationStore` with the
-   configuration data in Json format and it will identify all the changes for you 
+   configuration data in JSON format and it will identify all the changes for you 
    and call the registerd change handlers. If nothing changed then it will return 
    immediately without doing anything.
 
@@ -142,9 +142,10 @@ A: Yes, call the `UpdateConfiguration()` method of `IConfigurationStore` with th
 
 Q: Can I store all my configuration in a shared database?
 
-A: Yes, store the configuration in JSON format, then retrieve it from the database
-   and pass it to the `UpdateConfiguration()` method of `IConfigurationStore`. If nothing
-   changed then it will return immediately without doing anything.
+A: Yes, store the configuration in your database in JSON format, then retrieve it 
+   from the database and pass it to the `UpdateConfiguration()` method of 
+   `IConfigurationStore`. If nothing changed then it will return immediately without
+   doing anything.
 
 ---
 
@@ -165,7 +166,7 @@ A: When you `Initialize()` the `ConfigurationStore`, you can optionally pass an
 
 ---
 
-Q: I already use the `ConfigurationManager` and appSettings in my application's config
+Q: I already use the `ConfigurationManager` and `appSettings` in my application's config
    file. Can I start using Urchin without migrating all my code or duplicating my
    configuration?
 
@@ -173,7 +174,7 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
    your configuration will have to be maintained in `appSettings` until you have 
    migrated all of your code to Urchin.
    To do this, construct an instance of `ConfigurationManagerSource` and call it's 
-   `LoadConfiguration()` method. Register for changes with the path /appSettings/name.
+   `LoadConfiguration()` method. Then register for changes with the path /appSettings/name.
    For example if you have this your my web.config file:
 ````
        <appSettings>
@@ -198,6 +199,6 @@ Q: Can I specify default values in my application so that I only need to configu
 
 A: Yes, when you call the `Register<T>()` method of `IConfigurationStore` you can optionally
    pass a default value which will apply when there is no value specified in the
-   configuration.
+   configuration data.
 
 ---
