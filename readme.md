@@ -18,7 +18,7 @@ A rules based centralized enterprise configuration management solution for .Net
 * Urchin Client can pull config by polling the server at a URL that includes query
   string parameters to specify machine, application, environment and instance.
 * Rules for determining environment from machine so that this is an optional parameter.
-* 
+* Variable declaration and substitution.
 
 ## Contents
 | Component | Description |
@@ -40,6 +40,8 @@ Q: Do I need to use the server component?
 A: No, you can use the client stand alone with a configuration file, or a URI 
    that returns the configuration data.
 
+---
+
 Q: How do I get started?
 
 A: To get started with the client only using IoC and a local configuration file:
@@ -59,14 +61,20 @@ A: To get started with the client only using IoC and a local configuration file:
    6. Call the Register<T>() method of IConfigurationStore to get notified 
       of the initial config values, and when config changes.
 
+---
+
 Q: What's the best way to see what I can do with the client?
 
 A: Take a look at the unit tests for ConfigurationStore in Urchin.Client.Tests
+
+---
 
 Q: After I register for configuration changes, how do I get the initial values?
 
 A: When you register for changes, your change handler will be called right away
    with the current values, then called again if anything changes later.
+
+---
 
 Q: Do I have to register for changes, or can I just read the configuration?
 
@@ -75,12 +83,16 @@ A: You can read the configuration, the IConfigurationStore has a Get<T>()
    so call it once only at startup, not every time your code needs the
    configured value.
 
+---
+
 Q: How do I know what path to use when I register with IConfigurationStore?
 
 A: The path parameter is the path to a node in the JSON configuration file.
    Use / separators to go move from a JSON object to one of its properties.
    For example in this JSON {section1:{value1:23,value2:87},section2:{}}
    A path of /section1/value1 refers to the number 23.
+
+---
 
 Q: Do I have to register for each configuration value in my JSON?
 
@@ -117,6 +129,8 @@ A: No, you can register for notifications at any level of the configuration heir
        {
        }
 
+---
+
 Q: Can I implement my own source of configuration data?
 
 A: Yes, call the UpdateConfiguration() method of IConfigurationStore with the
@@ -124,11 +138,15 @@ A: Yes, call the UpdateConfiguration() method of IConfigurationStore with the
    and call the registerd change handlers. If nothing changed then it will return 
    immediately without doing anything.
 
+---
+
 Q: Can I store all my configuration in a shared database?
 
 A: Yes, store the configuration in JSON format, then retrieve it from the database
    and pass it to the UpdateConfiguration() method of IConfigurationStore. If nothing
    changed then it will return immediately without doing anything.
+
+---
 
 Q: Can I make sure my configuration is valid before applying it to my application?
 
@@ -137,11 +155,15 @@ A: Yes, when you Initialize the ConfigurationStore, you can optionally pass an
    if the configuration changed, and if it returns 'false' then the configuration
    will not be applied.
 
+---
+
 Q: How can I see when there are errors in my configuration?
 
 A: When you Initialize the ConfigurationStore, you can optionally pass an
    implementation of IErrorLogger. When you do this, all errors will be passed
    to your implementation so that you can report them any way you choose.
+
+---
 
 Q: I already use the ConfigurationManager and appSettings in my application's config
    file. Can I start using Urchin without migrating all my code or duplicating my
@@ -169,9 +191,13 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
        {
        }
 
+---
+
 Q: Can I specify default values in my application so that I only need to configure
    things that are not the default value?
 
 A: Yes, when you call the Register<T>() method of IConfigurationStore you can optionally
    pass a default value which will apply when there is no value specified in the
    configuration.
+
+---
