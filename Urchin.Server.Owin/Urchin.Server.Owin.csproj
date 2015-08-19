@@ -107,7 +107,7 @@
     <Compile Include="Middleware\Hello.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\OwinExtensions.cs" />
-    <Compile Include="Startup\Startup.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

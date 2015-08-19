@@ -22,7 +22,7 @@ namespace Urchin.Server.Owin.Middleware
                 return next.Invoke();
 
             var content = new StringBuilder();
-            content.AppendLine("Hello from Urchin Server on ");
+            content.Append("Hello from Urchin Server on ");
             content.Append(Environment.MachineName);
 
             context.Response.ContentType = "text/plain";

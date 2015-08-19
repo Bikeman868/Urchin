@@ -4,13 +4,13 @@ using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
 using Microsoft.Practices.Unity;
 using Owin;
-using Urchin.Server.Owin.Startup;
+using Urchin.Server.Owin;
 using Urchin.Server.Shared.Data;
 using Urchin.Server.Shared.Interfaces;
 
 [assembly: OwinStartup(typeof(Startup))]
 
-namespace Urchin.Server.Owin.Startup
+namespace Urchin.Server.Owin
 {
     public class Startup
     {
