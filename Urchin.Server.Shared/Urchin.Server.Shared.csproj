@@ -49,7 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\ConfigRules.cs" />
+    <Compile Include="DataContracts\ConfigPropertyDto.cs" />
+    <Compile Include="DataContracts\ConfigNodeDto.cs" />
+    <Compile Include="DataContracts\PostResponseDto.cs" />
+    <Compile Include="DataContracts\RuleSetDto.cs" />
+    <Compile Include="DataContracts\RuleDto.cs" />
+    <Compile Include="DataContracts\VariableDeclarationDto.cs" />
+    <Compile Include="DataContracts\EnvironmentDto.cs" />
+    <Compile Include="Rules\ConfigRules.cs" />
     <Compile Include="Interfaces\IConfigRules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

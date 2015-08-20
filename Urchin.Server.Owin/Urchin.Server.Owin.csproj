@@ -103,8 +103,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Middleware\ApiBase.cs" />
-    <Compile Include="Middleware\GetConfiguration.cs" />
-    <Compile Include="Middleware\Hello.cs" />
+    <Compile Include="Middleware\DefaultEnvironmentEndpoint.cs" />
+    <Compile Include="Middleware\RuleEndpoint.cs" />
+    <Compile Include="Middleware\EnvironmentsEndpoint.cs" />
+    <Compile Include="Middleware\RulesEndpoint.cs" />
+    <Compile Include="Middleware\TraceEndpoint.cs" />
+    <Compile Include="Middleware\ConfigEndpoint.cs" />
+    <Compile Include="Middleware\HelloEndpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\OwinExtensions.cs" />
     <Compile Include="Startup.cs" />

@@ -6,11 +6,11 @@ using Urchin.Server.Owin.Extensions;
 
 namespace Urchin.Server.Owin.Middleware
 {
-    public class Hello: ApiBase
+    public class HelloEndpoint: ApiBase
     {
         private readonly PathString _path;
         
-        public Hello()
+        public HelloEndpoint()
         {
             _path = new PathString("/hello");
         }

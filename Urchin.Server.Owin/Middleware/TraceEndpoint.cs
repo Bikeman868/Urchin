@@ -12,16 +12,16 @@ using Urchin.Server.Shared.Interfaces;
 
 namespace Urchin.Server.Owin.Middleware
 {
-    public class GetConfiguration: ApiBase
+    public class TraceEndpoint: ApiBase
     {
         private readonly IConfigRules _configRules;
         private readonly PathString _path;
 
-        public GetConfiguration(
+        public TraceEndpoint(
             IConfigRules configRules)
         {
             _configRules = configRules;
-            _path = new PathString("/config");
+            _path = new PathString("/trace");
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
@@ -41,10 +41,10 @@ namespace Urchin.Server.Owin.Middleware
             if (string.IsNullOrWhiteSpace(application))
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Application parameter is required");
 
-            var config = _configRules.GetConfig(environment, machine, application, instance);
+            var config = _configRules.TraceConfig(environment, machine, application, instance);
 
             context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(config.ToString(Formatting.None));
+            return context.Response.WriteAsync(config.ToString(Formatting.Indented));
         }
     }
 }

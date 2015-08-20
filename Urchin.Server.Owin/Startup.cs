@@ -38,8 +38,13 @@ namespace Urchin.Server.Owin
 
         private void ConfigureMiddleware(IAppBuilder app, UnityContainer iocContainer)
         {
-            app.Use(iocContainer.Resolve<Middleware.GetConfiguration>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.Hello>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
         }
     }
 }
