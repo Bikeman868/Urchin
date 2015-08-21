@@ -89,9 +89,13 @@ POST to this endpoint to create a new rule. The format of the request body is id
 response you receive from GET.
 
 #### The `/environments` Endpoint
-
-When you GET this endpoint, the server returns a list of the environments, the machines in each
-of those environments, and the default environment to apply to all other machines.
+When you GET this endpoint, the server returns a list of the environments, and the machines in each
+of those environments.
 
 When you PUT with the same format of data, all of the environment data on the server is overwritten
 with whatever you PUT.
+
+#### The `/environment/default` Endpoint
+Allows you to GET and PUT the name of the environment to use for all machines that are not listed
+in one of the environments. Note that this only applies if the client application does not supply
+an environment when it requests configuration data.

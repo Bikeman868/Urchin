@@ -51,6 +51,8 @@ namespace Urchin.Server.Shared.Rules
         public void Clear()
         {
             SetRules(new RuleSetDto());
+            SetDefaultEnvironment("Development");
+            SetEnvironments(null);
         }
 
         public JObject GetConfig(string environment, string machine, string application, string instance)
@@ -85,6 +87,13 @@ namespace Urchin.Server.Shared.Rules
                             variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
                         }
                     }
+                }
+            }
+
+            foreach (var rule in ruleSet.Rules)
+            {
+                if (RuleApplies(rule, environment, machine, application, instance))
+                {
                     if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
                     {
                         var json = ParseJson(rule.ConfigurationData, variables);
@@ -110,7 +119,15 @@ namespace Urchin.Server.Shared.Rules
                 };
             var matchEvaluator = new MatchEvaluator(substitutionFunction);
             json = _substitutionRegex.Replace(json, matchEvaluator);
-            return JToken.Parse(json);
+
+            try
+            {
+                return JToken.Parse(json);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to parse JSON " + json, ex);
+            }
         }
 
         private static string LookupEnvironment(string environment, string machine, RuleSetDto ruleSet)
