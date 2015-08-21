@@ -31,9 +31,6 @@ namespace Urchin.Server.Shared.TypeMappings
 
             CreateMap<RuleDto, RuleDto>()
                 .ForMember(
-                    dest => dest.ConfigurationData,
-                    opt => opt.MapFrom(src => src.ConfigurationData.DeepClone()))
-                .ForMember(
                     dest => dest.Variables,
                     opt => opt.MapFrom(src => src.Variables.DeepClone()));
 
@@ -45,10 +42,7 @@ namespace Urchin.Server.Shared.TypeMappings
                     dest => dest.Rules,
                     opt => opt.MapFrom(src => src.Rules.DeepClone()));
 
-            CreateMap<VariableDeclarationDto, VariableDeclarationDto>()
-                .ForMember(
-                    dest => dest.SubstitutionValue,
-                    opt => opt.MapFrom(src => src.SubstitutionValue.DeepClone()));
+            CreateMap<VariableDeclarationDto, VariableDeclarationDto>();
         }
     }
 
@@ -56,7 +50,9 @@ namespace Urchin.Server.Shared.TypeMappings
     {
         public static List<T> DeepClone<T>(this List<T> original)
         {
-            lock(original) return original.Select(AutoMapper.Mapper.Map<T, T>).ToList();
+            if (original == null) return null;
+            lock(original) 
+                return original.Select(AutoMapper.Mapper.Map<T, T>).ToList();
         }
 
         public static T DeepClone<T>(this T original)

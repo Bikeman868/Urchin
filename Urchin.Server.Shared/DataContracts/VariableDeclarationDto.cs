@@ -14,6 +14,6 @@ namespace Urchin.Server.Shared.DataContracts
         public string VariableName { get; set; }
 
         [JsonProperty("value")]
-        public JToken SubstitutionValue { get; set; }
+        public string SubstitutionValue { get; set; }
     }
 }

@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Shared", "Urchin.Server.Shared\Urchin.Server.Shared.csproj", "{372237CE-4202-4882-AD34-02D6493678DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Tests", "Urchin.Server.Tests\Urchin.Server.Tests.csproj", "{011E7B9D-2ACD-4B57-A1E3-B9F7E7870F6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{372237CE-4202-4882-AD34-02D6493678DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{372237CE-4202-4882-AD34-02D6493678DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{372237CE-4202-4882-AD34-02D6493678DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{011E7B9D-2ACD-4B57-A1E3-B9F7E7870F6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{011E7B9D-2ACD-4B57-A1E3-B9F7E7870F6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{011E7B9D-2ACD-4B57-A1E3-B9F7E7870F6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{011E7B9D-2ACD-4B57-A1E3-B9F7E7870F6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,11 +6,12 @@ namespace Urchin.Server.Shared.Interfaces
 {
     public interface IConfigRules
     {
-        JToken GetConfig(string environment, string machine, string application, string instance);
-        JToken TraceConfig(string environment, string machine, string application, string instance);
+        JObject GetConfig(string environment, string machine, string application, string instance);
+        JObject TraceConfig(string environment, string machine, string application, string instance);
 
         RuleSetDto GetRules();
 
+        void Clear();
         void SetRules(RuleSetDto rules);
 
         void SetDefaultEnvironment(string environmentName);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
 using Urchin.Server.Shared.DataContracts;
@@ -18,7 +19,7 @@ namespace Urchin.Server.Shared.Rules
         {
             _mapper = mapper;
 
-            _ruleSet = new RuleSetDto
+            var defaultRuleSet = new RuleSetDto
             {
                 DefaultEnvironmentName = "Development",
                 Environments = new List<EnvironmentDto> 
@@ -32,81 +33,111 @@ namespace Urchin.Server.Shared.Rules
                 {
                     new RuleDto
                     {
-                        ConfigurationData = new JObject(new JProperty("environment", "($environment$)"))
+                        RuleName = "DevelopmentEnvironment",
+                        Environment = "Development",
+                        ConfigurationData = "{\"debug\":true}"
+                    },
+                    new RuleDto
+                    {
+                        RuleName = "Root",
+                        ConfigurationData = "{\"environment\":\"($environment$)\",\"machine\":\"($machine$)\",\"application\":\"($application$)\",\"debug\":false}"
                     }
                 }
             };
+
+            SetRules(defaultRuleSet);
         }
 
-        public JToken GetConfig(string environment, string machine, string application, string instance)
+        public void Clear()
         {
-            var config = JToken.Parse("null");
+            SetRules(new RuleSetDto());
+        }
+
+        public JObject GetConfig(string environment, string machine, string application, string instance)
+        {
+            var config = new JObject();
 
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return config;
 
             var ruleSet = _ruleSet;
-            if (ruleSet == null) 
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0) 
                 return config;
 
-            if (string.IsNullOrWhiteSpace(environment))
+            environment = LookupEnvironment(environment, machine, ruleSet);
+
+            var variables = new Dictionary<string, string>
             {
-                environment = ruleSet.DefaultEnvironmentName;
-                if (ruleSet.Environments != null)
-                {
-                    foreach (var environmentRule in ruleSet.Environments)
-                    {
-                        if (environmentRule.Machines != null)
-                        {
-                            if (environmentRule.Machines.Any(machineRule => string.Compare(machineRule, machine, StringComparison.InvariantCultureIgnoreCase) == 0))
-                            {
-                                environment = environmentRule.EnvironmentName;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+                {"environment", environment},
+                {"machine", machine},
+                {"application", application},
+                {"instance", instance}
+            };
 
             foreach (var rule in ruleSet.Rules)
             {
                 if (RuleApplies(rule, environment, machine, application, instance))
                 {
-                    if (rule.ConfigurationData != null)
+                    if (rule.Variables != null)
                     {
-                        if (rule.ConfigurationData.Type == JTokenType.Object)
+                        foreach (var variable in rule.Variables)
                         {
-                            if (config.Type == JTokenType.Object)
-                            {
-                                ((JObject)config).Merge(rule.ConfigurationData);
-                            }
-                            else
-                            {
-                                config = rule.ConfigurationData;
-                            }
+                            variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
                         }
-                        else if (rule.ConfigurationData.Type == JTokenType.Array)
-                        {
-                            if (config.Type == JTokenType.Array)
-                            {
-                                ((JArray)config).Merge(rule.ConfigurationData);
-                            }
-                            else
-                            {
-                                config = rule.ConfigurationData;
-                            }
-                        }
-                        else
-                        {
-                            config = rule.ConfigurationData;
-                        }
+                    }
+                    if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
+                    {
+                        var json = ParseJson(rule.ConfigurationData, variables);
+                        config.Merge(json);
                     }
                 }
             }
             return config;
         }
 
-        public JToken TraceConfig(string environment, string machine, string application, string instance)
+        private readonly Regex _substitutionRegex = new Regex(@"\(\$(.+?)\$\)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        private JToken ParseJson(string json, Dictionary<string, string> variables)
+        {
+            Func<Match, string> substitutionFunction = 
+                m =>
+                {
+                    var variableName = m.Groups[1].Value;
+                    string value;
+                    return variables.TryGetValue(variableName.ToLower(), out value) 
+                        ? value 
+                        : string.Empty;
+                };
+            var matchEvaluator = new MatchEvaluator(substitutionFunction);
+            json = _substitutionRegex.Replace(json, matchEvaluator);
+            return JToken.Parse(json);
+        }
+
+        private static string LookupEnvironment(string environment, string machine, RuleSetDto ruleSet)
+        {
+            if (!string.IsNullOrWhiteSpace(environment)) return environment;
+
+            if (ruleSet.Environments != null)
+            {
+                foreach (var environmentRule in ruleSet.Environments)
+                {
+                    if (environmentRule.Machines != null)
+                    {
+                        if (
+                            environmentRule.Machines.Any(
+                                machineRule =>
+                                    string.Compare(machineRule, machine, StringComparison.InvariantCultureIgnoreCase) == 0))
+                        {
+                            return environmentRule.EnvironmentName;
+                        }
+                    }
+                }
+            }
+
+            return ruleSet.DefaultEnvironmentName;
+        }
+
+        public JObject TraceConfig(string environment, string machine, string application, string instance)
         {
             return GetConfig(environment, machine, application, instance);
         }
@@ -120,7 +151,7 @@ namespace Urchin.Server.Shared.Rules
             }
             if (!string.IsNullOrEmpty(rule.Machine))
             {
-                if (string.Compare(application, rule.Application, StringComparison.InvariantCultureIgnoreCase) != 0)
+                if (string.Compare(machine, rule.Machine, StringComparison.InvariantCultureIgnoreCase) != 0)
                     return false;
             }
             if (!string.IsNullOrEmpty(rule.Environment))
@@ -142,10 +173,32 @@ namespace Urchin.Server.Shared.Rules
             return _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
         }
 
-        public void SetRules(RuleSetDto rules)
+        public void SetRules(RuleSetDto ruleSet)
         {
-            // TODO: Order the rules by precedence so that they can be executed linearly
-            _ruleSet = rules;
+            if (ruleSet.Rules != null)
+            {
+                foreach (var rule in ruleSet.Rules)
+                {
+                    rule.EvaluationOrder = string.Empty;
+                    if (!string.IsNullOrWhiteSpace(rule.Instance)) rule.EvaluationOrder += 'D';
+                    if (!string.IsNullOrWhiteSpace(rule.Machine)) rule.EvaluationOrder += 'C';
+                    if (!string.IsNullOrWhiteSpace(rule.Application)) rule.EvaluationOrder += 'B';
+                    if (!string.IsNullOrWhiteSpace(rule.Environment)) rule.EvaluationOrder += 'A';
+                }
+                ruleSet.Rules.Sort(new RuleComparer());
+            }
+
+            _ruleSet = ruleSet;
+        }
+
+        private class RuleComparer: IComparer<RuleDto>
+        {
+            public int Compare(RuleDto x, RuleDto y)
+            {
+                if (x.EvaluationOrder.Length < y.EvaluationOrder.Length) return -1;
+                if (x.EvaluationOrder.Length > y.EvaluationOrder.Length) return 1;
+                return string.Compare(x.EvaluationOrder, y.EvaluationOrder, StringComparison.Ordinal);
+            }
         }
 
         public void SetDefaultEnvironment(string environmentName)

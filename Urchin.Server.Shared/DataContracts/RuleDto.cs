@@ -29,6 +29,9 @@ namespace Urchin.Server.Shared.DataContracts
         public List<VariableDeclarationDto> Variables { get; set; }
 
         [JsonProperty("config")]
-        public JToken ConfigurationData { get; set; }
+        public string ConfigurationData { get; set; }
+
+        [JsonIgnore]
+        public string EvaluationOrder { get; set; }
     }
 }
