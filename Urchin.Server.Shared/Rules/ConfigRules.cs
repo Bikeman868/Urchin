@@ -70,6 +70,19 @@ namespace Urchin.Server.Shared.Rules
             return MergeRules(applicableRules, environment, machine, application, instance);
         }
 
+        public JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance)
+        {
+            if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
+                return new JObject();
+
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new JObject();
+
+            environment = LookupEnvironment(environment, machine, ruleSet);
+            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
+            return MergeRules(applicableRules, environment, machine, application, instance);
+        }
+
         public JObject TraceConfig(string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
@@ -335,6 +348,5 @@ namespace Urchin.Server.Shared.Rules
                 }
             }
         }
-
     }
 }

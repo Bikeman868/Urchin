@@ -59,6 +59,7 @@ You can also use these endpoints in your own software to query or modify the rul
 | ------ | ------------- |------------- | ----------- |
 | GET    | /rules        |              | http://localhost/urchin/rules |
 | POST   | /rules        |              | http://localhost/urchin/rules |
+| PUT    | /rules        |              | http://localhost/urchin/rules |
 | GET    | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
 | PUT    | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
 | POST   | /rule         |              | http://localhost/urchin/rule |
@@ -67,6 +68,9 @@ You can also use these endpoints in your own software to query or modify the rul
 | PUT    | /environments |              | http://localhost/urchin/environments |
 | GET    | /environment/default |       | http://localhost/urchin/environment/default |
 | PUT    | /environment/default |       | http://localhost/urchin/environment/default |
+| GET    | /ruledata     |              | http://localhost/urchin/ruledata |
+| POST   | /test         | machine, application, environment, instance | http://localhost/urchin/test?machine=mymachine&application=testapp |
+
 
 #### The `/rules` Endpoint
 GET this endpoint to retrieve a list of the rules. The returned JSON includes the name of the rule
@@ -76,6 +80,9 @@ POST this endpoint to create a new set of rules. The format of the POST body is 
 response you GET from this endpoint. Rule names must be unique. Each rule can include a set of
 conditions in which that rule applies. You can not supply the valiables and config data for each 
 rule with this endpoint. Set these details by doing PUT to the `/rule/{name}` endpoint.
+
+PUT this endpoint to update one or more existing rules. This endpoint does not allow you to change
+the name of the rule. If you want to rename a rule, PUT the `/rule/{name}` endpoint instead.
 
 #### The `/rule` Endpoint
 GET this endpoint to retrieve the full details of an individual rule by name.
@@ -102,3 +109,13 @@ with whatever you PUT.
 Allows you to GET and PUT the name of the environment to use for all machines that are not listed
 in one of the environments. Note that this only applies if the client application does not supply
 an environment when it requests configuration data.
+
+#### The `/ruledata` Endpoint
+Retrievs the entire rule database from the server. This allows you to modify it and pass it to the
+`/test` endpoint to test your changes before commiting them to the server.
+
+#### The `/test` Endpoint
+This allows you to post an entire rule database with all environments and rules plus a query, and
+test what the query would return if you POSTed this data to the server. This provides a way
+to GET the `/ruledata` then edit and test changes before finally POSTing the new rules back to the
+server.

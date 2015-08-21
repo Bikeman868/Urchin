@@ -48,6 +48,8 @@ namespace Urchin.Server.Owin
             app.Use(iocContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
             app.Use(iocContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
             app.Use(iocContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.RuleDataEndpoint>().Invoke);
+            app.Use(iocContainer.Resolve<Middleware.TestEndpoint>().Invoke);
         }
     }
 }

@@ -110,6 +110,8 @@
     <Compile Include="Middleware\PostRuleEndpoint.cs" />
     <Compile Include="Middleware\RuleEndpoint.cs" />
     <Compile Include="Middleware\EnvironmentsEndpoint.cs" />
+    <Compile Include="Middleware\RuleDataEndpoint.cs" />
+    <Compile Include="Middleware\TestEndpoint.cs" />
     <Compile Include="Middleware\RulesEndpoint.cs" />
     <Compile Include="Middleware\TraceEndpoint.cs" />
     <Compile Include="Middleware\ConfigEndpoint.cs" />
@@ -121,6 +123,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="readme.md" />
+    <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
