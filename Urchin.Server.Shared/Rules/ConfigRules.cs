@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
 using Urchin.Server.Shared.DataContracts;
@@ -57,17 +58,71 @@ namespace Urchin.Server.Shared.Rules
 
         public JObject GetConfig(string environment, string machine, string application, string instance)
         {
-            var config = new JObject();
-
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
-                return config;
+                return new JObject();
 
             var ruleSet = _ruleSet;
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0) 
-                return config;
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new JObject();
 
             environment = LookupEnvironment(environment, machine, ruleSet);
+            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
+            return MergeRules(applicableRules, environment, machine, application, instance);
+        }
 
+        public JObject TraceConfig(string environment, string machine, string application, string instance)
+        {
+            if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
+                return new JObject();
+
+            var ruleSet = _ruleSet;
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new JObject();
+
+            environment = LookupEnvironment(environment, machine, ruleSet);
+            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
+            var serializedRules = JsonConvert.SerializeObject(applicableRules);
+
+            var variables = MergeVariables(applicableRules, environment, machine, application, instance);
+            var serializedVariables = JsonConvert.SerializeObject(variables);
+
+            var response = new JObject();
+
+            response["config"] = MergeRules(applicableRules, environment, machine, application, instance);
+            response["variables"] = JToken.Parse(serializedVariables);
+            response["matchingRules"] = JToken.Parse(serializedRules);
+
+            return response;
+        }
+
+        private JObject MergeRules(
+            IList<RuleDto> rules, 
+            string environment, 
+            string machine, 
+            string application, 
+            string instance)
+        {
+            var variables = MergeVariables(rules, environment, machine, application, instance);
+
+            var config = new JObject();
+            foreach (var rule in rules)
+            {
+                if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
+                {
+                    var json = ParseJson(rule.ConfigurationData, variables);
+                    config.Merge(json);
+                }
+            }
+            return config;
+        }
+
+        private Dictionary<string, string> MergeVariables(
+            IList<RuleDto> rules,
+            string environment,
+            string machine,
+            string application,
+            string instance)
+        {
             var variables = new Dictionary<string, string>
             {
                 {"environment", environment},
@@ -76,32 +131,31 @@ namespace Urchin.Server.Shared.Rules
                 {"instance", instance}
             };
 
-            foreach (var rule in ruleSet.Rules)
+            foreach (var rule in rules)
             {
-                if (RuleApplies(rule, environment, machine, application, instance))
+                if (rule.Variables != null)
                 {
-                    if (rule.Variables != null)
+                    foreach (var variable in rule.Variables)
                     {
-                        foreach (var variable in rule.Variables)
-                        {
-                            variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
-                        }
+                        variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
                     }
                 }
             }
 
-            foreach (var rule in ruleSet.Rules)
-            {
-                if (RuleApplies(rule, environment, machine, application, instance))
-                {
-                    if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
-                    {
-                        var json = ParseJson(rule.ConfigurationData, variables);
-                        config.Merge(json);
-                    }
-                }
-            }
-            return config;
+            return variables;
+        }
+
+        private List<RuleDto> GetApplicableRules(
+            RuleSetDto ruleSet, 
+            string environment, 
+            string machine, 
+            string application, 
+            string instance)
+        {
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new List<RuleDto>();
+
+            return ruleSet.Rules.Where(r => RuleApplies(r, environment, machine, application, instance)).ToList();
         }
 
         private readonly Regex _substitutionRegex = new Regex(@"\(\$(.+?)\$\)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -152,11 +206,6 @@ namespace Urchin.Server.Shared.Rules
             }
 
             return ruleSet.DefaultEnvironmentName;
-        }
-
-        public JObject TraceConfig(string environment, string machine, string application, string instance)
-        {
-            return GetConfig(environment, machine, application, instance);
         }
 
         private bool RuleApplies(RuleDto rule, string environment, string machine, string application, string instance)
