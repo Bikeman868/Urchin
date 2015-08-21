@@ -17,7 +17,7 @@ namespace Urchin.Server.Shared.Interfaces
         void SetEnvironments(List<EnvironmentDto> environments);
 
         void AddRules(List<RuleDto> newRules);
-        void UpdateRule(string name, RuleDto rule);
+        void UpdateRule(string oldName, RuleDto rule);
         void DeleteRule(string name);
     }
 }

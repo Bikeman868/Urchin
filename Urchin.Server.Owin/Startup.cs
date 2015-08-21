@@ -4,9 +4,11 @@ using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
 using Microsoft.Practices.Unity;
 using Owin;
+using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
 using Urchin.Server.Owin;
-using Urchin.Server.Shared.Data;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
+using Urchin.Server.Shared.TypeMappings;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -22,9 +24,9 @@ namespace Urchin.Server.Owin
             while (DateTime.UtcNow < endTime && !System.Diagnostics.Debugger.IsAttached)
                 System.Threading.Thread.Sleep(100);
 #endif
-
             var iocContainer = new UnityContainer();
             iocContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
+            iocContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
 
             ConfigureMiddleware(app, iocContainer);
 
