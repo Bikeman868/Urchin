@@ -25,7 +25,7 @@ Client applications should call this endpoint to obtain their configuration data
 | GET    | /trace       | machine, application, environment, instance | http://localhost/urchin/trace?machine=mymachine&application=testapp |
 | GET    | /hello       |              | http://localhost/urchin/trace?machine=mymachine&application=testapp |
 
-#### The '/config' Endpoint
+#### The `/config` Endpoint
 When you GET this endpoint, it returns JSON document defining the configuration for an instance 
 of application running on a specific machine in a specific environment.
 
@@ -68,7 +68,7 @@ You can also use these endpoints in your own software to query or modify the rul
 | GET    | /environment/default |       | http://localhost/urchin/environment/default |
 | PUT    | /environment/default |       | http://localhost/urchin/environment/default |
 
-#### The '/rules' Endpoint
+#### The `/rules` Endpoint
 GET this endpoint to retrieve a list of the rules. The returned JSON includes the name of the rule
 and the conditions under which this rule applies.
 
@@ -77,7 +77,7 @@ response you GET from this endpoint. Rule names must be unique. Each rule can in
 conditions in which that rule applies. You can not supply the valiables and config data for each 
 rule with this endpoint. Set these details by doing PUT to the `/rule` endpoint.
 
-#### The '/rule' Endpoint
+#### The `/rule` Endpoint
 GET this endpoint to retrieve the full details of an individual rule by name.
 
 PUT this endpoint to update a rule by name. An error is returned if the rule does not exist. The
@@ -88,7 +88,7 @@ DELETE this endpoint to remove a rule from the server.
 POST to this endpoint to create a new rule. The format of the request body is identical to the 
 response you receive from GET.
 
-#### The '/environments' Endpoint
+#### The `/environments` Endpoint
 
 When you GET this endpoint, the server returns a list of the environments, the machines in each
 of those environments, and the default environment to apply to all other machines.
