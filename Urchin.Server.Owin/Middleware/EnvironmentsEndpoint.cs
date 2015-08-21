@@ -68,7 +68,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetEnvironments(IOwinContext context)
         {
-            var rules = _configRules.GetRules();
+            var rules = _configRules.GetRuleSet();
             return Json(context, rules.Environments);
         }
 

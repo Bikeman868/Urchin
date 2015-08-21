@@ -34,35 +34,33 @@ namespace Urchin.Server.Owin.Middleware
 
             var pathSegmnts = request.Path.Value.Split('/').Select(HttpUtility.UrlDecode).ToArray();
 
-            if (pathSegmnts.Length <= 2)
+            if (pathSegmnts.Length < 3)
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _path.Value);
 
-            var ruleName = pathSegmnts[1];
+            var ruleName = pathSegmnts[2];
             
             if (request.Method == "GET")
-                return GetRule(ruleName);
-
-            string requestBody;
-            try
-            {
-                using (var sr = new StreamReader(request.Body, Encoding.UTF8))
-                    requestBody = sr.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
-            }
+                return GetRule(context, ruleName);
 
             try
             {
-                if (request.Method == "PUT")
-                    return UpdateRule(ruleName);
-
-                if (request.Method == "POST")
-                    return CreateRule(ruleName);
-
                 if (request.Method == "DELETE")
-                    return DeleteRule(ruleName);
+                    return DeleteRule(context, ruleName);
+
+                RuleDto rule;
+                try
+                {
+                    using (var sr = new StreamReader(request.Body, Encoding.UTF8))
+                        rule = JsonConvert.DeserializeObject<RuleDto>(sr.ReadToEnd());
+                }
+                catch (Exception ex)
+                {
+                    return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
+                }
+
+                if (request.Method == "PUT")
+                    return UpdateRule(context, ruleName, rule);
+
             }
             catch (Exception ex)
             {
@@ -72,24 +70,33 @@ namespace Urchin.Server.Owin.Middleware
             return next.Invoke();
         }
 
-        private Task GetRule(string name)
+        private Task GetRule(IOwinContext context, string name)
         {
-            throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Getting a rule is not implemented yet");
+            var ruleSet = _configRules.GetRuleSet();
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
+
+            var matchingRules = ruleSet.Rules.Where(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0).ToList();
+
+            if (matchingRules.Count == 1)
+                return Json(context, matchingRules[0]);
+
+            if (matchingRules.Count == 0)
+                throw new HttpException((int)HttpStatusCode.NotFound, "There are no rules called " + name);
+
+            throw new HttpException((int)HttpStatusCode.NoContent, "There are multiple rules with the name " + name);
         }
 
-        private Task CreateRule(string name)
+        private Task UpdateRule(IOwinContext context, string name, RuleDto rule)
         {
-            throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Creating a rule is not implemented yet");
+            _configRules.UpdateRule(name, rule);
+            return Json(context, new PostResponseDto { Success = true });
         }
 
-        private Task UpdateRule(string name)
+        private Task DeleteRule(IOwinContext context, string name)
         {
-            throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Updating a rule is not implemented yet");
-        }
-
-        private Task DeleteRule(string name)
-        {
-            throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Deleting a rule is not implemented yet");
+            _configRules.DeleteRule(name);
+            return Json(context, new PostResponseDto { Success = true });
         }
     }
 }

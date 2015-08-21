@@ -33,7 +33,7 @@ namespace Urchin.Server.Owin.Middleware
                 return next.Invoke();
 
             if (request.Method == "GET")
-                return GetRules();
+                return GetRules(context);
 
             string requestBody;
             try
@@ -49,7 +49,7 @@ namespace Urchin.Server.Owin.Middleware
             try
             {
                 if (request.Method == "POST")
-                    return CreateRules();
+                    return CreateRules(context);
             }
             catch (Exception ex)
             {
@@ -59,12 +59,16 @@ namespace Urchin.Server.Owin.Middleware
             return next.Invoke();
         }
 
-        private Task GetRules()
+        private Task GetRules(IOwinContext context)
         {
-            throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Getting a list of rules is not implemented yet");
+            var ruleSet = _configRules.GetRuleSet();
+            if (ruleSet == null)
+                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
+
+            return Json(context, ruleSet);
         }
 
-        private Task CreateRules()
+        private Task CreateRules(IOwinContext context)
         {
             throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Creating a list of rules is not implemented yet");
         }

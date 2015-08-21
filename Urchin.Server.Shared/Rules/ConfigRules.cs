@@ -45,12 +45,12 @@ namespace Urchin.Server.Shared.Rules
                 }
             };
 
-            SetRules(defaultRuleSet);
+            SetRuleSet(defaultRuleSet);
         }
 
         public void Clear()
         {
-            SetRules(new RuleSetDto());
+            SetRuleSet(new RuleSetDto());
             SetDefaultEnvironment("Development");
             SetEnvironments(null);
         }
@@ -184,13 +184,13 @@ namespace Urchin.Server.Shared.Rules
             return true;
         }
 
-        public RuleSetDto GetRules()
+        public RuleSetDto GetRuleSet()
         {
             // Return a deep copy of the rule set
             return _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
         }
 
-        public void SetRules(RuleSetDto ruleSet)
+        public void SetRuleSet(RuleSetDto ruleSet)
         {
             if (ruleSet.Rules != null)
             {
@@ -250,7 +250,7 @@ namespace Urchin.Server.Shared.Rules
             }
 
             // Replace the rules with a new set
-            SetRules(ruleSet);
+            SetRuleSet(ruleSet);
         }
 
         public void UpdateRule(string oldName, RuleDto rule)
@@ -262,10 +262,12 @@ namespace Urchin.Server.Shared.Rules
             ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(ruleSet);
 
             DeleteRule(ruleSet, oldName);
+            DeleteRule(ruleSet, rule.RuleName);
+
             ruleSet.Rules.Add(rule);
 
             // Replace the rules with a new set
-            SetRules(ruleSet);
+            SetRuleSet(ruleSet);
         }
 
         public void DeleteRule(string name)

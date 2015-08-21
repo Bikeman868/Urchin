@@ -61,7 +61,7 @@ You can also use these endpoints in your own software to query or modify the rul
 | POST   | /rules        |              | http://localhost/urchin/rules |
 | GET    | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
 | PUT    | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
-| POST   | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
+| POST   | /rule         |              | http://localhost/urchin/rule |
 | DELETE | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
 | GET    | /environments |              | http://localhost/urchin/environments |
 | PUT    | /environments |              | http://localhost/urchin/environments |
@@ -75,18 +75,21 @@ and the conditions under which this rule applies.
 POST this endpoint to create a new set of rules. The format of the POST body is identical to the
 response you GET from this endpoint. Rule names must be unique. Each rule can include a set of
 conditions in which that rule applies. You can not supply the valiables and config data for each 
-rule with this endpoint. Set these details by doing PUT to the `/rule` endpoint.
+rule with this endpoint. Set these details by doing PUT to the `/rule/{name}` endpoint.
 
 #### The `/rule` Endpoint
 GET this endpoint to retrieve the full details of an individual rule by name.
 
-PUT this endpoint to update a rule by name. An error is returned if the rule does not exist. The
-format of the request body is identical to the response you receive from GET.
+PUT this endpoint to update a rule by name, or to rename a rule. An error is returned if the
+rule does not exist. The format of the request body is identical to the response you receive from GET.
+The name in the URL should be the name of an existing rule to replace. The name passed in the body
+of the request should be the new name of the rule.
 
 DELETE this endpoint to remove a rule from the server.
 
 POST to this endpoint to create a new rule. The format of the request body is identical to the 
-response you receive from GET.
+response you receive from GET. Note that in this case the name of an existing rule is not required
+in the URL. If a rule with this name already exists you will get an error response.
 
 #### The `/environments` Endpoint
 When you GET this endpoint, the server returns a list of the environments, and the machines in each

@@ -107,6 +107,7 @@
   <ItemGroup>
     <Compile Include="Middleware\ApiBase.cs" />
     <Compile Include="Middleware\DefaultEnvironmentEndpoint.cs" />
+    <Compile Include="Middleware\PostRuleEndpoint.cs" />
     <Compile Include="Middleware\RuleEndpoint.cs" />
     <Compile Include="Middleware\EnvironmentsEndpoint.cs" />
     <Compile Include="Middleware\RulesEndpoint.cs" />

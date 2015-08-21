@@ -9,10 +9,10 @@ namespace Urchin.Server.Shared.Interfaces
         JObject GetConfig(string environment, string machine, string application, string instance);
         JObject TraceConfig(string environment, string machine, string application, string instance);
 
-        RuleSetDto GetRules();
+        RuleSetDto GetRuleSet();
 
         void Clear();
-        void SetRules(RuleSetDto rules);
+        void SetRuleSet(RuleSetDto rules);
 
         void SetDefaultEnvironment(string environmentName);
         void SetEnvironments(List<EnvironmentDto> environments);

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
@@ -35,11 +36,11 @@ namespace Urchin.Server.Owin.Middleware
             if (request.Method == "GET")
                 return GetDefaultEnvironment(context);
 
-            string requestBody;
+            JToken requestBody;
             try
             {
                 using (var sr = new StreamReader(request.Body, Encoding.UTF8))
-                    requestBody = sr.ReadToEnd();
+                    requestBody = JToken.Parse(sr.ReadToEnd());
             }
             catch (Exception ex)
             {
@@ -50,7 +51,7 @@ namespace Urchin.Server.Owin.Middleware
             {
                 try
                 {
-                    return UpdateDefaultEnvironment(context, requestBody);
+                    return UpdateDefaultEnvironment(context, requestBody.Value<string>());
                 }
                 catch (Exception ex)
                 {
@@ -68,7 +69,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetDefaultEnvironment(IOwinContext context)
         {
-            var rules = _configRules.GetRules();
+            var rules = _configRules.GetRuleSet();
             return Json(context, rules.DefaultEnvironmentName);
         }
 
