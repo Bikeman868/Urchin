@@ -27,6 +27,7 @@ namespace Urchin.Server.Owin
             var iocContainer = new UnityContainer();
             iocContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
             iocContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
+            iocContainer.RegisterType<IPersister, TestDataPersister>(new ContainerControlledLifetimeManager());
 
             ConfigureMiddleware(app, iocContainer);
 

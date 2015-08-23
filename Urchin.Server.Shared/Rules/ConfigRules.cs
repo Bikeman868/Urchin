@@ -12,40 +12,16 @@ namespace Urchin.Server.Shared.Rules
     public class ConfigRules: IConfigRules
     {
         private readonly IMapper _mapper;
+        private readonly IPersister _persister;
 
         private RuleSetDto _ruleSet;
 
-        public ConfigRules(IMapper mapper)
+        public ConfigRules(IMapper mapper, IPersister persister)
         {
             _mapper = mapper;
+            _persister = persister;
 
-            var defaultRuleSet = new RuleSetDto
-            {
-                DefaultEnvironmentName = "Development",
-                Environments = new List<EnvironmentDto> 
-                { 
-                    new EnvironmentDto { EnvironmentName = "Production", Machines = new List<string>() },
-                    new EnvironmentDto { EnvironmentName = "Staging", Machines = new List<string>() },
-                    new EnvironmentDto { EnvironmentName = "Integration", Machines = new List<string>() },
-                    new EnvironmentDto { EnvironmentName = "Test", Machines = new List<string>() }
-                },
-                Rules = new List<RuleDto> 
-                {
-                    new RuleDto
-                    {
-                        RuleName = "DevelopmentEnvironment",
-                        Environment = "Development",
-                        ConfigurationData = "{\"debug\":true}"
-                    },
-                    new RuleDto
-                    {
-                        RuleName = "Root",
-                        ConfigurationData = "{\"environment\":\"($environment$)\",\"machine\":\"($machine$)\",\"application\":\"($application$)\",\"debug\":false}"
-                    }
-                }
-            };
-
-            SetRules(defaultRuleSet);
+            ReloadFromPersister();
         }
 
         public void Clear()
@@ -53,6 +29,22 @@ namespace Urchin.Server.Shared.Rules
             SetRules(new RuleSetDto());
             SetDefaultEnvironment("Development");
             SetEnvironments(null);
+        }
+
+        public void ReloadFromPersister()
+        {
+            var ruleSet = new RuleSetDto
+            {
+                Environments = _persister.GetAllEnvironments().ToList(),
+                DefaultEnvironmentName = _persister.GetDefaultEnvironment(),
+                Rules = _persister.GetAllRules().ToList()
+            };
+            SetRules(ruleSet);
+        }
+
+        public void SaveToPersister()
+        {
+            
         }
 
         public JObject GetConfig(string environment, string machine, string application, string instance)

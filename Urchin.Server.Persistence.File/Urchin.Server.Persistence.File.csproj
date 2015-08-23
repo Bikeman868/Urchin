@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{372237CE-4202-4882-AD34-02D6493678DA}</ProjectGuid>
+    <ProjectGuid>{7E2602CD-E9A4-48C7-91F5-9322AB224C1A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Urchin.Server.Shared</RootNamespace>
-    <AssemblyName>Urchin.Server.Shared</AssemblyName>
+    <RootNamespace>Urchin.Server.Persistence.File</RootNamespace>
+    <AssemblyName>Urchin.Server.Persistence.File</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,19 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper">
-      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.3.2.0\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core">
-      <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,25 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataContracts\ConfigPropertyDto.cs" />
-    <Compile Include="DataContracts\ConfigNodeDto.cs" />
-    <Compile Include="DataContracts\PostResponseDto.cs" />
-    <Compile Include="DataContracts\RuleSetDto.cs" />
-    <Compile Include="DataContracts\RuleDto.cs" />
-    <Compile Include="DataContracts\VariableDeclarationDto.cs" />
-    <Compile Include="DataContracts\EnvironmentDto.cs" />
-    <Compile Include="Interfaces\IMapper.cs" />
-    <Compile Include="Interfaces\IPersister.cs" />
-    <Compile Include="Rules\ConfigRules.cs" />
-    <Compile Include="Interfaces\IConfigRules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rules\TestDataPersister.cs" />
-    <Compile Include="TypeMappings\DtoDeepCopy.cs" />
-    <Compile Include="TypeMappings\Mapper.cs" />
-    <Compile Include="TypeMappings\ReflectionHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
