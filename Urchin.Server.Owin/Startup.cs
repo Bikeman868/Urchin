@@ -19,11 +19,11 @@ namespace Urchin.Server.Owin
         public void Configuration(IAppBuilder app)
         {
 
-#if DEBUG
-            var endTime = DateTime.UtcNow.AddSeconds(10);
-            while (DateTime.UtcNow < endTime && !System.Diagnostics.Debugger.IsAttached)
-                System.Threading.Thread.Sleep(100);
-#endif
+//#if DEBUG
+//            var endTime = DateTime.UtcNow.AddSeconds(10);
+//            while (DateTime.UtcNow < endTime && !System.Diagnostics.Debugger.IsAttached)
+//                System.Threading.Thread.Sleep(100);
+//#endif
             var iocContainer = new UnityContainer();
             iocContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
             iocContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());

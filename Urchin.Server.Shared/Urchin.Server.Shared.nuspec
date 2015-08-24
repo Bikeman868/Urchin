@@ -15,7 +15,7 @@
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
   </metadata>
   <files>
-    <file src="..\*.txt" target="" />
+    <file src="..\license.txt" target="" />
     <file src="*.md" target="" />
   </files>
 </package>
