@@ -284,12 +284,17 @@ namespace Urchin.Server.Shared.Rules
 
             ruleSet.Environments = environments;
 
-            foreach(var environment in environments)
-                _persister.InsertOrUpdateEnvironment(environment);
+            if (environments != null)
+            {
+                foreach (var environment in environments)
+                    _persister.InsertOrUpdateEnvironment(environment);
+            }
         }
 
         public void AddRules(List<RuleDto> newRules)
         {
+            if (newRules == null) return;
+
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
