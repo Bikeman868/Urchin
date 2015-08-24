@@ -22,13 +22,7 @@ namespace Urchin.Client.Sources
         {
             _pollInterval = pollInterval;
 
-            try
-            {
-                Poll(_configurationStore);
-            }
-            catch (Exception)
-            {
-            }
+            Poll(_configurationStore);
 
             _thread = new Thread(ThresdEntry);
             _thread.IsBackground = true;
