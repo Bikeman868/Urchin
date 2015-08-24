@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Urchin.Client.Interfaces;
 using Urchin.Server.Shared.DataContracts;
@@ -73,10 +71,10 @@ namespace Urchin.Server.Shared.Rules
         {
             if (_fileInfo == null) return;
 
+            var content = JsonConvert.SerializeObject(_ruleSet, Formatting.Indented);
+
             try
             {
-                var content = JsonConvert.SerializeObject(_ruleSet, Formatting.Indented);
-
                 using (var stream = _fileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     using (var streamWriter = new StreamWriter(stream))
@@ -84,7 +82,6 @@ namespace Urchin.Server.Shared.Rules
                         streamWriter.Write(content);
                     }
                 }
-
                 _lastFileTime = _fileInfo.LastWriteTimeUtc;
             }
             catch

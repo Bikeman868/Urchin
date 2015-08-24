@@ -272,9 +272,9 @@ namespace Urchin.Server.Shared.Rules
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
-            ruleSet.DefaultEnvironmentName = environmentName;
-
             _persister.SetDefaultEnvironment(environmentName);
+
+            ruleSet.DefaultEnvironmentName = environmentName;
         }
 
         public void SetEnvironments(List<EnvironmentDto> environments)
@@ -282,13 +282,13 @@ namespace Urchin.Server.Shared.Rules
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
-            ruleSet.Environments = environments;
-
             if (environments != null)
             {
                 foreach (var environment in environments)
                     _persister.InsertOrUpdateEnvironment(environment);
             }
+
+            ruleSet.Environments = environments;
         }
 
         public void AddRules(List<RuleDto> newRules)
@@ -305,8 +305,8 @@ namespace Urchin.Server.Shared.Rules
             {
                 if (ruleSet.Rules.Exists(r => string.Compare(r.RuleName, newRule.RuleName, StringComparison.InvariantCultureIgnoreCase) == 0))
                     throw new Exception("There is already a rule with the name " + newRule.RuleName);
-                ruleSet.Rules.Add(newRule);
                 _persister.InsertOrUpdateRule(newRule);
+                ruleSet.Rules.Add(newRule);
             }
 
             // Replace the rules with a new set
@@ -315,6 +315,8 @@ namespace Urchin.Server.Shared.Rules
 
         public void UpdateRule(string oldName, RuleDto rule)
         {
+            _persister.InsertOrUpdateRule(rule);
+
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
@@ -328,8 +330,6 @@ namespace Urchin.Server.Shared.Rules
 
             // Replace the rules with a new set
             SetRuleSet(ruleSet);
-
-            _persister.InsertOrUpdateRule(rule);
         }
 
         public void DeleteRule(string name)
@@ -339,6 +339,8 @@ namespace Urchin.Server.Shared.Rules
 
         private void DeleteRule(RuleSetDto ruleSet, string name)
         {
+            _persister.DeleteRule(name);
+
             if (ruleSet != null)
             {
                 var rules = ruleSet.Rules;
@@ -347,7 +349,6 @@ namespace Urchin.Server.Shared.Rules
                     rules.RemoveAll(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0);
                 }
             }
-            _persister.DeleteRule(name);
         }
     }
 }
