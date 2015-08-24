@@ -21,5 +21,7 @@ namespace Urchin.Server.Shared.Interfaces
         void AddRules(List<RuleDto> newRules);
         void UpdateRule(string oldName, RuleDto rule);
         void DeleteRule(string name);
+
+        void ReloadFromPersister();
     }
 }

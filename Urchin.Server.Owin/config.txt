@@ -1,0 +1,36 @@
+﻿{
+  urchin:
+  {
+    server:
+	{
+	  persister:
+	  {
+	    filePath:"c:\\temp\\rules.txt",
+		repository:"rules"
+      }
+	}
+  },
+  prius:
+  {
+    databases:
+	[ 
+	  {
+	    name:"urchinRules", 
+		type:"MySql", 
+		connectionString:"Server=localhost;Port=3306;Uid=user;Pwd=password;Database=UrchinRules"
+	  } 
+	],
+	fallbackPolicies:
+	[ 
+	  { name:"dontFailover", allowedFailurePercent:100 }
+	],
+	repositories:
+	[
+	  {
+	    name:"rules", 
+		clusters:[ { databases:["urchinRules"], fallbackPolicy:"dontFailover" } ]
+	  }
+	]
+  }
+
+}

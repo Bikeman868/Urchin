@@ -171,22 +171,27 @@ namespace Urchin.Client.Data
 
         private bool AddChangedPaths(List<string> paths, string path, ConfigNode nodeA, ConfigNode nodeB)
         {
-            var nodesDiffer = false;
+            if (nodeA == null && nodeB == null)
+                return false;
+
+            var nodesDiffer = nodeA == null || nodeB == null;
 
             var childNames = new List<string>();
-            if (nodeA.Children != null)
+            if (nodeA != null && nodeA.Children != null)
                 childNames.AddRange(nodeA.Children.Values.Select(n => n.Name));
-            if (nodeB.Children != null)
+            if (nodeB != null && nodeB.Children != null)
                 childNames.AddRange(nodeB.Children.Values.Select(n => n.Name).Where(n => !childNames.Contains(n)));
 
             foreach (var childName in childNames)
             {
                 var childPath = path + "/" + childName;
-                var childA = nodeA.Children == null ? null : nodeA.Children[childName];
-                var childB = nodeB.Children == null ? null : nodeB.Children[childName];
+                ConfigNode childA = null;
+                ConfigNode childB = null;
+                if (nodeA != null && nodeA.Children != null) nodeA.Children.TryGetValue(childName, out childA);
+                if (nodeB != null && nodeB.Children != null) nodeB.Children.TryGetValue(childName, out childB);
                 if ((childA == null) != (childB == null))
                 {
-                    paths.Add(childPath);
+                    AddChangedPaths(paths, childPath, childA, childB);
                     nodesDiffer = true;
                 }
                 else

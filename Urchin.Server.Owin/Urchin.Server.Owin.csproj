@@ -102,6 +102,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +134,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\Urchin.Client\Urchin.Client.csproj">
+      <Project>{169CA82F-7924-47EE-9705-F333932110F4}</Project>
+      <Name>Urchin.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Urchin.Server.Shared\Urchin.Server.Shared.csproj">
       <Project>{372237ce-4202-4882-ad34-02d6493678da}</Project>
       <Name>Urchin.Server.Shared</Name>

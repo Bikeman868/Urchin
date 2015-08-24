@@ -13,40 +13,16 @@ namespace Urchin.Server.Shared.Rules
     public class ConfigRules: IConfigRules
     {
         private readonly IMapper _mapper;
+        private readonly IPersister _persister;
 
         private RuleSetDto _ruleSet;
 
-        public ConfigRules(IMapper mapper)
+        public ConfigRules(IMapper mapper, IPersister persister)
         {
             _mapper = mapper;
+            _persister = persister;
 
-            var defaultRuleSet = new RuleSetDto
-            {
-                DefaultEnvironmentName = "Development",
-                Environments = new List<EnvironmentDto> 
-                { 
-                    new EnvironmentDto { EnvironmentName = "Production", Machines = new List<string>() },
-                    new EnvironmentDto { EnvironmentName = "Staging", Machines = new List<string>() },
-                    new EnvironmentDto { EnvironmentName = "Integration", Machines = new List<string>() },
-                    new EnvironmentDto { EnvironmentName = "Test", Machines = new List<string>() }
-                },
-                Rules = new List<RuleDto> 
-                {
-                    new RuleDto
-                    {
-                        RuleName = "DevelopmentEnvironment",
-                        Environment = "Development",
-                        ConfigurationData = "{\"debug\":true}"
-                    },
-                    new RuleDto
-                    {
-                        RuleName = "Root",
-                        ConfigurationData = "{\"environment\":\"($environment$)\",\"machine\":\"($machine$)\",\"application\":\"($application$)\",\"debug\":false}"
-                    }
-                }
-            };
-
-            SetRuleSet(defaultRuleSet);
+            ReloadFromPersister();
         }
 
         public void Clear()
@@ -54,6 +30,17 @@ namespace Urchin.Server.Shared.Rules
             SetRuleSet(new RuleSetDto());
             SetDefaultEnvironment("Development");
             SetEnvironments(null);
+        }
+
+        public void ReloadFromPersister()
+        {
+            var ruleSet = new RuleSetDto
+            {
+                Environments = _persister.GetAllEnvironments().ToList(),
+                DefaultEnvironmentName = _persister.GetDefaultEnvironment(),
+                Rules = _persister.GetAllRules().ToList()
+            };
+            SetRuleSet(ruleSet);
         }
 
         public JObject GetConfig(string environment, string machine, string application, string instance)
@@ -286,6 +273,8 @@ namespace Urchin.Server.Shared.Rules
             if (ruleSet == null) return;
 
             ruleSet.DefaultEnvironmentName = environmentName;
+
+            _persister.SetDefaultEnvironment(environmentName);
         }
 
         public void SetEnvironments(List<EnvironmentDto> environments)
@@ -294,10 +283,18 @@ namespace Urchin.Server.Shared.Rules
             if (ruleSet == null) return;
 
             ruleSet.Environments = environments;
+
+            if (environments != null)
+            {
+                foreach (var environment in environments)
+                    _persister.InsertOrUpdateEnvironment(environment);
+            }
         }
 
         public void AddRules(List<RuleDto> newRules)
         {
+            if (newRules == null) return;
+
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
@@ -309,6 +306,7 @@ namespace Urchin.Server.Shared.Rules
                 if (ruleSet.Rules.Exists(r => string.Compare(r.RuleName, newRule.RuleName, StringComparison.InvariantCultureIgnoreCase) == 0))
                     throw new Exception("There is already a rule with the name " + newRule.RuleName);
                 ruleSet.Rules.Add(newRule);
+                _persister.InsertOrUpdateRule(newRule);
             }
 
             // Replace the rules with a new set
@@ -330,6 +328,8 @@ namespace Urchin.Server.Shared.Rules
 
             // Replace the rules with a new set
             SetRuleSet(ruleSet);
+
+            _persister.InsertOrUpdateRule(rule);
         }
 
         public void DeleteRule(string name)
@@ -347,6 +347,7 @@ namespace Urchin.Server.Shared.Rules
                     rules.RemoveAll(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0);
                 }
             }
+            _persister.DeleteRule(name);
         }
     }
 }
