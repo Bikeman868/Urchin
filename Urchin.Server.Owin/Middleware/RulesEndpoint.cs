@@ -33,23 +33,27 @@ namespace Urchin.Server.Owin.Middleware
                 return next.Invoke();
 
             if (request.Method == "GET")
-                return GetRules();
+                return GetRules(context);
 
-            string requestBody;
+            List<RuleDto> rules;
             try
             {
                 using (var sr = new StreamReader(request.Body, Encoding.UTF8))
-                    requestBody = sr.ReadToEnd();
+                    rules = JsonConvert.DeserializeObject<List<RuleDto>>(sr.ReadToEnd());
             }
             catch (Exception ex)
             {
-                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
+                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to deserialize request body to a list of rules. " + ex.Message });
             }
+
 
             try
             {
                 if (request.Method == "POST")
-                    return CreateRules();
+                    return CreateRules(context, rules);
+
+                if (request.Method == "PUT")
+                    return UpdateRules(context, rules);
             }
             catch (Exception ex)
             {
@@ -59,14 +63,27 @@ namespace Urchin.Server.Owin.Middleware
             return next.Invoke();
         }
 
-        private Task GetRules()
+        private Task GetRules(IOwinContext context)
         {
-            throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Getting a list of rules is not implemented yet");
+            var ruleSet = _configRules.GetRuleSet();
+            if (ruleSet == null || ruleSet.Rules == null)
+                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
+
+            return Json(context, ruleSet.Rules);
         }
 
-        private Task CreateRules()
+        private Task CreateRules(IOwinContext context, List<RuleDto> rules)
         {
-            throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Creating a list of rules is not implemented yet");
+            _configRules.AddRules(rules);
+            return Json(context, new PostResponseDto { Success = true });
+        }
+
+        private Task UpdateRules(IOwinContext context, List<RuleDto> rules)
+        {
+            foreach (var rule in rules)
+                _configRules.UpdateRule(rule.RuleName, rule);
+
+            return Json(context, new PostResponseDto { Success = true });
         }
     }
 }

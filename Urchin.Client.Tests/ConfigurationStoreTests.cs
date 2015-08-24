@@ -162,6 +162,59 @@ namespace Urchin.Client.Tests
         }
 
         [TestMethod]
+        public void Should_notify_all_when_everything_changes()
+        {
+            var configurationStore = new ConfigurationStore().Initialize();
+
+            const string originalConfig = "{}";
+            const string updatedConfig = "{child1:{field1:3,field2:2},child2:{field1:99,field2:98}}";
+
+            configurationStore.UpdateConfiguration(originalConfig);
+
+            var rootChanged = false;
+            var child1Changed = false;
+            var child2Changed = false;
+            var child1Field1Changed = false;
+            var child1Field2Changed = false;
+            var child2Field1Changed = false;
+            var child2Field2Changed = false;
+
+            configurationStore.Register("", (string json) => rootChanged = true);
+            configurationStore.Register("/child1", (TestClassA child) => child1Changed = true);
+            configurationStore.Register("/child1/field1", (int v) => child1Field1Changed = true);
+            configurationStore.Register("/child1/field2", (int v) => child1Field2Changed = true);
+            configurationStore.Register("/child2", (TestClassA child) => child2Changed = true);
+            configurationStore.Register("/child2/field1", (int v) => child2Field1Changed = true);
+            configurationStore.Register("/child2/field2", (int v) => child2Field2Changed = true);
+
+            Assert.IsTrue(rootChanged);
+            Assert.IsTrue(child1Changed);
+            Assert.IsTrue(child2Changed);
+            Assert.IsTrue(child1Field1Changed);
+            Assert.IsTrue(child1Field2Changed);
+            Assert.IsTrue(child2Field1Changed);
+            Assert.IsTrue(child2Field2Changed);
+
+            rootChanged = false;
+            child1Changed = false;
+            child2Changed = false;
+            child1Field1Changed = false;
+            child1Field2Changed = false;
+            child2Field1Changed = false;
+            child2Field2Changed = false;
+
+            configurationStore.UpdateConfiguration(updatedConfig);
+
+            Assert.IsTrue(rootChanged);
+            Assert.IsTrue(child1Changed);
+            Assert.IsTrue(child2Changed);
+            Assert.IsTrue(child1Field1Changed);
+            Assert.IsTrue(child1Field2Changed);
+            Assert.IsTrue(child2Field1Changed);
+            Assert.IsTrue(child2Field2Changed);
+        }
+
+        [TestMethod]
         public void Should_pass_new_value_on_change_notification()
         {
             var configurationStore = new ConfigurationStore().Initialize();

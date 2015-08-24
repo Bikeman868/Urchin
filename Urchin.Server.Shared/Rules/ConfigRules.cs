@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
 using Urchin.Server.Shared.DataContracts;
@@ -26,7 +27,7 @@ namespace Urchin.Server.Shared.Rules
 
         public void Clear()
         {
-            SetRules(new RuleSetDto());
+            SetRuleSet(new RuleSetDto());
             SetDefaultEnvironment("Development");
             SetEnvironments(null);
         }
@@ -39,27 +40,89 @@ namespace Urchin.Server.Shared.Rules
                 DefaultEnvironmentName = _persister.GetDefaultEnvironment(),
                 Rules = _persister.GetAllRules().ToList()
             };
-            SetRules(ruleSet);
-        }
-
-        public void SaveToPersister()
-        {
-            
+            SetRuleSet(ruleSet);
         }
 
         public JObject GetConfig(string environment, string machine, string application, string instance)
         {
-            var config = new JObject();
-
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
-                return config;
+                return new JObject();
 
             var ruleSet = _ruleSet;
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0) 
-                return config;
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new JObject();
 
             environment = LookupEnvironment(environment, machine, ruleSet);
+            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
+            return MergeRules(applicableRules, environment, machine, application, instance);
+        }
 
+        public JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance)
+        {
+            if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
+                return new JObject();
+
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new JObject();
+
+            environment = LookupEnvironment(environment, machine, ruleSet);
+            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
+            return MergeRules(applicableRules, environment, machine, application, instance);
+        }
+
+        public JObject TraceConfig(string environment, string machine, string application, string instance)
+        {
+            if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
+                return new JObject();
+
+            var ruleSet = _ruleSet;
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new JObject();
+
+            environment = LookupEnvironment(environment, machine, ruleSet);
+            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
+            var serializedRules = JsonConvert.SerializeObject(applicableRules);
+
+            var variables = MergeVariables(applicableRules, environment, machine, application, instance);
+            var serializedVariables = JsonConvert.SerializeObject(variables);
+
+            var response = new JObject();
+
+            response["config"] = MergeRules(applicableRules, environment, machine, application, instance);
+            response["variables"] = JToken.Parse(serializedVariables);
+            response["matchingRules"] = JToken.Parse(serializedRules);
+
+            return response;
+        }
+
+        private JObject MergeRules(
+            IList<RuleDto> rules, 
+            string environment, 
+            string machine, 
+            string application, 
+            string instance)
+        {
+            var variables = MergeVariables(rules, environment, machine, application, instance);
+
+            var config = new JObject();
+            foreach (var rule in rules)
+            {
+                if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
+                {
+                    var json = ParseJson(rule.ConfigurationData, variables);
+                    config.Merge(json);
+                }
+            }
+            return config;
+        }
+
+        private Dictionary<string, string> MergeVariables(
+            IList<RuleDto> rules,
+            string environment,
+            string machine,
+            string application,
+            string instance)
+        {
             var variables = new Dictionary<string, string>
             {
                 {"environment", environment},
@@ -68,32 +131,31 @@ namespace Urchin.Server.Shared.Rules
                 {"instance", instance}
             };
 
-            foreach (var rule in ruleSet.Rules)
+            foreach (var rule in rules)
             {
-                if (RuleApplies(rule, environment, machine, application, instance))
+                if (rule.Variables != null)
                 {
-                    if (rule.Variables != null)
+                    foreach (var variable in rule.Variables)
                     {
-                        foreach (var variable in rule.Variables)
-                        {
-                            variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
-                        }
+                        variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
                     }
                 }
             }
 
-            foreach (var rule in ruleSet.Rules)
-            {
-                if (RuleApplies(rule, environment, machine, application, instance))
-                {
-                    if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
-                    {
-                        var json = ParseJson(rule.ConfigurationData, variables);
-                        config.Merge(json);
-                    }
-                }
-            }
-            return config;
+            return variables;
+        }
+
+        private List<RuleDto> GetApplicableRules(
+            RuleSetDto ruleSet, 
+            string environment, 
+            string machine, 
+            string application, 
+            string instance)
+        {
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+                return new List<RuleDto>();
+
+            return ruleSet.Rules.Where(r => RuleApplies(r, environment, machine, application, instance)).ToList();
         }
 
         private readonly Regex _substitutionRegex = new Regex(@"\(\$(.+?)\$\)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -146,11 +208,6 @@ namespace Urchin.Server.Shared.Rules
             return ruleSet.DefaultEnvironmentName;
         }
 
-        public JObject TraceConfig(string environment, string machine, string application, string instance)
-        {
-            return GetConfig(environment, machine, application, instance);
-        }
-
         private bool RuleApplies(RuleDto rule, string environment, string machine, string application, string instance)
         {
             if (!string.IsNullOrEmpty(rule.Application))
@@ -176,13 +233,13 @@ namespace Urchin.Server.Shared.Rules
             return true;
         }
 
-        public RuleSetDto GetRules()
+        public RuleSetDto GetRuleSet()
         {
             // Return a deep copy of the rule set
             return _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
         }
 
-        public void SetRules(RuleSetDto ruleSet)
+        public void SetRuleSet(RuleSetDto ruleSet)
         {
             if (ruleSet.Rules != null)
             {
@@ -216,6 +273,8 @@ namespace Urchin.Server.Shared.Rules
             if (ruleSet == null) return;
 
             ruleSet.DefaultEnvironmentName = environmentName;
+
+            _persister.SetDefaultEnvironment(environmentName);
         }
 
         public void SetEnvironments(List<EnvironmentDto> environments)
@@ -224,6 +283,9 @@ namespace Urchin.Server.Shared.Rules
             if (ruleSet == null) return;
 
             ruleSet.Environments = environments;
+
+            foreach(var environment in environments)
+                _persister.InsertOrUpdateEnvironment(environment);
         }
 
         public void AddRules(List<RuleDto> newRules)
@@ -239,10 +301,11 @@ namespace Urchin.Server.Shared.Rules
                 if (ruleSet.Rules.Exists(r => string.Compare(r.RuleName, newRule.RuleName, StringComparison.InvariantCultureIgnoreCase) == 0))
                     throw new Exception("There is already a rule with the name " + newRule.RuleName);
                 ruleSet.Rules.Add(newRule);
+                _persister.InsertOrUpdateRule(newRule);
             }
 
             // Replace the rules with a new set
-            SetRules(ruleSet);
+            SetRuleSet(ruleSet);
         }
 
         public void UpdateRule(string oldName, RuleDto rule)
@@ -254,10 +317,14 @@ namespace Urchin.Server.Shared.Rules
             ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(ruleSet);
 
             DeleteRule(ruleSet, oldName);
+            DeleteRule(ruleSet, rule.RuleName);
+
             ruleSet.Rules.Add(rule);
 
             // Replace the rules with a new set
-            SetRules(ruleSet);
+            SetRuleSet(ruleSet);
+
+            _persister.InsertOrUpdateRule(rule);
         }
 
         public void DeleteRule(string name)
@@ -275,7 +342,7 @@ namespace Urchin.Server.Shared.Rules
                     rules.RemoveAll(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0);
                 }
             }
+            _persister.DeleteRule(name);
         }
-
     }
 }

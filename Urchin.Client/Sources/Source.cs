@@ -22,6 +22,14 @@ namespace Urchin.Client.Sources
         {
             _pollInterval = pollInterval;
 
+            try
+            {
+                Poll(_configurationStore);
+            }
+            catch (Exception)
+            {
+            }
+
             _thread = new Thread(ThresdEntry);
             _thread.IsBackground = true;
             _isPolling = true;
@@ -48,7 +56,7 @@ namespace Urchin.Client.Sources
             if (sleepSeconds > 1) sleepSeconds = 1;
             var sleepTime = TimeSpan.FromSeconds(sleepSeconds);
 
-            var nextPoll = DateTime.UtcNow;
+            var nextPoll = DateTime.UtcNow + _pollInterval;
 
             while (_isPolling)
             {

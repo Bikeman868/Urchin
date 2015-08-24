@@ -20,8 +20,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Tests", "Urch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Persistence.Prius", "Urchin.Server.Persistence.Prius\Urchin.Server.Persistence.Prius.csproj", "{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Persistence.File", "Urchin.Server.Persistence.File\Urchin.Server.Persistence.File.csproj", "{7E2602CD-E9A4-48C7-91F5-9322AB224C1A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,10 +50,6 @@ Global
 		{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E2602CD-E9A4-48C7-91F5-9322AB224C1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E2602CD-E9A4-48C7-91F5-9322AB224C1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E2602CD-E9A4-48C7-91F5-9322AB224C1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E2602CD-E9A4-48C7-91F5-9322AB224C1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

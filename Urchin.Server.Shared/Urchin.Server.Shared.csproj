@@ -64,6 +64,7 @@
     <Compile Include="Rules\ConfigRules.cs" />
     <Compile Include="Interfaces\IConfigRules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rules\FilePersister.cs" />
     <Compile Include="Rules\TestDataPersister.cs" />
     <Compile Include="TypeMappings\DtoDeepCopy.cs" />
     <Compile Include="TypeMappings\Mapper.cs" />
@@ -71,6 +72,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Urchin.Client\Urchin.Client.csproj">
+      <Project>{169ca82f-7924-47ee-9705-f333932110f4}</Project>
+      <Name>Urchin.Client</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -35,22 +35,22 @@ namespace Urchin.Server.Owin.Middleware
             if (request.Method == "GET")
                 return GetEnvironments(context);
 
-            string requestBody;
+            List<EnvironmentDto> environments;
             try
             {
                 using (var sr = new StreamReader(request.Body, Encoding.UTF8))
-                    requestBody = sr.ReadToEnd();
+                    environments = JsonConvert.DeserializeObject<List<EnvironmentDto>>(sr.ReadToEnd());
             }
             catch (Exception ex)
             {
-                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
+                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to deserialize request body to a list of environments. " + ex.Message });
             }
 
             if (request.Method == "PUT")
             {
                 try
                 {
-                    return UpdateEnvironments(context, requestBody);
+                    return UpdateEnvironments(context, environments);
                 }
                 catch (Exception ex)
                 {
@@ -68,29 +68,13 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetEnvironments(IOwinContext context)
         {
-            var rules = _configRules.GetRules();
+            var rules = _configRules.GetRuleSet();
             return Json(context, rules.Environments);
         }
 
-        private Task UpdateEnvironments(IOwinContext context, string requestBody)
+        private Task UpdateEnvironments(IOwinContext context, List<EnvironmentDto> environments)
         {
-            List<EnvironmentDto> environments;
-            try
-            {
-                environments = JsonConvert.DeserializeObject<List<EnvironmentDto>>(requestBody);
-            }
-            catch (Exception ex)
-            {
-                return Json(context,
-                    new PostResponseDto
-                    {
-                        Success = false,
-                        ErrorMessage = "Failed to deserialize request body to List<EnvironmentDto>. " + ex.Message
-                    });
-            }
-
             _configRules.SetEnvironments(environments);
-
             return Json(context, new PostResponseDto { Success = true });
         }
     }

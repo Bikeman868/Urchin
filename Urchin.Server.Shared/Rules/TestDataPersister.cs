@@ -92,7 +92,7 @@ namespace Urchin.Server.Shared.Rules
         {
         }
 
-        public void InsertOrUpdateEnvironment(RuleDto rule)
+        public void InsertOrUpdateEnvironment(EnvironmentDto environment)
         {
         }
     }

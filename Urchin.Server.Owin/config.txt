@@ -1,0 +1,12 @@
+﻿{
+  urchin:
+  {
+    server:
+	{
+	  persister:
+	  {
+	    filePath:"c:\\temp\\rules.txt"
+      }
+	}
+  }
+}

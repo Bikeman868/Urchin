@@ -18,7 +18,8 @@ namespace Urchin.Server.Tests
         public void Initialize()
         {
             var mapper = new Mapper();
-            _configRules = new ConfigRules(mapper);
+            var persister = new TestDataPersister();
+            _configRules = new ConfigRules(mapper, persister);
         }
 
         [TestMethod]

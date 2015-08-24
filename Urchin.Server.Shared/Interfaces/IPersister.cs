@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Urchin.Server.Shared.DataContracts;
 
 namespace Urchin.Server.Shared.Interfaces
@@ -22,6 +19,6 @@ namespace Urchin.Server.Shared.Interfaces
         EnvironmentDto GetEnvironment(string name);
         IEnumerable<EnvironmentDto> GetAllEnvironments();
         void DeleteEnvironment(string name);
-        void InsertOrUpdateEnvironment(RuleDto rule);
+        void InsertOrUpdateEnvironment(EnvironmentDto environment);
     }
 }
