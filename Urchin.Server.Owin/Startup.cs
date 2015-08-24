@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Web.Configuration;
 using Microsoft.Owin;
@@ -27,37 +29,84 @@ namespace Urchin.Server.Owin
             while (DateTime.UtcNow < endTime && !System.Diagnostics.Debugger.IsAttached)
                 System.Threading.Thread.Sleep(100);
 #endif
-            var iocContainer = new UnityContainer();
-            iocContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
-            iocContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
-            iocContainer.RegisterType<IPersister, FilePersister>(new ContainerControlledLifetimeManager());
 
-            ConfigureUrchinClient(iocContainer);
+            var iocContainer = ConfigureUnity();
+            var configSource = ConfigureUrchinClient(iocContainer);
             ConfigureMiddleware(app, iocContainer);
 
             var properties = new AppProperties(app.Properties);
             var token = properties.OnAppDisposing;
             token.Register(() =>
             {
+                configSource.Dispose();
                 iocContainer.Dispose();
             });
         }
 
-        private void ConfigureMiddleware(IAppBuilder app, UnityContainer iocContainer)
+        private UnityContainer ConfigureUnity()
         {
-            app.Use(iocContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.RuleDataEndpoint>().Invoke);
-            app.Use(iocContainer.Resolve<Middleware.TestEndpoint>().Invoke);
+            var unityContainer = new UnityContainer();
+            unityContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IPersister, FilePersister>(new ContainerControlledLifetimeManager());
+
+            var registrar = new UnityRegistrar(unityContainer);
+            var iocConfigs = GetIocConfigs(unityContainer);
+
+            foreach (var config in iocConfigs)
+                config.RegisterDependencies(registrar);
+
+            return unityContainer;
         }
 
-        private void ConfigureUrchinClient(UnityContainer iocContainer)
+        private class UnityRegistrar: IIocRegistrar
+        {
+            private readonly UnityContainer _container;
+
+            public UnityRegistrar(UnityContainer container)
+            {
+                _container = container;
+            }
+
+            public void RegisterSingleton<TInterface, TClass>()
+                where TInterface : class
+                where TClass : class, TInterface
+            {
+                _container.RegisterType<TInterface, TClass>(new ContainerControlledLifetimeManager());
+            }
+
+            public void RegisterType<TInterface, TClass>()
+                where TInterface : class
+                where TClass : class, TInterface
+            {
+                _container.RegisterType<TInterface, TClass>(new ExternallyControlledLifetimeManager());
+            }
+        }
+
+        private IEnumerable<IIocConfig> GetIocConfigs(UnityContainer unityContainer)
+        {
+            var dependencyDefinitionInterface = typeof(IIocConfig);
+            return Shared.TypeMappings.ReflectionHelper.GetTypes(t => t.IsClass && dependencyDefinitionInterface.IsAssignableFrom(t))
+                .Select(t => unityContainer.Resolve(t))
+                .Cast<IIocConfig>()
+                .OrderBy(c => c.OrderIndex);
+        }
+
+        private void ConfigureMiddleware(IAppBuilder app, UnityContainer unityContainer)
+        {
+            app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.RuleDataEndpoint>().Invoke);
+            app.Use(unityContainer.Resolve<Middleware.TestEndpoint>().Invoke);
+        }
+
+        private IDisposable ConfigureUrchinClient(UnityContainer unityContainer)
         {
             var fileName = "config.txt";
             var thisAssembly = Assembly.GetExecutingAssembly();
@@ -73,8 +122,10 @@ namespace Urchin.Server.Owin
             var configurationStore = new Client.Data.ConfigurationStore().Initialize();
             var configurationSource = new Client.Sources.FileSource(configurationStore).Initialize(fileInfo, TimeSpan.FromSeconds(10));
 
-            iocContainer.RegisterInstance(configurationStore);
-            iocContainer.RegisterInstance(configurationSource);
+            unityContainer.RegisterInstance(configurationStore);
+            unityContainer.RegisterInstance(configurationSource);
+
+            return configurationSource;
         }
     }
 }
