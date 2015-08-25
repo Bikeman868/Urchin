@@ -125,16 +125,31 @@ namespace Urchin.Server.Owin
         /// </summary>
         private void ConfigureMiddleware(IAppBuilder app, UnityContainer unityContainer)
         {
-            app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.RuleDataEndpoint>().Invoke);
-            app.Use(unityContainer.Resolve<Middleware.TestEndpoint>().Invoke);
+            try
+            {
+                app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.RuleDataEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.TestEndpoint>().Invoke);
+            }
+            catch (Exception ex)
+            {
+                var log = LogManager.GetLogger(GetType());
+                var innerExceptions = string.Empty;
+                var innerException = ex.InnerException;
+                while (innerException != null)
+                {
+                    innerExceptions += innerException.Message + "\r\n";
+                    innerException = innerException.InnerException;
+                }
+                log.FatalFormat("Failed to construct OWIN handler chain.\r\n{0}\r\n{1}\r\n{2}", ex.Message, ex.StackTrace, innerExceptions);
+            }
         }
 
         /// <summary>
