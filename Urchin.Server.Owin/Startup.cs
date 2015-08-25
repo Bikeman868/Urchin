@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Web.Configuration;
+using Common.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
 using Microsoft.Practices.Unity;
 using Owin;
 using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
-using Urchin.Client.Interfaces;
 using Urchin.Server.Owin;
 using Urchin.Server.Shared.Interfaces;
 using Urchin.Server.Shared.Rules;
@@ -48,23 +47,32 @@ namespace Urchin.Server.Owin
             var unityContainer = new UnityContainer();
             unityContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<ILogManager, LogManager>(new ContainerControlledLifetimeManager());
 
             // Register the default persister. If you include the DLLs from any
-            // other persister, it will become the registered persister.
+            // other persister, it will override this registration and become the 
+            // persister for your installation.
             unityContainer.RegisterType<IPersister, FilePersister>(new ContainerControlledLifetimeManager());
 
             var iocConfigs = GetIocConfigs(unityContainer);
 
+            // The code below will dynamically load any IOC registrations from
+            // additional libraries that are deployed to the bin folder. This
+            // is the mechanism for replacing the persistence mechanism.
             var registrar = new UnityRegistrar(unityContainer);
             unityContainer.RegisterInstance<IIocRegistrar>(registrar);
             unityContainer.RegisterInstance<IIocFactory>(registrar);
-
             foreach (var config in iocConfigs)
                 config.RegisterDependencies(registrar);
 
             return unityContainer;
         }
 
+        /// <summary>
+        /// Implements IIocRegistrar and IIocFactory using Unity. These interfaces allow
+        /// add on modules to register themselves with the IoC container without knowing
+        /// which IoC is being used.
+        /// </summary>
         private class UnityRegistrar: IIocRegistrar, IIocFactory
         {
             private readonly UnityContainer _container;
@@ -94,6 +102,13 @@ namespace Urchin.Server.Owin
             }
         }
 
+        /// <summary>
+        /// Scans all DLLs in the bin folder, and finds classes that register interface
+        /// mappings in IOC. This provides a mechanism for changing the behaviour of the
+        /// urchin server by simply dropping a DLL into the bin folder. An example
+        /// of this is the Prius persister. By adding this to the bin folder, the
+        /// standard file persister is replaced by the database persister.
+        /// </summary>
         private IEnumerable<IIocConfig> GetIocConfigs(UnityContainer unityContainer)
         {
             var dependencyDefinitionInterface = typeof(IIocConfig);
@@ -103,6 +118,11 @@ namespace Urchin.Server.Owin
                 .OrderBy(c => c.OrderIndex);
         }
 
+        /// <summary>
+        /// Configures OWIN middleware handlers. Note that the handlers run in the 
+        /// order they are are listed here, so put the most frequently called ones
+        /// at the begining of the list
+        /// </summary>
         private void ConfigureMiddleware(IAppBuilder app, UnityContainer unityContainer)
         {
             app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
@@ -117,6 +137,13 @@ namespace Urchin.Server.Owin
             app.Use(unityContainer.Resolve<Middleware.TestEndpoint>().Invoke);
         }
 
+        /// <summary>
+        /// Configures Urchin client to read ita configuration from a file in the
+        /// parent of the bin foldar (the main folder of the site). This file
+        /// will be used to configure the server and also to configure other
+        /// modules that use Urchin (like Prius for example).
+        /// Note that you should configure IIS to not serve this file.
+        /// </summary>
         private IDisposable ConfigureUrchinClient(UnityContainer unityContainer)
         {
             var fileName = "config.txt";

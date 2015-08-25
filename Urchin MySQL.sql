@@ -1,8 +1,8 @@
 -- --------------------------------------------------------
--- Host:                         devdb1
--- Server version:               10.0.14-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win64
--- HeidiSQL Version:             9.2.0.4947
+-- Creates an Urchin server database in MySQL.
+--
+-- This script was exported from Heidi, but should also work
+-- with other MySQL cients.
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

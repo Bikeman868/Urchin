@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Common.Logging;
 using Prius.Contracts.Interfaces;
 using Urchin.Client.Interfaces;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
-using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Persistence.Prius
 {
@@ -15,21 +15,26 @@ namespace Urchin.Server.Persistence.Prius
         private readonly IDisposable _configNotifier;
         private readonly ICommandFactory _commandFactory;
         private readonly IContextFactory _contextFactory;
+        private readonly ILog _log;
 
         private string _repositoryName;
 
         public DatabasePersister(
             IConfigurationStore configurationStore,
             ICommandFactory commandFactory,
-            IContextFactory contextFactory)
+            IContextFactory contextFactory,
+            ILogManager logManager)
         {
             _commandFactory = commandFactory;
             _contextFactory = contextFactory;
+            _log = logManager.GetLogger(GetType());
+
             _configNotifier = configurationStore.Register("/urchin/server/persister/repository", SetRepositoryName, "Rules");
         }
 
         private void SetRepositoryName(string repositoryName)
         {
+            _log.Info(m => m("Using '{0}' Prius repository for Urchin configuration rules", repositoryName));
             _repositoryName = repositoryName;
         }
 
@@ -46,6 +51,7 @@ namespace Urchin.Server.Persistence.Prius
 
         public void SetDefaultEnvironment(string name)
         {
+            _log.Info(m => m("Changing default environment name to '{0}'", name));
             using (var context = _contextFactory.Create(_repositoryName))
             {
                 using (var command = _commandFactory.CreateStoredProcedure("sp_UpdateDefaultEnvironment"))
@@ -122,6 +128,7 @@ namespace Urchin.Server.Persistence.Prius
 
         public void InsertOrUpdateRule(RuleDto rule)
         {
+            _log.Info(m => m("Updating '{0}' rule", rule.RuleName));
             using (var context = _contextFactory.Create(_repositoryName))
             {
                 using (var command = _commandFactory.CreateStoredProcedure("sp_InsertUpdateRule"))
@@ -227,6 +234,7 @@ namespace Urchin.Server.Persistence.Prius
 
         public void InsertOrUpdateEnvironment(EnvironmentDto environment)
         {
+            _log.Info(m => m("Updating '{0}' environment", environment.EnvironmentName));
             using (var context = _contextFactory.Create(_repositoryName))
             {
                 using (var command = _commandFactory.CreateStoredProcedure("sp_InsertUpdateEnvironment"))

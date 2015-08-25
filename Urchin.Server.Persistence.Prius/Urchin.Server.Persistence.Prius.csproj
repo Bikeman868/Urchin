@@ -33,6 +33,12 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.3.2.0\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Security">
       <HintPath>..\packages\Npgsql.2.2.5\lib\net45\Mono.Security.dll</HintPath>
     </Reference>
@@ -46,11 +52,13 @@
     <Reference Include="Npgsql">
       <HintPath>..\packages\Npgsql.2.2.5\lib\net45\Npgsql.dll</HintPath>
     </Reference>
-    <Reference Include="Prius.Contracts">
-      <HintPath>..\packages\Prius.1.0.1\lib\Prius.Contracts.dll</HintPath>
+    <Reference Include="Prius.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Prius.1.0.2\lib\Prius.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="Prius.Orm">
-      <HintPath>..\packages\Prius.1.0.1\lib\Prius.Orm.dll</HintPath>
+    <Reference Include="Prius.Orm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Prius.1.0.2\lib\Prius.Orm.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,8 +67,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Urchin.Client">
-      <HintPath>..\packages\Urchin.Client.1.0.1.2\lib\net40\Urchin.Client.dll</HintPath>
+    <Reference Include="Urchin.Client, Version=1.0.2.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Urchin.Client.1.0.2.3\lib\net40\Urchin.Client.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -81,7 +90,11 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)\Prius.* $(SolutionDir)Urchin.Server.Owin\bin</PostBuildEvent>
+
+copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
+copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
+copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
