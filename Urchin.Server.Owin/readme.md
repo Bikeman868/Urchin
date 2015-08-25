@@ -1,5 +1,67 @@
 ﻿# Urchin Server
 
+## Installation
+There is no installer application for the server yet. Please download the source code and compile
+it using Visual Studio. To install the server you just need to copy a few files to the server and
+configure a web site in IIS.
+
+To build the server, compile the Urchin.Server.Owin project. If you want to store your data in a
+database, then you should also compile Urchin.Server.Persistence.Prius.
+
+In development, you can create a web site in IIS and point it to Urchin.Server.Owin project folder,
+or you can run this project from within Visual Studio by right clicking and choosing Debug|Start new 
+instance.
+
+To deploy to production, make sure you build the 'Release' version, then deploy:
+  web.config
+  config.txt
+  bin\*.dll
+
+If you want to store your data in a database, then you must also copy some files from the
+the Urchin.Server.Persistence.Prius\bin folder. There is a commented out post build step 
+in this project that copies these files to Urchin.Server.Owin\bin. Uncomment these steps
+before building if you want database persistence.
+
+## Configuration
+The Urchin server uses the Urchin client to manage its configuration file - nothing like eating
+your own dog food. The configuration is stored in the config.txt file.
+
+If you are using the default file persister, then you should configure the location of the rules
+file in config.txt. Note that this file is in JSON format, and directory separators are reserved
+characters in JSON and must be escaped.
+
+If you are using the Prius persister, then you need to configure the name of the Prius repository
+to use, and you also need to configure Prius - since it also uses Urchin Client for its configuration.
+
+This server uses the following configurable modules:
+
+### Owin
+Not much configuration you can do here.
+
+### Common.Logging Package
+This NuGet package is used for logging. You can configure it via the web.config file. See 
+[documentation](http://netcommon.sourceforge.net/documentation.html) for the available configuration options.
+
+### Prius Package
+This NuGet package is used for database persistence, and is optional. If you are using it, then
+you need to configure it in the config.txt file. The config.txt file already contains a boilerplate
+configuration for MySQL, you need just need to customize the connection string for the location
+and logon credentials of your MySQL instance.
+
+If you want to persist to another database (Microsoft SQL Server for example), then take a look at
+the [Prius documentation](https://github.com/Bikeman868/Prius) for configuration details.
+
+## Testing
+Once you have your server installed and configured, you can check if it's working using a browser.
+Assuming you a new web site in IIS with the host name of 'urchin.local', then you can browse
+to http://urchin.local/hello and the server should reply back with a hello message. You can
+use this endpoint in your system health checks.
+
+If you want to perform more in-depth testing, I recommend a Chrome app called Postman. You will find
+a file called 'Urchin.json.postman_collection' in the source code that can be imported into
+Postman. This will provide example calls for all methods available in the API that you can test
+using Postman.
+
 ## REST API
 This server has a RESTful API with JSON in the body of POSTs and PUTs and it replies with JSON.
 The sections below define the endpoints, each endpoint definition specifies the HTTP method

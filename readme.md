@@ -37,9 +37,28 @@ A rules based centralized enterprise configuration management solution for .Net
 ## Project Status
 The client is complete and fully usable. It has a comprehensive set of unit tests.
 
-The client can retrieve configuration from a file, or a URI. Later the URI will
-be used to retrieve configuration from the Urchin server, but the server is not
-ready yet.
+The client can retrieve configuration from a file, or a URI. The URI method can be used to retrieve 
+configuration from the Urchin server; which gives you rule based centralized configuration
+management.
+
+The server is ready, and has had some testing in a development environment. I am going to build it
+into our production environment this week. You can configure the server to store its rules in a 
+single file in json format or in a database. The database persister uses Prius ORM, which supports 
+Microsoft SQL Server, MySQL and Postgresql, but so far I have only created database schema and 
+stored procedures for MySQL.
+
+The server has a REST API for managing the rule database, but the management UI is not built yet.
+If you are using the file persister, then you can edit the file and the changes will be picked up
+and applied by the server. If you are using the Prius persister to save changes to a database, and
+you edit the database directly, you will have to recycle the IIS app pool to pick up the changes.
+
+## Next Steps
+If you want to contribute to this project, these are the next most important tasks
+
+* Write scripts to create databases for Microsoft SQL Server and Postgresql.
+* Add security, so that production configuration can only be retrived by production servers.
+* Create a web based UI for managing the environments and rules.
+
 
 ## FAQ
 
@@ -74,6 +93,13 @@ A: To get started with the client only using IoC and a local configuration file:
 Q: What's the best way to see what I can do with the client?
 
 A: Take a look at the unit tests for `ConfigurationStore` in `Urchin.Client.Tests`
+
+---
+
+Q: How do I install and configure the server?
+
+A: The server doesn't have an installer yet. You need to get the source code from
+   git and compile it. See [Urchin OWIN server](https://github.com/Bikeman868/Urchin/tree/master/Urchin.Server.Owin) readme for full details.
 
 ---
 

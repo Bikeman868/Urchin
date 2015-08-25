@@ -280,10 +280,12 @@ namespace Urchin.Client.Data
         private abstract class Registration: IDisposable
         {
             protected readonly ConfigurationStore _configurationSource;
+
             private string _key;
             public string Path { get; private set; }
 
-            protected Registration(ConfigurationStore configurationSource)
+            protected Registration(
+                ConfigurationStore configurationSource)
             {
                 _configurationSource = configurationSource;
             }
@@ -308,7 +310,8 @@ namespace Urchin.Client.Data
             private Action<T> _onChangeAction;
             private T _defaultValue;
 
-            public Registration(ConfigurationStore configurationSource)
+            public Registration(
+                ConfigurationStore configurationSource)
                 : base(configurationSource)
             {
             }

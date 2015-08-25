@@ -52,13 +52,13 @@
     <Reference Include="Npgsql">
       <HintPath>..\packages\Npgsql.2.2.5\lib\net45\Npgsql.dll</HintPath>
     </Reference>
-    <Reference Include="Prius.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Prius.Contracts, Version=1.0.3.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Prius.1.0.2\lib\Prius.Contracts.dll</HintPath>
+      <HintPath>..\packages\Prius.1.0.3\lib\Prius.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="Prius.Orm, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Prius.Orm, Version=1.0.3.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Prius.1.0.2\lib\Prius.Orm.dll</HintPath>
+      <HintPath>..\packages\Prius.1.0.3\lib\Prius.Orm.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -87,13 +87,15 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Urchin MySQL.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
-
-copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
+    <PostBuildEvent>REM copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
+REM copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
+REM copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
+REM copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
