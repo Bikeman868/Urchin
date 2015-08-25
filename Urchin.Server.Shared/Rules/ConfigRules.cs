@@ -314,7 +314,6 @@ namespace Urchin.Server.Shared.Rules
 
         public void UpdateRule(string oldName, RuleDto rule)
         {
-            _persister.InsertOrUpdateRule(rule);
 
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
@@ -325,6 +324,7 @@ namespace Urchin.Server.Shared.Rules
             DeleteRule(ruleSet, oldName);
             DeleteRule(ruleSet, rule.RuleName);
 
+            _persister.InsertOrUpdateRule(rule);
             ruleSet.Rules.Add(rule);
 
             // Replace the rules with a new set
