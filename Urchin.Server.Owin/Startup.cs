@@ -48,10 +48,16 @@ namespace Urchin.Server.Owin
             var unityContainer = new UnityContainer();
             unityContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
+
+            // Register the default persister. If you include the DLLs from any
+            // other persister, it will become the registered persister.
             unityContainer.RegisterType<IPersister, FilePersister>(new ContainerControlledLifetimeManager());
 
-            var registrar = new UnityRegistrar(unityContainer);
             var iocConfigs = GetIocConfigs(unityContainer);
+
+            var registrar = new UnityRegistrar(unityContainer);
+            unityContainer.RegisterInstance<IIocRegistrar>(registrar);
+            unityContainer.RegisterInstance<IIocFactory>(registrar);
 
             foreach (var config in iocConfigs)
                 config.RegisterDependencies(registrar);
@@ -59,7 +65,7 @@ namespace Urchin.Server.Owin
             return unityContainer;
         }
 
-        private class UnityRegistrar: IIocRegistrar
+        private class UnityRegistrar: IIocRegistrar, IIocFactory
         {
             private readonly UnityContainer _container;
 
@@ -80,6 +86,11 @@ namespace Urchin.Server.Owin
                 where TClass : class, TInterface
             {
                 _container.RegisterType<TInterface, TClass>(new ExternallyControlledLifetimeManager());
+            }
+
+            public T Create<T>()
+            {
+                return _container.Resolve<T>();
             }
         }
 

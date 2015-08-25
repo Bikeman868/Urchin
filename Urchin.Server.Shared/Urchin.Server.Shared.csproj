@@ -59,6 +59,7 @@
     <Compile Include="DataContracts\RuleDto.cs" />
     <Compile Include="DataContracts\VariableDeclarationDto.cs" />
     <Compile Include="DataContracts\EnvironmentDto.cs" />
+    <Compile Include="Interfaces\IFactory.cs" />
     <Compile Include="Interfaces\IIocConfig.cs" />
     <Compile Include="Interfaces\IIocRegistrar.cs" />
     <Compile Include="Interfaces\IMapper.cs" />
