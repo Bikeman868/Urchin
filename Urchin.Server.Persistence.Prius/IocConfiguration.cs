@@ -7,6 +7,8 @@ using Prius.Orm.Connections;
 using Prius.Orm.Data;
 using Urchin.Server.Shared.Interfaces;
 
+using IMapper = Prius.Contracts.Interfaces.IMapper;
+
 namespace Urchin.Server.Persistence.Prius
 {
     public class IocConfiguration : IIocConfig

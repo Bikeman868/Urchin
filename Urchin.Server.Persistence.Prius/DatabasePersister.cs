@@ -5,7 +5,7 @@ using System.Linq;
 using Common.Logging;
 using Prius.Contracts.Interfaces;
 using Urchin.Client.Interfaces;
-using Urchin.Server.Shared.DataContracts;
+using Urchin.Server.Persistence.Prius.DatabaseRecords;
 using Urchin.Server.Shared.Interfaces;
 
 namespace Urchin.Server.Persistence.Prius
@@ -16,6 +16,7 @@ namespace Urchin.Server.Persistence.Prius
         private readonly ICommandFactory _commandFactory;
         private readonly IContextFactory _contextFactory;
         private readonly ILog _log;
+        private readonly Shared.Interfaces.IMapper _mapper;
 
         private string _repositoryName;
 
@@ -23,11 +24,13 @@ namespace Urchin.Server.Persistence.Prius
             IConfigurationStore configurationStore,
             ICommandFactory commandFactory,
             IContextFactory contextFactory,
-            ILogManager logManager)
+            ILogManager logManager,
+            Shared.Interfaces.IMapper mapper)
         {
             _commandFactory = commandFactory;
             _contextFactory = contextFactory;
             _log = logManager.GetLogger(GetType());
+            _mapper = mapper;
 
             _configNotifier = configurationStore.Register("/urchin/server/persister/repository", SetRepositoryName, "Rules");
         }
@@ -81,35 +84,35 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public RuleDto GetRule(string name)
+        public Shared.DataContracts.RuleDto GetRule(string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
-                RuleDto rule;
+                RuleRecord ruleRecord;
                 using (var command = _commandFactory.CreateStoredProcedure("sp_GetRule"))
                 {
                     command.AddParameter("ruleName", name);
-                    using (var data = context.ExecuteEnumerable<RuleDto>(command))
+                    using (var data = context.ExecuteEnumerable<RuleRecord>(command))
                     {
-                        rule = data.FirstOrDefault();
+                        ruleRecord = data.FirstOrDefault();
                     }
                 }
-                if (rule != null)
+                if (ruleRecord == null) return null;
+
+                var ruleDto = _mapper.Map<RuleRecord, Shared.DataContracts.RuleDto>(ruleRecord);
+                using (var command = _commandFactory.CreateStoredProcedure("sp_GetRuleVariables"))
                 {
-                    using (var command = _commandFactory.CreateStoredProcedure("sp_GetRuleVariables"))
+                    command.AddParameter("ruleName", name);
+                    using (var data = context.ExecuteEnumerable<VariableRecord>(command))
                     {
-                        command.AddParameter("ruleName", name);
-                        using (var data = context.ExecuteEnumerable<VariableDeclarationDto>(command))
-                        {
-                            rule.Variables = data.ToList();
-                        }
+                        ruleDto.Variables = _mapper.Map<IEnumerable<VariableRecord>, List<Shared.DataContracts.VariableDeclarationDto>>(data);
                     }
                 }
-                return rule;
+                return ruleDto;
             }
         }
 
-        public IEnumerable<RuleDto> GetAllRules()
+        public IEnumerable<Shared.DataContracts.RuleDto> GetAllRules()
         {
             return GetRuleNames().Select(GetRule).ToList();
         }
@@ -126,7 +129,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public void InsertOrUpdateRule(RuleDto rule)
+        public void InsertOrUpdateRule(Shared.DataContracts.RuleDto rule)
         {
             _log.Info(m => m("Updating '{0}' rule", rule.RuleName));
             using (var context = _contextFactory.Create(_repositoryName))
@@ -183,39 +186,40 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public EnvironmentDto GetEnvironment(string name)
+        public Shared.DataContracts.EnvironmentDto GetEnvironment(string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
-                EnvironmentDto environment;
+                EnvironmentRecord environmentRecord;
                 using (var command = _commandFactory.CreateStoredProcedure("sp_GetEnvironment"))
                 {
                     command.AddParameter("environmentName", name);
-                    using (var data = context.ExecuteEnumerable<EnvironmentDto>(command))
+                    using (var data = context.ExecuteEnumerable<EnvironmentRecord>(command))
                     {
-                        environment = data.FirstOrDefault();
+                        environmentRecord = data.FirstOrDefault();
                     }
                 }
-                if (environment != null)
+                if (environmentRecord == null) return null;
+
+                var environmentDto = _mapper.Map<EnvironmentRecord, Shared.DataContracts.EnvironmentDto>(environmentRecord);
+
+                using (var command = _commandFactory.CreateStoredProcedure("sp_GetEnvironmentMachines"))
                 {
-                    using (var command = _commandFactory.CreateStoredProcedure("sp_GetEnvironmentMachines"))
+                    command.AddParameter("environmentName", name);
+                    using (var reader = context.ExecuteReader(command))
                     {
-                        command.AddParameter("environmentName", name);
-                        using (var reader = context.ExecuteReader(command))
+                        environmentDto.Machines = new List<string>();
+                        while (reader.Read())
                         {
-                            environment.Machines = new List<string>();
-                            while (reader.Read())
-                            {
-                                environment.Machines.Add(reader.Get<string>(0));
-                            }
+                            environmentDto.Machines.Add(reader.Get<string>(0));
                         }
                     }
                 }
-             return environment;
+                return environmentDto;
            }
         }
 
-        public IEnumerable<EnvironmentDto> GetAllEnvironments()
+        public IEnumerable<Shared.DataContracts.EnvironmentDto> GetAllEnvironments()
         {
             return GetEnvironmentNames().Select(GetEnvironment).ToList();
         }
@@ -232,7 +236,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public void InsertOrUpdateEnvironment(EnvironmentDto environment)
+        public void InsertOrUpdateEnvironment(Shared.DataContracts.EnvironmentDto environment)
         {
             _log.Info(m => m("Updating '{0}' environment", environment.EnvironmentName));
             using (var context = _contextFactory.Create(_repositoryName))

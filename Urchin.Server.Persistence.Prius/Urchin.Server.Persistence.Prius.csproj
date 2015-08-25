@@ -33,6 +33,10 @@
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Common.Logging">
       <HintPath>..\packages\Common.Logging.3.2.0\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
@@ -73,6 +77,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseRecords\Mappings.cs" />
+    <Compile Include="DatabaseRecords\EnvironmentRecord.cs" />
+    <Compile Include="DatabaseRecords\RuleRecord.cs" />
+    <Compile Include="DatabaseRecords\VariableRecord.cs" />
     <Compile Include="IocConfiguration.cs" />
     <Compile Include="DatabasePersister.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,10 +100,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>REM copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
-REM copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
-REM copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
-REM copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
+    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
+copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
+copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
+copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

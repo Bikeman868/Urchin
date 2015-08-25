@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
 

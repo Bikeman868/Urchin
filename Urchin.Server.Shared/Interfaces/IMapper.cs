@@ -1,4 +1,4 @@
-﻿namespace Stockhouse.Shared.Contracts.Interfaces.DataTransformation
+﻿namespace Urchin.Server.Shared.Interfaces
 {
     public interface IMapper
     {

@@ -8,7 +8,6 @@ using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
 using Microsoft.Practices.Unity;
 using Owin;
-using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
 using Urchin.Server.Owin;
 using Urchin.Server.Shared.Interfaces;
 using Urchin.Server.Shared.Rules;

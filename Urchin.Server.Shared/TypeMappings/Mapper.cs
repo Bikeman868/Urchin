@@ -1,5 +1,5 @@
 ﻿using System;
-using Stockhouse.Shared.Contracts.Interfaces.DataTransformation;
+using Urchin.Server.Shared.Interfaces;
 
 namespace Urchin.Server.Shared.TypeMappings
 {
