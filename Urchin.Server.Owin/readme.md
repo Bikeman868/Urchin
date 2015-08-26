@@ -181,3 +181,204 @@ This allows you to post an entire rule database with all environments and rules 
 test what the query would return if you POSTed this data to the server. This provides a way
 to GET the `/ruledata` then edit and test changes before finally POSTing the new rules back to the
 server.
+
+## Recommended best practice for rule configuration
+There are many ways you can organize your rules. If you are new to Urchin, I recommend you try this
+first, and experiment later as needed.
+
+My first recommendation is only put config into rules that specify the application. All of your 
+rules that specify environmemt, machine and instance only should only set variables, then these
+variables should be referenced in the application specific config.
+
+> Note that examples shown below assume that you have installed the Urchin server with a host
+> name of `urchin.local`. If your server is at a different URL you will need to adjust the URLs
+> from these examples accordingly.
+
+Lets work through an example of configuring the Prius ORM, where there are multiple applications
+that each use a different but overlapping set of databases, and each database has a different
+connection string in each environment.
+
+For example if you `PUT` this JSON to the Urchin server at `http://urchin.local/rule/root`
+
+    {
+      "name": "Root",
+      "variables": 
+      [
+        {name:"StandardFallbackPolicies", value:"{ name:\"noFallback\", allowedFailurePercent:100 }"},
+        {name:"Repository1", value:"{ name:\"Repository1\", clusters:[{ databases:[\"Database1\"], fallbackPolicy:\"noFallback\" }]}"},
+        {name:"Repository2", value:"{ name:\"Repository2\", clusters:[{ databases:[\"Database2\"], fallbackPolicy:\"noFallback\" }]}"}
+      ]
+    }
+
+The Urchin server will create or overwrite a rule called 'Root' that will set three variables in all 
+environments and for all applications, all machines and all instances. Note that just setting variables
+like this does not put anything into the config file.
+
+These variables define snippets of JSON that can be assembled into the application config later.
+
+Our repositories are defined globally, but the database is different in each environment. We can
+define the database variables in the development environment by `PUT` this JSON to `http://urchin.local/rule/development`
+
+    {
+      "name": "Development",
+      "environment": "Development",
+      "variables": 
+      [
+        {name:"Database1",  value:"{ name:\"Database1\", type:\"SqlServer\", connectionString:\"server=DEVDB; ......... \" }"},
+        {name:"Database2",  value:"{ name:\"Database2\", type:\"SqlServer\", connectionString:\"server=DEVDB; ......... \" }"}
+      ]
+    }
+
+This can be repeated for other environments, setting the appropriate connection strings for each database in
+each environment.
+
+Now we can define the config file for an application using the variables we already set in other rules. Here
+is an example of an application that only uses database 1. Post this JSON to  `http://urchin.local/rule/application1`
+
+    {
+        name: "Application1",
+        application: "Application1",
+        config:"
+        {
+            prius:
+            {
+                databases:
+                [
+                    ($Database1$)
+                ],
+                fallbackPolicies:
+                [
+                    ($StandardFallbackPolicies$)
+                ], 
+                repositories:
+                [
+                    ($Repository1$)
+                ]
+            }
+        }"
+    }
+
+And if application 2 uses both databases, it can be configured by a `PUT` to `http://urchin.local/rule/application2`
+like this:
+
+    {
+        name: "Application2",
+        application: "Application2",
+        config:"
+        {
+            prius:
+            {
+                databases:
+                [
+                    ($Database1$),
+                    ($Database2$)
+                ],
+                fallbackPolicies:
+                [
+                    ($StandardFallbackPolicies$)
+                ], 
+                repositories:
+                [
+                    ($Repository1$),
+                    ($Repository2$)
+                ]
+            }
+        }"
+    }
+
+Now if you `GET` from  `http://urchin.local/confi?machine=mymachine&application=application2&environment=development`
+you will receive the following response:
+
+    {
+	    prius:
+		{
+		    databases:
+			[
+				{name:"Database1", type:"SqlServer", connectionString:" ......... " },
+				{name:"Database2", type:"SqlServer", connectionString:" ......... " }
+			],
+			fallbackPolicies:
+			[
+				{name:"noFallback", allowedFailurePercent:100}
+			],
+			repositories:
+			[
+				{name:"Repository1", clusters:[{databases:["Database1"], fallbackPolicy:"noFallback"}]},
+				{name:"Repository2", clusters:[{databases:["Database2"], fallbackPolicy:"noFallback"}]}
+			]
+		}
+    }
+
+Which is a complete and correct Prius configuration.
+
+So what happens if we want the production environment to load balance across two database instances? No
+problem, we just need to create a new rule for production, and since it is more specific than the 'Root'
+rule that defines the repositories, it will override just for production, and all other environments will
+be unaffected. You can make this change with a `PUT` to  `http://urchin.local/rule/production`
+
+    {
+      "name": "Production",
+      "environment": "Production",
+      "variables": 
+      [
+        {name:"Database1",  value:"
+			{ name:\"Database1a\", type:\"SqlServer\", connectionString:\"server=PRODDB1; ......... \" },
+			{ name:\"Database1b\", type:\"SqlServer\", connectionString:\"server=PRODDB2; ......... \" }
+			"},
+        {name:"Database2",  value:"
+			{ name:\"Database2a\", type:\"SqlServer\", connectionString:\"server=PRODDB1; ......... \" },
+			{ name:\"Database2b\", type:\"SqlServer\", connectionString:\"server=PRODDB2; ......... \" }
+			"},
+        {name:"Repository1", value:"{ name:\"Repository1\", clusters:[{ databases:[\"Database1a\",\"Database1b\"], fallbackPolicy:\"noFallback\" }]}"},
+        {name:"Repository2", value:"{ name:\"Repository2\", clusters:[{ databases:[\"Database2a\",\"Database2b\"], fallbackPolicy:\"noFallback\" }]}"}
+      ]
+    }
+
+Now if you `GET` from  `http://urchin.local/confi?machine=mymachine&application=application2&environment=development`
+you will still receive the following response:
+
+    {
+	    prius:
+		{
+		    databases:
+			[
+				{name:"Database1", type:"SqlServer", connectionString:" ......... " },
+				{name:"Database2", type:"SqlServer", connectionString:" ......... " }
+			],
+			fallbackPolicies:
+			[
+				{name:"noFallback", allowedFailurePercent:100}
+			],
+			repositories:
+			[
+				{name:"Repository1", clusters:[{databases:["Database1"], fallbackPolicy:"noFallback"}]},
+				{name:"Repository2", clusters:[{databases:["Database2"], fallbackPolicy:"noFallback"}]}
+			]
+		}
+    }
+
+But if you `GET` from  `http://urchin.local/confi?machine=mymachine&application=application2&environment=production`
+you will receive the this instead:
+
+    {
+	    prius:
+		{
+		    databases:
+			[
+				{name:"Database1a", type:"SqlServer", connectionString:" ......... " },
+				{name:"Database1b", type:"SqlServer", connectionString:" ......... " },
+				{name:"Database2a", type:"SqlServer", connectionString:" ......... " },
+				{name:"Database2b", type:"SqlServer", connectionString:" ......... " }
+			],
+			fallbackPolicies:
+			[
+				{name:"noFallback", allowedFailurePercent:100}
+			],
+			repositories:
+			[
+				{name:"Repository1", clusters:[{databases:["Database1a","Database1b"], fallbackPolicy:"noFallback"}]},
+				{name:"Repository2", clusters:[{databases:["Database2a","Database2b"], fallbackPolicy:"noFallback"}]}
+			]
+		}
+    }
+
