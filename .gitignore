@@ -194,3 +194,7 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+Urchin.Server.Owin/Ui/web/*.deps
+Urchin.Server.Owin/Ui/web/*.map
+Urchin.Server.Owin/Ui/.pub/*

@@ -23,5 +23,11 @@ namespace Urchin.Server.Owin.Extensions
 
             return true;
         }
+
+        public static bool StartsWith(this PathString wildcardPath, PathString path)
+        {
+            if (!wildcardPath.HasValue) return !path.HasValue;
+            return wildcardPath.Value.StartsWith(path.Value);
+        }
     }
 }

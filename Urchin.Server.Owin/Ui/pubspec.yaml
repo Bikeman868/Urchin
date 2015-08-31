@@ -4,3 +4,13 @@ description: User interface for configuring the rules in Urchin server
 author: Martin Halliday
 homepage: https://github.com/Bikeman868/Urchin
 documentation: https://github.com/Bikeman868/Urchin/tree/master/Urchin.Server.Owin
+
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+
+dependencies:
+  browser: '>=0.10.0 <0.11.0'
+  dart_to_js_script_rewriter: '^0.1.0'
+
+transformers:
+- dart_to_js_script_rewriter

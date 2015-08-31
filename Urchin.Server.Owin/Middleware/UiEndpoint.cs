@@ -14,7 +14,7 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class UiEndpoint: ApiBase
     {
-        private readonly PathString _uiUrlPathPattern;
+        private readonly PathString _uiRootUrlPathPattern;
         private readonly PathString _faviconUrlPath;
         private readonly DirectoryInfo _uiDirectoryInfo;
         private readonly IDictionary<string, FileWrapper> _fileCache;
@@ -28,7 +28,7 @@ namespace Urchin.Server.Owin.Middleware
             IConfigurationStore configurationStore)
         {
             _versionChangeRegistration = configurationStore.Register("/urchin/server/version", v => _version = v, 1);
-            _uiUrlPathPattern = new PathString("/ui/{file}");
+            _uiRootUrlPathPattern = new PathString("/ui");
             _faviconUrlPath = new PathString("/favicon.ico");
 
             var uiRootPath =  System.Web.Hosting.HostingEnvironment.MapPath("~/ui/web");
@@ -57,7 +57,7 @@ namespace Urchin.Server.Owin.Middleware
                 {".css", new FileTypeInfo{MimeType = "text/css", Expiry = TimeSpan.FromDays(7), Processing = FileProcessing.Css}},
 
                 {".js", new FileTypeInfo{MimeType = "application/javascript", Expiry = TimeSpan.FromHours(1), Processing = FileProcessing.JavaScript}},
-                {".dart", new FileTypeInfo{MimeType = "application/javascript", Expiry = TimeSpan.FromHours(1), Processing = FileProcessing.Dart}},
+                {".dart", new FileTypeInfo{MimeType = "application/dart", Expiry = TimeSpan.FromHours(1), Processing = FileProcessing.Dart}},
             };
 
             _fileTypes.Add(".htm", _fileTypes[".html"]);
@@ -80,9 +80,12 @@ namespace Urchin.Server.Owin.Middleware
             if (request.Method != "GET")
                 return next.Invoke();
 
-            if (_uiUrlPathPattern.IsWildcardMatch(request.Path))
-                return ServeUi(context);
+            if (_uiRootUrlPathPattern.IsWildcardMatch(request.Path))
+                return ServeUiRoot(context);
 
+            if (request.Path.StartsWith(_uiRootUrlPathPattern))
+                return ServeUi(context);
+           
             if (_faviconUrlPath.IsWildcardMatch(request.Path))
                 return ServeFavicon(context);
 
@@ -96,18 +99,22 @@ namespace Urchin.Server.Owin.Middleware
 
             var request = context.Request;
 
-            var pathSegmnts = request.Path.Value
-                .Split('/')
-                .Where(p => !string.IsNullOrWhiteSpace(p))
-                .Select(HttpUtility.UrlDecode)
-                .ToArray();
+            var path = request.Path.Value.Substring(_uiRootUrlPathPattern.Value.Length + 1);
+            var fileName = path.Replace('/', '\\');
 
-            if (pathSegmnts.Length < 2)
-                throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _uiUrlPathPattern.Value);
-
-            var fileName = pathSegmnts[1];
             bool isVersioned;
             var wrapper = GetWrapper(fileName, out isVersioned);
+
+            return wrapper.Send(context, _version, isVersioned);
+        }
+
+        private Task ServeUiRoot(IOwinContext context)
+        {
+            if (_uiDirectoryInfo == null)
+                throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Unable to determine location of files to serve");
+
+            bool isVersioned;
+            var wrapper = GetWrapper("rules.html", out isVersioned);
 
             return wrapper.Send(context, _version, isVersioned);
         }
@@ -127,7 +134,7 @@ namespace Urchin.Server.Owin.Middleware
             if (string.IsNullOrWhiteSpace(fileName)) return null;
 
             var extension = Path.GetExtension(fileName);
-            var baseFileName = Path.GetFileNameWithoutExtension(fileName);
+            var baseFileName = string.IsNullOrEmpty(extension) ? fileName : fileName.Substring(0, fileName.Length - extension.Length);
 
             var versionSuffix = "_v" + _version;
             isVersioned = baseFileName.EndsWith(versionSuffix);
@@ -205,6 +212,7 @@ namespace Urchin.Server.Owin.Middleware
                 {
                     _lastModified = DateTime.UtcNow;
                     _content = null;
+                    return;
                 }
 
                 try

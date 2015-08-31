@@ -102,8 +102,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="config.txt" />
+    <Content Include="Ui\web\favicon.ico" />
+    <Content Include="Ui\web\index.html" />
     <Content Include="Ui\web\rules.css" />
     <Content Include="Ui\web\rules.html" />
+    <Content Include="Ui\web\styles.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -129,6 +132,7 @@
     <Content Include="packages.config" />
     <Content Include="readme.md" />
     <Content Include="Ui\pubspec.yaml" />
+    <Content Include="Ui\web\main.dart" />
     <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -142,6 +146,7 @@
     <Folder Include="Ui\build\" />
     <Folder Include="Ui\doc\" />
     <Folder Include="Ui\lib\" />
+    <Folder Include="Ui\packages\" />
     <Folder Include="Ui\tools\" />
   </ItemGroup>
   <ItemGroup>
