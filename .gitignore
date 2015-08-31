@@ -195,8 +195,17 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 
-Urchin.Server.Owin/Ui/web/*.deps
-Urchin.Server.Owin/Ui/web/*.map
-Urchin.Server.Owin/Ui/.pub/*
+# Dart SDK generated files
 Urchin.Server.Owin/Ui/.packages
-Urchin.Server.Owin/Ui/pubspec.lock
+
+Urchin.Server.Owin/Ui/.pub/*
+Urchin.Server.Owin/Ui/bin/*
+Urchin.Server.Owin/Ui/tools/*
+Urchin.Server.Owin/Ui/.buildlog/*
+
+Urchin.Server.Owin/Ui/packages/*
+
+Urchin.Server.Owin/Ui/web/*.dart.js
+Urchin.Server.Owin/Ui/web/*.js_
+Urchin.Server.Owin/Ui/web/*.js.deps
+Urchin.Server.Owin/Ui/web/*.js.map
