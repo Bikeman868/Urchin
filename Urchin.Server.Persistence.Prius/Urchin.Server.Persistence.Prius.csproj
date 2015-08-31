@@ -43,16 +43,19 @@
     <Reference Include="Common.Logging.Core">
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
+    <Reference Include="Mono.Security">
+      <HintPath>..\packages\Npgsql.2.2.5\lib\net45\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MySql.Data.6.9.7\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=3.0.1.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Npgsql.3.0.1\lib\net45\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql">
+      <HintPath>..\packages\Npgsql.2.2.5\lib\net45\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="Prius.Contracts, Version=1.0.3.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -69,9 +72,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Urchin.Client, Version=1.0.2.3, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Urchin.Client, Version=1.0.1.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Urchin.Client.1.0.2.3\lib\net40\Urchin.Client.dll</HintPath>
+      <HintPath>..\packages\Urchin.Client.1.0.1.2\lib\net40\Urchin.Client.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
