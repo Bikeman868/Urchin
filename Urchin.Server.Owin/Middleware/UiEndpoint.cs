@@ -16,7 +16,7 @@ namespace Urchin.Server.Owin.Middleware
     /// This middleware behaves a lot like the static files middleware with the
     /// following differences:
     /// - Files can be versioned. The version number comes from /urchin/server/version in the config file.
-    /// - It maps the url /ui/* onto the physical path ui/web/*
+    /// - It maps the url /ui/* onto the physical path ui/build/web/*
     /// - It maps the url /favicon.ico onto the physical path ui/web/favicon.ico
     /// - If the url includes a version:
     ///    * If the version in the url does not match the current version a 404 is returned.
@@ -48,7 +48,7 @@ namespace Urchin.Server.Owin.Middleware
             _uiRootUrlPathPattern = new PathString("/ui");
             _faviconUrlPath = new PathString("/favicon.ico");
 
-            var uiRootPath =  System.Web.Hosting.HostingEnvironment.MapPath("~/ui/web");
+            var uiRootPath =  System.Web.Hosting.HostingEnvironment.MapPath("~/ui/build/web");
             if (string.IsNullOrEmpty(uiRootPath))
                 return;
             _uiDirectoryInfo = new DirectoryInfo(uiRootPath);

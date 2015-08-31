@@ -91,7 +91,7 @@ For the optional management UI, copy:
 
 | From | To |
 | ------- | -------- |
-| ui\\build\\web | ui\\web |
+| ui\\build\\web | ui\\build\\web |
 
 For the optional database persistence, copy:
 
