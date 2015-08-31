@@ -32,12 +32,16 @@ namespace Urchin.Server.Owin.Middleware
             if (!_path.IsWildcardMatch(request.Path))
                 return next.Invoke();
 
-            var pathSegmnts = request.Path.Value.Split('/').Select(HttpUtility.UrlDecode).ToArray();
+            var pathSegmnts = request.Path.Value
+                .Split('/')
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Select(HttpUtility.UrlDecode)
+                .ToArray();
 
-            if (pathSegmnts.Length < 3)
+            if (pathSegmnts.Length < 2)
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _path.Value);
 
-            var ruleName = pathSegmnts[2];
+            var ruleName = pathSegmnts[1];
             
             if (request.Method == "GET")
                 return GetRule(context, ruleName);

@@ -6,6 +6,7 @@ using System.Reflection;
 using Common.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
+using Microsoft.Owin.Extensions;
 using Microsoft.Practices.Unity;
 using Owin;
 using Urchin.Server.Owin;
@@ -128,6 +129,7 @@ namespace Urchin.Server.Owin
             {
                 app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.UiEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);

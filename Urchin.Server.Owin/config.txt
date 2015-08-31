@@ -3,6 +3,7 @@
   {
     server:
 	{
+	  version:1,
 	  persister:
 	  {
 	    filePath:"c:\\temp\\rules.txt",

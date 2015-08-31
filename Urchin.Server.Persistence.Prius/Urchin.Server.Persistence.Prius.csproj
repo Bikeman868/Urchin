@@ -43,9 +43,6 @@
     <Reference Include="Common.Logging.Core">
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>..\packages\Npgsql.2.2.5\lib\net45\Mono.Security.dll</HintPath>
-    </Reference>
     <Reference Include="MySql.Data">
       <HintPath>..\packages\MySql.Data.6.9.7\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
@@ -53,8 +50,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql">
-      <HintPath>..\packages\Npgsql.2.2.5\lib\net45\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=3.0.1.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Npgsql.3.0.1\lib\net45\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="Prius.Contracts, Version=1.0.3.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -100,9 +98,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
+    <PostBuildEvent>ECHO copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
 copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
+
+ECHO copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
+ECHO 
 copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
 </PostBuildEvent>
   </PropertyGroup>
