@@ -133,15 +133,22 @@ namespace Urchin.Server.Owin.Middleware
             isVersioned = false;
             if (string.IsNullOrWhiteSpace(fileName)) return null;
 
-            var extension = Path.GetExtension(fileName);
-            var baseFileName = string.IsNullOrEmpty(extension) ? fileName : fileName.Substring(0, fileName.Length - extension.Length);
+            var lastDirectorySeparatorIndex = fileName.LastIndexOf('\\');
+            var firstPeriodIndex = lastDirectorySeparatorIndex < 0 
+                ? fileName.IndexOf('.') 
+                : fileName.IndexOf('.', lastDirectorySeparatorIndex);
+            var lastPeriodIndex = fileName.LastIndexOf('.');
+
+            var fullExtension = firstPeriodIndex < 0 ? "" : fileName.Substring(firstPeriodIndex);
+            var extension = lastPeriodIndex < 0 ? "" : fileName.Substring(lastPeriodIndex);
+            var baseFileName = firstPeriodIndex < 0 ? fileName : fileName.Substring(0, firstPeriodIndex);
 
             var versionSuffix = "_v" + _version;
             isVersioned = baseFileName.EndsWith(versionSuffix);
             if (isVersioned)
             {
                 var fileNameWithoutVersion = baseFileName.Substring(0, baseFileName.Length - versionSuffix.Length);
-                fileName = fileNameWithoutVersion + extension;
+                fileName = fileNameWithoutVersion + fullExtension;
             }
 
             FileWrapper wrapper;
