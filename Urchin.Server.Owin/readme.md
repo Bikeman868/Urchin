@@ -9,10 +9,10 @@ to the server and configure a web site in IIS.
 
 To get going in development, you need to :
 
-1. download the [Dart SDK](https://www.dartlang.org/downloads/windows.html)
-   and make sure the Dart SDK bin folder is in your Windows environment path.
+1. Download the [Dart SDK](https://www.dartlang.org/downloads/windows.html)
+   and make sure the Dart SDK's `bin` folder is in your Windows environment path.
 2. Open a command window and change the working directory to the `ui` folder
-   in the Urchin.Server.Owin project.
+   in the `Urchin.Server.Owin` project.
 3. Type `pub get` into the command prompt. This will download all the dependant
    packages from the Dart repository. This is simplar to restoring packages in NuGet.
 4. Type `pub build` into the command prompt. This will compile all the Dart
@@ -20,14 +20,15 @@ To get going in development, you need to :
 5. Open the solution in Visual Studio.
 6. Change the config.txt file and set the persister file path.
 7. Hit the run button and try these URLs:
-   http://localhost:60626/hello
-   http://localhost:60626/ui/index.html
-   http://localhost:60626/rules
-   http://localhost:60626/environments
+
+   (http://localhost:60626/hello)[http://localhost:60626/hello]
+   (http://localhost:60626/ui/index.html)[http://localhost:60626/ui/index.html]
+   (http://localhost:60626/rules)[http://localhost:60626/rules]
+   (http://localhost:60626/environments)[http://localhost:60626/environments]
 
 > If you want to store your data in a database, then you must copy some files from the
-> the Urchin.Server.Persistence.Prius\bin\Release folder. There is a commented out post build step 
-> in this project that copies these files to Urchin.Server.Owin\bin. Uncomment these steps
+> the `Urchin.Server.Persistence.Prius\bin\Release` folder. There is a commented out post build step 
+> in this project that copies these files. Uncomment these steps
 > before building if you want database persistence, or just copy the files manually.
 
 > If you have problems running the UI under IIS make sure that the Dart packages folder is accessible
@@ -42,8 +43,8 @@ These are the steps to making a production build:
 2. Compile the Visual Studio solution (required).
 3. Compile the Dart code to JavaScript (required for the management UI).
 4. Copy the files to a folder on your web server (required).
-5. Configure a new web site in IIS to point to the new folder (required).
-6. Copy dlls from Urchin.Server.Persistence.Prius (required for database persistence).
+5. Copy dlls from Urchin.Server.Persistence.Prius (required for database persistence).
+6. Configure a new web site in IIS to point to the new folder (required).
 7. Alter web.config and config.txt files to match your system (required).
 
 #### Downloading the source code from GitHub
@@ -62,16 +63,16 @@ You should ensure that the environment is set to 'Release' before building the s
 
 Dart is a rich object oriented language that allows developers to create sophiticated client-side
 experience in all existing browsers. The Dart language runs natively in some browsers, and can be
-compiled into JavaScript to support older browsers.
+compiled into JavaScript to support older ones.
 
 The managemnt UI is written in Dart. All of the Dart code is included in the Visual Studio
-solution, but Visual Studio doesn't know how to compile Dart code. If you want to use the
+solution, but Visual Studio doesn't know how to compileit. If you want to use the
 management UI, you need to download the [Dart SDK](https://www.dartlang.org/downloads/windows.html) and 
-use the (Pub tool)[https://www.dartlang.org/tools/pub/] to pull the dependant packages, and compile 
+use the [Pub tool](https://www.dartlang.org/tools/pub/) to pull the dependant packages, and compile 
 the Dart code into JavaScript.
 
-Once the Dart SDK is installed, open a command window and change the working directory to the `ui` folder
-in the solution (where the `pubspec.yaml` file is), then run this Dart SDK commands:
+Install the Dart SDK then open a command window and change the working directory to the `ui` folder
+in the solution (where the `pubspec.yaml` file is) and run these Dart SDK commands:
 
     pub get
 	pub build
@@ -79,18 +80,24 @@ in the solution (where the `pubspec.yaml` file is), then run this Dart SDK comma
 #### Copy files to your web server
 
 For the main server, copy:
-  web.config   =>   web.config
-  config.txt   =>   config.txt
-  bin\*.dll    =>   bin\*.dll
+| From | To |
+| ------- | -------- |
+| web.config | web.config |
+| config.txt | config.txt |
+| bin\*.dll | bin\*.dll |
 
 For the optional management UI, copy:
-  ui\build\web  =>    ui\web
+| From | To |
+| ------- | -------- |
+| ui\build\web | ui\web |
 
 For the optional database persistence, copy:
-  Urchin.Server.Persistence.Prius\bin\Release\MySql.Data.dll        => bin\MySql.Data.dll
-  Urchin.Server.Persistence.Prius\bin\Release\Npgsql.dll            => bin\Npgsql.dll
-  Urchin.Server.Persistence.Prius\bin\Release\Prius.Contracts.dll   => bin\Prius.Contracts.dll
-  Urchin.Server.Persistence.Prius\bin\Release\Prius.Orm.dll         => bin\Prius.Orm.dll
+| From | To |
+| ------- | -------- |
+| Urchin.Server.Persistence.Prius\bin\Release\MySql.Data.dll      | bin\MySql.Data.dll |
+| Urchin.Server.Persistence.Prius\bin\Release\Npgsql.dll          | bin\Npgsql.dll |
+| Urchin.Server.Persistence.Prius\bin\Release\Prius.Contracts.dll | bin\Prius.Contracts.dll |
+| Urchin.Server.Persistence.Prius\bin\Release\Prius.Orm.dll       | bin\Prius.Orm.dll |
 
 #### Customize web.config and config.txt
 
