@@ -80,6 +80,7 @@ in the solution (where the `pubspec.yaml` file is) and run these Dart SDK comman
 #### Copy files to your web server
 
 For the main server, copy:
+
 | From | To |
 | ------- | -------- |
 | web.config | web.config |
@@ -87,11 +88,13 @@ For the main server, copy:
 | bin\*.dll | bin\*.dll |
 
 For the optional management UI, copy:
+
 | From | To |
 | ------- | -------- |
 | ui\build\web | ui\web |
 
 For the optional database persistence, copy:
+
 | From | To |
 | ------- | -------- |
 | Urchin.Server.Persistence.Prius\bin\Release\MySql.Data.dll      | bin\MySql.Data.dll |
