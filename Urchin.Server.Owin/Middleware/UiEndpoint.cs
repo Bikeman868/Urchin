@@ -12,6 +12,23 @@ using Urchin.Server.Owin.Extensions;
 
 namespace Urchin.Server.Owin.Middleware
 {
+    /// <summary>
+    /// This middleware behaves a lot like the static files middleware with the
+    /// following differences:
+    /// - Files can be versioned. The version number comes from /urchin/server/version in the config file.
+    /// - It maps the url /ui/* onto the physical path ui/web/*
+    /// - It maps the url /favicon.ico onto the physical path ui/web/favicon.ico
+    /// - If the url includes a version:
+    ///    * If the version in the url does not match the current version a 404 is returned.
+    ///    * If the version in the url is the the current version, the version number is
+    ///      stripped out to get the name of the file to serve, and the file is served with
+    ///      an expiry date, allowing the browser to cache the file.
+    ///  - If the url does not include a version the file file is served to the browser with
+    ///    no caching enabled so the browser will request the resource every time.
+    ///  - In HTML files, the string {_v_} is replaced with the current version number before
+    ///    being sent to the browser. This should be added to all links that refer to resources
+    ///    such as javascript, css and images.
+    /// </summary>
     public class UiEndpoint: ApiBase
     {
         private readonly PathString _uiRootUrlPathPattern;
@@ -202,7 +219,14 @@ namespace Urchin.Server.Owin.Middleware
 
                 context.Response.ContentType = _fileTypeInfo.MimeType;
                 if (isVersioned && _fileTypeInfo.Expiry.HasValue)
+                {
                     context.Response.Expires = DateTime.UtcNow + _fileTypeInfo.Expiry;
+                    context.Response.Headers.Set("Cache-Control", "public, max-age=" + (int)_fileTypeInfo.Expiry.Value.TotalSeconds);
+                }
+                else
+                {
+                    context.Response.Headers.Set("Cache-Control", "no-cache");
+                }
                 return context.Response.WriteAsync(_content);
             }
 
