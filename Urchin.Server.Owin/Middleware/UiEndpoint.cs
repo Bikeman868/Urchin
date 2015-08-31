@@ -31,7 +31,7 @@ namespace Urchin.Server.Owin.Middleware
             _uiUrlPathPattern = new PathString("/ui/{file}");
             _faviconUrlPath = new PathString("/favicon.ico");
 
-            var uiRootPath =  System.Web.Hosting.HostingEnvironment.MapPath("~/ui.dart/web");
+            var uiRootPath =  System.Web.Hosting.HostingEnvironment.MapPath("~/ui/web");
             if (string.IsNullOrEmpty(uiRootPath))
                 return;
             _uiDirectoryInfo = new DirectoryInfo(uiRootPath);

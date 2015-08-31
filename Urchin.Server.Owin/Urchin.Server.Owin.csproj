@@ -102,8 +102,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="config.txt" />
-    <Content Include="Ui.Dart\web\rules.css" />
-    <Content Include="Ui.Dart\web\rules.html" />
+    <Content Include="Ui\web\rules.css" />
+    <Content Include="Ui\web\rules.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -128,7 +128,7 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="readme.md" />
-    <Content Include="Ui.Dart\pubspec.yaml" />
+    <Content Include="Ui\pubspec.yaml" />
     <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -138,11 +138,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Ui.Dart\bin\" />
-    <Folder Include="Ui.Dart\build\" />
-    <Folder Include="Ui.Dart\doc\" />
-    <Folder Include="Ui.Dart\lib\" />
-    <Folder Include="Ui.Dart\tools\" />
+    <Folder Include="Ui\bin\" />
+    <Folder Include="Ui\build\" />
+    <Folder Include="Ui\doc\" />
+    <Folder Include="Ui\lib\" />
+    <Folder Include="Ui\tools\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Urchin.Client\Urchin.Client.csproj">
