@@ -114,7 +114,7 @@ namespace Urchin.Server.Owin.Middleware
                 throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Unable to determine location of files to serve");
 
             bool isVersioned;
-            var wrapper = GetWrapper("rules.html", out isVersioned);
+            var wrapper = GetWrapper("index.html", out isVersioned);
 
             return wrapper.Send(context, _version, isVersioned);
         }
