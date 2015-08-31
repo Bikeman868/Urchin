@@ -97,6 +97,7 @@ For the optional database persistence, copy:
 
 | From | To |
 | ------- | -------- |
+| Urchin.Server.Persistence.Prius\\bin\\Release\\Urchin.Server.Persistence.Prius.dll | bin\\Urchin.Server.Persistence.Prius.dll |
 | Urchin.Server.Persistence.Prius\\bin\\Release\\MySql.Data.dll      | bin\\MySql.Data.dll |
 | Urchin.Server.Persistence.Prius\\bin\\Release\\Npgsql.dll          | bin\\Npgsql.dll |
 | Urchin.Server.Persistence.Prius\\bin\\Release\\Prius.Contracts.dll | bin\\Prius.Contracts.dll |
