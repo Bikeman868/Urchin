@@ -2,12 +2,67 @@
 
 ## Installation
 There is no installer application for the server yet. Please download the source code and compile
-it using Visual Studio. To install the server you just need to copy a few files to the server and
-configure a web site in IIS.
+it using Visual Studio and the Dart SDK. To install the server you just need to copy a few files 
+to the server and configure a web site in IIS.
 
-To build the server, compile the Urchin.Server.Owin project.
+### Development environment
 
-If you want to store your data in a database, then you should also compile Urchin.Server.Persistence.Prius.
+To get going in development, you need to :
+
+1. download the [Dart SDK](https://www.dartlang.org/downloads/windows.html)
+   and make sure the Dart SDK bin folder is in your Windows environment path.
+2. Open a command window and change the working directory to the `ui` folder
+   in the Urchin.Server.Owin project.
+3. Type `pub get` into the command prompt. This will download all the dependant
+   packages from the Dart repository. This is simplar to restoring packages in NuGet.
+4. Type `pub build` into the command prompt. This will compile all the Dart
+   code into JavaScript.
+5. Open the solution in Visual Studio.
+6. Change the config.txt file and set the persister file path.
+7. Hit the run button and try these URLs:
+   http://localhost:60626/hello
+   http://localhost:60626/ui/index.html
+   http://localhost:60626/rules
+   http://localhost:60626/environments
+
+> If you want to store your data in a database, then you must copy some files from the
+> the Urchin.Server.Persistence.Prius\bin\Release folder. There is a commented out post build step 
+> in this project that copies these files to Urchin.Server.Owin\bin. Uncomment these steps
+> before building if you want database persistence, or just copy the files manually.
+
+> If you have problems running the UI under IIS make sure that the Dart packages folder is accessible
+> to the IIS worker process. The Dart `pub` tool will create symbolic links in your solution
+> folder that point to your roaming user profile, and by default IIS does not have access to this.
+
+### Production environment
+
+These are the steps to making a production build:
+
+1. Download the source code from GitHub (required).
+2. Compile the Visual Studio solution (required).
+3. Compile the Dart code to JavaScript (required for the management UI).
+4. Copy the files to a folder on your web server (required).
+5. Configure a new web site in IIS to point to the new folder (required).
+6. Copy dlls from Urchin.Server.Persistence.Prius (required for database persistence).
+7. Alter web.config and config.txt files to match your system (required).
+
+#### Downloading the source code from GitHub
+
+The source code is available at https://github.com/Bikeman868/Urchin. You can download it using any
+Git client, or just click the download button on the GitHub page.
+
+#### Compiling in Visual Studio
+
+The solution was developed on Visual Studio 2013, but newer versions will also work. You can download
+the community edition of Visual Studio from here https://www.visualstudio.com/.
+
+You should ensure that the environment is set to 'Release' before building the solution.
+
+#### Compile Dart code
+
+Dart is a rich object oriented language that allows developers to create sophiticated client-side
+experience in all existing browsers. The Dart language runs natively in some browsers, and can be
+compiled into JavaScript to support older browsers.
 
 The managemnt UI is written in Dart. All of the Dart code is included in the Visual Studio
 solution, but Visual Studio doesn't know how to compile Dart code. If you want to use the
@@ -15,19 +70,35 @@ management UI, you need to download the [Dart SDK](https://www.dartlang.org/down
 use the (Pub tool)[https://www.dartlang.org/tools/pub/] to pull the dependant packages, and compile 
 the Dart code into JavaScript.
 
-In development, you can create a web site in IIS and point it to Urchin.Server.Owin project folder,
-or you can run this project from within Visual Studio by right clicking and choosing Debug|Start new 
-instance.
+Once the Dart SDK is installed, open a command window and change the working directory to the `ui` folder
+in the solution (where the `pubspec.yaml` file is), then run this Dart SDK commands:
 
-To deploy to production, make sure you build the 'Release' version, then deploy:
-  web.config
-  config.txt
-  bin\*.dll
+    pub get
+	pub build
 
-If you want to store your data in a database, then you must also copy some files from the
-the Urchin.Server.Persistence.Prius\bin folder. There is a commented out post build step 
-in this project that copies these files to Urchin.Server.Owin\bin. Uncomment these steps
-before building if you want database persistence.
+#### Copy files to your web server
+
+For the main server, copy:
+  web.config   =>   web.config
+  config.txt   =>   config.txt
+  bin\*.dll    =>   bin\*.dll
+
+For the optional management UI, copy:
+  ui\build\web  =>    ui\web
+
+For the optional database persistence, copy:
+  Urchin.Server.Persistence.Prius\bin\Release\MySql.Data.dll        => bin\MySql.Data.dll
+  Urchin.Server.Persistence.Prius\bin\Release\Npgsql.dll            => bin\Npgsql.dll
+  Urchin.Server.Persistence.Prius\bin\Release\Prius.Contracts.dll   => bin\Prius.Contracts.dll
+  Urchin.Server.Persistence.Prius\bin\Release\Prius.Orm.dll         => bin\Prius.Orm.dll
+
+#### Customize web.config and config.txt
+
+You will need to edit the web.config and config.txt and adjust them to suit your production environment.
+In the simplest scenario where rules are stored in a file, you just need to specify the location
+of this file, and make sure that IIS can overwrite its contents.
+
+Detailed configuration instructions follow.
 
 ## Configuration
 The Urchin server uses the Urchin client to manage its configuration file - nothing like eating
@@ -68,6 +139,15 @@ If you want to perform more in-depth testing, I recommend a Chrome app called Po
 a file called 'Urchin.json.postman_collection' in the source code that can be imported into
 Postman. This will provide example calls for all methods available in the API that you can test
 using Postman.
+
+## The management UI
+
+If you chose to deploy the managemnt UI, then you can navigate to http://urchin.local/ui and 
+you should be presented with a user interface that allows you to view, test and save 
+environments and rules.
+
+See the project status in the main readme for a description of what is currently possible in the 
+management UI.
 
 ## REST API
 This server has a RESTful API with JSON in the body of POSTs and PUTs and it replies with JSON.

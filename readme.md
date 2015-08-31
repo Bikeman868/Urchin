@@ -47,10 +47,12 @@ single file in json format or in a database. The database persister uses Prius O
 Microsoft SQL Server, MySQL and Postgresql, but so far I have only created database schema and 
 stored procedures for MySQL.
 
-The server has a REST API for managing the rule database, but the management UI is not built yet.
-If you are using the file persister, then you can edit the file and the changes will be picked up
-and applied by the server. If you are using the Prius persister to save changes to a database, and
-you edit the database directly, you will have to recycle the IIS app pool to pick up the changes.
+The server has a REST API for managing the rule database. If you are using the file persister, then 
+you can edit the file and the changes will be picked up and applied by the server. If you are using 
+the Prius persister to save changes to a database, and you edit the database directly, you will have
+to recycle the IIS app pool to pick up the changes.
+
+A UI for managing rules is in development, but is not ready for widespread use at this time.
 
 ## Next Steps
 If you want to contribute to this project, these are the next most important tasks

@@ -198,3 +198,5 @@ FakesAssemblies/
 Urchin.Server.Owin/Ui/web/*.deps
 Urchin.Server.Owin/Ui/web/*.map
 Urchin.Server.Owin/Ui/.pub/*
+Urchin.Server.Owin/Ui/.packages
+Urchin.Server.Owin/Ui/pubspec.lock
