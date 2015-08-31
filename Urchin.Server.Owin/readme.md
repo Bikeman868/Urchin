@@ -85,22 +85,22 @@ For the main server, copy:
 | ------- | -------- |
 | web.config | web.config |
 | config.txt | config.txt |
-| bin\*.dll | bin\*.dll |
+| bin\\*.dll | bin\\*.dll |
 
 For the optional management UI, copy:
 
 | From | To |
 | ------- | -------- |
-| ui\build\web | ui\web |
+| ui\\build\\web | ui\\web |
 
 For the optional database persistence, copy:
 
 | From | To |
 | ------- | -------- |
-| Urchin.Server.Persistence.Prius\bin\Release\MySql.Data.dll      | bin\MySql.Data.dll |
-| Urchin.Server.Persistence.Prius\bin\Release\Npgsql.dll          | bin\Npgsql.dll |
-| Urchin.Server.Persistence.Prius\bin\Release\Prius.Contracts.dll | bin\Prius.Contracts.dll |
-| Urchin.Server.Persistence.Prius\bin\Release\Prius.Orm.dll       | bin\Prius.Orm.dll |
+| Urchin.Server.Persistence.Prius\\bin\\Release\\MySql.Data.dll      | bin\\MySql.Data.dll |
+| Urchin.Server.Persistence.Prius\\bin\\Release\\Npgsql.dll          | bin\\Npgsql.dll |
+| Urchin.Server.Persistence.Prius\\bin\\Release\\Prius.Contracts.dll | bin\\Prius.Contracts.dll |
+| Urchin.Server.Persistence.Prius\\bin\\Release\\Prius.Orm.dll       | bin\\Prius.Orm.dll |
 
 #### Customize web.config and config.txt
 
