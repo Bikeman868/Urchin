@@ -99,11 +99,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>ECHO copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
-
+ECHO copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
 ECHO copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
-ECHO 
-copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
+ECHO copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

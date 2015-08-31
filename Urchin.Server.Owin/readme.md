@@ -5,8 +5,15 @@ There is no installer application for the server yet. Please download the source
 it using Visual Studio. To install the server you just need to copy a few files to the server and
 configure a web site in IIS.
 
-To build the server, compile the Urchin.Server.Owin project. If you want to store your data in a
-database, then you should also compile Urchin.Server.Persistence.Prius.
+To build the server, compile the Urchin.Server.Owin project.
+
+If you want to store your data in a database, then you should also compile Urchin.Server.Persistence.Prius.
+
+The managemnt UI is written in Dart. All of the Dart code is included in the Visual Studio
+solution, but Visual Studio doesn't know how to compile Dart code. If you want to use the
+management UI, you need to download the [Dart SDK](https://www.dartlang.org/downloads/windows.html) and 
+use the (Pub tool)[https://www.dartlang.org/tools/pub/] to pull the dependant packages, and compile 
+the Dart code into JavaScript.
 
 In development, you can create a web site in IIS and point it to Urchin.Server.Owin project folder,
 or you can run this project from within Visual Studio by right clicking and choosing Debug|Start new 
