@@ -1,9 +1,111 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto);
-
-html, body {
-    width: 100%;
-    height: 100%;
+body 
+{
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', sans-serif;
+    font-family: sans-serif;
+    font-size: 12px;
+    background:ghostwhite
+}
+
+#topDiv
+{
+    background: gray;
+    color: whitesmoke;
+    clear: both;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#middleDiv
+{
+    background: whitesmoke;
+    clear: both;
+}
+
+#bottomDiv
+{
+    background: gray;
+    color: whitesmoke;
+    padding: 4px;
+    clear: both;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#toolBarDiv
+{
+    padding: 4px;
+    clear: both;
+    height: 30px;
+}
+
+#leftDiv
+{
+    background: aliceblue;
+    float: left;
+    width:200px;
+    border: 1px solid navy;
+}
+
+#centreDiv
+{
+    background: aliceblue;
+    float: left;
+    width:200px;
+    border: 1px solid navy;
+}
+
+#rightDiv
+{
+    float: right;
+    width:200px;
+}
+
+.toolBarButton
+{
+    margin: 10px;
+    position: relative;
+    padding: 10px 10px 4px 4px;
+    font-size: 14px;
+}
+
+.toolBarButton:hover
+{
+    cursor: pointer;
+    border: 1px solid white;
+}
+
+.panelTitle
+{
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    align-content: center;
+    width: 100%;
+    margin: 10px;
+}
+
+.selectionList
+{
+    list-style: none;
+    margin: 10px;
+    position: relative;
+    padding: 4px 4px 4px 4px;
+    font-size: 14px;
+}
+
+.selectionItem
+{
+    margin: 4px;
+    padding: 2px;
+}
+
+.selectionItem:hover
+{
+    cursor: pointer;
+    background-color: yellow;
 }

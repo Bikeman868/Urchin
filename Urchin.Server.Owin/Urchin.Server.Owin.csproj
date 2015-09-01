@@ -131,6 +131,11 @@
     <Content Include="readme.md" />
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
+    <Content Include="Ui\web\Dto.dart" />
+    <Content Include="Ui\web\RuleListComponent.dart" />
+    <Content Include="Ui\web\ToolBarComponent.dart" />
+    <Content Include="Ui\web\Data.dart" />
+    <Content Include="Ui\web\Server.dart" />
     <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -139,14 +144,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Ui\bin\" />
-    <Folder Include="Ui\build\" />
-    <Folder Include="Ui\doc\" />
-    <Folder Include="Ui\lib\" />
-    <Folder Include="Ui\packages\" />
-    <Folder Include="Ui\tools\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Urchin.Client\Urchin.Client.csproj">
       <Project>{169CA82F-7924-47EE-9705-F333932110F4}</Project>

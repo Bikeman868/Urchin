@@ -31,53 +31,26 @@ namespace Urchin.Server.Owin.Middleware
     /// </summary>
     public class UiEndpoint: ApiBase
     {
-        private readonly IDictionary<string, FileTypeInfo> _fileTypes;
         private readonly List<IDisposable> _disposables;
-        private readonly FileTypeInfo _defaultFileTypeInfo;
 
+        private FileTypeInfo _defaultFileTypeInfo;
+        private IDictionary<string, FileTypeInfo> _fileTypes;
         private int _version;
         private DirectoryInfo _uiDirectoryInfo;
         private IDictionary<string, FileWrapper> _fileCache;
         private PathString _uiRootUrlPathPattern;
         private PathString _faviconUrlPath;
+        private bool _enableCaching;
 
         public UiEndpoint(
             IConfigurationStore configurationStore)
         {
-            _fileTypes = new Dictionary<string, FileTypeInfo>()
-            {
-                {".avi", new FileTypeInfo{MimeType = "video/avi", Expiry = TimeSpan.FromDays(7)}},
-                {".mov", new FileTypeInfo{MimeType = "video/quicktime", Expiry = TimeSpan.FromDays(7)}},
-                {".mp3", new FileTypeInfo{MimeType = "video/mpeg", Expiry = TimeSpan.FromDays(7)}},
-
-                {".bmp", new FileTypeInfo{MimeType = "image/bmp", Expiry = TimeSpan.FromDays(7)}},
-                {".ico", new FileTypeInfo{MimeType = "image/ico", Expiry = TimeSpan.FromDays(7)}},
-                {".jpg", new FileTypeInfo{MimeType = "image/jpeg", Expiry = TimeSpan.FromDays(7)}},
-                {".jfif", new FileTypeInfo{MimeType = "image/jpeg", Expiry = TimeSpan.FromDays(7)}},
-                {".jpeg", new FileTypeInfo{MimeType = "image/jpeg", Expiry = TimeSpan.FromDays(7)}},
-                {".png", new FileTypeInfo{MimeType = "image/png", Expiry = TimeSpan.FromDays(7)}},
-                {".tif", new FileTypeInfo{MimeType = "image/tif", Expiry = TimeSpan.FromDays(7)}},
-                {".tiff", new FileTypeInfo{MimeType = "image/tif", Expiry = TimeSpan.FromDays(7)}},
-                {".gif", new FileTypeInfo{MimeType = "image/gif", Expiry = TimeSpan.FromDays(7)}},
-
-                {".html", new FileTypeInfo{MimeType = "text/html", Expiry = TimeSpan.FromHours(1), Processing = FileProcessing.Html}},
-                {".txt", new FileTypeInfo{MimeType = "text/plain"}},
-                {".css", new FileTypeInfo{MimeType = "text/css", Expiry = TimeSpan.FromDays(7), Processing = FileProcessing.Css}},
-
-                {".js", new FileTypeInfo{MimeType = "application/javascript", Expiry = TimeSpan.FromHours(1), Processing = FileProcessing.JavaScript}},
-                {".dart", new FileTypeInfo{MimeType = "application/dart", Expiry = TimeSpan.FromHours(1), Processing = FileProcessing.Dart}},
-            };
-
-            _fileTypes.Add(".htm", _fileTypes[".html"]);
-            _fileTypes.Add(".shtml", _fileTypes[".html"]);
-
-            _defaultFileTypeInfo = _fileTypes[".html"];
-
             _disposables = new List<IDisposable>();
             _disposables.Add(configurationStore.Register("/urchin/server/version", v => _version = v, 1));
             _disposables.Add(configurationStore.Register("/urchin/server/ui/url", p => _uiRootUrlPathPattern = new PathString(p), "/ui"));
             _disposables.Add(configurationStore.Register("/urchin/server/ui/faviconUrl", u => _faviconUrlPath = new PathString(u), "/favicon.ico"));
             _disposables.Add(configurationStore.Register("/urchin/server/ui/physicalPath", PhysicalPathChanged, "~/ui/build/web"));
+            _disposables.Add(configurationStore.Register("/urchin/server/ui/cache", EnableCachingChanged, true));
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
@@ -104,17 +77,64 @@ namespace Urchin.Server.Owin.Middleware
             var uiRootPath = System.Web.Hosting.HostingEnvironment.MapPath(physicalPath);
             if (string.IsNullOrEmpty(uiRootPath)) return;
 
-            var uiDirectoryInfo = new DirectoryInfo(uiRootPath);
+            _uiDirectoryInfo = new DirectoryInfo(uiRootPath);
 
+            FlushFileCache();
+        }
+
+        private void EnableCachingChanged(bool enableCaching)
+        {
+            _enableCaching = enableCaching;
+            DefineFileTypes();
+            FlushFileCache();
+        }
+
+        private void FlushFileCache()
+        {
             var fileCache = new Dictionary<string, FileWrapper>();
 
             fileCache.Add("favicon.ico", new FileWrapper(
-                uiDirectoryInfo,
+                _uiDirectoryInfo,
                 "favicon.ico",
                 new FileTypeInfo { MimeType = "image/ico", Expiry = TimeSpan.FromHours(4) }));
 
-            _uiDirectoryInfo = uiDirectoryInfo;
             _fileCache = fileCache;
+        }
+
+        private void DefineFileTypes()
+        {
+            var oneWeek = _enableCaching ? TimeSpan.FromDays(7) : (TimeSpan?)null;
+            var oneHour = _enableCaching ? TimeSpan.FromHours(1) : (TimeSpan?)null;
+
+            var fileTypes = new Dictionary<string, FileTypeInfo>()
+            {
+                {".avi", new FileTypeInfo{MimeType = "video/avi", Expiry = oneWeek}},
+                {".mov", new FileTypeInfo{MimeType = "video/quicktime", Expiry = oneWeek}},
+                {".mp3", new FileTypeInfo{MimeType = "video/mpeg",  Expiry = oneWeek}},
+
+                {".bmp", new FileTypeInfo{MimeType = "image/bmp",  Expiry = oneWeek}},
+                {".ico", new FileTypeInfo{MimeType = "image/ico",  Expiry = oneWeek}},
+                {".jpg", new FileTypeInfo{MimeType = "image/jpeg",  Expiry = oneWeek}},
+                {".jfif", new FileTypeInfo{MimeType = "image/jpeg",  Expiry = oneWeek}},
+                {".jpeg", new FileTypeInfo{MimeType = "image/jpeg",  Expiry = oneWeek}},
+                {".png", new FileTypeInfo{MimeType = "image/png",  Expiry = oneWeek}},
+                {".tif", new FileTypeInfo{MimeType = "image/tif",  Expiry = oneWeek}},
+                {".tiff", new FileTypeInfo{MimeType = "image/tif",  Expiry = oneWeek}},
+                {".gif", new FileTypeInfo{MimeType = "image/gif",  Expiry = oneWeek}},
+
+                {".html", new FileTypeInfo{MimeType = "text/html", Expiry = oneHour, Processing = FileProcessing.Html}},
+                {".txt", new FileTypeInfo{MimeType = "text/plain"}},
+                {".css", new FileTypeInfo{MimeType = "text/css", Expiry = oneWeek, Processing = FileProcessing.Css}},
+
+                {".js", new FileTypeInfo{MimeType = "application/javascript", Expiry = oneHour, Processing = FileProcessing.JavaScript}},
+                {".dart", new FileTypeInfo{MimeType = "application/dart", Expiry = oneHour, Processing = FileProcessing.Dart}},
+            };
+
+            fileTypes.Add(".htm", fileTypes[".html"]);
+            fileTypes.Add(".shtml", fileTypes[".html"]);
+
+            _defaultFileTypeInfo = fileTypes[".html"];
+            _fileTypes = fileTypes;
         }
 
         private Task ServeUi(IOwinContext context)
@@ -149,7 +169,9 @@ namespace Urchin.Server.Owin.Middleware
             if (_uiDirectoryInfo == null)
                 throw new HttpException((int)HttpStatusCode.ServiceUnavailable, "Unable to determine location of files to serve");
 
-            var wrapper = _fileCache["favicon.ico"];
+            var fileCache = _fileCache;
+            FileWrapper wrapper;
+            lock (fileCache) wrapper = fileCache["favicon.ico"];
             return wrapper.Send(context, 1, true);
         }
 
@@ -176,20 +198,22 @@ namespace Urchin.Server.Owin.Middleware
                 fileName = fileNameWithoutVersion + fullExtension;
             }
 
+            var fileCache = _fileCache;
             FileWrapper wrapper;
-            lock (_fileCache)
+            lock (fileCache)
             {
-                if (_fileCache.TryGetValue(fileName, out wrapper)) return wrapper;
+                if (fileCache.TryGetValue(fileName, out wrapper)) return wrapper;
 
+                var fileTypes = _fileTypes;
                 FileTypeInfo fileTypeInfo;
-                lock (_fileTypes)
+                lock (fileTypes)
                 {
-                    if (!_fileTypes.TryGetValue(extension, out fileTypeInfo))
+                    if (!fileTypes.TryGetValue(extension, out fileTypeInfo))
                         fileTypeInfo = _defaultFileTypeInfo;
                 }
 
                 wrapper = new FileWrapper(_uiDirectoryInfo, fileName, fileTypeInfo);
-                _fileCache.Add(fileName, wrapper);
+                fileCache.Add(fileName, wrapper);
             }
             return wrapper;
         }
@@ -205,7 +229,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private class FileWrapper
         {
-            private readonly FileInfo _fileInfo;
+            private readonly string _fullFilePath;
             private readonly FileTypeInfo _fileTypeInfo;
 
             private byte[] _content;
@@ -214,7 +238,7 @@ namespace Urchin.Server.Owin.Middleware
 
             public FileWrapper(DirectoryInfo rootDirectory, string relativePath, FileTypeInfo fileTypeInfo)
             {
-                _fileInfo = new FileInfo(Path.Combine(rootDirectory.FullName, relativePath));
+                _fullFilePath = Path.Combine(rootDirectory.FullName, relativePath);
                 _fileTypeInfo = fileTypeInfo;
             }
 
@@ -240,14 +264,17 @@ namespace Urchin.Server.Owin.Middleware
 
             private bool HasChanged(int version)
             {
-                if (_content == null || !_fileInfo.Exists || version != _version) return true;
-                return _fileInfo.LastWriteTimeUtc > _lastModified || (DateTime.UtcNow - _lastModified) > TimeSpan.FromMinutes(5);
+                var fileInfo = new FileInfo(_fullFilePath);
+                if (_content == null || !fileInfo.Exists || version != _version) return true;
+                return fileInfo.LastWriteTimeUtc > _lastModified || (DateTime.UtcNow - _lastModified) > TimeSpan.FromMinutes(5);
             }
 
             private void ReadFile(int version)
             {
                 _version = version;
-                if (!_fileInfo.Exists)
+
+                var fileInfo = new FileInfo(_fullFilePath);
+                if (!fileInfo.Exists)
                 {
                     _lastModified = DateTime.UtcNow;
                     _content = null;
@@ -256,13 +283,13 @@ namespace Urchin.Server.Owin.Middleware
 
                 try
                 {
-                    using (var stream = _fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         var length = (int)stream.Length;
                         _content = new byte[length];
                         stream.Read(_content, 0, length);
                     }
-                    _lastModified = _fileInfo.LastWriteTimeUtc;
+                    _lastModified = fileInfo.LastWriteTimeUtc;
 
                     if (_fileTypeInfo.Processing == FileProcessing.None) return;
 
@@ -270,9 +297,9 @@ namespace Urchin.Server.Owin.Middleware
                     var text = encoding.GetString(_content);
                     switch (_fileTypeInfo.Processing)
                     {
-                            case FileProcessing.Html:
-                                text = text.Replace("{_v_}", "_v" + version);
-                                break;
+                        case FileProcessing.Html:
+                            text = text.Replace("{_v_}", "_v" + version);
+                            break;
                     }
                     _content = encoding.GetBytes(text);
                 }
