@@ -31,28 +31,19 @@ namespace Urchin.Server.Owin.Middleware
     /// </summary>
     public class UiEndpoint: ApiBase
     {
-        private readonly PathString _uiRootUrlPathPattern;
-        private readonly PathString _faviconUrlPath;
-        private readonly DirectoryInfo _uiDirectoryInfo;
-        private readonly IDictionary<string, FileWrapper> _fileCache;
         private readonly IDictionary<string, FileTypeInfo> _fileTypes;
-        private readonly IDisposable _versionChangeRegistration;
+        private readonly List<IDisposable> _disposables;
         private readonly FileTypeInfo _defaultFileTypeInfo;
 
         private int _version;
+        private DirectoryInfo _uiDirectoryInfo;
+        private IDictionary<string, FileWrapper> _fileCache;
+        private PathString _uiRootUrlPathPattern;
+        private PathString _faviconUrlPath;
 
         public UiEndpoint(
             IConfigurationStore configurationStore)
         {
-            _versionChangeRegistration = configurationStore.Register("/urchin/server/version", v => _version = v, 1);
-            _uiRootUrlPathPattern = new PathString("/ui");
-            _faviconUrlPath = new PathString("/favicon.ico");
-
-            var uiRootPath =  System.Web.Hosting.HostingEnvironment.MapPath("~/ui/build/web");
-            if (string.IsNullOrEmpty(uiRootPath))
-                return;
-            _uiDirectoryInfo = new DirectoryInfo(uiRootPath);
-
             _fileTypes = new Dictionary<string, FileTypeInfo>()
             {
                 {".avi", new FileTypeInfo{MimeType = "video/avi", Expiry = TimeSpan.FromDays(7)}},
@@ -82,12 +73,11 @@ namespace Urchin.Server.Owin.Middleware
 
             _defaultFileTypeInfo = _fileTypes[".html"];
 
-            _fileCache = new Dictionary<string, FileWrapper>();
-
-            _fileCache.Add("favicon.ico", new FileWrapper(
-                _uiDirectoryInfo,
-                "favicon.ico", 
-                new FileTypeInfo { MimeType = "image/ico", Expiry = TimeSpan.FromHours(4) }));
+            _disposables = new List<IDisposable>();
+            _disposables.Add(configurationStore.Register("/urchin/server/version", v => _version = v, 1));
+            _disposables.Add(configurationStore.Register("/urchin/server/ui/url", p => _uiRootUrlPathPattern = new PathString(p), "/ui"));
+            _disposables.Add(configurationStore.Register("/urchin/server/ui/faviconUrl", u => _faviconUrlPath = new PathString(u), "/favicon.ico"));
+            _disposables.Add(configurationStore.Register("/urchin/server/ui/physicalPath", PhysicalPathChanged, "~/ui/build/web"));
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
@@ -107,6 +97,24 @@ namespace Urchin.Server.Owin.Middleware
                 return ServeFavicon(context);
 
             return next.Invoke();
+        }
+
+        private void PhysicalPathChanged(string physicalPath)
+        {
+            var uiRootPath = System.Web.Hosting.HostingEnvironment.MapPath(physicalPath);
+            if (string.IsNullOrEmpty(uiRootPath)) return;
+
+            var uiDirectoryInfo = new DirectoryInfo(uiRootPath);
+
+            var fileCache = new Dictionary<string, FileWrapper>();
+
+            fileCache.Add("favicon.ico", new FileWrapper(
+                uiDirectoryInfo,
+                "favicon.ico",
+                new FileTypeInfo { MimeType = "image/ico", Expiry = TimeSpan.FromHours(4) }));
+
+            _uiDirectoryInfo = uiDirectoryInfo;
+            _fileCache = fileCache;
         }
 
         private Task ServeUi(IOwinContext context)

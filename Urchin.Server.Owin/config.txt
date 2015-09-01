@@ -8,9 +8,16 @@
 	  {
 	    filePath:"c:\\temp\\rules.txt",
 		repository:"rules"
-      }
+      },
+	  ui:
+	  {
+	    url:"/ui",
+	    physicalPath:"~/ui/build/web",
+		faviconUrl:"/favicon.ico"
+	  }
 	}
   },
+
   prius:
   {
     databases:

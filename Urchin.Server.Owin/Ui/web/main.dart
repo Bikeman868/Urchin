@@ -1,8 +1,37 @@
-// Copyright (c) 2015, <your name>. All rights reserved. Use of this source code
-// is governed by a BSD-style license that can be found in the LICENSE file.
-
 import 'dart:html';
+import 'dart:convert';
 
 void main() {
-  querySelector('#output').text = 'Your Dart app is running.';
+  var menu = querySelector('#menuDiv');
+
+  var button = new ButtonElement();
+  button.text = "Get Rules";
+  button.onClick.listen(fetchRules);
+  menu.children.add(button);
+}
+
+void fetchRules(MouseEvent e){
+  var data = new Data();
+  var div = querySelector('#centreDiv');
+  data.getRules()
+	..then((r) => displayRules(div, r))
+	..catchError((e) => div.text = e.toString());	
+}
+
+void displayRules(div, rules){
+  var list = new UListElement();
+  for (var rule in rules){
+    var element = new LIElement();
+	element.text = rule['name'];
+	list.children.add(element);
+  }
+  div.children.clear();
+  div.children.add(list);
+}
+
+class Data{
+	getRules() async {
+		String content = await HttpRequest.getString('/rules');
+		return JSON.decode(content);
+	}
 }
