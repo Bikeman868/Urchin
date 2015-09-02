@@ -22,8 +22,6 @@ class RuleDetailComponent
   
 	void displayIn(containerDiv)
 	{
-		containerDiv.children.clear();
-
 		_heading = new SpanElement();
 		_heading.classes.add('panelTitle');
 		_heading.text = 'Rule Details';

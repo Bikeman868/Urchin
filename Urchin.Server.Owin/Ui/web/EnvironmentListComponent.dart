@@ -6,28 +6,28 @@ import 'Dto.dart';
 import 'Data.dart';
 import 'ApplicationEvents.dart';
 
-class RuleListComponent
+class EnvironmentListComponent
 {
 	Data _data;
-	RuleListComponent(this._data);
+	EnvironmentListComponent(this._data);
   
 	void displayIn(containerDiv)
 	{
 		var heading = new SpanElement();
 		heading.classes.add('panelTitle');
-		heading.text = 'Rules';
+		heading.text = 'Environments';
 		containerDiv.children.add(heading);
 
-		Map<String, RuleDto> rules = _data.rules;
-		if (rules != null)
+		Map<String, EnvironmentDto> environments = _data.environments;
+		if (environments != null)
 		{
 			var list = new UListElement();
 			list.classes.add("selectionList");
-			for (RuleDto rule in rules.values)
+			for (EnvironmentDto environment in environments.values)
 			{
 				var element = new LIElement();
-				element.text = rule.name;
-				element.classes.add('ruleName');
+				element.text = environment.name;
+				element.classes.add('environmentName');
 				element.classes.add('selectionItem');
 				element.onClick.listen(ruleClicked);
 				list.children.add(element);
@@ -39,6 +39,6 @@ class RuleListComponent
 	void ruleClicked(MouseEvent e)
 	{
 		LIElement target = e.target;
-		ApplicationEvents.ruleSelected(target.text);
+		ApplicationEvents.environmentSelected(target.text);
 	}
 }

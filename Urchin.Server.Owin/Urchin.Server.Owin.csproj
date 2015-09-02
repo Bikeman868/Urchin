@@ -138,6 +138,7 @@
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\ApplicationEvents.dart" />
     <Content Include="Ui\web\RuleDetailComponent.dart" />
+    <Content Include="Ui\web\EnvironmentListComponent.dart" />
     <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

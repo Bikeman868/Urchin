@@ -4,23 +4,21 @@ import 'dart:async';
 
 import 'Dto.dart';
 import 'Data.dart';
+import 'ApplicationEvents.dart';
 
 class ToolBarComponent
 {
-	Data _data;
 	List<SpanElement> _buttons;
   
-	ToolBarComponent(Data data)
+	ToolBarComponent()
 	{
-		_data = data;
-
 		_buttons = new List<SpanElement>();
 
 		var rulesButton = _createButton('Rules');
-		rulesButton.onClick.listen(_showRules);
+		rulesButton.onClick.listen(_tabChanged);
 
 		var environmentsButton = _createButton('Environments');
-		environmentsButton.onClick.listen(_showEnvironments);
+		environmentsButton.onClick.listen(_tabChanged);
 	}
 
 	void displayIn(containerDiv)
@@ -41,13 +39,9 @@ class ToolBarComponent
 		return button;
 	}
 
-	void _showRules(MouseEvent e)
+	void _tabChanged(MouseEvent e)
 	{
-		_data.loadRuleNames();
+		SpanElement target = e.target;
+		ApplicationEvents.tabChanged(target.text);
 	}
-  
-	void _showEnvironments(MouseEvent e)
-	{
-		_data.loadRuleNames();
-	}
-}
+  }
