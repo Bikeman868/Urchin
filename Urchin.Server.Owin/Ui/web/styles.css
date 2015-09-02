@@ -53,10 +53,8 @@ body
 
 #centreDiv
 {
-    background: aliceblue;
+    padding:10px;
     float: left;
-    width:200px;
-    border: 1px solid navy;
 }
 
 #rightDiv
@@ -107,5 +105,10 @@ body
 .selectionItem:hover
 {
     cursor: pointer;
-    background-color: yellow;
+    border: 1px solid navy;
+}
+
+.ruleField
+{
+    display:block;
 }

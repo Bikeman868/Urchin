@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'Dto.dart';
 import 'Data.dart';
+import 'ApplicationEvents.dart';
 
 class RuleListComponent
 {
@@ -30,7 +31,7 @@ class RuleListComponent
 				element.text = rule.name;
 				element.classes.add('ruleName');
 				element.classes.add('selectionItem');
-				//element.onClick.listen(ruleClicked);
+				element.onClick.listen(ruleClicked);
 				list.children.add(element);
 			}
 			containerDiv.children.add(list);
@@ -39,5 +40,7 @@ class RuleListComponent
 
 	void ruleClicked(MouseEvent e)
 	{
+		LIElement target = e.target;
+		ApplicationEvents.RuleSelected(target.text);
 	}
 }
