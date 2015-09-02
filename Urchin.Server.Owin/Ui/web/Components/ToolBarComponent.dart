@@ -2,9 +2,9 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'Dto.dart';
-import 'Data.dart';
-import 'ApplicationEvents.dart';
+import '../Dto.dart';
+import '../Data.dart';
+import '../ApplicationEvents.dart';
 
 class ToolBarComponent
 {

@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'Data.dart';
-import 'RuleListComponent.dart';
-import 'ToolBarComponent.dart';
-import 'RuleDetailComponent.dart';
 import 'ApplicationEvents.dart';
+
+import 'Components/RuleListComponent.dart';
+import 'Components/ToolBarComponent.dart';
+import 'Components/RuleDetailComponent.dart';
+import 'Components/EnvironmentListComponent.dart';
+import 'Components/EnvironmentDetailComponent.dart';
 
 Data data;
 
@@ -62,7 +65,11 @@ void _setupEnvironmentsTab()
   centreDiv.children.clear(); 
   rightDiv.children.clear(); 
 
-  // put some content here
+  var environmentList = new EnvironmentListComponent(data);
+  environmentList.displayIn(leftDiv);
+
+  var environmentDetailComponent = new EnvironmentDetailComponent(data);
+  environmentDetailComponent.displayIn(centreDiv);
 }
 
 

@@ -2,9 +2,9 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'Dto.dart';
-import 'Data.dart';
-import 'ApplicationEvents.dart';
+import '../Dto.dart';
+import '../Data.dart';
+import '../ApplicationEvents.dart';
 
 class EnvironmentListComponent
 {
@@ -29,14 +29,14 @@ class EnvironmentListComponent
 				element.text = environment.name;
 				element.classes.add('environmentName');
 				element.classes.add('selectionItem');
-				element.onClick.listen(ruleClicked);
+				element.onClick.listen(environmentClicked);
 				list.children.add(element);
 			}
 			containerDiv.children.add(list);
 		}
 	}
 
-	void ruleClicked(MouseEvent e)
+	void environmentClicked(MouseEvent e)
 	{
 		LIElement target = e.target;
 		ApplicationEvents.environmentSelected(target.text);

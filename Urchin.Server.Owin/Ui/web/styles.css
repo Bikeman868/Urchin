@@ -96,6 +96,11 @@ body
     font-size: 14px;
 }
 
+.machineList
+{
+    list-style: none;
+}
+
 .selectionItem
 {
     margin: 4px;
@@ -108,7 +113,37 @@ body
     border: 1px solid navy;
 }
 
-.ruleField
+.dataForm
 {
-    display:block;
+    display: table;
+    width: auto;
+}
+
+.dataRow 
+{
+    display: table-row;
+    width: auto;
+}
+
+.dataLabel
+{
+    display: table-cell;
+    width: 140px;
+}
+
+.dataField
+{
+    display: table-cell;
+    font-weight: bold;
+    width: 600px;
+}
+
+.dataTitle
+{
+    display: table-row;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    padding-top: 40px;
+    padding-bottom: 20px;
 }

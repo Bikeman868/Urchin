@@ -132,13 +132,15 @@
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
     <Content Include="Ui\web\Dto.dart" />
-    <Content Include="Ui\web\RuleListComponent.dart" />
-    <Content Include="Ui\web\ToolBarComponent.dart" />
+    <Content Include="Ui\web\Components\RuleListComponent.dart" />
+    <Content Include="Ui\web\Components\ToolBarComponent.dart" />
     <Content Include="Ui\web\Data.dart" />
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\ApplicationEvents.dart" />
-    <Content Include="Ui\web\RuleDetailComponent.dart" />
-    <Content Include="Ui\web\EnvironmentListComponent.dart" />
+    <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
+    <Content Include="Ui\web\Components\EnvironmentListComponent.dart" />
+    <Content Include="Ui\web\Components\EnvironmentDetailComponent.dart" />
+    <Content Include="Ui\web\Components\FormBuilder.dart" />
     <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -162,6 +164,9 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -183,6 +188,11 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>cd $(ProjectDir)Ui
+echo pub get
+pub build</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -13,7 +13,8 @@
 	  {
 	    url:"/ui",
 	    physicalPath:"~/ui/build/web",
-		faviconUrl:"/favicon.ico"
+		faviconUrl:"/favicon.ico",
+		cache:false
 	  }
 	}
   },

@@ -2,9 +2,10 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'Dto.dart';
-import 'Data.dart';
-import 'ApplicationEvents.dart';
+import 'FormBuilder.dart';
+import '../Dto.dart';
+import '../Data.dart';
+import '../ApplicationEvents.dart';
 
 class RuleDetailComponent
 {
@@ -22,33 +23,17 @@ class RuleDetailComponent
   
 	void displayIn(containerDiv)
 	{
-		_heading = new SpanElement();
-		_heading.classes.add('panelTitle');
-		_heading.text = 'Rule Details';
-		containerDiv.children.add(_heading);
+		var formBuilder = new FormBuilder(containerDiv);
 
-		_ruleName = new SpanElement();
-		_ruleName.classes.add('ruleField');
-		containerDiv.children.add(_ruleName);
-
-		_machine = new SpanElement();
-		_machine.classes.add('ruleField');
-		containerDiv.children.add(_machine);
-
-		_environment = new SpanElement();
-		_environment.classes.add('ruleField');
-		containerDiv.children.add(_environment);
-
-		_instance = new SpanElement();
-		_instance.classes.add('ruleField');
-		containerDiv.children.add(_instance);
-
-		_application = new SpanElement();
-		_application.classes.add('ruleField');
-		containerDiv.children.add(_application);
+		_heading = formBuilder.addHeading('Rule Details');
+		_ruleName = formBuilder.addLabeledField('Rule name:');
+		_machine = formBuilder.addLabeledField('Machine name:');
+		_environment = formBuilder.addLabeledField('Environment name:');
+		_instance = formBuilder.addLabeledField('Instance name:');
+		_application = formBuilder.addLabeledField('Application name:');
 
 		_config = new SpanElement();
-		_config.classes.add('ruleField');
+		_config.classes.add('dataField');
 		containerDiv.children.add(_config);
 
 		ApplicationEvents.onRuleSelected.listen(_ruleSelected);

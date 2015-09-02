@@ -9,11 +9,13 @@ class Data
 {
 	List<String> ruleNames;
 	Map<String, RuleDto> rules;
+	Map<String, EnvironmentDto> environments;
 
 	Future loadAll() async
 	{
 		await loadRuleNames();
 		await loadRules();
+		await loadEnvironments();
 	}
 
 	loadRuleNames() async
@@ -39,5 +41,18 @@ class Data
 			rules[ruleName] = new RuleDto(rule);
 		}
 		this.rules = rules;
+	}
+
+	loadEnvironments() async
+	{
+		String content = await Server.getEnvironments();
+		List<Map> environmentList = JSON.decode(content);
+
+		var environments = new Map<String, EnvironmentDto>();
+		for (Map environment in environmentList)
+		{
+			environments[environment['name']] = new EnvironmentDto(environment);
+		}
+		this.environments = environments;
 	}
 }

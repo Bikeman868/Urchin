@@ -55,3 +55,14 @@ class VariableDto extends Dto
 	String get value => json['value'];
 	set value(String value) => json['value'] = value;
 }
+
+class EnvironmentDto extends Dto
+{
+	EnvironmentDto(Map json): super(json){}
+
+	String get name => json['name'];
+	set name(String value) => json['name'] = value;
+  
+	List<String> get machines => json['machines'];
+	set machines(List<String> value) => json['machines'] = value;
+}
