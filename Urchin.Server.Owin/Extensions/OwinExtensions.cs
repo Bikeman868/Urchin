@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin;
 using System;
+using System.Linq;
 
 namespace Urchin.Server.Owin.Extensions
 {
@@ -10,7 +11,11 @@ namespace Urchin.Server.Owin.Extensions
             if (!wildcardPath.HasValue) return !path.HasValue;
 
             var wildcardSegments = wildcardPath.Value.Split('/');
-            var segments = path.Value.Split('/');
+
+            var pathValue = path.Value.Trim();
+            if (pathValue.EndsWith("/")) 
+                pathValue = pathValue.Substring(0, pathValue.Length - 1);
+            var segments = pathValue.Split('/');
 
             if (wildcardSegments.Length != segments.Length) return false;
 

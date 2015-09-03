@@ -14,7 +14,7 @@ To get going in development, you need to :
 2. Open a command window and change the working directory to the `ui` folder
    in the `Urchin.Server.Owin` project.
 3. Type `pub get` into the command prompt. This will download all the dependant
-   packages from the Dart repository. This is simplar to restoring packages in NuGet.
+   packages from the Dart repository. This is similar to restoring packages in NuGet.
 4. Type `pub build` into the command prompt. This will compile all the Dart
    code into JavaScript.
 5. Open the solution in Visual Studio.
@@ -34,6 +34,12 @@ To get going in development, you need to :
 > If you have problems running the UI under IIS make sure that the Dart packages folder is accessible
 > to the IIS worker process. The Dart `pub` tool will create symbolic links in your solution
 > folder that point to your roaming user profile, and by default IIS does not have access to this.
+
+> If you want to set breakpoints and step through Dart code, then you wil need to install the
+> Dartium browser. This is a version of Chrome with the Dart VM built into it. It cab run Dart
+> code natively without compillation to JavaScript. When running the solution in Dartium, you can
+> configure the server to serve .dart files to the browser by editing config.txt and changing the 
+> setting for `/urchin/server/ui/physicalPath` from `~/ui/build/web` to `~/ui/web`.
 
 ### Production environment
 
@@ -91,7 +97,7 @@ For the optional management UI, copy:
 
 | From | To |
 | ------- | -------- |
-| ui\\build\\web | ui\\build\\web |
+| ui\\build\\web | ui |
 
 For the optional database persistence, copy:
 
@@ -108,6 +114,9 @@ For the optional database persistence, copy:
 You will need to edit the web.config and config.txt and adjust them to suit your production environment.
 In the simplest scenario where rules are stored in a file, you just need to specify the location
 of this file, and make sure that IIS can overwrite its contents.
+
+You also need to change the `/urchin/server/ui/physicalPath` from  to `~/ui/web` development. The 
+default value is `~/ui/build/web`, and you need to change it to `~/ui` for production.
 
 Detailed configuration instructions follow.
 

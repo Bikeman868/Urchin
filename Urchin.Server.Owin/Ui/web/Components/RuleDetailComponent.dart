@@ -17,7 +17,8 @@ class RuleDetailComponent
 	SpanElement _environment;
 	SpanElement _instance;
 	SpanElement _application;
-	SpanElement _config;
+	Element _config;
+	Element _variables;
 
 	RuleDetailComponent(this._data);
   
@@ -25,16 +26,18 @@ class RuleDetailComponent
 	{
 		var formBuilder = new FormBuilder(containerDiv);
 
-		_heading = formBuilder.addHeading('Rule Details');
+		_heading = formBuilder.addHeading('Rule Details', 1);
 		_ruleName = formBuilder.addLabeledField('Rule name:');
 		_machine = formBuilder.addLabeledField('Machine name:');
 		_environment = formBuilder.addLabeledField('Environment name:');
 		_instance = formBuilder.addLabeledField('Instance name:');
 		_application = formBuilder.addLabeledField('Application name:');
 
-		_config = new SpanElement();
-		_config.classes.add('dataField');
-		containerDiv.children.add(_config);
+		formBuilder.addHeading('Configuration', 1);
+		_config = formBuilder.addContainer();
+
+		formBuilder.addHeading('Variables', 1);
+		_variables = formBuilder.addContainer();
 
 		ApplicationEvents.onRuleSelected.listen(_ruleSelected);
 	}
@@ -43,15 +46,27 @@ class RuleDetailComponent
 	{
 		var ruleName = e.ruleName;
 
-		_heading.text = ruleName + ' Rule';
-
 		RuleDto rule = _data.rules[ruleName];
 
+		_heading.text = rule.name + ' Rule';
 		_ruleName.text = rule.name;
 		_machine.text = rule.machine;
 		_environment.text = rule.environment;
 		_instance.text = rule.instance;
 		_application.text = rule.application;
-		_config.text = rule.config;
+
+		FormBuilder.replaceJSON(_config, rule.config);
+
+		_variables.children.clear();
+		if (rule.variables != null && rule.variables.length > 0)
+		{
+			var formBuilder = new FormBuilder(_variables);
+			for (var variable in rule.variables)
+			{
+				formBuilder.addHeading(variable.name, 2);
+				var value = formBuilder.addContainer();
+				FormBuilder.replaceJSON(value, variable.value);
+			}
+		}
 	}
 }
