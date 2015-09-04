@@ -141,6 +141,7 @@
     <Content Include="Ui\web\Components\EnvironmentListComponent.dart" />
     <Content Include="Ui\web\Components\EnvironmentDetailComponent.dart" />
     <Content Include="Ui\web\Components\FormBuilder.dart" />
+    <Content Include="Ui\web\Components\TestQueryComponent.dart" />
     <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

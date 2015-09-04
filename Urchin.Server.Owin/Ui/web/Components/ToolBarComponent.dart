@@ -19,6 +19,9 @@ class ToolBarComponent
 
 		var environmentsButton = _createButton('Environments');
 		environmentsButton.onClick.listen(_tabChanged);
+
+		var testButton = _createButton('Test Query');
+		testButton.onClick.listen(_tabChanged);
 	}
 
 	void displayIn(containerDiv)

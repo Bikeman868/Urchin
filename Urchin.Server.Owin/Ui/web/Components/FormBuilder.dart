@@ -30,6 +30,29 @@ class FormBuilder
 		return dataField;
 	}
 
+	Element addLabeledEdit(String label)
+	{
+		var row = new DivElement();
+		row.classes.add('dataRow');
+
+		var labelField = new SpanElement();
+		labelField.classes.add('dataLabel');
+		labelField.text = label;
+		row.children.add(labelField);
+
+		var dataField = new InputElement();
+		dataField.classes.add('inputField');
+
+		var div = new DivElement();
+		div.classes.add('dataField');
+		div.children.add(dataField);
+
+		row.children.add(div);
+
+		form.children.add(row);
+		return dataField;
+	}
+
 	Element addHeading(String label, int level)
 	{
 		var container = form.parent;
@@ -59,6 +82,33 @@ class FormBuilder
 		container.children.add(div);
 
 		return div;
+	}
+
+	List<Element> addButtons(List<String> text, List<EventListener> onClickMethod)
+	{
+		var row = new DivElement();
+		row.classes.add('dataRow');
+
+		var labelField = new SpanElement();
+		labelField.classes.add('dataLabel');
+		row.children.add(labelField);
+
+		var buttonDiv = new DivElement();
+		var buttons = new List<Element>();
+		for (var i = 0; i < text.length; i++)
+		{
+			var button = new SpanElement();
+			button.text = text[i];
+			button.classes.add('formButton');
+			button.onClick.listen(onClickMethod[i]);
+
+			buttons.add(button);
+			buttonDiv.children.add(button);
+		}
+		row.children.add(buttonDiv);
+		form.children.add(row);
+
+		return buttons;
 	}
 
 	static replaceJSON(Element div, String json)

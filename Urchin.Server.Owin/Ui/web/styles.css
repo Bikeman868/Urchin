@@ -132,6 +132,7 @@ div
 {
     display: table;
     width: auto;
+    border-spacing: 3px;
 }
 
 .dataRow 
@@ -157,6 +158,15 @@ div
     margin-right: 10px;
 }
 
+.inputField
+{
+    display: inline;
+    font-weight: bold;
+    width: 150px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 span.jsonName
 {
   color: blue;
@@ -165,4 +175,32 @@ span.jsonName
 span.jsonString
 {
   color: forestgreen;
+}
+
+.formButton
+{
+    display: table-cell;
+    padding: 10px;
+    height:15px;
+    font-size: 15px;
+    border: 1px solid navy;
+    border-radius: 6px;
+    background: cornflowerblue;
+    color:white;
+}
+
+.formButton:hover
+{
+    cursor: pointer;
+    border: 1px solid red;
+}
+
+
+.instruction
+{
+    font-size: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
 }

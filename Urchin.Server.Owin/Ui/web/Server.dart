@@ -11,6 +11,25 @@ class Server
 
 	static Future<String> getEnvironments()
 		=> HttpRequest.getString('/environments');
+
+	static Future<String> getConfig(String machine, String application, String environment, String instance) async
+	{
+		if (machine == null || machine.isEmpty)
+			throw 'Machine name can not be empty';
+		
+		if (application == null || application.isEmpty)
+			throw 'Application name can not be empty';
+
+		var url = '/config?machine=' + machine + '&application=' + application;
+
+		if (environment != null && !environment.isEmpty)
+			url = url + '&environment=' + environment;
+
+		if (instance != null && !instance.isEmpty)
+			url = url + '&instance=' + instance;
+
+		return HttpRequest.getString(url);
+	}
 }
 
 class _Server
@@ -23,4 +42,7 @@ class _Server
 
 	static Future<String> getEnvironments() async
 		=> '[{"name":"Production","machines":["web1","web2"]},{"name":"Staging","machines":["stg1","stg2"]}]';
+
+	static Future<String> getConfig(String machine, String application, String environment, String instance) async
+		=> '{"app":{[{"name":"value"}]}}'
 }
