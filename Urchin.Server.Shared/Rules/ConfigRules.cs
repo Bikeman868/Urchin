@@ -52,6 +52,14 @@ namespace Urchin.Server.Shared.Rules
                 return new JObject();
 
             environment = LookupEnvironment(environment, machine, ruleSet);
+
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+            if (blockedEnvironments != null)
+            {
+                if( blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environment, StringComparison.InvariantCultureIgnoreCase)))
+                    return new JObject();
+            }
+
             var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
             return MergeRules(applicableRules, environment, machine, application, instance);
         }
@@ -79,6 +87,14 @@ namespace Urchin.Server.Shared.Rules
                 return new JObject();
 
             environment = LookupEnvironment(environment, machine, ruleSet);
+
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+            if (blockedEnvironments != null)
+            {
+                if (blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environment, StringComparison.InvariantCultureIgnoreCase)))
+                    return new JObject();
+            }
+
             var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
             var serializedRules = JsonConvert.SerializeObject(applicableRules);
 
@@ -116,7 +132,7 @@ namespace Urchin.Server.Shared.Rules
         }
 
         private Dictionary<string, string> MergeVariables(
-            IList<RuleDto> rules,
+            IEnumerable<RuleDto> rules,
             string environment,
             string machine,
             string application,
@@ -234,11 +250,13 @@ namespace Urchin.Server.Shared.Rules
 
         public RuleSetDto GetRuleSet(IClientCredentials clientCredentials)
         {
+            if (_ruleSet == null) return null;
+
             // Make a deep copy of the rule set
             var ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
 
             // Get the environments that this client does not have access to
-            var blockedEnvironments = GetBlockedEnvironments(_ruleSet.Environments, clientCredentials);
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
             if (blockedEnvironments == null || blockedEnvironments.Count == 0)
                 return ruleSet;
 
@@ -262,7 +280,13 @@ namespace Urchin.Server.Shared.Rules
 
         public void SetRuleSet(IClientCredentials clientCredentials, RuleSetDto ruleSet)
         {
-            var blockedEnvironments = GetBlockedEnvironments(_ruleSet.Environments, clientCredentials);
+            var currentRuleSet = _ruleSet;
+            var blockedEnvironments = currentRuleSet == null
+                ? null
+                : GetBlockedEnvironments(currentRuleSet.Environments, clientCredentials);
+
+            if (blockedEnvironments != null && blockedEnvironments.Count > 0)
+                throw new Exception("You do not have permission to replace the entire rule set");
 
             if (ruleSet.Rules != null)
             {
@@ -337,6 +361,8 @@ namespace Urchin.Server.Shared.Rules
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
+            var blockedEnvironments = ruleSet == null ? null : GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+            
             _persister.SetDefaultEnvironment(environmentName);
 
             ruleSet.DefaultEnvironmentName = environmentName;
@@ -375,7 +401,7 @@ namespace Urchin.Server.Shared.Rules
             }
 
             // Replace the rules with a new set
-            SetRuleSet(clientCredentials, ruleSet);
+            SetRuleSet(null, ruleSet);
         }
 
         public void UpdateRule(IClientCredentials clientCredentials, string oldName, RuleDto rule)
@@ -394,7 +420,7 @@ namespace Urchin.Server.Shared.Rules
             ruleSet.Rules.Add(rule);
 
             // Replace the rules with a new set
-            SetRuleSet(clientCredentials, ruleSet);
+            SetRuleSet(null, ruleSet);
         }
 
         public void DeleteRule(IClientCredentials clientCredentials, string name)

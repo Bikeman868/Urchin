@@ -24,7 +24,7 @@ namespace Urchin.Server.Owin
         {
 
 //#if DEBUG
-//            var endTime = DateTime.UtcNow.AddSeconds(10);
+//            var endTime = DateTime.UtcNow.AddSeconds(60);
 //            while (DateTime.UtcNow < endTime && !System.Diagnostics.Debugger.IsAttached)
 //                System.Threading.Thread.Sleep(100);
 //#endif
