@@ -33,10 +33,10 @@ class RuleDetailComponent
 		_instance = formBuilder.addLabeledField('Instance name:');
 		_application = formBuilder.addLabeledField('Application name:');
 
-		formBuilder.addHeading('Configuration', 1);
+		formBuilder.addHeading('Configuration', 2);
 		_config = formBuilder.addContainer();
 
-		formBuilder.addHeading('Variables', 1);
+		formBuilder.addHeading('Variables', 2);
 		_variables = formBuilder.addContainer();
 
 		ApplicationEvents.onRuleSelected.listen(_ruleSelected);
@@ -63,7 +63,7 @@ class RuleDetailComponent
 			var formBuilder = new FormBuilder(_variables);
 			for (var variable in rule.variables)
 			{
-				formBuilder.addHeading(variable.name, 2);
+				formBuilder.addHeading(variable.name, 3);
 				var value = formBuilder.addContainer();
 				FormBuilder.replaceJSON(value, variable.value);
 			}

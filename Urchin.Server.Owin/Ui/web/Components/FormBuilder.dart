@@ -64,6 +64,8 @@ class FormBuilder
 		if (level == 1)
 			heading.classes.add('panelTitle');
 		else if (level == 2)
+			heading.classes.add('panelHeading');
+		else if (level == 3)
 			heading.classes.add('panelSubHeading');
 
 		form = new DivElement();

@@ -23,7 +23,7 @@ class EnvironmentDetailComponent
 		var formBuilder = new FormBuilder(containerDiv);
 		//_heading1 = formBuilder.addHeading('Environment Details', 1);
 		//_environmentName = formBuilder.addLabeledField('Environment name:');
-		_heading2 = formBuilder.addHeading('Machines in this environment', 2);
+		_heading2 = formBuilder.addHeading('Machines in this environment', 1);
 
 		_machines = new UListElement();
 		_machines.classes.add('machineList');
