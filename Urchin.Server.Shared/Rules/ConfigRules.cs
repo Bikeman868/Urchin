@@ -24,11 +24,11 @@ namespace Urchin.Server.Shared.Rules
             ReloadFromPersister();
         }
 
-        public void Clear()
+        public void Clear(IClientCredentials clientCredentials)
         {
-            SetRuleSet(new RuleSetDto());
-            SetDefaultEnvironment("Development");
-            SetEnvironments(null);
+            SetRuleSet(clientCredentials, new RuleSetDto());
+            SetDefaultEnvironment(clientCredentials, "Development");
+            SetEnvironments(clientCredentials, null);
         }
 
         public void ReloadFromPersister()
@@ -39,10 +39,10 @@ namespace Urchin.Server.Shared.Rules
                 DefaultEnvironmentName = _persister.GetDefaultEnvironment(),
                 Rules = _persister.GetAllRules().ToList()
             };
-            SetRuleSet(ruleSet);
+            SetRuleSet(null, ruleSet);
         }
 
-        public JObject GetConfig(string environment, string machine, string application, string instance)
+        public JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -56,7 +56,7 @@ namespace Urchin.Server.Shared.Rules
             return MergeRules(applicableRules, environment, machine, application, instance);
         }
 
-        public JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance)
+        public JObject TestConfig(IClientCredentials clientCredentials, RuleSetDto ruleSet, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -69,7 +69,7 @@ namespace Urchin.Server.Shared.Rules
             return MergeRules(applicableRules, environment, machine, application, instance);
         }
 
-        public JObject TraceConfig(string environment, string machine, string application, string instance)
+        public JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -232,14 +232,38 @@ namespace Urchin.Server.Shared.Rules
             return true;
         }
 
-        public RuleSetDto GetRuleSet()
+        public RuleSetDto GetRuleSet(IClientCredentials clientCredentials)
         {
-            // Return a deep copy of the rule set
-            return _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
+            // Make a deep copy of the rule set
+            var ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
+
+            // Get the environments that this client does not have access to
+            var blockedEnvironments = GetBlockedEnvironments(_ruleSet.Environments, clientCredentials);
+            if (blockedEnvironments == null || blockedEnvironments.Count == 0)
+                return ruleSet;
+
+            var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
+            var blockedEnvironmentNames = blockedEnvironments.Select(e => e.EnvironmentName.ToLower()).ToList();
+
+            Func<RuleDto, int, bool> isAllowed = (r, i) =>
+            {
+                if (!string.IsNullOrEmpty(r.Environment))
+                    if (blockedEnvironmentNames.Contains(r.Environment.ToLower())) return false;
+
+                if (!string.IsNullOrEmpty(r.Machine))
+                    if (blockedMachineNemes.Contains(r.Machine.ToLower())) return false;
+
+                return true;
+            };
+
+            ruleSet.Rules = ruleSet.Rules.Where(isAllowed).ToList();
+            return ruleSet;
         }
 
-        public void SetRuleSet(RuleSetDto ruleSet)
+        public void SetRuleSet(IClientCredentials clientCredentials, RuleSetDto ruleSet)
         {
+            var blockedEnvironments = GetBlockedEnvironments(_ruleSet.Environments, clientCredentials);
+
             if (ruleSet.Rules != null)
             {
                 foreach (var rule in ruleSet.Rules)
@@ -256,6 +280,48 @@ namespace Urchin.Server.Shared.Rules
             _ruleSet = ruleSet;
         }
 
+        private IList<string> GetBlockedMachines(IEnumerable<EnvironmentDto> blockedEnvironments)
+        {
+            return blockedEnvironments.Aggregate(new List<string>(),
+                (l, e) =>
+                {
+                    if (e.Machines != null)
+                        l.AddRange(e.Machines.Select(m => m.ToLower()));
+                    return l;
+                });
+        }
+
+        private IList<EnvironmentDto> GetBlockedEnvironments(IEnumerable<EnvironmentDto> environments, IClientCredentials clientCredentials)
+        {
+            if (environments == null || clientCredentials == null)
+                return null;
+
+            Func<string, uint> parseIp = (ip) =>
+            {
+                var parts = ip.Split('.');
+                if (parts.Length != 4)
+                    throw new Exception("Invalid IP address format");
+                return parts.Aggregate(0u, (s, p) => s*256 + uint.Parse(p));
+            };
+
+            var clientIp = parseIp(clientCredentials.IpAddress);
+
+            Func<EnvironmentDto, int, bool> isBlocked = (environment, i) =>
+            {
+                if (environment.SecurityRules == null || environment.SecurityRules.Count == 0) return false;
+                foreach (var rule in environment.SecurityRules)
+                {
+                    var start = parseIp(rule.AllowedIpStart);
+                    var end = parseIp(rule.AllowedIpEnd);
+                    if (clientIp >= start && clientIp <= end) return false;
+                }
+                return true;
+            };
+
+            var blockedEnvironments = environments.Where(isBlocked).ToList();
+            return blockedEnvironments;
+        }
+
         private class RuleComparer: IComparer<RuleDto>
         {
             public int Compare(RuleDto x, RuleDto y)
@@ -266,7 +332,7 @@ namespace Urchin.Server.Shared.Rules
             }
         }
 
-        public void SetDefaultEnvironment(string environmentName)
+        public void SetDefaultEnvironment(IClientCredentials clientCredentials, string environmentName)
         {
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
@@ -276,7 +342,7 @@ namespace Urchin.Server.Shared.Rules
             ruleSet.DefaultEnvironmentName = environmentName;
         }
 
-        public void SetEnvironments(List<EnvironmentDto> environments)
+        public void SetEnvironments(IClientCredentials clientCredentials, List<EnvironmentDto> environments)
         {
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
@@ -290,7 +356,7 @@ namespace Urchin.Server.Shared.Rules
             ruleSet.Environments = environments;
         }
 
-        public void AddRules(List<RuleDto> newRules)
+        public void AddRules(IClientCredentials clientCredentials, List<RuleDto> newRules)
         {
             if (newRules == null) return;
 
@@ -309,10 +375,10 @@ namespace Urchin.Server.Shared.Rules
             }
 
             // Replace the rules with a new set
-            SetRuleSet(ruleSet);
+            SetRuleSet(clientCredentials, ruleSet);
         }
 
-        public void UpdateRule(string oldName, RuleDto rule)
+        public void UpdateRule(IClientCredentials clientCredentials, string oldName, RuleDto rule)
         {
 
             var ruleSet = _ruleSet;
@@ -328,10 +394,10 @@ namespace Urchin.Server.Shared.Rules
             ruleSet.Rules.Add(rule);
 
             // Replace the rules with a new set
-            SetRuleSet(ruleSet);
+            SetRuleSet(clientCredentials, ruleSet);
         }
 
-        public void DeleteRule(string name)
+        public void DeleteRule(IClientCredentials clientCredentials, string name)
         {
             DeleteRule(_ruleSet, name);
         }

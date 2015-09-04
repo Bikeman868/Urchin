@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -59,7 +60,8 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task CreateRule(IOwinContext context, RuleDto rule)
         {
-            _configRules.AddRules(new List<RuleDto>{ rule });
+            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            _configRules.AddRules(clientCredentials, new List<RuleDto> { rule });
             return Json(context, new PostResponseDto { Success = true });
         }
     }

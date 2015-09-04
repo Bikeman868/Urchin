@@ -58,7 +58,7 @@ namespace Urchin.Server.Owin
 
             // The code below will dynamically load any IOC registrations from
             // additional libraries that are deployed to the bin folder. This
-            // is the mechanism for replacing the persistence mechanism.
+            // makes it possible to replace the persistence mechanism.
             var registrar = new UnityRegistrar(unityContainer);
             unityContainer.RegisterInstance<IIocRegistrar>(registrar);
             unityContainer.RegisterInstance<IIocFactory>(registrar);

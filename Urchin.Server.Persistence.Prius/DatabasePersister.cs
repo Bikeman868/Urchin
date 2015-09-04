@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
 using Common.Logging;
 using Prius.Contracts.Interfaces;
 using Urchin.Client.Interfaces;
 using Urchin.Server.Persistence.Prius.DatabaseRecords;
+using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
 
 namespace Urchin.Server.Persistence.Prius
@@ -215,6 +217,26 @@ namespace Urchin.Server.Persistence.Prius
                         }
                     }
                 }
+
+                using (var command = _commandFactory.CreateStoredProcedure("sp_GetEnvironmentSecurityRules"))
+                {
+                    command.AddParameter("environmentName", name);
+                    using (var security = context.ExecuteEnumerable<SecurityRuleRecord>(command))
+                    {
+                        environmentDto.SecurityRules = new List<SecurityRuleDto>();
+                        if (security != null)
+                        {
+                            foreach (var rule in security)
+                            {
+                                environmentDto.SecurityRules.Add(new SecurityRuleDto
+                                    {
+                                        AllowedIpStart = rule.StartIp,
+                                        AllowedIpEnd = rule.EndIp
+                                    });
+                            }
+                        }
+                    }
+                }
                 return environmentDto;
            }
         }
@@ -246,11 +268,13 @@ namespace Urchin.Server.Persistence.Prius
                     command.AddParameter("environmentName", environment.EnvironmentName);
                     context.ExecuteNonQuery(command);
                 }
+
                 using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteEnvironmentMachines"))
                 {
                     command.AddParameter("environmentName", environment.EnvironmentName);
                     context.ExecuteNonQuery(command);
                 }
+
                 if (environment.Machines != null && environment.Machines.Count > 0)
                 {
                     using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentMachine"))
@@ -264,6 +288,29 @@ namespace Urchin.Server.Persistence.Prius
                         }
                     }
                 }
+
+                using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteEnvironmentSecurityRules"))
+                {
+                    command.AddParameter("environmentName", environment.EnvironmentName);
+                    context.ExecuteNonQuery(command);
+                }
+
+                if (environment.SecurityRules != null && environment.SecurityRules.Count > 0)
+                {
+                    using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentSecurityRule"))
+                    {
+                        command.AddParameter("environmentName", environment.EnvironmentName);
+                        var startIp = command.AddParameter("startIp", SqlDbType.NVarChar, ParameterDirection.Input);
+                        var endIp = command.AddParameter("endIp", SqlDbType.NVarChar, ParameterDirection.Input);
+                        foreach (var securityRule in environment.SecurityRules)
+                        {
+                            startIp.Value = securityRule.AllowedIpStart;
+                            endIp.Value = securityRule.AllowedIpEnd;
+                            context.ExecuteNonQuery(command);
+                        }
+                    }
+                }
+            
             }
         }
     }

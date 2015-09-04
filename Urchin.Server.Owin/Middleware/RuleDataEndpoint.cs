@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -40,7 +41,9 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetRules(IOwinContext context)
         {
-            var ruleSet = _configRules.GetRuleSet();
+            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+
+            var ruleSet = _configRules.GetRuleSet(clientCredentials);
             if (ruleSet == null)
                 throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
 

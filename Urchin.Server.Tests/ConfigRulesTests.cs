@@ -25,8 +25,8 @@ namespace Urchin.Server.Tests
         [TestMethod]
         public void Should_return_empty_rule_set()
         {
-            _configRules.Clear();
-            var config = _configRules.GetConfig(null, "myMachine", "myApp", null);
+            _configRules.Clear(null);
+            var config = _configRules.GetConfig(null, null, "myMachine", "myApp", null);
 
             Assert.IsNotNull(config);
             Assert.AreEqual(0, config.Properties().Count());
@@ -35,9 +35,9 @@ namespace Urchin.Server.Tests
         [TestMethod]
         public void Should_return_simple_configuration()
         {
-            _configRules.Clear();
-            _configRules.SetDefaultEnvironment("Integration");
-            _configRules.AddRules(new List<RuleDto>
+            _configRules.Clear(null);
+            _configRules.SetDefaultEnvironment(null, "Integration");
+            _configRules.AddRules(null, new List<RuleDto>
             {
                 new RuleDto
                 {
@@ -46,7 +46,7 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var config = _configRules.GetConfig(null, "myMachine", "myApp", null);
+            var config = _configRules.GetConfig(null, null, "myMachine", "myApp", null);
 
             Assert.IsNotNull(config);
             Assert.AreEqual(876, config["test"].Value<int>());
@@ -55,9 +55,9 @@ namespace Urchin.Server.Tests
         [TestMethod]
         public void Should_lookup_environment_from_machine_name()
         {
-            _configRules.Clear();
-            _configRules.SetDefaultEnvironment("Development");
-            _configRules.SetEnvironments(new List<EnvironmentDto>
+            _configRules.Clear(null);
+            _configRules.SetDefaultEnvironment(null, "Development");
+            _configRules.SetEnvironments(null, new List<EnvironmentDto>
             {
                 new EnvironmentDto
                 {
@@ -70,7 +70,7 @@ namespace Urchin.Server.Tests
                     Machines = new List<string>{"TEST1", "TEST2"}
                 }
             });
-            _configRules.AddRules(new List<RuleDto>
+            _configRules.AddRules(null, new List<RuleDto>
             {
                 new RuleDto
                 {
@@ -93,12 +93,12 @@ namespace Urchin.Server.Tests
             });
 
 
-            var web1Config = _configRules.GetConfig(null, "web1", "web", null);
-            var web2Config = _configRules.GetConfig(null, "web2", "web", null);
-            var test1Config = _configRules.GetConfig(null, "test1", "web", null);
-            var test2Config = _configRules.GetConfig(null, "test2", "web", null);
-            var dev1Config = _configRules.GetConfig(null, "devmachine", "web", null);
-            var dev2Config = _configRules.GetConfig("prod", "devmachine", "web", null);
+            var web1Config = _configRules.GetConfig(null, null, "web1", "web", null);
+            var web2Config = _configRules.GetConfig(null, null, "web2", "web", null);
+            var test1Config = _configRules.GetConfig(null, null, "test1", "web", null);
+            var test2Config = _configRules.GetConfig(null, null, "test2", "web", null);
+            var dev1Config = _configRules.GetConfig(null, null, "devmachine", "web", null);
+            var dev2Config = _configRules.GetConfig(null, "prod", "devmachine", "web", null);
 
             Assert.IsNotNull(web1Config);
             Assert.IsNotNull(web2Config);
@@ -124,10 +124,10 @@ namespace Urchin.Server.Tests
         [TestMethod]
         public void Should_support_variable_substitution()
         {
-            _configRules.Clear();
-            _configRules.SetDefaultEnvironment("Development");
+            _configRules.Clear(null);
+            _configRules.SetDefaultEnvironment(null, "Development");
 
-            _configRules.AddRules(new List<RuleDto>
+            _configRules.AddRules(null, new List<RuleDto>
             {
                 new RuleDto
                 {
@@ -164,10 +164,10 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var configApp1Prod = _configRules.GetConfig("Prod", "WEB1", "Application1", null);
-            var configApp2Prod = _configRules.GetConfig("Prod", "WEB2", "Application2", null);
-            var configApp1Test = _configRules.GetConfig("Test", "WEB3", "Application1", null);
-            var configApp2Test = _configRules.GetConfig("Test", "WEB4", "Application2", null);
+            var configApp1Prod = _configRules.GetConfig(null, "Prod", "WEB1", "Application1", null);
+            var configApp2Prod = _configRules.GetConfig(null, "Prod", "WEB2", "Application2", null);
+            var configApp1Test = _configRules.GetConfig(null, "Test", "WEB3", "Application1", null);
+            var configApp2Test = _configRules.GetConfig(null, "Test", "WEB4", "Application2", null);
 
             Assert.AreEqual("Database", configApp1Prod["log"]["method"].Value<string>());
             Assert.AreEqual("Database", configApp2Prod["log"]["method"].Value<string>());

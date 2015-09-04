@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -73,7 +74,8 @@ namespace Urchin.Server.Owin.Middleware
             string application, 
             string instance)
         {
-            var config = _configRules.TestConfig(ruleSet, environment, machine, application, instance);
+            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var config = _configRules.TestConfig(clientCredentials, ruleSet, environment, machine, application, instance);
 
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(config.ToString(Formatting.Indented));
