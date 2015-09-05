@@ -263,7 +263,7 @@ namespace Urchin.Server.Shared.Rules
             // Make a deep copy of the rule set
             var ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
 
-            // Get the environments that this client does not have access to
+            // Get the environments and machines that this client does not have access to
             var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
             if (blockedEnvironments == null || blockedEnvironments.Count == 0)
                 return ruleSet;
@@ -282,7 +282,9 @@ namespace Urchin.Server.Shared.Rules
                 return true;
             };
 
+            // Remove the blocked content from the data
             ruleSet.Rules = ruleSet.Rules.Where(isAllowed).ToList();
+
             return ruleSet;
         }
 
@@ -326,7 +328,7 @@ namespace Urchin.Server.Shared.Rules
         private IList<EnvironmentDto> GetBlockedEnvironments(IEnumerable<EnvironmentDto> environments, IClientCredentials clientCredentials)
         {
             if (environments == null || clientCredentials == null)
-                return null;
+                return new List<EnvironmentDto>();
 
             Func<string, uint> parseIp = (ip) =>
             {
@@ -369,8 +371,14 @@ namespace Urchin.Server.Shared.Rules
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
-            var blockedEnvironments = ruleSet == null ? null : GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
-            
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+
+            if (blockedEnvironments != null && blockedEnvironments.Any(e => string.Equals(e.EnvironmentName, environmentName, StringComparison.InvariantCultureIgnoreCase)))
+                throw new Exception("You do not have permission to set " + environmentName + " as the default environment");
+
+            if (blockedEnvironments != null && blockedEnvironments.Any(e => string.Equals(e.EnvironmentName, ruleSet.DefaultEnvironmentName, StringComparison.InvariantCultureIgnoreCase)))
+                throw new Exception("You do not have permission to make " + ruleSet.DefaultEnvironmentName + " no longer the default environment");
+
             _persister.SetDefaultEnvironment(environmentName);
 
             ruleSet.DefaultEnvironmentName = environmentName;
@@ -380,14 +388,55 @@ namespace Urchin.Server.Shared.Rules
         {
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
+            if (ruleSet.Environments == null) ruleSet.Environments = new List<EnvironmentDto>();
 
-            if (environments != null)
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+
+            var toDelete = new List<string>();
+            var toAdd = new List<EnvironmentDto>();
+
+            Func<EnvironmentDto, EnvironmentDto, bool> eq =
+                (e1, e2) => string.Equals(e1.EnvironmentName, e2.EnvironmentName, StringComparison.InvariantCultureIgnoreCase);
+
+            if (environments == null || environments.Count == 0)
             {
+                if (ruleSet.Environments != null)
+                {
+                    foreach (var environment in ruleSet.Environments)
+                    {
+                        if (!blockedEnvironments.Any(e => eq(e, environment)))
+                            toDelete.Add(environment.EnvironmentName);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var environment in ruleSet.Environments)
+                {
+                    if (!blockedEnvironments.Any(e => eq(e, environment)))
+                        toDelete.Add(environment.EnvironmentName);
+                }
+
                 foreach (var environment in environments)
-                    _persister.InsertOrUpdateEnvironment(environment);
+                {
+                    if (!blockedEnvironments.Any(e => eq(e, environment)))
+                        toAdd.Add(environment);
+                }
             }
 
-            ruleSet.Environments = environments;
+            foreach (var environment in toDelete)
+                _persister.DeleteEnvironment(environment);
+
+            ruleSet.Environments = ruleSet.Environments
+                .Where(e => !toDelete.Any(d => string.Equals(d, e.EnvironmentName, StringComparison.InvariantCultureIgnoreCase)))
+                .ToList();
+
+            foreach (var environment in toAdd)
+            {
+                _persister.InsertOrUpdateEnvironment(environment);
+                lock(ruleSet.Environments)
+                    ruleSet.Environments.Add(environment);
+            }
         }
 
         public void AddRules(IClientCredentials clientCredentials, List<RuleDto> newRules)
@@ -397,13 +446,29 @@ namespace Urchin.Server.Shared.Rules
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
-            // Make a deep copy of the rule set
+            // Make a deep copy of the rule set in a thread-safe way
             ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(ruleSet);
 
+            // Get the environments and machines that this client does not have access to
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+            var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
+            var blockedEnvironmentNames = blockedEnvironments.Select(e => e.EnvironmentName.ToLower()).ToList();
+
+            // Add the new rules
             foreach (var newRule in newRules)
             {
-                if (ruleSet.Rules.Exists(r => string.Compare(r.RuleName, newRule.RuleName, StringComparison.InvariantCultureIgnoreCase) == 0))
+                if (ruleSet.Rules.Exists(r => string.Equals(r.RuleName, newRule.RuleName, StringComparison.InvariantCultureIgnoreCase)))
                     throw new Exception("There is already a rule with the name " + newRule.RuleName);
+                if (!string.IsNullOrEmpty(newRule.Environment))
+                {
+                    if (blockedEnvironmentNames.Contains(newRule.Environment.ToLower()))
+                        throw new Exception("You do not have permission to add rules for the " + newRule.Environment + " environment");
+                }
+                if (!string.IsNullOrEmpty(newRule.Machine))
+                {
+                    if (blockedMachineNemes.Contains(newRule.Machine.ToLower()))
+                        throw new Exception("You do not have permission to add rules for the " + newRule.Machine + " machine");
+                }
                 _persister.InsertOrUpdateRule(newRule);
                 ruleSet.Rules.Add(newRule);
             }
@@ -414,12 +479,52 @@ namespace Urchin.Server.Shared.Rules
 
         public void UpdateRule(IClientCredentials clientCredentials, string oldName, RuleDto rule)
         {
-
             var ruleSet = _ruleSet;
             if (ruleSet == null) return;
 
-            // Make a deep copy of the rule set
+            // Make a deep copy of the rule set in a thread-safe way
             ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(ruleSet);
+
+            // Get the environments and machines that this client does not have access to
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+
+            if (blockedEnvironments.Count > 0)
+            {
+                var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
+                var blockedEnvironmentNames = blockedEnvironments.Select(e => e.EnvironmentName.ToLower()).ToList();
+
+                var existingRule =
+                    ruleSet.Rules.FirstOrDefault(
+                        r => string.Equals(oldName, r.RuleName, StringComparison.InvariantCultureIgnoreCase));
+                if (existingRule != null)
+                {
+                    if (!string.IsNullOrEmpty(existingRule.Environment))
+                    {
+                        if (blockedEnvironmentNames.Contains(existingRule.Environment.ToLower()))
+                            throw new Exception("You do not have permission to update rules for the " +
+                                                existingRule.Environment + " environment");
+                    }
+                    if (!string.IsNullOrEmpty(existingRule.Machine))
+                    {
+                        if (blockedMachineNemes.Contains(existingRule.Machine.ToLower()))
+                            throw new Exception("You do not have permission to update rules for the " +
+                                                existingRule.Machine + " machine");
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(rule.Environment))
+                {
+                    if (blockedEnvironmentNames.Contains(rule.Environment.ToLower()))
+                        throw new Exception("You do not have permission to update rules for the " + rule.Environment +
+                                            " environment");
+                }
+                if (!string.IsNullOrEmpty(rule.Machine))
+                {
+                    if (blockedMachineNemes.Contains(rule.Machine.ToLower()))
+                        throw new Exception("You do not have permission to update rules for the " + rule.Machine +
+                                            " machine");
+                }
+            }
 
             DeleteRule(ruleSet, oldName);
             DeleteRule(ruleSet, rule.RuleName);
@@ -433,6 +538,37 @@ namespace Urchin.Server.Shared.Rules
 
         public void DeleteRule(IClientCredentials clientCredentials, string name)
         {
+            var ruleSet = _ruleSet;
+            if (ruleSet == null) return;
+
+            // Get the environments and machines that this client does not have access to
+            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+
+            if (blockedEnvironments.Count > 0)
+            {
+                var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
+                var blockedEnvironmentNames = blockedEnvironments.Select(e => e.EnvironmentName.ToLower()).ToList();
+
+                var existingRule =
+                    ruleSet.Rules.FirstOrDefault(
+                        r => string.Equals(name, r.RuleName, StringComparison.InvariantCultureIgnoreCase));
+                if (existingRule != null)
+                {
+                    if (!string.IsNullOrEmpty(existingRule.Environment))
+                    {
+                        if (blockedEnvironmentNames.Contains(existingRule.Environment.ToLower()))
+                            throw new Exception("You do not have permission to delete rules for the " +
+                                                existingRule.Environment + " environment");
+                    }
+                    if (!string.IsNullOrEmpty(existingRule.Machine))
+                    {
+                        if (blockedMachineNemes.Contains(existingRule.Machine.ToLower()))
+                            throw new Exception("You do not have permission to delete rules for the " +
+                                                existingRule.Machine + " machine");
+                    }
+                }
+            }
+
             DeleteRule(_ruleSet, name);
         }
 

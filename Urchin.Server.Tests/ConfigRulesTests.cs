@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using Urchin.Server.Shared.DataContracts;
+using Urchin.Server.Shared.Interfaces;
 using Urchin.Server.Shared.Rules;
 using Urchin.Server.Shared.TypeMappings;
 
@@ -173,6 +174,124 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("Database", configApp2Prod["log"]["method"].Value<string>());
             Assert.AreEqual("File", configApp1Test["log"]["method"].Value<string>());
             Assert.AreEqual("File", configApp2Test["log"]["method"].Value<string>());
+        }
+
+        [TestMethod]
+        public void Should_secure_restricted_environments()
+        {
+            _configRules.Clear(null);
+            SetupSecureEnvironments();
+            _configRules.SetDefaultEnvironment(null, "Production");
+
+            var devClient = new ClientCredentials{IpAddress = "192.168.3.54"};
+            var config1 = _configRules.GetRuleSet(devClient);
+
+            Assert.AreEqual(3, config1.Environments.Count);
+
+            Assert.AreEqual("Production", config1.Environments[0].EnvironmentName);
+            Assert.AreEqual("Staging", config1.Environments[1].EnvironmentName);
+            Assert.AreEqual("Development", config1.Environments[2].EnvironmentName);
+
+            Assert.AreEqual("web1", config1.Environments[0].Machines[0]);
+            Assert.AreEqual("web2", config1.Environments[0].Machines[1]);
+            Assert.AreEqual("web3", config1.Environments[0].Machines[2]);
+
+            _configRules.SetEnvironments(devClient, new List<EnvironmentDto> 
+            {
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Production",
+                    Machines = new List<string>{"dev1"}
+                },
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Development",
+                    Machines = new List<string>{"dev1", "dev2", "dev3"},
+                }
+            });
+
+            var config2 = _configRules.GetRuleSet(devClient);
+
+            Assert.AreEqual(3, config2.Environments.Count);
+
+            Assert.AreEqual("Production", config2.Environments[0].EnvironmentName);
+            Assert.AreEqual("Staging", config2.Environments[1].EnvironmentName);
+            Assert.AreEqual("Development", config2.Environments[2].EnvironmentName);
+
+            Assert.AreEqual("web1", config2.Environments[0].Machines[0]);
+            Assert.AreEqual("web2", config2.Environments[0].Machines[1]);
+            Assert.AreEqual("web3", config2.Environments[0].Machines[2]);
+
+            Assert.AreEqual("stage1", config2.Environments[1].Machines[0]);
+            Assert.AreEqual("stage2", config2.Environments[1].Machines[1]);
+            Assert.AreEqual("stage3", config2.Environments[1].Machines[2]);
+
+            Assert.AreEqual("dev1", config2.Environments[2].Machines[0]);
+            Assert.AreEqual("dev2", config2.Environments[2].Machines[1]);
+            Assert.AreEqual("dev3", config2.Environments[2].Machines[2]);
+
+            var prodClient = new ClientCredentials { IpAddress = "192.168.0.2" };
+
+            _configRules.SetEnvironments(prodClient, new List<EnvironmentDto> 
+            {
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Production",
+                    Machines = new List<string>{"dev1"}
+                },
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Development",
+                    Machines = new List<string>{"dev1", "dev2", "dev3"},
+                }
+            });
+
+            var config3 = _configRules.GetRuleSet(prodClient);
+
+            Assert.AreEqual(2, config3.Environments.Count);
+
+            Assert.AreEqual("Production", config3.Environments[0].EnvironmentName);
+            Assert.AreEqual("Development", config3.Environments[1].EnvironmentName);
+
+            Assert.AreEqual("dev1", config3.Environments[0].Machines[0]);
+
+            Assert.AreEqual("dev1", config3.Environments[1].Machines[0]);
+            Assert.AreEqual("dev2", config3.Environments[1].Machines[1]);
+            Assert.AreEqual("dev3", config3.Environments[1].Machines[2]);
+        }
+
+        private void SetupSecureEnvironments()
+        {
+            _configRules.SetEnvironments(null, new List<EnvironmentDto>
+                {
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Production",
+                        Machines = new List<string>{"web1", "web2", "web3"},
+                        SecurityRules = new List<SecurityRuleDto>
+                        {
+                            new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.0.255"}
+                        }
+                    },
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Staging",
+                        Machines = new List<string>{"stage1", "stage2", "stage3"},
+                        SecurityRules = new List<SecurityRuleDto>
+                        {
+                            new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.1.255"}
+                        }
+                    },
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Development"
+                    }
+                });
+        }
+
+        private class ClientCredentials : IClientCredentials
+        {
+            public string IpAddress { get; set; }
         }
 
     }
