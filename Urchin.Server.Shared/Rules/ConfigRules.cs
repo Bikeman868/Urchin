@@ -27,8 +27,11 @@ namespace Urchin.Server.Shared.Rules
         public void Clear(IClientCredentials clientCredentials)
         {
             SetRuleSet(clientCredentials, new RuleSetDto());
-            SetDefaultEnvironment(clientCredentials, "Development");
-            SetEnvironments(clientCredentials, null);
+
+            // Note that there is no need to check credentials again,
+            // SetRuleSet will throw if any environments are blocked
+            SetDefaultEnvironment(null, "Development");
+            SetEnvironments(null, null);
         }
 
         public void ReloadFromPersister()
@@ -72,6 +75,8 @@ namespace Urchin.Server.Shared.Rules
             if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
                 return new JObject();
 
+            // Note that since the entire rule set is provided by the caller, no credentials check is needed here
+
             environment = LookupEnvironment(environment, machine, ruleSet);
             var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
             return MergeRules(applicableRules, environment, machine, application, instance);
@@ -79,12 +84,14 @@ namespace Urchin.Server.Shared.Rules
 
         public JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
         {
+            var response = new JObject();
+
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
-                return new JObject();
+                return response;
 
             var ruleSet = _ruleSet;
             if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
-                return new JObject();
+                return response;
 
             environment = LookupEnvironment(environment, machine, ruleSet);
 
@@ -92,7 +99,10 @@ namespace Urchin.Server.Shared.Rules
             if (blockedEnvironments != null)
             {
                 if (blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environment, StringComparison.InvariantCultureIgnoreCase)))
-                    return new JObject();
+                {
+                    response["error"] = "You do not have permission to retrieve config for this machine";
+                    return response;
+                }
             }
 
             var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
@@ -100,8 +110,6 @@ namespace Urchin.Server.Shared.Rules
 
             var variables = MergeVariables(applicableRules, environment, machine, application, instance);
             var serializedVariables = JsonConvert.SerializeObject(variables);
-
-            var response = new JObject();
 
             response["config"] = MergeRules(applicableRules, environment, machine, application, instance);
             response["variables"] = JToken.Parse(serializedVariables);
