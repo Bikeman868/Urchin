@@ -230,6 +230,37 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("dev2", config2.Environments[2].Machines[1]);
             Assert.AreEqual("dev3", config2.Environments[2].Machines[2]);
 
+            var stagingClient = new ClientCredentials { IpAddress = "192.168.1.2" };
+
+            _configRules.SetEnvironments(stagingClient, new List<EnvironmentDto> 
+            {
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Production",
+                    Machines = new List<string>{"dev1"}
+                },
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Development",
+                    Machines = new List<string>{"dev1", "dev2", "dev3"},
+                }
+            });
+
+            var config3 = _configRules.GetRuleSet(stagingClient);
+
+            Assert.AreEqual(2, config3.Environments.Count);
+
+            Assert.AreEqual("Production", config3.Environments[0].EnvironmentName);
+            Assert.AreEqual("Development", config3.Environments[1].EnvironmentName);
+
+            Assert.AreEqual("web1", config3.Environments[0].Machines[0]);
+            Assert.AreEqual("web2", config3.Environments[0].Machines[1]);
+            Assert.AreEqual("web3", config3.Environments[0].Machines[2]);
+
+            Assert.AreEqual("dev1", config3.Environments[1].Machines[0]);
+            Assert.AreEqual("dev2", config3.Environments[1].Machines[1]);
+            Assert.AreEqual("dev3", config3.Environments[1].Machines[2]);
+
             var prodClient = new ClientCredentials { IpAddress = "192.168.0.2" };
 
             _configRules.SetEnvironments(prodClient, new List<EnvironmentDto> 
@@ -246,18 +277,55 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var config3 = _configRules.GetRuleSet(prodClient);
+            var config4 = _configRules.GetRuleSet(prodClient);
 
-            Assert.AreEqual(2, config3.Environments.Count);
+            Assert.AreEqual(2, config4.Environments.Count);
 
-            Assert.AreEqual("Production", config3.Environments[0].EnvironmentName);
-            Assert.AreEqual("Development", config3.Environments[1].EnvironmentName);
+            Assert.AreEqual("Production", config4.Environments[0].EnvironmentName);
+            Assert.AreEqual("Development", config4.Environments[1].EnvironmentName);
 
-            Assert.AreEqual("dev1", config3.Environments[0].Machines[0]);
+            Assert.AreEqual("dev1", config4.Environments[0].Machines[0]);
 
-            Assert.AreEqual("dev1", config3.Environments[1].Machines[0]);
-            Assert.AreEqual("dev2", config3.Environments[1].Machines[1]);
-            Assert.AreEqual("dev3", config3.Environments[1].Machines[2]);
+            Assert.AreEqual("dev1", config4.Environments[1].Machines[0]);
+            Assert.AreEqual("dev2", config4.Environments[1].Machines[1]);
+            Assert.AreEqual("dev3", config4.Environments[1].Machines[2]);
+        }
+
+        [TestMethod]
+        public void Should_not_retrieve_config_from_restricted_environment()
+        {
+            _configRules.Clear(null);
+            SetupSecureEnvironments();
+
+            var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
+            var stagingClient = new ClientCredentials { IpAddress = "192.168.1.99" };
+            var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
+
+            var web1Production = _configRules.GetConfig(productionClient, "", "web1", "myApp", "");
+            var web1Staging = _configRules.GetConfig(stagingClient, "", "web1", "myApp", "");
+            var web1Development = _configRules.GetConfig(developmentClient, "", "web1", "myApp", "");
+
+            var stage2Production = _configRules.GetConfig(productionClient, "", "stage2", "myApp", "");
+            var stage2Staging = _configRules.GetConfig(stagingClient, "", "stage2", "myApp", "");
+            var stage2Development = _configRules.GetConfig(developmentClient, "", "stage2", "myApp", "");
+
+            var dev1Production = _configRules.GetConfig(productionClient, "", "dev1", "myApp", "");
+            var dev1Staging = _configRules.GetConfig(stagingClient, "", "dev1", "myApp", "");
+            var dev1Development = _configRules.GetConfig(developmentClient, "", "dev1", "myApp", "");
+
+            var emptyConfig = "{}";
+
+            Assert.IsTrue(web1Production.ToString().IndexOf("web1.mysite.com") > 0);
+            Assert.AreEqual(emptyConfig, web1Staging.ToString());
+            Assert.AreEqual(emptyConfig, web1Development.ToString());
+
+            Assert.IsTrue(stage2Production.ToString().IndexOf("stage2.mysite.local") > 0);
+            Assert.IsTrue(stage2Staging.ToString().IndexOf("stage2.mysite.local") > 0);
+            Assert.AreEqual(emptyConfig, stage2Development.ToString());
+
+            Assert.IsTrue(dev1Production.ToString().IndexOf("localhost/mysite") > 0);
+            Assert.IsTrue(dev1Staging.ToString().IndexOf("localhost/mysite") > 0);
+            Assert.IsTrue(dev1Development.ToString().IndexOf("localhost/mysite") > 0);
         }
 
         private void SetupSecureEnvironments()
@@ -287,6 +355,28 @@ namespace Urchin.Server.Tests
                         EnvironmentName = "Development"
                     }
                 });
+            _configRules.AddRules(null, new List<RuleDto>
+            {
+                new RuleDto
+                {
+                    RuleName = "Production Environment",
+                    Environment = "Production",
+                    ConfigurationData = "{host:\"www.mysite.com\",localhost:\"($machine$).mysite.com\"}"
+                },
+                new RuleDto
+                {
+                    RuleName = "Staging Environment",
+                    Environment = "Staging",
+                    ConfigurationData = "{host:\"staging.mysite.local\",localhost:\"($machine$).mysite.local\"}"
+                },
+                new RuleDto
+                {
+                    RuleName = "Development Environment",
+                    Environment = "Development",
+                    ConfigurationData = "{host:\"localhost/mysite\",localhost:\"localhost/mysite\"}"
+                }
+            });
+            _configRules.SetDefaultEnvironment(null, "Development");
         }
 
         private class ClientCredentials : IClientCredentials
