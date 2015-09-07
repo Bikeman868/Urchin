@@ -106,7 +106,7 @@ namespace Urchin.Server.Owin.Middleware
 
                 if (string.Equals(password.Value<string>(), _config.AdministratorPassword, StringComparison.Ordinal))
                 {
-                    var cookie = NewSession(clientCredentials.IpAddress);
+                    var cookie = NewSession(clientCredentials.IpAddress, userName.Value<string>());
                     context.Response.Cookies.Append(_config.CookieName, cookie);
                     return Json(context, new PostResponseDto { Success = true, Id = cookie });
                 }
@@ -137,14 +137,14 @@ namespace Urchin.Server.Owin.Middleware
                 _sessionTimeout = TimeSpan.FromHours(1);
         }
 
-        private string NewSession(string ipAddress)
+        private string NewSession(string ipAddress, string userName)
         {
             var token = new SessionToken
             {
                 Expiry = DateTime.UtcNow + _sessionTimeout,
                 IpAddress = ipAddress,
                 Token = Guid.NewGuid().ToString("n"),
-                Username = "Administrator"
+                Username = userName
             };
             lock (_sessionTokens)
             {

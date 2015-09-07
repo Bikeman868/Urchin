@@ -28,12 +28,6 @@ class RuleListComponent
 		_builder.displayIn(containerDiv);
 	}
 
-	void _ruleClicked(MouseEvent e)
-	{
-		LIElement target = e.target;
-		ApplicationEvents.ruleSelected(target.text);
-	}
-
 	void _dataRefreshed(DataRefreshedEvent e)
 	{
 		_dataChanged(e.data);
@@ -57,5 +51,11 @@ class RuleListComponent
 				_ruleList.children.add(element);
 			}
 		}
+	}
+
+	void _ruleClicked(MouseEvent e)
+	{
+		Element target = e.target;
+		ApplicationEvents.ruleSelected(target.text);
 	}
 }

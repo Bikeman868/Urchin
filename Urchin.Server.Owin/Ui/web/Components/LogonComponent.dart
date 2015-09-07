@@ -67,7 +67,7 @@ class LogonComponent
 		}
 
 		var loadAll = _data.loadAll();
-		loadAll.then(() => ApplicationEvents.dataRefreshed(_data));
+		loadAll.then((data) => ApplicationEvents.dataRefreshed(data));
 	}
 
 	void _logonClick(MouseEvent e)
