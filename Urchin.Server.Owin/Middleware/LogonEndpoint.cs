@@ -18,6 +18,7 @@ namespace Urchin.Server.Owin.Middleware
         private readonly IDisposable _configChangeNotifier;
         private readonly PathString _logonPath;
         private readonly PathString _logoffPath;
+        private readonly PathString _userPath;
         private readonly IDictionary<string, SessionToken> _sessionTokens;
 
         private Config _config;
@@ -29,6 +30,7 @@ namespace Urchin.Server.Owin.Middleware
 
             _logonPath = new PathString("/logon");
             _logoffPath = new PathString("/logoff");
+            _userPath = new PathString("/user");
             _sessionTokens = new Dictionary<string, SessionToken>();
         }
 
@@ -41,7 +43,10 @@ namespace Urchin.Server.Owin.Middleware
         {
             var request = context.Request;
 
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = new ClientCredentialsDto 
+            {
+                IpAddress = context.Request.RemoteIpAddress
+            };
             if (context.Request.RemoteIpAddress == "::1")
                 context.Request.RemoteIpAddress = "127.0.0.1";
 
@@ -61,10 +66,18 @@ namespace Urchin.Server.Owin.Middleware
                         }
                         else
                         {
+                            clientCredentials.IsLoggedOn = true;
+                            clientCredentials.Username = sessionToken.Username;
                             clientCredentials.IsAdministrator = string.Equals(sessionToken.IpAddress, context.Request.RemoteIpAddress, StringComparison.Ordinal);
                         }
                     }
                 }
+            }
+
+            if (request.Method == "GET" && _userPath.IsWildcardMatch(request.Path))
+            {
+                context.Response.ContentType = "text/plain";
+                return context.Response.WriteAsync(clientCredentials.Username ?? "");
             }
 
             if (request.Method != "POST")
@@ -95,7 +108,7 @@ namespace Urchin.Server.Owin.Middleware
                 {
                     var cookie = NewSession(clientCredentials.IpAddress);
                     context.Response.Cookies.Append(_config.CookieName, cookie);
-                    return Json(context, new PostResponseDto { Success = true });
+                    return Json(context, new PostResponseDto { Success = true, Id = cookie });
                 }
                 return Json(context, new PostResponseDto { Success = false });
             }
@@ -130,7 +143,8 @@ namespace Urchin.Server.Owin.Middleware
             {
                 Expiry = DateTime.UtcNow + _sessionTimeout,
                 IpAddress = ipAddress,
-                Token = Guid.NewGuid().ToString("n")
+                Token = Guid.NewGuid().ToString("n"),
+                Username = "Administrator"
             };
             lock (_sessionTokens)
             {
@@ -144,6 +158,7 @@ namespace Urchin.Server.Owin.Middleware
             public string Token { get; set; }
             public string IpAddress { get; set; }
             public DateTime Expiry { get; set; }
+            public string Username { get; set; }
         }
 
         public class Config

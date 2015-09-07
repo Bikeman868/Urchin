@@ -6,12 +6,15 @@ import '../Dto.dart';
 import '../Data.dart';
 import '../Server.dart';
 import '../ApplicationEvents.dart';
+import '../Html/HtmlBuilder.dart';
 
 class LogonComponent
 {
+	Data _data;
+
 	Element _container;
-	List<Element> _loggedOnUi;
-	List<Element> _loggedOffUi;
+	HtmlBuilder _loggedOnUi;
+	HtmlBuilder _loggedOffUi;
 
 	Element _userNameSpanElement;
 	Element _logOnButton;
@@ -20,46 +23,35 @@ class LogonComponent
 	Element _passwordInputElement;
 	Element _logOffButton;
 
-	LogonComponent()
+	LogonComponent(Data data)
 	{
-		_userNameSpanElement = new SpanElement();
-		_logOnButton = new SpanElement();
+		_data = data;
 
-	    _userNameInputElement = new SpanElement();
-	    _passwordInputElement = new SpanElement();
-	    _logOffButton = new SpanElement();
+		_loggedOnUi = new HtmlBuilder();
+		_userNameSpanElement = _loggedOnUi.addInlineText('');
+		_logOnButton = _loggedOnUi.addButton('Logoff', _logoffClick, className: 'toolBarButton');
 
-		_loggedOnUi = new List<Element>();
-		_loggedOnUi.add(_userNameSpanElement);
-		_loggedOnUi.add(_logOnButton);
+		_loggedOffUi = new HtmlBuilder();
+		var userNameContainer = _loggedOffUi.addContainer();
+		_loggedOffUi.addInlineText('Username&nbsp;', parent: userNameContainer);
+	    _userNameInputElement = _loggedOffUi.addInput(className: 'inputLogon', parent: userNameContainer);
+		var passwordContainer = _loggedOffUi.addContainer();
+		_loggedOffUi.addInlineText('Password&nbsp;', parent: passwordContainer);
+	    _passwordInputElement = _loggedOffUi.addPassword(className: 'inputLogon', parent: passwordContainer);
+		var buttonContainer = _loggedOffUi.addContainer();
+	    _logOffButton = _loggedOffUi.addButton('Logon', _logonClick, className: 'toolBarButton', parent: buttonContainer);
 
-		_loggedOffUi = new List<Element>();
-		_loggedOffUi.add(_userNameInputElement);
-		_loggedOffUi.add(_passwordInputElement);
-		_loggedOffUi.add(_logOffButton);
+		ApplicationEvents.onUserChanged.listen(_userChanged);
 	}
 
 	void displayIn(Element container)
 	{
 		_container = container;
-		ApplicationEvents.onUserChanged.listen(_userChanged);
-		Server.getLoggedOnUser().then(user => ApplicationEvents.userChanged(user));
+
+		var getLoggedOnUser = Server.getLoggedOnUser();
+		getLoggedOnUser.then((userName) => ApplicationEvents.userChanged(userName));
 	}
 
-	void _displayLoggedOn()
-	{
-		_container.children.clear();
-		for (var element in _loggedOnUi)
-			_container.children.add(element);    
-	}
-  
-	void _displayLoggedOff()
-	{
-		_container.children.clear();
-		for (var element in _loggedOffUi)
-			_container.children.add(element);    
-	}
-  
 	void _userChanged(UserChangedEvent e)
 	{
 		_userNameSpanElement.text = e.userName;
@@ -67,11 +59,25 @@ class LogonComponent
 		if (e.isLoggedOn)
 		{
 			_userNameInputElement.text = e.userName;
-			_displayLoggedOn();
+			_loggedOnUi.displayIn(_container);
 		}
 		else
 		{
-			_displayLoggedOff();
+			_loggedOffUi.displayIn(_container);
 		}
+
+		var loadAll = _data.loadAll();
+		loadAll.then(() => ApplicationEvents.dataRefreshed(_data));
 	}
-  }
+
+	void _logonClick(MouseEvent e)
+	{
+		ApplicationEvents.userChanged('Administrator');
+	}
+  
+	void _logoffClick(MouseEvent e)
+	{
+		ApplicationEvents.userChanged('');
+	}
+  
+}

@@ -12,7 +12,7 @@
 	  ui:
 	  {
 	    url:"/ui",
-	    physicalPath:"~/ui/web",
+	    physicalPath:"~/ui/build/web",
 		faviconUrl:"/favicon.ico",
 		cache:false
 	  },

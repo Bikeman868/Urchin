@@ -69,11 +69,12 @@ class HtmlBuilder
 			Element parent
 		})
 	{
-		var button = new ButtonElement();
+		var button = new SpanElement();
+		button.classes.add('button');
 		if (html != null)
     		button.innerHtml = html;
 		if (onClick != null)
-    		button.onClick = onClick;
+    		button.onClick.listen(onClick);
 		return _addElement(button, classNames, className, parent);
 	}
   

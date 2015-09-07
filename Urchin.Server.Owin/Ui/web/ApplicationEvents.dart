@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'Dto.dart';
+import 'Data.dart';
 
 class RuleSelectedEvent
 {
@@ -23,7 +24,13 @@ class UserChangedEvent
 {
 	String userName;
 	bool isLoggedOn;
-	UserChangedEvent(this.isLoggedOn. {this.userName});
+	UserChangedEvent(this.isLoggedOn, { this.userName });
+}
+
+class DataRefreshedEvent
+{
+	Data data;
+	DataRefreshedEvent(this.data);
 }
 
 class ApplicationEvents
@@ -53,7 +60,17 @@ class ApplicationEvents
 	static Stream<UserChangedEvent> get onUserChanged => _userChangedController.stream;
 	static userChanged(String userName)
 	{
-		var isLoggedOn = userName.length > 0;
-		_userChangedController.add(new UserChangedEvent(isLoggedOn, userName));
+		var isLoggedOn = userName != null && userName.length > 0;
+		if (isLoggedOn)
+			_userChangedController.add(new UserChangedEvent(true, userName: userName));
+		else
+			_userChangedController.add(new UserChangedEvent(false));
+	}
+
+	static StreamController<DataRefreshedEvent> _dataRefreshedController = new StreamController.broadcast();
+	static Stream<DataRefreshedEvent> get onDataRefreshed => _dataRefreshedController.stream;
+	static dataRefreshed(Data data)
+	{
+		_dataRefreshedController.add(new DataRefreshedEvent(data));
 	}
 }

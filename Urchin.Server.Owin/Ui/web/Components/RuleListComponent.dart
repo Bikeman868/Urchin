@@ -5,40 +5,57 @@ import 'dart:async';
 import '../Dto.dart';
 import '../Data.dart';
 import '../ApplicationEvents.dart';
+import '../Html/HtmlBuilder.dart';
 
 class RuleListComponent
 {
 	Data _data;
-	RuleListComponent(this._data);
+	HtmlBuilder _builder;
+	Element _ruleList;
+
+	RuleListComponent(this._data)
+	{
+		_builder = new HtmlBuilder();
+		_builder.addBlockText('Rules', className: 'panelTitle');
+		_ruleList = _builder.addList(className: 'selectionList');
+
+		ApplicationEvents.onDataRefreshed.listen(_dataRefreshed);
+		_dataChanged(_data);
+	}
   
 	void displayIn(containerDiv)
 	{
-		var heading = new SpanElement();
-		heading.classes.add('panelTitle');
-		heading.text = 'Rules';
-		containerDiv.children.add(heading);
+		_builder.displayIn(containerDiv);
+	}
 
-		Map<String, RuleDto> rules = _data.rules;
+	void _ruleClicked(MouseEvent e)
+	{
+		LIElement target = e.target;
+		ApplicationEvents.ruleSelected(target.text);
+	}
+
+	void _dataRefreshed(DataRefreshedEvent e)
+	{
+		_dataChanged(e.data);
+	}
+
+	void _dataChanged(Data data)
+	{
+		_data = data;
+		_ruleList.children.clear();
+
+		Map<String, RuleDto> rules = data.rules;
 		if (rules != null)
 		{
-			var list = new UListElement();
-			list.classes.add("selectionList");
 			for (RuleDto rule in rules.values)
 			{
 				var element = new LIElement();
 				element.text = rule.name;
 				element.classes.add('ruleName');
 				element.classes.add('selectionItem');
-				element.onClick.listen(ruleClicked);
-				list.children.add(element);
+				element.onClick.listen(_ruleClicked);
+				_ruleList.children.add(element);
 			}
-			containerDiv.children.add(list);
 		}
-	}
-
-	void ruleClicked(MouseEvent e)
-	{
-		LIElement target = e.target;
-		ApplicationEvents.ruleSelected(target.text);
 	}
 }

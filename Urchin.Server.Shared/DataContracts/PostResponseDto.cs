@@ -14,5 +14,8 @@ namespace Urchin.Server.Shared.DataContracts
 
         [JsonProperty("error")]
         public string ErrorMessage { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 }

@@ -514,6 +514,8 @@ namespace Urchin.Server.Tests
         {
             public string IpAddress { get; set; }
             public bool IsAdministrator { get; set; }
+            public bool IsLoggedOn { get; set; }
+            public string Username { get; set; }
         }
 
     }
