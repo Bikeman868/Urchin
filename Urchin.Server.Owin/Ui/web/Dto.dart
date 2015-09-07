@@ -58,7 +58,21 @@ class VariableDto extends Dto
 
 class EnvironmentDto extends Dto
 {
-	EnvironmentDto(Map json): super(json){}
+	List<SecurityRuleDto> securityRules;
+
+	EnvironmentDto(Map json): super(json)
+	{
+		securityRules = new List<SecurityRuleDto>();
+    
+		List jsonRules = json['securityRules'];
+		if (jsonRules != null)
+		{
+			for (Map r in jsonRules)
+			{
+				securityRules.add(new SecurityRuleDto(r));
+			}
+		}
+	}
 
 	String get name => json['name'];
 	set name(String value) => json['name'] = value;
@@ -66,3 +80,15 @@ class EnvironmentDto extends Dto
 	List<String> get machines => json['machines'];
 	set machines(List<String> value) => json['machines'] = value;
 }
+
+class SecurityRuleDto extends Dto
+{
+	SecurityRuleDto(Map json): super(json){}
+
+	String get startIp => json['startIp'];
+	set startIp(String value) => json['startIp'] = value;
+  
+	String get endIp => json['endIp'];
+	set endIp(String value) => json['endIp'] = value;
+}
+

@@ -116,6 +116,20 @@ div
     list-style: none;
 }
 
+.machineName
+{
+    text-transform: uppercase;
+}
+
+.securityRuleList
+{
+    list-style: none;
+}
+
+.securityRule
+{
+}
+
 .selectionItem
 {
     margin: 4px;

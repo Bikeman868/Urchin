@@ -11,17 +11,21 @@ class EnvironmentDetailComponent
 {
 	Data _data;
 
-	Element _heading;
+	Element _heading1;
+	Element _heading2;
 	Element _environmentName;
-	UListElement _machines;
+	Element _machines;
+	Element _rules;
 
 	EnvironmentDetailComponent(this._data);
   
 	void displayIn(containerDiv)
 	{
 		var formBuilder = new FormBuilder();
-		_heading = formBuilder.addHeading('Machines in this environment', 2);
+		_heading1 = formBuilder.addHeading('Machines in this environment', 2);
 		_machines = formBuilder.addList('machineList');
+		_heading2 = formBuilder.addHeading('Rules for this environment', 2);
+		_rules = formBuilder.addList('securityRuleList');
 
 		formBuilder.addTo(containerDiv);
 
@@ -32,7 +36,8 @@ class EnvironmentDetailComponent
 	{
 		EnvironmentDto environment = _data.environments[e.environmentName];
 
-		_heading.text = 'Machines in ' + environment.name + ' Environment';
+		_heading1.text = 'Machines in ' + environment.name + ' Environment';
+		_heading2.text = 'Rules for ' + environment.name + ' Environment';
 
 		_machines.children.clear();
 		if (environment.machines != null)
@@ -45,5 +50,17 @@ class EnvironmentDetailComponent
 				_machines.children.add(element);
 			}
 		}
-	}
+
+		_rules.children.clear();
+		if (environment.securityRules != null)
+		{
+			for (SecurityRuleDto rule in environment.securityRules)
+			{
+				var element = new LIElement();
+				element.text = 'Allowed IP ' + rule.startIp + ' => ' + rule.endIp;
+				element.classes.add('securityRule');
+				_rules.children.add(element);
+			}
+		}
+}
 }
