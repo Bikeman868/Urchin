@@ -8,6 +8,7 @@ namespace Urchin.Server.Shared.Interfaces
 {
     public interface IClientCredentials
     {
-        string IpAddress { get; set; }
+        string IpAddress { get; }
+        bool IsAdministrator { get; }
     }
 }

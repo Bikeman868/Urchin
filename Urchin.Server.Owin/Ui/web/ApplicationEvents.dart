@@ -19,6 +19,13 @@ class TabChangedEvent
 	TabChangedEvent(this.tabName);
 }
 
+class UserChangedEvent
+{
+	String userName;
+	bool isLoggedOn;
+	UserChangedEvent(this.isLoggedOn. {this.userName});
+}
+
 class ApplicationEvents
 {
 	static StreamController<RuleSelectedEvent> _ruleSelectedController = new StreamController.broadcast();
@@ -40,5 +47,13 @@ class ApplicationEvents
 	static tabChanged(String name)
 	{
 		_tabChangedController.add(new TabChangedEvent(name));
+	}
+
+	static StreamController<UserChangedEvent> _userChangedController = new StreamController.broadcast();
+	static Stream<UserChangedEvent> get onUserChanged => _userChangedController.stream;
+	static userChanged(String userName)
+	{
+		var isLoggedOn = userName.length > 0;
+		_userChangedController.add(new UserChangedEvent(isLoggedOn, userName));
 	}
 }

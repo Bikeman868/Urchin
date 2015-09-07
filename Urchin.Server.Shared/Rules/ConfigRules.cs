@@ -327,7 +327,7 @@ namespace Urchin.Server.Shared.Rules
 
         private IList<EnvironmentDto> GetBlockedEnvironments(IEnumerable<EnvironmentDto> environments, IClientCredentials clientCredentials)
         {
-            if (environments == null || clientCredentials == null)
+            if (environments == null || clientCredentials == null || clientCredentials.IsAdministrator)
                 return new List<EnvironmentDto>();
 
             Func<string, uint> parseIp = (ip) =>

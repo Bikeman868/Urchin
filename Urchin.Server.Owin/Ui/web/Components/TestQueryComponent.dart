@@ -2,7 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'FormBuilder.dart';
+import '../Html/FormBuilder.dart';
+import '../Html/JsonHighlighter.dart';
 import '../Server.dart';
 
 class TestQueryComponent
@@ -19,7 +20,7 @@ class TestQueryComponent
 
 	void displayIn(containerDiv)
 	{
-		var formBuilder = new FormBuilder(containerDiv);
+		var formBuilder = new FormBuilder();
 
 		_heading1 = formBuilder.addHeading('Test Query', 1);
 
@@ -31,6 +32,8 @@ class TestQueryComponent
 
 		_heading2 = formBuilder.addHeading('Results', 1);
 		_resultsContainer = formBuilder.addContainer();
+
+		formBuilder.addTo(containerDiv);
 	}
 
 	testClicked(MouseEvent e)
@@ -41,7 +44,7 @@ class TestQueryComponent
 			_environmentInput.value,
 			_instanceInput.value);
 
-		getConfig.then((json) => FormBuilder.replaceJSON(_resultsContainer, json));
+		getConfig.then((json) => JsonHighlighter.display(_resultsContainer, json));
 	}
 
 }

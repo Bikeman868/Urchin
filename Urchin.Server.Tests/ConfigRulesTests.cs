@@ -513,6 +513,7 @@ namespace Urchin.Server.Tests
         private class ClientCredentials : IClientCredentials
         {
             public string IpAddress { get; set; }
+            public bool IsAdministrator { get; set; }
         }
 
     }

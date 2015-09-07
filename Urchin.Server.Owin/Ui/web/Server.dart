@@ -30,6 +30,9 @@ class Server
 
 		return HttpRequest.getString(url);
 	}
+
+	static Future<String> getLoggedOnUser()
+		=> HttpRequest.getString('/user');
 }
 
 class _Server
@@ -45,4 +48,7 @@ class _Server
 
 	static Future<String> getConfig(String machine, String application, String environment, String instance) async
 		=> '{"app":{[{"name":"value"}]}}'
+
+	static Future<String> getLoggedOnUser() async
+		=> 'TestUser';
 }
