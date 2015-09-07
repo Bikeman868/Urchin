@@ -136,22 +136,22 @@ A: No, you can register for notifications at any level of the configuration heir
    including the root. When you register a JSON object, specify a .Net class 
    that can be deserialized from this JSON. For example if you have this 
    JSON configuration:
-````
+```
        {
          section1:{value1:23,value2:87},
          section2:{value1:19,value2:43}
        }
-````
+```
    You can write a C# class like this:
-````
+```
        public class SectionConfig
        {
          public int Value1 { get; set; }
          public int Value2 { get; set; }
        }
-````
+```
    Then you can register with the `IConfigurationStore` like this:
-````
+```
        private readonly IConfigurationStore _config;
        public void Initialize()
        {
@@ -164,7 +164,7 @@ A: No, you can register for notifications at any level of the configuration heir
        private void Section2Changed(SectionConfig section2)
        {
        }
-````
+```
 ---
 
 Q: Can I implement my own source of configuration data?
@@ -212,11 +212,11 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
    To do this, construct an instance of `ConfigurationManagerSource` and call it's 
    `LoadConfiguration()` method. Then register for changes with the path /appSettings/name.
    For example if you have this your my web.config file:
-````
+```
        <appSettings>
          <add key="cacheDuration" value="34"/>
        </appSettings>
-````
+```
    You can register for changes in cache duration with this code:
 
        private readonly IConfigurationStore _config;
@@ -227,7 +227,7 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
        public void CacheDurationChanged(int cacheDuration)
        {
        }
-````
+```
 
 ---
 
@@ -239,3 +239,87 @@ A: Yes, when you call the `Register<T>()` method of `IConfigurationStore` you ca
    configuration data.
 
 ---
+
+Q: What is your recommended best practice for managing config?
+
+A: I recommend that you define a class that serializes to the config values you want. this
+   is extensible later. For example if you are writting a logger, and need to confgure the
+   file path, even though you only have one config value and you might be tempted to
+   register a string in the config file, I suggest you regisrer a class with one property
+   instead, because it makes it easy to add more config options later.
+   In this example, the `LoggerConfiguration` class has properties that will be deserialized
+   from the configuration data. It also has a default public constructor that specifies the 
+   default values that apply when these properties are not configured.
+   When the notification handler is registered, it constructs a default instance of 
+   `LoggerConfiguration` that will be used when the entire logger configuration is absent
+   from the configuration data.
+   The configuration JSON should be similar to `{"myapp":{"logger":{"filePath":"L:\\logfile.txt"}}}`
+
+```
+    public class Logger: IDisposable
+	{
+	   private readonly IDisposable _configurationNotifier;
+
+	   public Logger(IConfigurationStore configurationStore)
+	   {
+	      _configurationNotifier = configurationStore.Register("/myapp/logger", SetConfiguration, new LoggerConfiguration());
+	   }
+
+	   public void Dispose()
+	   {
+	      _configurationNotifier.Dispose();
+	   }
+
+	   private void SetConfiguration(LoggerConfiguration loggerConfiguration)
+	   {
+	      // ... etc
+	   }
+
+	   public class LoggerConfiguration
+	   {
+	      public LoggerConfiguration()
+		  {
+		    FilePath = @"C:\Temp\Log.txt";
+		  }
+
+	      public string FilePath { get; set; }
+	   }
+	}
+```
+
+---
+
+Q: What is your recommended best practice for specifying paths in the config data?
+
+A: I recommend that you have 2 or three levels deep, with the application name or library name in the 
+   first level, then the class or module name second level. And if the second level is a module, then
+   the class name at the third level.
+   For example if your application is called MyApp and it uses third party libraries called Prius and
+   Urchin, you will have config that has similar structure to what is shown below. In this example class 1
+   from module 1 would register for config changes in `/myApp/module1/class1`.
+```
+   {
+       "myApp":
+	   {
+	       "myClass":{"setting1":value1, "setting2":value2},
+	        "module1":
+			{
+			    "class1":{"setting1":value1, "setting2":value2},
+			    "class2":{"setting1":value1, "setting2":value2},
+			    "class3":{"setting1":value1, "setting2":value2}
+			},
+			"module2":
+			{
+			    "class1":{"setting1":value1, "setting2":value2},
+			    "class2":{"setting1":value1, "setting2":value2},
+			    "class3":{"setting1":value1, "setting2":value2}
+			}
+	   },
+	   "prius":
+	   {
+	   },
+	   "urchin":
+	   {
+	   }
+   }
+```

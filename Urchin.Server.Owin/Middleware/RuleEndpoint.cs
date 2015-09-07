@@ -77,7 +77,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetRule(IOwinContext context, string name)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             var ruleSet = _configRules.GetRuleSet(clientCredentials);
             if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
@@ -96,14 +96,14 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task UpdateRule(IOwinContext context, string name, RuleDto rule)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             _configRules.UpdateRule(clientCredentials, name, rule);
             return Json(context, new PostResponseDto { Success = true });
         }
 
         private Task DeleteRule(IOwinContext context, string name)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             _configRules.DeleteRule(clientCredentials, name);
             return Json(context, new PostResponseDto { Success = true });
         }

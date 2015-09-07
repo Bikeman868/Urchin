@@ -67,7 +67,7 @@ namespace Urchin.Server.Shared.Rules
             return MergeRules(applicableRules, environment, machine, application, instance);
         }
 
-        public JObject TestConfig(IClientCredentials clientCredentials, RuleSetDto ruleSet, string environment, string machine, string application, string instance)
+        public JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -332,6 +332,8 @@ namespace Urchin.Server.Shared.Rules
 
             Func<string, uint> parseIp = (ip) =>
             {
+                if (ip.Contains(':')) return 0; // IPv6 address
+
                 var parts = ip.Split('.');
                 if (parts.Length != 4)
                     throw new Exception("Invalid IP address format");

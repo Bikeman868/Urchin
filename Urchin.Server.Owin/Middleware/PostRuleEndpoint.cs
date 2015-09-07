@@ -60,7 +60,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task CreateRule(IOwinContext context, RuleDto rule)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             _configRules.AddRules(clientCredentials, new List<RuleDto> { rule });
             return Json(context, new PostResponseDto { Success = true });
         }

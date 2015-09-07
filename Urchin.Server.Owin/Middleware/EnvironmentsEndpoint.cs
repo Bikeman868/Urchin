@@ -69,14 +69,14 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetEnvironments(IOwinContext context)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             var rules = _configRules.GetRuleSet(clientCredentials);
             return Json(context, rules.Environments);
         }
 
         private Task UpdateEnvironments(IOwinContext context, List<EnvironmentDto> environments)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             _configRules.SetEnvironments(clientCredentials, environments);
             return Json(context, new PostResponseDto { Success = true });
         }

@@ -127,6 +127,7 @@ namespace Urchin.Server.Owin
         {
             try
             {
+                app.Use(unityContainer.Resolve<Middleware.LogonEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.UiEndpoint>().Invoke);

@@ -313,7 +313,7 @@ namespace Urchin.Server.Tests
             var dev1Staging = _configRules.GetConfig(stagingClient, "", "dev1", "myApp", "");
             var dev1Development = _configRules.GetConfig(developmentClient, "", "dev1", "myApp", "");
 
-            var emptyConfig = "{}";
+            const string emptyConfig = "{}";
 
             Assert.IsTrue(web1Production.ToString().IndexOf("web1.mysite.com") > 0);
             Assert.AreEqual(emptyConfig, web1Staging.ToString());
@@ -326,6 +326,137 @@ namespace Urchin.Server.Tests
             Assert.IsTrue(dev1Production.ToString().IndexOf("localhost/mysite") > 0);
             Assert.IsTrue(dev1Staging.ToString().IndexOf("localhost/mysite") > 0);
             Assert.IsTrue(dev1Development.ToString().IndexOf("localhost/mysite") > 0);
+        }
+
+        [TestMethod]
+        public void Should_not_retrieve_rules_from_restricted_environment()
+        {
+            _configRules.Clear(null);
+            SetupSecureEnvironments();
+
+            var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
+            var stagingClient = new ClientCredentials { IpAddress = "192.168.1.99" };
+            var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
+
+            var productionRules = _configRules.GetRuleSet(productionClient).Rules;
+            var stagingRules = _configRules.GetRuleSet(stagingClient).Rules;
+            var developmentRules = _configRules.GetRuleSet(developmentClient).Rules;
+
+            Assert.AreEqual(3, productionRules.Count);
+            Assert.AreEqual(2, stagingRules.Count);
+            Assert.AreEqual(1, developmentRules.Count);
+
+            Assert.AreEqual("Production Environment", productionRules[0].RuleName);
+            Assert.AreEqual("Staging Environment", productionRules[1].RuleName);
+            Assert.AreEqual("Development Environment", productionRules[2].RuleName);
+
+            Assert.AreEqual("Staging Environment", stagingRules[0].RuleName);
+            Assert.AreEqual("Development Environment", stagingRules[1].RuleName);
+
+            Assert.AreEqual("Development Environment", developmentRules[0].RuleName);
+        }
+
+        [TestMethod]
+        public void Should_not_add_rules_for_restricted_environments()
+        {
+            _configRules.Clear(null);
+            SetupSecureEnvironments();
+
+            var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
+            var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
+
+            var exception = false;
+            try
+            {
+                _configRules.AddRules(developmentClient, new List<RuleDto>
+                {
+                    new RuleDto
+                    {
+                        RuleName = "Test Rule",
+                        Environment = "Production",
+                        Application = "MyNewApp"
+                    }
+                });
+
+            }
+            catch
+            {
+                exception = true;
+            }
+
+            var newRules = _configRules.GetRuleSet(productionClient).Rules;
+
+            Assert.IsTrue(exception);
+            Assert.AreEqual(3, newRules.Count);
+            Assert.IsFalse(newRules.Any(r => r.RuleName == "Test Rule"));
+        }
+
+        [TestMethod]
+        public void Should_not_add_rules_for_restricted_machines()
+        {
+            _configRules.Clear(null);
+            SetupSecureEnvironments();
+
+            var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
+            var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
+
+            var exception = false;
+            try
+            {
+                _configRules.AddRules(developmentClient, new List<RuleDto>
+                {
+                    new RuleDto
+                    {
+                        RuleName = "Test Rule",
+                        Machine = "web2",
+                        Application = "MyNewApp"
+                    }
+                });
+
+            }
+            catch
+            {
+                exception = true;
+            }
+
+            var newRules = _configRules.GetRuleSet(productionClient).Rules;
+
+            Assert.IsTrue(exception);
+            Assert.AreEqual(3, newRules.Count);
+            Assert.IsFalse(newRules.Any(r => r.RuleName == "Test Rule"));
+        }
+
+        [TestMethod]
+        public void Should_not_update_rules_for_restricted_environments()
+        {
+            _configRules.Clear(null);
+            SetupSecureEnvironments();
+
+            var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
+            var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
+
+            var exception = false;
+            try
+            {
+                _configRules.UpdateRule(developmentClient, "Production Environment", 
+                    new RuleDto
+                    {
+                        RuleName = "Production Environment",
+                        Environment = "Development",
+                        Application = "MyNewApp"
+                    });
+            }
+            catch
+            {
+                exception = true;
+            }
+
+            var newRules = _configRules.GetRuleSet(productionClient).Rules;
+
+            Assert.IsTrue(exception);
+            Assert.AreEqual(3, newRules.Count);
+            Assert.AreEqual("Production Environment", newRules[0].RuleName);
+            Assert.AreEqual("Production", newRules[0].Environment);
         }
 
         private void SetupSecureEnvironments()

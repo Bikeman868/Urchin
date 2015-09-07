@@ -70,7 +70,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetDefaultEnvironment(IOwinContext context)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             var rules = _configRules.GetRuleSet(clientCredentials);
             return Json(context, rules.DefaultEnvironmentName);
         }
@@ -83,7 +83,7 @@ namespace Urchin.Server.Owin.Middleware
             if (requestBody.Length > 80)
                 return Json(context, new PostResponseDto { Success = false, ErrorMessage = "The default environment name is too long" });
 
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             _configRules.SetDefaultEnvironment(clientCredentials, requestBody);
 
             return Json(context, new PostResponseDto { Success = true });

@@ -42,7 +42,7 @@ namespace Urchin.Server.Owin.Middleware
             if (string.IsNullOrWhiteSpace(application))
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Application parameter is required");
 
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             var config = _configRules.TraceConfig(clientCredentials, environment, machine, application, instance);
 

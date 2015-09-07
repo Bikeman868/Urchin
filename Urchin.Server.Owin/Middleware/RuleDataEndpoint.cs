@@ -41,7 +41,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetRules(IOwinContext context)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             var ruleSet = _configRules.GetRuleSet(clientCredentials);
             if (ruleSet == null)

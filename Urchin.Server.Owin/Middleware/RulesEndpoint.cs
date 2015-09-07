@@ -47,7 +47,6 @@ namespace Urchin.Server.Owin.Middleware
                 return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to deserialize request body to a list of rules. " + ex.Message });
             }
 
-
             try
             {
                 if (request.Method == "POST")
@@ -66,7 +65,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetRules(IOwinContext context)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             var ruleSet = _configRules.GetRuleSet(clientCredentials);
             if (ruleSet == null || ruleSet.Rules == null)
@@ -77,14 +76,14 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task CreateRules(IOwinContext context, List<RuleDto> rules)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             _configRules.AddRules(clientCredentials, rules);
             return Json(context, new PostResponseDto { Success = true });
         }
 
         private Task UpdateRules(IOwinContext context, List<RuleDto> rules)
         {
-            var clientCredentials = new ClientCredentialsDto { IpAddress = context.Request.RemoteIpAddress };
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             foreach (var rule in rules)
                 _configRules.UpdateRule(clientCredentials, rule.RuleName, rule);

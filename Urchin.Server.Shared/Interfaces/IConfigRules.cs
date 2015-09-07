@@ -8,7 +8,7 @@ namespace Urchin.Server.Shared.Interfaces
     {
         JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
         JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
-        JObject TestConfig(IClientCredentials clientCredentials, RuleSetDto ruleSet, string environment, string machine, string application, string instance);
+        JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance);
 
         RuleSetDto GetRuleSet(IClientCredentials clientCredentials);
 
