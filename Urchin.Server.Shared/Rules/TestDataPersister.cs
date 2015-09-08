@@ -34,10 +34,33 @@ namespace Urchin.Server.Shared.Rules
 
             _environments = new List<EnvironmentDto>
             {
-                new EnvironmentDto {EnvironmentName = "Production", Machines = new List<string>()},
-                new EnvironmentDto {EnvironmentName = "Staging", Machines = new List<string>()},
-                new EnvironmentDto {EnvironmentName = "Integration", Machines = new List<string>()},
-                new EnvironmentDto {EnvironmentName = "Test", Machines = new List<string>()}
+                new EnvironmentDto 
+                {
+                    EnvironmentName = "Production", Machines = new List<string>(),
+                    SecurityRules = new List<SecurityRuleDto>
+                    {
+                        new SecurityRuleDto
+                        {
+                            AllowedIpStart = "192.168.0.1",
+                            AllowedIpEnd = "192.168.0.4"
+                        }
+                    }
+                },
+                new EnvironmentDto 
+                {
+                    EnvironmentName = "Staging", Machines = new List<string>(),
+                    SecurityRules = new List<SecurityRuleDto>{}
+                },
+                new EnvironmentDto 
+                {
+                    EnvironmentName = "Integration", Machines = new List<string>(),
+                    SecurityRules = new List<SecurityRuleDto>{}
+                },
+                new EnvironmentDto 
+                {
+                    EnvironmentName = "Test", Machines = new List<string>(),
+                    SecurityRules = new List<SecurityRuleDto>{}
+                }
             };
         }
 

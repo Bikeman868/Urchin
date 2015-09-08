@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -68,13 +69,15 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetEnvironments(IOwinContext context)
         {
-            var rules = _configRules.GetRuleSet();
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            var rules = _configRules.GetRuleSet(clientCredentials);
             return Json(context, rules.Environments);
         }
 
         private Task UpdateEnvironments(IOwinContext context, List<EnvironmentDto> environments)
         {
-            _configRules.SetEnvironments(environments);
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            _configRules.SetEnvironments(clientCredentials, environments);
             return Json(context, new PostResponseDto { Success = true });
         }
     }

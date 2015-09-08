@@ -53,20 +53,37 @@ div
 {
     background: aliceblue;
     float: left;
-    width:200px;
+    width: 200px;
     border: 1px solid navy;
 }
 
 #centreDiv
 {
-    padding:10px;
+    padding: 10px;
     float: left;
 }
 
 #rightDiv
 {
     float: right;
-    width:200px;
+    width: 200px;
+}
+
+#headingDiv
+{
+    float: left;
+    width: auto;
+}
+
+#userDiv
+{
+    float: right;
+    width: 200px;
+}
+
+span.button
+{
+    cursor: pointer;
 }
 
 .toolBarButton
@@ -127,6 +144,20 @@ div
     list-style: none;
 }
 
+.machineName
+{
+    text-transform: uppercase;
+}
+
+.securityRuleList
+{
+    list-style: none;
+}
+
+.securityRule
+{
+}
+
 .selectionItem
 {
     margin: 4px;
@@ -176,6 +207,13 @@ div
     width: 150px;
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.inputLogon
+{
+    font-weight: bold;
+    width: 90px;
+    margin: 2px;
 }
 
 span.jsonName

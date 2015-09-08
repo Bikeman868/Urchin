@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -69,7 +70,8 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetDefaultEnvironment(IOwinContext context)
         {
-            var rules = _configRules.GetRuleSet();
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            var rules = _configRules.GetRuleSet(clientCredentials);
             return Json(context, rules.DefaultEnvironmentName);
         }
 
@@ -81,7 +83,8 @@ namespace Urchin.Server.Owin.Middleware
             if (requestBody.Length > 80)
                 return Json(context, new PostResponseDto { Success = false, ErrorMessage = "The default environment name is too long" });
 
-            _configRules.SetDefaultEnvironment(requestBody);
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            _configRules.SetDefaultEnvironment(clientCredentials, requestBody);
 
             return Json(context, new PostResponseDto { Success = true });
         }

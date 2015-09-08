@@ -2,7 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'FormBuilder.dart';
+import '../Html/FormBuilder.dart';
+import '../Html/JsonHighlighter.dart';
 import '../Dto.dart';
 import '../Data.dart';
 import '../ApplicationEvents.dart';
@@ -24,7 +25,7 @@ class RuleDetailComponent
   
 	void displayIn(containerDiv)
 	{
-		var formBuilder = new FormBuilder(containerDiv);
+		var formBuilder = new FormBuilder();
 
 		_heading = formBuilder.addHeading('Rule Details', 1);
 		_ruleName = formBuilder.addLabeledField('Rule name:');
@@ -38,6 +39,8 @@ class RuleDetailComponent
 
 		formBuilder.addHeading('Variables', 2);
 		_variables = formBuilder.addContainer();
+
+		formBuilder.addTo(containerDiv);
 
 		ApplicationEvents.onRuleSelected.listen(_ruleSelected);
 	}
@@ -55,18 +58,19 @@ class RuleDetailComponent
 		_instance.text = rule.instance;
 		_application.text = rule.application;
 
-		FormBuilder.replaceJSON(_config, rule.config);
+		JsonHighlighter.displayIn(_config, rule.config);
 
 		_variables.children.clear();
 		if (rule.variables != null && rule.variables.length > 0)
 		{
-			var formBuilder = new FormBuilder(_variables);
+			var formBuilder = new FormBuilder();
 			for (var variable in rule.variables)
 			{
 				formBuilder.addHeading(variable.name, 3);
 				var value = formBuilder.addContainer();
-				FormBuilder.replaceJSON(value, variable.value);
+				JsonHighlighter.displayIn(value, variable.value);
 			}
+			formBuilder.addTo(_variables);
 		}
 	}
 }

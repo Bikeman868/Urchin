@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -46,7 +47,6 @@ namespace Urchin.Server.Owin.Middleware
                 return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to deserialize request body to a list of rules. " + ex.Message });
             }
 
-
             try
             {
                 if (request.Method == "POST")
@@ -65,7 +65,9 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetRules(IOwinContext context)
         {
-            var ruleSet = _configRules.GetRuleSet();
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+
+            var ruleSet = _configRules.GetRuleSet(clientCredentials);
             if (ruleSet == null || ruleSet.Rules == null)
                 throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
 
@@ -74,14 +76,17 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task CreateRules(IOwinContext context, List<RuleDto> rules)
         {
-            _configRules.AddRules(rules);
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            _configRules.AddRules(clientCredentials, rules);
             return Json(context, new PostResponseDto { Success = true });
         }
 
         private Task UpdateRules(IOwinContext context, List<RuleDto> rules)
         {
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+
             foreach (var rule in rules)
-                _configRules.UpdateRule(rule.RuleName, rule);
+                _configRules.UpdateRule(clientCredentials, rule.RuleName, rule);
 
             return Json(context, new PostResponseDto { Success = true });
         }

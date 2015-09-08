@@ -11,11 +11,12 @@ class Data
 	Map<String, RuleDto> rules;
 	Map<String, EnvironmentDto> environments;
 
-	Future loadAll() async
+	Future<Data> loadAll() async
 	{
 		await loadRuleNames();
 		await loadRules();
 		await loadEnvironments();
+		return this;
 	}
 
 	loadRuleNames() async

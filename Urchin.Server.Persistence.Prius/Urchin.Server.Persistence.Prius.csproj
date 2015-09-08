@@ -78,6 +78,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseRecords\SecurityRuleRecord.cs" />
     <Compile Include="DatabaseRecords\Mappings.cs" />
     <Compile Include="DatabaseRecords\EnvironmentRecord.cs" />
     <Compile Include="DatabaseRecords\RuleRecord.cs" />
@@ -101,10 +102,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
-copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
+    <PostBuildEvent>ECHO copy $(TargetPath) $(SolutionDir)Urchin.Server.Owin\bin
+ECHO copy $(TargetDir)Prius*.dll $(SolutionDir)Urchin.Server.Owin\bin
+ECHO copy $(TargetDir)MySQL*.dll $(SolutionDir)Urchin.Server.Owin\bin
+ECHO copy $(TargetDir)Npgsql*.dll $(SolutionDir)Urchin.Server.Owin\bin
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

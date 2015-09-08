@@ -15,6 +15,12 @@
 	    physicalPath:"~/ui/build/web",
 		faviconUrl:"/favicon.ico",
 		cache:false
+	  },
+	  logon:
+	  {
+	    administratorPassword:"password",
+		sessionExpiry:"00:45:00",
+		cookieName:"urchin_session_token"
 	  }
 	}
   },

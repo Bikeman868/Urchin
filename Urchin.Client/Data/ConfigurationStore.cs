@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -9,10 +10,13 @@ using Urchin.Client.Interfaces;
 namespace Urchin.Client.Data
 {
     /// <summary>
-    /// 
+    /// The configuration store keeps the previous config settings,
+    /// calculates a diff when new configuration is supplied, and
+    /// makes notification callbacks to classes that registerd to
+    /// be notified when specific elements of the config change.
     /// </summary>
     /// <remarks>
-    /// This class is designed to be correct, not efficient. Ths
+    /// This class is designed to be correct, not efficient. The
     /// assumption when building this class is that configuration changes
     /// infrequently and performance is not an issue. This class also
     /// asumes that applications will not call the Get method every
@@ -39,8 +43,8 @@ namespace Urchin.Client.Data
             IConfigurationValidator validator = null,
             IErrorLogger errorLogger = null)
         {
-            _validator = validator;
-            _errorLogger = errorLogger;
+            _validator = validator ?? new DefaultValidator();
+            _errorLogger = errorLogger ?? new DefaultErrorLogger();
             return this;
         }
 
@@ -129,6 +133,7 @@ namespace Urchin.Client.Data
 
         public void UpdateConfiguration(string jsonText)
         {
+            if (string.IsNullOrWhiteSpace(jsonText)) return;
             if (jsonText == _originalJsonText) return;
 
             var json = JToken.Parse(jsonText);
@@ -328,6 +333,25 @@ namespace Urchin.Client.Data
             {
                 var config = _configurationSource.Get<T>(Path, _defaultValue);
                 _onChangeAction(config);
+            }
+        }
+
+        private class DefaultValidator: IConfigurationValidator
+        {
+            public bool IsValidConfiguration(JToken configuration)
+            {
+                if (configuration == null) return false;
+
+                var jobject = configuration as JObject;
+                return jobject != null && jobject.Properties().Any();
+            }
+        }
+
+        private class DefaultErrorLogger : IErrorLogger
+        {
+            public void LogError(string errorMessage)
+            {
+                Trace.WriteLine("Urchin configuration store: " + errorMessage);
             }
         }
     }

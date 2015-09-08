@@ -30,6 +30,20 @@ class Server
 
 		return HttpRequest.getString(url);
 	}
+
+	static Future<String> getLoggedOnUser()
+		=> HttpRequest.getString('/user');
+
+	static Future<HttpRequest> logon(String userName, String password)
+		=> HttpRequest.request(
+			'/logon', 
+			method: 'POST',
+			sendData: '{"username": "' + userName + '","password": "' + password + '"}',
+			mimeType: 'application/json',
+			responseType: 'application/json');
+
+	static Future<HttpRequest> logoff()
+		=> HttpRequest.request('/logoff', method: 'POST');
 }
 
 class _Server
@@ -45,4 +59,7 @@ class _Server
 
 	static Future<String> getConfig(String machine, String application, String environment, String instance) async
 		=> '{"app":{[{"name":"value"}]}}'
+
+	static Future<String> getLoggedOnUser() async
+		=> 'TestUser';
 }

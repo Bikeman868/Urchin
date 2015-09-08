@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
 using Common.Logging;
 using Prius.Contracts.Interfaces;
 using Urchin.Client.Interfaces;
 using Urchin.Server.Persistence.Prius.DatabaseRecords;
+using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
 
 namespace Urchin.Server.Persistence.Prius
 {
-    public class DatabasePersister: IPersister
+    public class DatabasePersister : IPersister
     {
         private readonly IDisposable _configNotifier;
         private readonly ICommandFactory _commandFactory;
@@ -84,7 +86,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public Shared.DataContracts.RuleDto GetRule(string name)
+        public RuleDto GetRule(string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
@@ -112,7 +114,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public IEnumerable<Shared.DataContracts.RuleDto> GetAllRules()
+        public IEnumerable<RuleDto> GetAllRules()
         {
             return GetRuleNames().Select(GetRule).ToList();
         }
@@ -129,7 +131,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public void InsertOrUpdateRule(Shared.DataContracts.RuleDto rule)
+        public void InsertOrUpdateRule(RuleDto rule)
         {
             _log.Info(m => m("Updating '{0}' rule", rule.RuleName));
             using (var context = _contextFactory.Create(_repositoryName))
@@ -186,7 +188,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public Shared.DataContracts.EnvironmentDto GetEnvironment(string name)
+        public EnvironmentDto GetEnvironment(string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
@@ -215,11 +217,31 @@ namespace Urchin.Server.Persistence.Prius
                         }
                     }
                 }
+
+                using (var command = _commandFactory.CreateStoredProcedure("sp_GetEnvironmentSecurity"))
+                {
+                    command.AddParameter("environmentName", name);
+                    using (var security = context.ExecuteEnumerable<SecurityRuleRecord>(command))
+                    {
+                        environmentDto.SecurityRules = new List<SecurityRuleDto>();
+                        if (security != null)
+                        {
+                            foreach (var rule in security)
+                            {
+                                environmentDto.SecurityRules.Add(new SecurityRuleDto
+                                {
+                                    AllowedIpStart = rule.StartIp,
+                                    AllowedIpEnd = rule.EndIp
+                                });
+                            }
+                        }
+                    }
+                }
                 return environmentDto;
-           }
+            }
         }
 
-        public IEnumerable<Shared.DataContracts.EnvironmentDto> GetAllEnvironments()
+        public IEnumerable<EnvironmentDto> GetAllEnvironments()
         {
             return GetEnvironmentNames().Select(GetEnvironment).ToList();
         }
@@ -236,7 +258,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public void InsertOrUpdateEnvironment(Shared.DataContracts.EnvironmentDto environment)
+        public void InsertOrUpdateEnvironment(EnvironmentDto environment)
         {
             _log.Info(m => m("Updating '{0}' environment", environment.EnvironmentName));
             using (var context = _contextFactory.Create(_repositoryName))
@@ -246,11 +268,13 @@ namespace Urchin.Server.Persistence.Prius
                     command.AddParameter("environmentName", environment.EnvironmentName);
                     context.ExecuteNonQuery(command);
                 }
+
                 using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteEnvironmentMachines"))
                 {
                     command.AddParameter("environmentName", environment.EnvironmentName);
                     context.ExecuteNonQuery(command);
                 }
+
                 if (environment.Machines != null && environment.Machines.Count > 0)
                 {
                     using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentMachine"))
@@ -264,6 +288,29 @@ namespace Urchin.Server.Persistence.Prius
                         }
                     }
                 }
+
+                using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteEnvironmentSecurity"))
+                {
+                    command.AddParameter("environmentName", environment.EnvironmentName);
+                    context.ExecuteNonQuery(command);
+                }
+
+                if (environment.SecurityRules != null && environment.SecurityRules.Count > 0)
+                {
+                    using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentSecurity"))
+                    {
+                        command.AddParameter("environmentName", environment.EnvironmentName);
+                        var startIp = command.AddParameter("startIp", SqlDbType.NVarChar, ParameterDirection.Input);
+                        var endIp = command.AddParameter("endIp", SqlDbType.NVarChar, ParameterDirection.Input);
+                        foreach (var securityRule in environment.SecurityRules)
+                        {
+                            startIp.Value = securityRule.AllowedIpStart;
+                            endIp.Value = securityRule.AllowedIpEnd;
+                            context.ExecuteNonQuery(command);
+                        }
+                    }
+                }
+
             }
         }
     }

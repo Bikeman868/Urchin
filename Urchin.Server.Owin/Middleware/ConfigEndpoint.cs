@@ -9,6 +9,7 @@ using Microsoft.Owin;
 using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -41,7 +42,9 @@ namespace Urchin.Server.Owin.Middleware
             if (string.IsNullOrWhiteSpace(application))
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Application parameter is required");
 
-            var config = _configRules.GetConfig(environment, machine, application, instance);
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+
+            var config = _configRules.GetConfig(clientCredentials, environment, machine, application, instance);
 
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(config.ToString(Formatting.None));

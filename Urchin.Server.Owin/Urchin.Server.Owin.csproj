@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Middleware\ApiBase.cs" />
+    <Compile Include="Middleware\LogonEndpoint.cs" />
     <Compile Include="Middleware\UiEndpoint.cs" />
     <Compile Include="Middleware\DefaultEnvironmentEndpoint.cs" />
     <Compile Include="Middleware\PostRuleEndpoint.cs" />
@@ -140,8 +141,11 @@
     <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
     <Content Include="Ui\web\Components\EnvironmentListComponent.dart" />
     <Content Include="Ui\web\Components\EnvironmentDetailComponent.dart" />
-    <Content Include="Ui\web\Components\FormBuilder.dart" />
+    <Content Include="Ui\web\Html\FormBuilder.dart" />
     <Content Include="Ui\web\Components\TestQueryComponent.dart" />
+    <Content Include="Ui\web\Components\LogonComponent.dart" />
+    <Content Include="Ui\web\Html\HtmlBuilder.dart" />
+    <Content Include="Ui\web\Html\JsonHighlighter.dart" />
     <None Include="Urchin.json.postman_collection" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

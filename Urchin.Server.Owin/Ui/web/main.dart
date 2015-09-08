@@ -11,26 +11,30 @@ import 'Components/RuleDetailComponent.dart';
 import 'Components/EnvironmentListComponent.dart';
 import 'Components/EnvironmentDetailComponent.dart';
 import 'Components/TestQueryComponent.dart';
+import 'Components/LogonComponent.dart';
 
 Data data;
 
 main() async
 { 
   data = new Data();
-  await data.loadAll();
   _setupUI();
 }
 
 void _setupUI()
 {
-	var toolBarDiv = querySelector('#toolBarDiv');
+	var userDiv = querySelector('#userDiv');
+	var logon = new LogonComponent(data);
+	logon.displayIn(userDiv);
 
+	var toolBarDiv = querySelector('#toolBarDiv');
 	var toolBar = new ToolBarComponent();
 	toolBar.displayIn(toolBarDiv);
 
 	_setupRulesTab();
 
 	ApplicationEvents.onTabChanged.listen(_tabChanged);
+
 }
 
 void _tabChanged(TabChangedEvent e)

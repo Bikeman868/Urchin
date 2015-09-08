@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
+using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
@@ -76,7 +77,9 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetRule(IOwinContext context, string name)
         {
-            var ruleSet = _configRules.GetRuleSet();
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+
+            var ruleSet = _configRules.GetRuleSet(clientCredentials);
             if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
                 throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
 
@@ -93,13 +96,15 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task UpdateRule(IOwinContext context, string name, RuleDto rule)
         {
-            _configRules.UpdateRule(name, rule);
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            _configRules.UpdateRule(clientCredentials, name, rule);
             return Json(context, new PostResponseDto { Success = true });
         }
 
         private Task DeleteRule(IOwinContext context, string name)
         {
-            _configRules.DeleteRule(name);
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            _configRules.DeleteRule(clientCredentials, name);
             return Json(context, new PostResponseDto { Success = true });
         }
     }

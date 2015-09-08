@@ -6,21 +6,21 @@ namespace Urchin.Server.Shared.Interfaces
 {
     public interface IConfigRules
     {
-        JObject GetConfig(string environment, string machine, string application, string instance);
-        JObject TraceConfig(string environment, string machine, string application, string instance);
+        JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
+        JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
         JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance);
 
-        RuleSetDto GetRuleSet();
+        RuleSetDto GetRuleSet(IClientCredentials clientCredentials);
 
-        void Clear();
-        void SetRuleSet(RuleSetDto rules);
+        void Clear(IClientCredentials clientCredentials);
+        void SetRuleSet(IClientCredentials clientCredentials, RuleSetDto rules);
 
-        void SetDefaultEnvironment(string environmentName);
-        void SetEnvironments(List<EnvironmentDto> environments);
+        void SetDefaultEnvironment(IClientCredentials clientCredentials, string environmentName);
+        void SetEnvironments(IClientCredentials clientCredentials, List<EnvironmentDto> environments);
 
-        void AddRules(List<RuleDto> newRules);
-        void UpdateRule(string oldName, RuleDto rule);
-        void DeleteRule(string name);
+        void AddRules(IClientCredentials clientCredentials, List<RuleDto> newRules);
+        void UpdateRule(IClientCredentials clientCredentials, string oldName, RuleDto rules);
+        void DeleteRule(IClientCredentials clientCredentials, string name);
 
         void ReloadFromPersister();
     }

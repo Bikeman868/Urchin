@@ -24,7 +24,7 @@ namespace Urchin.Server.Owin
         {
 
 //#if DEBUG
-//            var endTime = DateTime.UtcNow.AddSeconds(10);
+//            var endTime = DateTime.UtcNow.AddSeconds(60);
 //            while (DateTime.UtcNow < endTime && !System.Diagnostics.Debugger.IsAttached)
 //                System.Threading.Thread.Sleep(100);
 //#endif
@@ -58,7 +58,7 @@ namespace Urchin.Server.Owin
 
             // The code below will dynamically load any IOC registrations from
             // additional libraries that are deployed to the bin folder. This
-            // is the mechanism for replacing the persistence mechanism.
+            // makes it possible to replace the persistence mechanism.
             var registrar = new UnityRegistrar(unityContainer);
             unityContainer.RegisterInstance<IIocRegistrar>(registrar);
             unityContainer.RegisterInstance<IIocFactory>(registrar);
@@ -127,6 +127,7 @@ namespace Urchin.Server.Owin
         {
             try
             {
+                app.Use(unityContainer.Resolve<Middleware.LogonEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.UiEndpoint>().Invoke);

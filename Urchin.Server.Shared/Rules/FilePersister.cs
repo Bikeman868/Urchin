@@ -12,7 +12,7 @@ namespace Urchin.Server.Shared.Rules
     public class FilePersister: IPersister
     {
         private readonly IDisposable _configNotifier;
-        private FileInfo _fileInfo;
+        private string _filePath;
         private DateTime _lastFileTime;
         private RuleSetDto _ruleSet;
 
@@ -29,8 +29,10 @@ namespace Urchin.Server.Shared.Rules
 
         private void SetFilePath(string filePath)
         {
-            _fileInfo = new FileInfo(filePath);
-            if (_fileInfo.Exists)
+            _filePath = filePath;
+
+            var fileInfo = new FileInfo(filePath);
+            if (fileInfo.Exists)
             {
                 Reload();
             }
@@ -42,10 +44,11 @@ namespace Urchin.Server.Shared.Rules
 
         private void Reload()
         {
-            _lastFileTime = _fileInfo.LastWriteTimeUtc;
+            var fileInfo = new FileInfo(_filePath);
+            _lastFileTime = fileInfo.LastWriteTimeUtc;
 
             string content;
-            using (var stream = _fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 using (var streamReader = new StreamReader(stream))
                 {
@@ -63,26 +66,30 @@ namespace Urchin.Server.Shared.Rules
 
         private void CheckForUpdate()
         {
-            if (_fileInfo != null && _fileInfo.Exists && _fileInfo.LastWriteTimeUtc > _lastFileTime)
+            if (_filePath == null) return;
+
+            var fileInfo = new FileInfo(_filePath);
+            if (fileInfo.Exists && fileInfo.LastWriteTimeUtc > _lastFileTime)
                 Reload();
         }
 
         private void SaveChanges()
         {
-            if (_fileInfo == null) return;
+            if (_filePath == null) return;
 
             var content = JsonConvert.SerializeObject(_ruleSet, Formatting.Indented);
 
             try
             {
-                using (var stream = _fileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+                var fileInfo = new FileInfo(_filePath);
+                using (var stream = fileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     using (var streamWriter = new StreamWriter(stream))
                     {
                         streamWriter.Write(content);
                     }
                 }
-                _lastFileTime = _fileInfo.LastWriteTimeUtc;
+                _lastFileTime = fileInfo.LastWriteTimeUtc;
             }
             catch
             {

@@ -54,16 +54,19 @@
   <ItemGroup>
     <Compile Include="DataContracts\ConfigPropertyDto.cs" />
     <Compile Include="DataContracts\ConfigNodeDto.cs" />
+    <Compile Include="DataContracts\SecurityRuleDto.cs" />
     <Compile Include="DataContracts\PostResponseDto.cs" />
     <Compile Include="DataContracts\RuleSetDto.cs" />
     <Compile Include="DataContracts\RuleDto.cs" />
     <Compile Include="DataContracts\VariableDeclarationDto.cs" />
     <Compile Include="DataContracts\EnvironmentDto.cs" />
+    <Compile Include="Interfaces\IClientCredentials.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
     <Compile Include="Interfaces\IIocConfig.cs" />
     <Compile Include="Interfaces\IIocRegistrar.cs" />
     <Compile Include="Interfaces\IMapper.cs" />
     <Compile Include="Interfaces\IPersister.cs" />
+    <Compile Include="Rules\ClientCredentialsDto.cs" />
     <Compile Include="Rules\ConfigRules.cs" />
     <Compile Include="Interfaces\IConfigRules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

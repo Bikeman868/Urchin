@@ -22,7 +22,8 @@ namespace Urchin.Client.Tests
         [TestMethod]
         public void Should_get_value_configuration()
         {
-            var configurationStore = new ConfigurationStore().Initialize();
+            var validator = new Validator { IsValid = true };
+            var configurationStore = new ConfigurationStore().Initialize(validator);
 
             const int testValue = 76534;
             configurationStore.UpdateConfiguration(testValue.ToString());
@@ -34,7 +35,8 @@ namespace Urchin.Client.Tests
         [TestMethod]
         public void Should_get_array_configuration()
         {
-            var configurationStore = new ConfigurationStore().Initialize();
+            var validator = new Validator { IsValid = true };
+            var configurationStore = new ConfigurationStore().Initialize(validator);
 
             configurationStore.UpdateConfiguration("[3,2,1]");
             var root = configurationStore.Get<int[]>("/");
@@ -344,6 +346,30 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(0, errorLogger.Errors.Count);
             Assert.AreEqual(45, value.Field1);
         }
+
+        [TestMethod]
+        public void Should_use_default_validator_that_rejects_empty_configuration()
+        {
+            var configurationStore = new ConfigurationStore().Initialize();
+
+            configurationStore.UpdateConfiguration("{field1:1,field2:2}");
+            var root1 = configurationStore.Get<TestClassA>("/");
+
+            Assert.IsNotNull(root1);
+            Assert.AreEqual(1, root1.Field1);
+            Assert.AreEqual(2, root1.Field2);
+
+            configurationStore.UpdateConfiguration(null);
+            configurationStore.UpdateConfiguration("");
+            configurationStore.UpdateConfiguration("{}");
+
+            var root2 = configurationStore.Get<TestClassA>("/");
+
+            Assert.IsNotNull(root2);
+            Assert.AreEqual(1, root2.Field1);
+            Assert.AreEqual(2, root2.Field2);
+        }
+
 
         public class Validator : IConfigurationValidator
         {

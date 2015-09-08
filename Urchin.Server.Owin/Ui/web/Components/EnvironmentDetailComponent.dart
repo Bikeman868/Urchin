@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'FormBuilder.dart';
+import '../Html/FormBuilder.dart';
 import '../Dto.dart';
 import '../Data.dart';
 import '../ApplicationEvents.dart';
@@ -11,23 +11,23 @@ class EnvironmentDetailComponent
 {
 	Data _data;
 
-	SpanElement _heading1;
-	SpanElement _heading2;
-	SpanElement _environmentName;
-	UListElement _machines;
+	Element _heading1;
+	Element _heading2;
+	Element _environmentName;
+	Element _machines;
+	Element _rules;
 
 	EnvironmentDetailComponent(this._data);
   
 	void displayIn(containerDiv)
 	{
-		var formBuilder = new FormBuilder(containerDiv);
-		//_heading1 = formBuilder.addHeading('Environment Details', 1);
-		//_environmentName = formBuilder.addLabeledField('Environment name:');
-		_heading2 = formBuilder.addHeading('Machines in this environment', 1);
+		var formBuilder = new FormBuilder();
+		_heading1 = formBuilder.addHeading('Machines in this environment', 2);
+		_machines = formBuilder.addList('machineList');
+		_heading2 = formBuilder.addHeading('Rules for this environment', 2);
+		_rules = formBuilder.addList('securityRuleList');
 
-		_machines = new UListElement();
-		_machines.classes.add('machineList');
-		containerDiv.children.add(_machines);
+		formBuilder.addTo(containerDiv);
 
 		ApplicationEvents.onEnvironmentSelected.listen(_environmentSelected);
 	}
@@ -36,9 +36,8 @@ class EnvironmentDetailComponent
 	{
 		EnvironmentDto environment = _data.environments[e.environmentName];
 
-		//_heading1.text = environment.name + ' Environment';
-		_heading2.text = 'Machines in ' + environment.name;
-		//_environmentName.text = environment.name;
+		_heading1.text = 'Machines in ' + environment.name + ' Environment';
+		_heading2.text = 'Rules for ' + environment.name + ' Environment';
 
 		_machines.children.clear();
 		if (environment.machines != null)
@@ -51,5 +50,17 @@ class EnvironmentDetailComponent
 				_machines.children.add(element);
 			}
 		}
-	}
+
+		_rules.children.clear();
+		if (environment.securityRules != null)
+		{
+			for (SecurityRuleDto rule in environment.securityRules)
+			{
+				var element = new LIElement();
+				element.text = 'Allowed IP ' + rule.startIp + ' => ' + rule.endIp;
+				element.classes.add('securityRule');
+				_rules.children.add(element);
+			}
+		}
+}
 }
