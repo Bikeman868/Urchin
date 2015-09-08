@@ -33,6 +33,17 @@ class Server
 
 	static Future<String> getLoggedOnUser()
 		=> HttpRequest.getString('/user');
+
+	static Future<String> logon(String userName, String password)
+		=> HttpRequest.request(
+			'/logon', 
+			method: 'POST',
+			sendData: '{"username": "' + userName + '","password": "' + password + '"}',
+			mimeType: 'application/json',
+			responseType: 'application/json');
+
+	static Future<String> logoff()
+		=> HttpRequest.request('/logoff', method: 'POST');
 }
 
 class _Server

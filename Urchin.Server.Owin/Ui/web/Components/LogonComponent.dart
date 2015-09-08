@@ -19,8 +19,8 @@ class LogonComponent
 	Element _userNameSpanElement;
 	Element _logOnButton;
   
-	Element _userNameInputElement;
-	Element _passwordInputElement;
+	InputElement _userNameInputElement;
+	InputElement _passwordInputElement;
 	Element _logOffButton;
 
 	LogonComponent(Data data)
@@ -58,7 +58,7 @@ class LogonComponent
 
 		if (e.isLoggedOn)
 		{
-			_userNameInputElement.text = e.userName;
+			_userNameInputElement.value = e.userName;
 			_loggedOnUi.displayIn(_container);
 		}
 		else
@@ -72,10 +72,24 @@ class LogonComponent
 
 	void _logonClick(MouseEvent e)
 	{
-		ApplicationEvents.userChanged('Administrator');
+		var logon = Server.logon(_userNameInputElement.value, _passwordInputElement.value);
+		logon.then((response) => _loggedOn());
+	}
+
+	void _loggedOn()
+	{
+		_passwordInputElement.value = '';
+		ApplicationEvents.userChanged(_userNameInputElement.value);
 	}
   
 	void _logoffClick(MouseEvent e)
+	{
+		_passwordInputElement.value = '';
+		var logoff = Server.logoff();
+		logoff.then((response) => _loggedOff());
+	}
+
+	void _loggedOff()
 	{
 		ApplicationEvents.userChanged('');
 	}
