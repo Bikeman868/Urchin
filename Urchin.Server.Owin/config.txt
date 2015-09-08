@@ -14,7 +14,7 @@
 	    url:"/ui",
 	    physicalPath:"~/ui/build/web",
 		faviconUrl:"/favicon.ico",
-		cache:false
+		cache: false
 	  },
 	  logon:
 	  {

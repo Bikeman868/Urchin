@@ -6,12 +6,12 @@ using System.Reflection;
 using Common.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
-using Microsoft.Owin.Extensions;
 using Microsoft.Practices.Unity;
 using Owin;
 using Urchin.Server.Owin;
 using Urchin.Server.Shared.Interfaces;
 using Urchin.Server.Shared.Rules;
+
 using Mapper = Urchin.Server.Shared.TypeMappings.Mapper;
 
 [assembly: OwinStartup(typeof(Startup))]
@@ -22,24 +22,24 @@ namespace Urchin.Server.Owin
     {
         public void Configuration(IAppBuilder app)
         {
-
-//#if DEBUG
-//            var endTime = DateTime.UtcNow.AddSeconds(60);
-//            while (DateTime.UtcNow < endTime && !System.Diagnostics.Debugger.IsAttached)
-//                System.Threading.Thread.Sleep(100);
-//#endif
-
-            var iocContainer = ConfigureUnity();
-            var configSource = ConfigureUrchinClient(iocContainer);
-            ConfigureMiddleware(app, iocContainer);
-
-            var properties = new AppProperties(app.Properties);
-            var token = properties.OnAppDisposing;
-            token.Register(() =>
+            try
             {
-                configSource.Dispose();
-                iocContainer.Dispose();
-            });
+                var iocContainer = ConfigureUnity();
+                var configSource = ConfigureUrchinClient(iocContainer);
+                ConfigureMiddleware(app, iocContainer);
+
+                var properties = new AppProperties(app.Properties);
+                var token = properties.OnAppDisposing;
+                token.Register(() =>
+                {
+                    configSource.Dispose();
+                    iocContainer.Dispose();
+                });
+            }
+            catch (Exception ex)
+            {
+                ConfigureFailedMiddleware(app, ex);
+            }
         }
 
         private UnityContainer ConfigureUnity()
@@ -151,7 +151,13 @@ namespace Urchin.Server.Owin
                     innerException = innerException.InnerException;
                 }
                 log.FatalFormat("Failed to construct OWIN handler chain.\r\n{0}\r\n{1}\r\n{2}", ex.Message, ex.StackTrace, innerExceptions);
+                throw;
             }
+        }
+
+        private void ConfigureFailedMiddleware(IAppBuilder app, Exception exception)
+        {
+            app.Use(new Middleware.FailedSetupMiddleware(exception).Invoke);
         }
 
         /// <summary>
@@ -169,8 +175,11 @@ namespace Urchin.Server.Owin
             if (codeBaseUri.IsFile)
             {
                 var binFolderPath = Path.GetDirectoryName(codeBaseUri.LocalPath);
-                var siteFolderPath = Directory.GetParent(binFolderPath).FullName;
-                fileName = Path.Combine(siteFolderPath, fileName);
+                if (binFolderPath != null)
+                {
+                    var siteFolderPath = Directory.GetParent(binFolderPath).FullName;
+                    fileName = Path.Combine(siteFolderPath, fileName);
+                }
             }
             var fileInfo = new FileInfo(fileName);
 

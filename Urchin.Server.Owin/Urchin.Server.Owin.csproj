@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Middleware\ApiBase.cs" />
+    <Compile Include="Middleware\FailedSetupMiddleware.cs" />
     <Compile Include="Middleware\LogonEndpoint.cs" />
     <Compile Include="Middleware\UiEndpoint.cs" />
     <Compile Include="Middleware\DefaultEnvironmentEndpoint.cs" />
