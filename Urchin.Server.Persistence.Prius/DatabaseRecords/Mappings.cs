@@ -12,6 +12,9 @@
             CreateMap<EnvironmentRecord, Shared.DataContracts.EnvironmentDto>()
                 .ForMember(
                     dest => dest.Machines,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.SecurityRules,
                     opt => opt.Ignore());
 
             CreateMap<VariableRecord, Shared.DataContracts.VariableDeclarationDto>();

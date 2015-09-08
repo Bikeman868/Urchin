@@ -7,7 +7,7 @@ namespace Urchin.Server.Persistence.Prius.DatabaseRecords
         [Mapping("startIp")]
         public string StartIp { get; set; }
 
-        [Mapping("sendIp")]
+        [Mapping("endIp")]
         public string EndIp { get; set; }
     }
 }
