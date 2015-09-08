@@ -58,7 +58,7 @@ class RuleDetailComponent
 		_instance.text = rule.instance;
 		_application.text = rule.application;
 
-		JsonHighlighter.display(_config, rule.config);
+		JsonHighlighter.displayIn(_config, rule.config);
 
 		_variables.children.clear();
 		if (rule.variables != null && rule.variables.length > 0)
@@ -68,7 +68,7 @@ class RuleDetailComponent
 			{
 				formBuilder.addHeading(variable.name, 2);
 				var value = formBuilder.addContainer();
-				JsonHighlighter.display(value, variable.value);
+				JsonHighlighter.displayIn(value, variable.value);
 			}
 			formBuilder.addTo(_variables);
 		}

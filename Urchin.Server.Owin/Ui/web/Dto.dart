@@ -92,3 +92,11 @@ class SecurityRuleDto extends Dto
 	set endIp(String value) => json['endIp'] = value;
 }
 
+class PostResponseDto extends Dto
+{
+	PostResponseDto(Map json): super(json){}
+
+	bool get success => json['success'];
+	bool get error => json['error'];
+	bool get id => json['id'];
+}

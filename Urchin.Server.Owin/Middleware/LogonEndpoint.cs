@@ -110,7 +110,7 @@ namespace Urchin.Server.Owin.Middleware
                     context.Response.Cookies.Append(_config.CookieName, cookie);
                     return Json(context, new PostResponseDto { Success = true, Id = cookie });
                 }
-                return Json(context, new PostResponseDto { Success = false });
+                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Logon failed for user " + userName.Value<string>() });
             }
             if (_logoffPath.IsWildcardMatch(request.Path))
             {

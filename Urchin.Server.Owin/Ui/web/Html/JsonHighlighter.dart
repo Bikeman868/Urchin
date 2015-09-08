@@ -3,7 +3,7 @@ import 'HtmlBuilder.dart';
 
 class JsonHighlighter
 {
-	static display(Element div, String json)
+	static displayIn(Element div, String json)
 	{
 		div.children.clear();
 		if (json == null || json.length == 0)

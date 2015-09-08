@@ -44,7 +44,9 @@ class TestQueryComponent
 			_environmentInput.value,
 			_instanceInput.value);
 
-		getConfig.then((json) => JsonHighlighter.display(_resultsContainer, json));
+		getConfig
+			.then((json) => JsonHighlighter.displayIn(_resultsContainer, json))
+			.catchError((Error error) => window.alert(error.toString()));
 	}
 
 }

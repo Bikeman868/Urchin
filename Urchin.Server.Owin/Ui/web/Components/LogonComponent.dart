@@ -73,23 +73,38 @@ class LogonComponent
 	void _logonClick(MouseEvent e)
 	{
 		var logon = Server.logon(_userNameInputElement.value, _passwordInputElement.value);
-		logon.then((response) => _loggedOn());
+		logon
+			.then((HttpRequest request) 
+			{
+				if (request.status == 200)
+				{
+					Map json = JSON.decode(request.responseText);
+					var postResponse = new PostResponseDto(json);
+					if (postResponse.success)
+					{
+						_passwordInputElement.value = '';
+						ApplicationEvents.userChanged(_userNameInputElement.value);
+					}
+					else
+					{
+						window.alert(postResponse.error);
+					}
+				}
+			})
+			.catchError((Error error)
+			{
+				window.alert(error.toString());
+			});
 	}
 
-	void _loggedOn()
-	{
-		_passwordInputElement.value = '';
-		ApplicationEvents.userChanged(_userNameInputElement.value);
-	}
-  
 	void _logoffClick(MouseEvent e)
 	{
 		_passwordInputElement.value = '';
 		var logoff = Server.logoff();
-		logoff.then((response) => _loggedOff());
+		logoff.then((request) => _loggedOff(request));
 	}
 
-	void _loggedOff()
+	void _loggedOff(HttpRequest request)
 	{
 		ApplicationEvents.userChanged('');
 	}

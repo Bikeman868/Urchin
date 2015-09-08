@@ -34,7 +34,7 @@ class Server
 	static Future<String> getLoggedOnUser()
 		=> HttpRequest.getString('/user');
 
-	static Future<String> logon(String userName, String password)
+	static Future<HttpRequest> logon(String userName, String password)
 		=> HttpRequest.request(
 			'/logon', 
 			method: 'POST',
@@ -42,7 +42,7 @@ class Server
 			mimeType: 'application/json',
 			responseType: 'application/json');
 
-	static Future<String> logoff()
+	static Future<HttpRequest> logoff()
 		=> HttpRequest.request('/logoff', method: 'POST');
 }
 
