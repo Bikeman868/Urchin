@@ -24,7 +24,7 @@ class EnvironmentDetailComponent
 		var formBuilder = new FormBuilder();
 		_heading1 = formBuilder.addHeading('Machines in this environment', 2);
 		_machines = formBuilder.addList('machineList');
-		_heading2 = formBuilder.addHeading('Rules for this environment', 2);
+		_heading2 = formBuilder.addHeading('Security for this environment', 2);
 		_rules = formBuilder.addList('securityRuleList');
 
 		formBuilder.addTo(containerDiv);
@@ -37,7 +37,7 @@ class EnvironmentDetailComponent
 		EnvironmentDto environment = _data.environments[e.environmentName];
 
 		_heading1.text = 'Machines in ' + environment.name + ' Environment';
-		_heading2.text = 'Rules for ' + environment.name + ' Environment';
+		_heading2.text = 'Security for ' + environment.name + ' Environment';
 
 		_machines.children.clear();
 		if (environment.machines != null)
