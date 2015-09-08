@@ -1,8 +1,8 @@
 -- --------------------------------------------------------
--- Creates an Urchin server database in MySQL.
---
--- This script was exported from Heidi, but should also work
--- with other MySQL cients.
+-- Host:                         devdb1
+-- Server version:               10.0.14-MariaDB - mariadb.org binary distribution
+-- Server OS:                    Win64
+-- HeidiSQL Version:             9.2.0.4947
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -48,6 +48,17 @@ CREATE TABLE IF NOT EXISTS `Rules` (
   `Config` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `Name` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table Urchin.SecurityRules
+CREATE TABLE IF NOT EXISTS `SecurityRules` (
+  `EnvironmentId` int(11) unsigned NOT NULL,
+  `StartIp` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `EndIp` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
+  KEY `ix_Environment` (`EnvironmentId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Data exporting was unselected.
@@ -113,6 +124,23 @@ END//
 DELIMITER ;
 
 
+-- Dumping structure for procedure Urchin.sp_DeleteEnvironmentSecurity
+DELIMITER //
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteEnvironmentSecurity`(IN `environmentName` VARCHAR(50))
+BEGIN
+	DECLARE environmentId INT UNSIGNED;
+	
+	SELECT e.Id
+	INTO environmentId
+	FROM Environments e
+	WHERE e.Name = environmentName;
+
+	DELETE FROM r USING SecurityRules AS r
+	WHERE r.EnvironmentId = environmentId;
+END//
+DELIMITER ;
+
+
 -- Dumping structure for procedure Urchin.sp_DeleteRule
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteRule`(IN `ruleName` VARCHAR(50))
@@ -146,6 +174,17 @@ BEGIN
 
 	DELETE FROM v USING Variables AS v
 	WHERE v.RuleId = ruleId;
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure Urchin.sp_GetAdministratorPassword
+DELIMITER //
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetAdministratorPassword`()
+BEGIN
+	SELECT s.Value AS AdministratorPassword
+	FROM Settings s
+	WHERE s.Name = 'AdministratorPassword';
 END//
 DELIMITER ;
 
@@ -194,6 +233,26 @@ CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetEnvironmentNames`()
 BEGIN
 	SELECT e.Name
 	FROM Environments e;
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure Urchin.sp_GetEnvironmentSecurity
+DELIMITER //
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetEnvironmentSecurity`(IN `environmentName` VARCHAR(50))
+BEGIN
+	DECLARE environmentId INT UNSIGNED;
+	
+	SELECT e.Id
+	INTO environmentId
+	FROM Environments e
+	WHERE e.Name = environmentName;
+	
+	SELECT 
+		r.StartIp,
+		r.EndIp
+	FROM SecurityRules r
+	WHERE r.EnvironmentId = environmentId;
 END//
 DELIMITER ;
 
@@ -267,6 +326,33 @@ BEGIN
 	) VALUES (
 		environmentId,
 		machineName
+	);
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure Urchin.sp_InsertEnvironmentSecurity
+DELIMITER //
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertEnvironmentSecurity`(IN `environmentName` VARCHAR(50), IN `startIP` VARCHAR(15), IN `endIp` VARCHAR(15))
+BEGIN
+	DECLARE environmentId INT UNSIGNED;
+
+	CALL sp_InsertUpdateEnvironment(environmentName);
+	
+	SELECT e.Id
+	INTO environmentId
+	FROM Environments e
+	WHERE e.Name = environmentName;
+
+	INSERT IGNORE INTO SecurityRules
+	(
+		EnvironmentId,
+		StartIp,
+		EndIp
+	) VALUES (
+		environmentId,
+		startIp,
+		endIp
 	);
 END//
 DELIMITER ;
@@ -374,6 +460,15 @@ BEGIN
 		r.Instance = instance,
 		r.Config = config
 	WHERE r.Id = ruleId;
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure Urchin.sp_UpdateAdministratorPassword
+DELIMITER //
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_UpdateAdministratorPassword`(IN `newPassword` VARCHAR(50))
+BEGIN
+	CALL sp_UpdateSetting('AdministratorPassword', newPassword);
 END//
 DELIMITER ;
 
