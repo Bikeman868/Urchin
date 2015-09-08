@@ -19,6 +19,7 @@ A rules based centralized enterprise configuration management solution for .Net
   string parameters to specify machine, application, environment and instance.
 * Rules for determining environment from machine so that this is an optional parameter.
 * Variable declaration and substitution.
+* IP based security with administrator logon to override.
 
 ## Things that Urchin does _not_ do
 * I can't find any way to get ASP.NET to give up on using the web.config file for
@@ -52,14 +53,17 @@ you can edit the file and the changes will be picked up and applied by the serve
 the Prius persister to save changes to a database, and you edit the database directly, you will have
 to recycle the IIS app pool to pick up the changes.
 
-A UI for managing rules is in development, but is not ready for widespread use at this time.
+A UI for managing rules is in development, so far you can view the rules and environments, and run 
+test queries, but the rules can not be edited via the UI. This feature will be built after versioning.
 
 ## Next Steps
 If you want to contribute to this project, these are the next most important tasks
 
 * Write scripts to create databases for Microsoft SQL Server and Postgresql.
-* Add security, so that production configuration can only be retrived by production servers.
-* Create a web based UI for managing the environments and rules.
+* Implement versioning, so that draft rules can be created and tested before going live.
+* Choose which version of the rules are used in each environment so that new rules can be
+  tried in staging before being made live in production for example.
+* Add editing of the most recent version of the rules and environment management to the UI.
 
 
 ## FAQ
