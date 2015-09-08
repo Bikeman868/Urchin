@@ -12,7 +12,7 @@ using Urchin.Server.Shared.Interfaces;
 
 namespace Urchin.Server.Persistence.Prius
 {
-    public class DatabasePersister: IPersister
+    public class DatabasePersister : IPersister
     {
         private readonly IDisposable _configNotifier;
         private readonly ICommandFactory _commandFactory;
@@ -86,7 +86,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public Shared.DataContracts.RuleDto GetRule(string name)
+        public RuleDto GetRule(string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
@@ -114,7 +114,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public IEnumerable<Shared.DataContracts.RuleDto> GetAllRules()
+        public IEnumerable<RuleDto> GetAllRules()
         {
             return GetRuleNames().Select(GetRule).ToList();
         }
@@ -131,7 +131,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public void InsertOrUpdateRule(Shared.DataContracts.RuleDto rule)
+        public void InsertOrUpdateRule(RuleDto rule)
         {
             _log.Info(m => m("Updating '{0}' rule", rule.RuleName));
             using (var context = _contextFactory.Create(_repositoryName))
@@ -188,7 +188,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public Shared.DataContracts.EnvironmentDto GetEnvironment(string name)
+        public EnvironmentDto GetEnvironment(string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
@@ -218,7 +218,7 @@ namespace Urchin.Server.Persistence.Prius
                     }
                 }
 
-                using (var command = _commandFactory.CreateStoredProcedure("sp_GetEnvironmentSecurityRules"))
+                using (var command = _commandFactory.CreateStoredProcedure("sp_GetEnvironmentSecurity"))
                 {
                     command.AddParameter("environmentName", name);
                     using (var security = context.ExecuteEnumerable<SecurityRuleRecord>(command))
@@ -229,19 +229,19 @@ namespace Urchin.Server.Persistence.Prius
                             foreach (var rule in security)
                             {
                                 environmentDto.SecurityRules.Add(new SecurityRuleDto
-                                    {
-                                        AllowedIpStart = rule.StartIp,
-                                        AllowedIpEnd = rule.EndIp
-                                    });
+                                {
+                                    AllowedIpStart = rule.StartIp,
+                                    AllowedIpEnd = rule.EndIp
+                                });
                             }
                         }
                     }
                 }
                 return environmentDto;
-           }
+            }
         }
 
-        public IEnumerable<Shared.DataContracts.EnvironmentDto> GetAllEnvironments()
+        public IEnumerable<EnvironmentDto> GetAllEnvironments()
         {
             return GetEnvironmentNames().Select(GetEnvironment).ToList();
         }
@@ -258,7 +258,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public void InsertOrUpdateEnvironment(Shared.DataContracts.EnvironmentDto environment)
+        public void InsertOrUpdateEnvironment(EnvironmentDto environment)
         {
             _log.Info(m => m("Updating '{0}' environment", environment.EnvironmentName));
             using (var context = _contextFactory.Create(_repositoryName))
@@ -289,7 +289,7 @@ namespace Urchin.Server.Persistence.Prius
                     }
                 }
 
-                using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteEnvironmentSecurityRules"))
+                using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteEnvironmentSecurity"))
                 {
                     command.AddParameter("environmentName", environment.EnvironmentName);
                     context.ExecuteNonQuery(command);
@@ -297,7 +297,7 @@ namespace Urchin.Server.Persistence.Prius
 
                 if (environment.SecurityRules != null && environment.SecurityRules.Count > 0)
                 {
-                    using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentSecurityRule"))
+                    using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentSecurity"))
                     {
                         command.AddParameter("environmentName", environment.EnvironmentName);
                         var startIp = command.AddParameter("startIp", SqlDbType.NVarChar, ParameterDirection.Input);
@@ -310,7 +310,7 @@ namespace Urchin.Server.Persistence.Prius
                         }
                     }
                 }
-            
+
             }
         }
     }
