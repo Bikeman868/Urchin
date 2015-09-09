@@ -232,7 +232,6 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
        {
        }
 ```
-
 ---
 
 Q: Can I specify default values in my application so that I only need to configure
@@ -258,7 +257,6 @@ A: I recommend that you define a class that serializes to the config values you 
    `LoggerConfiguration` that will be used when the entire logger configuration is absent
    from the configuration data.
    The configuration JSON should be similar to `{"myapp":{"logger":{"filePath":"L:\\logfile.txt"}}}`
-
 ```
     public class Logger: IDisposable
 	{
@@ -290,7 +288,6 @@ A: I recommend that you define a class that serializes to the config values you 
 	   }
 	}
 ```
-
 ---
 
 Q: What is your recommended best practice for specifying paths in the config data?
