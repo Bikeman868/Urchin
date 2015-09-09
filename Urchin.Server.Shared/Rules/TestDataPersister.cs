@@ -64,6 +64,13 @@ namespace Urchin.Server.Shared.Rules
             };
         }
 
+        public bool SupportsVersioning { get { return false; } }
+
+        public List<int> GetVersionNumbers() 
+        { 
+            return null; 
+        }
+
         public string GetDefaultEnvironment()
         {
             return _defaultEnvironment;
@@ -73,26 +80,26 @@ namespace Urchin.Server.Shared.Rules
         {
         }
 
-        public IEnumerable<string> GetRuleNames()
+        public IEnumerable<string> GetRuleNames(int version)
         {
             return _rules.Select(r => r.RuleName);
         }
 
-        public RuleDto GetRule(string name)
+        public RuleDto GetRule(int version, string name)
         {
             return _rules.FirstOrDefault(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public IEnumerable<RuleDto> GetAllRules()
+        public IEnumerable<RuleDto> GetAllRules(int version)
         {
             return _rules;
         }
 
-        public void DeleteRule(string name)
+        public void DeleteRule(int version, string name)
         {
         }
 
-        public void InsertOrUpdateRule(RuleDto rule)
+        public void InsertOrUpdateRule(int version, RuleDto rule)
         {
         }
 
