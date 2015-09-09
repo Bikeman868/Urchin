@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
 using Urchin.Server.Shared.Rules;
@@ -10,12 +10,12 @@ using Urchin.Server.Shared.TypeMappings;
 
 namespace Urchin.Server.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class ConfigRulesTests
     {
         private ConfigRules _configRules;
 
-        [TestInitialize]
+        [Test]
         public void Initialize()
         {
             var mapper = new Mapper();
@@ -23,7 +23,7 @@ namespace Urchin.Server.Tests
             _configRules = new ConfigRules(mapper, persister);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_return_empty_rule_set()
         {
             _configRules.Clear(null);
@@ -33,7 +33,7 @@ namespace Urchin.Server.Tests
             Assert.AreEqual(0, config.Properties().Count());
         }
 
-        [TestMethod]
+        [Test]
         public void Should_return_simple_configuration()
         {
             _configRules.Clear(null);
@@ -53,7 +53,7 @@ namespace Urchin.Server.Tests
             Assert.AreEqual(876, config["test"].Value<int>());
         }
 
-        [TestMethod]
+        [Test]
         public void Should_lookup_environment_from_machine_name()
         {
             _configRules.Clear(null);
@@ -122,7 +122,7 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("devmachine.mysite.com", dev2Config["localhost"].Value<string>());
         }
 
-        [TestMethod]
+        [Test]
         public void Should_support_variable_substitution()
         {
             _configRules.Clear(null);
@@ -176,7 +176,7 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("File", configApp2Test["log"]["method"].Value<string>());
         }
 
-        [TestMethod]
+        [Test]
         public void Should_secure_restricted_environments()
         {
             _configRules.Clear(null);
@@ -291,7 +291,7 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("dev3", config4.Environments[1].Machines[2]);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_not_retrieve_config_from_restricted_environment()
         {
             _configRules.Clear(null);
@@ -328,7 +328,7 @@ namespace Urchin.Server.Tests
             Assert.IsTrue(dev1Development.ToString().IndexOf("localhost/mysite") > 0);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_not_retrieve_rules_from_restricted_environment()
         {
             _configRules.Clear(null);
@@ -356,7 +356,7 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("Development Environment", developmentRules[0].RuleName);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_not_add_rules_for_restricted_environments()
         {
             _configRules.Clear(null);
@@ -391,7 +391,7 @@ namespace Urchin.Server.Tests
             Assert.IsFalse(newRules.Any(r => r.RuleName == "Test Rule"));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_not_add_rules_for_restricted_machines()
         {
             _configRules.Clear(null);
@@ -426,7 +426,7 @@ namespace Urchin.Server.Tests
             Assert.IsFalse(newRules.Any(r => r.RuleName == "Test Rule"));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_not_update_rules_for_restricted_environments()
         {
             _configRules.Clear(null);
