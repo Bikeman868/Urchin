@@ -222,7 +222,7 @@ A: Yes, but this is a short-term stop gap. Right now if you go this route, all o
        </appSettings>
 ```
    You can register for changes in cache duration with this code:
-
+```
        private readonly IConfigurationStore _config;
        public void Initialize()
        {
