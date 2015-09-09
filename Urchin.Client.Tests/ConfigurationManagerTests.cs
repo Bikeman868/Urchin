@@ -1,20 +1,16 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Urchin.Client.Data;
+﻿using Urchin.Client.Data;
 using Urchin.Client.Sources;
+using NUnit.Framework;
 
 namespace Urchin.Client.Tests
 {
     /// <summary>
     /// Summary description for UnitTest1
     /// </summary>
-    [TestClass]
+    [TestFixture]
     public class ConfigurationManagerTests
     {
-        [TestMethod]
+        [Test]
         public void Should_load_app_settings()
         {
             var configurationStore = new ConfigurationStore().Initialize();

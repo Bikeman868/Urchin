@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using Urchin.Client.Data;
 using Urchin.Client.Interfaces;
 
 namespace Urchin.Client.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class ConfigurationStoreTests
     {
-        [TestMethod]
+        [Test]
         public void Should_get_empty_configuration()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -19,7 +19,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual("null", root);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_get_value_configuration()
         {
             var validator = new Validator { IsValid = true };
@@ -32,7 +32,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(testValue, root);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_get_array_configuration()
         {
             var validator = new Validator { IsValid = true };
@@ -47,7 +47,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(1, root[2]);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_get_object_configuration()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -60,7 +60,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(2, root.Field2);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_ignore_leading_slash()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -83,7 +83,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(1, field1);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_parse_path()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -110,7 +110,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(98, child2.Field2);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_notify_only_changed_values()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -163,7 +163,7 @@ namespace Urchin.Client.Tests
             Assert.IsFalse(child2Field2Changed);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_notify_all_when_everything_changes()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -216,7 +216,7 @@ namespace Urchin.Client.Tests
             Assert.IsTrue(child2Field2Changed);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_pass_new_value_on_change_notification()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -237,7 +237,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(3, child1Field1Value);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_not_notify_after_deregistration()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -264,7 +264,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(1, configurationStore.Get<int>("/child1/field1"));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_work_with_any_json_type()
         {
             var configurationStore = new ConfigurationStore().Initialize();
@@ -289,7 +289,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(98, root.Children[1].Field2);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_not_apply_invalid_configuration()
         {
             var validator = new Validator {IsValid = true};
@@ -311,7 +311,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(1, child1Field1Value);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_log_configuration_errors()
         {
             var validator = new Validator { IsValid = true };
@@ -329,7 +329,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(45, value.Field1);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_return_defaults_for_missing_values()
         {
             var validator = new Validator { IsValid = true };
@@ -347,7 +347,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(45, value.Field1);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_use_default_validator_that_rejects_empty_configuration()
         {
             var configurationStore = new ConfigurationStore().Initialize();
