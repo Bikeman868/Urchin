@@ -101,7 +101,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config.txt" />
+    <None Include="Urchin.config" />
     <Content Include="Ui\web\favicon.ico" />
     <Content Include="Ui\web\index.html" />
     <Content Include="Ui\web\styles.css" />
