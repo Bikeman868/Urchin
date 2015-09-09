@@ -14,7 +14,10 @@ namespace Urchin.Server.Shared.Rules
         private readonly IMapper _mapper;
         private readonly IPersister _persister;
 
-        private RuleSetDto _ruleSet;
+        private string _defaultEnvironmentName;
+        private List<EnvironmentDto> _environments;
+        private List<RuleVersionDto> _rules;
+        private int _highestVersionNumber;
 
         public ConfigRules(IMapper mapper, IPersister persister)
         {
@@ -26,60 +29,31 @@ namespace Urchin.Server.Shared.Rules
 
         public void Clear(IClientCredentials clientCredentials)
         {
-            SetRuleSet(clientCredentials, new RuleSetDto());
-
-            // Note that there is no need to check credentials again,
-            // SetRuleSet will throw if any environments are blocked
-            SetDefaultEnvironment(null, "Development");
-            SetEnvironments(null, null);
+            _defaultEnvironmentName = "Development";
+            _environments = new List<EnvironmentDto>();
+            _rules = new List<RuleVersionDto>();
         }
 
-        public void ReloadFromPersister()
-        {
-            var ruleSet = new RuleSetDto
-            {
-                Environments = _persister.GetAllEnvironments().ToList(),
-                DefaultEnvironmentName = _persister.GetDefaultEnvironment(),
-                Rules = _persister.GetAllRules().ToList()
-            };
-            SetRuleSet(null, ruleSet);
-        }
-
-        public JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
+        public JObject GetCurrentConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
 
-            var ruleSet = _ruleSet;
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+            var environmentDto = LookupEnvironment(environment, machine);
+            var ruleVersion = EnsureVersion(environmentDto.Version);
+
+            if (ruleVersion == null || ruleVersion.Rules == null || ruleVersion.Rules.Count == 0)
                 return new JObject();
 
-            environment = LookupEnvironment(environment, machine, ruleSet);
-
-            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+            var blockedEnvironments = GetBlockedEnvironments(clientCredentials);
             if (blockedEnvironments != null)
             {
-                if( blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environment, StringComparison.InvariantCultureIgnoreCase)))
+                if (blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environmentDto.EnvironmentName, StringComparison.InvariantCultureIgnoreCase)))
                     return new JObject();
             }
 
-            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
-            return MergeRules(applicableRules, environment, machine, application, instance);
-        }
-
-        public JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance)
-        {
-            if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
-                return new JObject();
-
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
-                return new JObject();
-
-            // Note that since the entire rule set is provided by the caller, no credentials check is needed here
-
-            environment = LookupEnvironment(environment, machine, ruleSet);
-            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
-            return MergeRules(applicableRules, environment, machine, application, instance);
+            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, machine, application, instance);
+            return MergeRules(applicableRules, environmentDto, machine, application, instance);
         }
 
         public JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
@@ -89,176 +63,56 @@ namespace Urchin.Server.Shared.Rules
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return response;
 
-            var ruleSet = _ruleSet;
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+            var environmentDto = LookupEnvironment(environment, machine);
+            var ruleVersion = EnsureVersion(environmentDto.Version);
+
+            if (ruleVersion == null || ruleVersion.Rules == null || ruleVersion.Rules.Count == 0)
                 return response;
 
-            environment = LookupEnvironment(environment, machine, ruleSet);
-
-            var blockedEnvironments = GetBlockedEnvironments(ruleSet.Environments, clientCredentials);
+            var blockedEnvironments = GetBlockedEnvironments(clientCredentials);
             if (blockedEnvironments != null)
             {
-                if (blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environment, StringComparison.InvariantCultureIgnoreCase)))
+                if (blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environmentDto.EnvironmentName, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     response["error"] = "You do not have permission to retrieve config for this machine";
                     return response;
                 }
             }
 
-            var applicableRules = GetApplicableRules(ruleSet, environment, machine, application, instance);
+            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, machine, application, instance);
             var serializedRules = JsonConvert.SerializeObject(applicableRules);
 
             var variables = MergeVariables(applicableRules, environment, machine, application, instance);
             var serializedVariables = JsonConvert.SerializeObject(variables);
 
-            response["config"] = MergeRules(applicableRules, environment, machine, application, instance);
+            response["config"] = MergeRules(applicableRules, environmentDto, machine, application, instance);
             response["variables"] = JToken.Parse(serializedVariables);
             response["matchingRules"] = JToken.Parse(serializedRules);
 
             return response;
         }
 
-        private JObject MergeRules(
-            IList<RuleDto> rules, 
-            string environment, 
-            string machine, 
-            string application, 
-            string instance)
+        public JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance)
         {
-            var variables = MergeVariables(rules, environment, machine, application, instance);
+            if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
+                return new JObject();
 
-            var config = new JObject();
-            foreach (var rule in rules)
-            {
-                if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
-                {
-                    var json = ParseJson(rule.ConfigurationData, variables);
-                    config.Merge(json);
-                }
-            }
-            return config;
+            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Rules == null || ruleSet.Rules.Rules.Count == 0)
+                return new JObject();
+
+            // Note that since the entire rule set is provided by the caller, no credentials check is needed here
+
+            var environmentDto = LookupEnvironment(environment, machine);
+            var applicableRules = GetApplicableRules(ruleSet.Rules, environmentDto, machine, application, instance);
+            return MergeRules(applicableRules, environmentDto, machine, application, instance);
         }
 
-        private Dictionary<string, string> MergeVariables(
-            IEnumerable<RuleDto> rules,
-            string environment,
-            string machine,
-            string application,
-            string instance)
+        public RuleSetDto GetRuleSet(IClientCredentials clientCredentials, int? version)
         {
-            var variables = new Dictionary<string, string>
-            {
-                {"environment", environment},
-                {"machine", machine},
-                {"application", application},
-                {"instance", instance}
-            };
+            if (!version.HasValue) version = _highestVersionNumber;
+            var ruleVersion = EnsureVersion(version.Value);
 
-            foreach (var rule in rules)
-            {
-                if (rule.Variables != null)
-                {
-                    foreach (var variable in rule.Variables)
-                    {
-                        variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
-                    }
-                }
-            }
-
-            return variables;
-        }
-
-        private List<RuleDto> GetApplicableRules(
-            RuleSetDto ruleSet, 
-            string environment, 
-            string machine, 
-            string application, 
-            string instance)
-        {
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
-                return new List<RuleDto>();
-
-            return ruleSet.Rules.Where(r => RuleApplies(r, environment, machine, application, instance)).ToList();
-        }
-
-        private readonly Regex _substitutionRegex = new Regex(@"\(\$(.+?)\$\)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-
-        private JToken ParseJson(string json, Dictionary<string, string> variables)
-        {
-            Func<Match, string> substitutionFunction = 
-                m =>
-                {
-                    var variableName = m.Groups[1].Value;
-                    string value;
-                    return variables.TryGetValue(variableName.ToLower(), out value) 
-                        ? value 
-                        : string.Empty;
-                };
-            var matchEvaluator = new MatchEvaluator(substitutionFunction);
-            json = _substitutionRegex.Replace(json, matchEvaluator);
-
-            try
-            {
-                return JToken.Parse(json);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to parse JSON " + json, ex);
-            }
-        }
-
-        private static string LookupEnvironment(string environment, string machine, RuleSetDto ruleSet)
-        {
-            if (!string.IsNullOrWhiteSpace(environment)) return environment;
-
-            if (ruleSet.Environments != null)
-            {
-                foreach (var environmentRule in ruleSet.Environments)
-                {
-                    if (environmentRule.Machines != null)
-                    {
-                        if (
-                            environmentRule.Machines.Any(
-                                machineRule =>
-                                    string.Compare(machineRule, machine, StringComparison.InvariantCultureIgnoreCase) == 0))
-                        {
-                            return environmentRule.EnvironmentName;
-                        }
-                    }
-                }
-            }
-
-            return ruleSet.DefaultEnvironmentName;
-        }
-
-        private bool RuleApplies(RuleDto rule, string environment, string machine, string application, string instance)
-        {
-            if (!string.IsNullOrEmpty(rule.Application))
-            {
-                if (string.Compare(application, rule.Application, StringComparison.InvariantCultureIgnoreCase) != 0)
-                    return false;
-            }
-            if (!string.IsNullOrEmpty(rule.Machine))
-            {
-                if (string.Compare(machine, rule.Machine, StringComparison.InvariantCultureIgnoreCase) != 0)
-                    return false;
-            }
-            if (!string.IsNullOrEmpty(rule.Environment))
-            {
-                if (string.Compare(environment, rule.Environment, StringComparison.InvariantCultureIgnoreCase) != 0)
-                    return false;
-            }
-            if (!string.IsNullOrEmpty(rule.Instance))
-            {
-                if (string.Compare(instance, rule.Instance, StringComparison.InvariantCultureIgnoreCase) != 0)
-                    return false;
-            }
-            return true;
-        }
-
-        public RuleSetDto GetRuleSet(IClientCredentials clientCredentials)
-        {
-            if (_ruleSet == null) return null;
+            if (ruleVersion == null) return null;
 
             // Make a deep copy of the rule set
             var ruleSet = _mapper.Map<RuleSetDto, RuleSetDto>(_ruleSet);
@@ -288,7 +142,7 @@ namespace Urchin.Server.Shared.Rules
             return ruleSet;
         }
 
-        public void SetRuleSet(IClientCredentials clientCredentials, RuleSetDto ruleSet)
+        public void SetRuleSet(IClientCredentials clientCredentials, RuleSetDto ruleSet, bool asNewVersion)
         {
             var currentRuleSet = _ruleSet;
             var blockedEnvironments = currentRuleSet == null
@@ -314,57 +168,19 @@ namespace Urchin.Server.Shared.Rules
             _ruleSet = ruleSet;
         }
 
-        private IList<string> GetBlockedMachines(IEnumerable<EnvironmentDto> blockedEnvironments)
+        public void SetEvaluationOrder(RuleVersionDto ruleVersion)
         {
-            return blockedEnvironments.Aggregate(new List<string>(),
-                (l, e) =>
-                {
-                    if (e.Machines != null)
-                        l.AddRange(e.Machines.Select(m => m.ToLower()));
-                    return l;
-                });
-        }
-
-        private IList<EnvironmentDto> GetBlockedEnvironments(IEnumerable<EnvironmentDto> environments, IClientCredentials clientCredentials)
-        {
-            if (environments == null || clientCredentials == null || clientCredentials.IsAdministrator)
-                return new List<EnvironmentDto>();
-
-            Func<string, uint> parseIp = (ip) =>
+            if (ruleVersion.Rules != null)
             {
-                if (ip.Contains(':')) return 0; // IPv6 address
-
-                var parts = ip.Split('.');
-                if (parts.Length != 4)
-                    throw new Exception("Invalid IP address format");
-                return parts.Aggregate(0u, (s, p) => s*256 + uint.Parse(p));
-            };
-
-            var clientIp = parseIp(clientCredentials.IpAddress);
-
-            Func<EnvironmentDto, int, bool> isBlocked = (environment, i) =>
-            {
-                if (environment.SecurityRules == null || environment.SecurityRules.Count == 0) return false;
-                foreach (var rule in environment.SecurityRules)
+                foreach (var rule in ruleVersion.Rules)
                 {
-                    var start = parseIp(rule.AllowedIpStart);
-                    var end = parseIp(rule.AllowedIpEnd);
-                    if (clientIp >= start && clientIp <= end) return false;
+                    rule.EvaluationOrder = string.Empty;
+                    if (!string.IsNullOrWhiteSpace(rule.Instance)) rule.EvaluationOrder += 'D';
+                    if (!string.IsNullOrWhiteSpace(rule.Machine)) rule.EvaluationOrder += 'C';
+                    if (!string.IsNullOrWhiteSpace(rule.Application)) rule.EvaluationOrder += 'B';
+                    if (!string.IsNullOrWhiteSpace(rule.Environment)) rule.EvaluationOrder += 'A';
                 }
-                return true;
-            };
-
-            var blockedEnvironments = environments.Where(isBlocked).ToList();
-            return blockedEnvironments;
-        }
-
-        private class RuleComparer: IComparer<RuleDto>
-        {
-            public int Compare(RuleDto x, RuleDto y)
-            {
-                if (x.EvaluationOrder.Length < y.EvaluationOrder.Length) return -1;
-                if (x.EvaluationOrder.Length > y.EvaluationOrder.Length) return 1;
-                return string.Compare(x.EvaluationOrder, y.EvaluationOrder, StringComparison.Ordinal);
+                ruleVersion.Rules.Sort(new RuleComparer());
             }
         }
 
@@ -574,18 +390,263 @@ namespace Urchin.Server.Shared.Rules
             DeleteRule(_ruleSet, name);
         }
 
-        private void DeleteRule(RuleSetDto ruleSet, string name)
-        {
-            _persister.DeleteRule(name);
+        #region Private methods
 
-            if (ruleSet != null)
+        private JObject MergeRules(
+            IList<RuleDto> rules,
+            EnvironmentDto environment,
+            string machine,
+            string application,
+            string instance)
+        {
+            var variables = MergeVariables(rules, environment, machine, application, instance);
+
+            var config = new JObject();
+            foreach (var rule in rules)
             {
-                var rules = ruleSet.Rules;
+                if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
+                {
+                    var json = ParseJson(rule.ConfigurationData, variables);
+                    config.Merge(json);
+                }
+            }
+            return config;
+        }
+
+        private Dictionary<string, string> MergeVariables(
+            IEnumerable<RuleDto> rules,
+            EnvironmentDto environment,
+            string machine,
+            string application,
+            string instance)
+        {
+            var variables = new Dictionary<string, string>
+            {
+                {"environment", environment.EnvironmentName},
+                {"machine", machine},
+                {"application", application},
+                {"instance", instance}
+            };
+
+            foreach (var rule in rules)
+            {
+                if (rule.Variables != null)
+                {
+                    foreach (var variable in rule.Variables)
+                    {
+                        variables[variable.VariableName.ToLower()] = variable.SubstitutionValue;
+                    }
+                }
+            }
+
+            return variables;
+        }
+
+        private List<RuleDto> GetApplicableRules(
+            RuleVersionDto ruleVersion,
+            EnvironmentDto environment,
+            string machine,
+            string application,
+            string instance)
+        {
+            if (ruleVersion == null || ruleVersion.Rules == null || ruleVersion.Rules.Count == 0)
+                return new List<RuleDto>();
+
+            return ruleVersion.Rules.Where(r => RuleApplies(r, environment, machine, application, instance)).ToList();
+        }
+
+        private readonly Regex _substitutionRegex = new Regex(@"\(\$(.+?)\$\)", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        private JToken ParseJson(string json, Dictionary<string, string> variables)
+        {
+            Func<Match, string> substitutionFunction =
+                m =>
+                {
+                    var variableName = m.Groups[1].Value;
+                    string value;
+                    return variables.TryGetValue(variableName.ToLower(), out value)
+                        ? value
+                        : string.Empty;
+                };
+            var matchEvaluator = new MatchEvaluator(substitutionFunction);
+            json = _substitutionRegex.Replace(json, matchEvaluator);
+
+            try
+            {
+                return JToken.Parse(json);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to parse JSON " + json, ex);
+            }
+        }
+
+        private EnvironmentDto LookupEnvironment(string environmentName, string machineName)
+        {
+            var environments = _environments;
+            if (environments == null) return null;
+
+            if (!string.IsNullOrWhiteSpace(environmentName))
+            {
+                return environments.FirstOrDefault(e => string.Equals(e.EnvironmentName, environmentName, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            foreach (var environment in environments)
+            {
+                if (environment.Machines == null) continue;
+                if (environment.Machines.Any(
+                    machine => string.Equals(machine, machineName, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    return environment;
+                }
+            }
+            return environments.FirstOrDefault(e => string.Equals(e.EnvironmentName, _defaultEnvironmentName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private bool RuleApplies(RuleDto rule, EnvironmentDto environment, string machine, string application, string instance)
+        {
+            if (!string.IsNullOrEmpty(rule.Application))
+            {
+                if (!string.Equals(application, rule.Application, StringComparison.InvariantCultureIgnoreCase))
+                    return false;
+            }
+            if (!string.IsNullOrEmpty(rule.Machine))
+            {
+                if (string.Compare(machine, rule.Machine, StringComparison.InvariantCultureIgnoreCase) != 0)
+                    return false;
+            }
+            if (!string.IsNullOrEmpty(rule.Environment))
+            {
+                if (!string.Equals(environment.EnvironmentName, rule.Environment, StringComparison.InvariantCultureIgnoreCase))
+                    return false;
+            }
+            if (!string.IsNullOrEmpty(rule.Instance))
+            {
+                if (!string.Equals(instance, rule.Instance, StringComparison.InvariantCultureIgnoreCase))
+                    return false;
+            }
+            return true;
+        }
+
+        private IList<string> GetBlockedMachines(IEnumerable<EnvironmentDto> blockedEnvironments)
+        {
+            return blockedEnvironments.Aggregate(new List<string>(),
+                (l, e) =>
+                {
+                    if (e.Machines != null)
+                        l.AddRange(e.Machines.Select(m => m.ToLower()));
+                    return l;
+                });
+        }
+
+        private IList<EnvironmentDto> GetBlockedEnvironments(IClientCredentials clientCredentials)
+        {
+            var environments = _environments;
+            if (environments == null || clientCredentials == null || clientCredentials.IsAdministrator)
+                return new List<EnvironmentDto>();
+
+            Func<string, uint> parseIp = (ip) =>
+            {
+                if (ip.Contains(':')) return 0; // IPv6 address
+
+                var parts = ip.Split('.');
+                if (parts.Length != 4)
+                    throw new Exception("Invalid IP address format");
+                return parts.Aggregate(0u, (s, p) => s * 256 + uint.Parse(p));
+            };
+
+            var clientIp = parseIp(clientCredentials.IpAddress);
+
+            Func<EnvironmentDto, int, bool> isBlocked = (environment, i) =>
+            {
+                if (environment.SecurityRules == null || environment.SecurityRules.Count == 0) return false;
+                foreach (var rule in environment.SecurityRules)
+                {
+                    var start = parseIp(rule.AllowedIpStart);
+                    var end = parseIp(rule.AllowedIpEnd);
+                    if (clientIp >= start && clientIp <= end) return false;
+                }
+                return true;
+            };
+
+            var blockedEnvironments = environments.Where(isBlocked).ToList();
+            return blockedEnvironments;
+        }
+
+        private void ReloadFromPersister()
+        {
+            _defaultEnvironmentName = _persister.GetDefaultEnvironment();
+            _environments = _persister.GetAllEnvironments().ToList();
+            _rules = new List<RuleVersionDto>();
+            _highestVersionNumber = _persister.GetVersionNumbers().Aggregate(0, (s, v) => v > s ? v : s);
+        }
+
+        private RuleVersionDto EnsureVersion(int versionNumber)
+        {
+            var rules = _rules;
+            lock (rules)
+            {
+                RuleVersionDto version;
+                if (_persister.SupportsVersioning)
+                {
+                    version = rules.FirstOrDefault(r => r.Version == versionNumber);
+                    if (version == null)
+                    {
+                        var ruleList = _persister.GetAllRules(versionNumber);
+                        if (ruleList != null)
+                        {
+                            version = new RuleVersionDto
+                            {
+                                Version = versionNumber,
+                                Rules = ruleList.ToList()
+                            };
+                            SetEvaluationOrder(version);
+                            rules.Add(version);
+                        }
+                    }
+                }
+                else
+                {
+                    if (rules.Count == 0)
+                    {
+                        version = new RuleVersionDto
+                        {
+                            Rules = _persister.GetAllRules(0).ToList()
+                        };
+                        SetEvaluationOrder(version);
+                        rules.Add(version);
+                    }
+                    return rules[0];
+                }
+                return version;
+            }
+        }
+
+        private void DeleteRule(RuleVersionDto version, string name)
+        {
+            _persister.DeleteRule(version.Version, name);
+
+            if (version != null)
+            {
+                var rules = version.Rules;
                 lock (rules)
                 {
                     rules.RemoveAll(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0);
                 }
             }
         }
+
+        #endregion
+
+        private class RuleComparer : IComparer<RuleDto>
+        {
+            public int Compare(RuleDto x, RuleDto y)
+            {
+                if (x.EvaluationOrder.Length < y.EvaluationOrder.Length) return -1;
+                if (x.EvaluationOrder.Length > y.EvaluationOrder.Length) return 1;
+                return string.Compare(x.EvaluationOrder, y.EvaluationOrder, StringComparison.Ordinal);
+            }
+        }
+
     }
 }

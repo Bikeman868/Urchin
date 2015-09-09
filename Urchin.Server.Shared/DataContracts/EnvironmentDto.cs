@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Urchin.Server.Shared.DataContracts
@@ -12,6 +7,9 @@ namespace Urchin.Server.Shared.DataContracts
     {
         [JsonProperty("name")]
         public string EnvironmentName { get; set; }
+
+        [JsonProperty("version")]
+        public int Version { get; set; }
 
         [JsonProperty("machines")]
         public List<string> Machines { get; set; }
