@@ -45,19 +45,25 @@ namespace Urchin.Server.Shared.Rules
         private void Reload()
         {
             var fileInfo = new FileInfo(_filePath);
-            _lastFileTime = fileInfo.LastWriteTimeUtc;
+            RuleSetDto ruleSet = null;
 
-            string content;
-            using (var stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            if (fileInfo.Exists)
             {
-                using (var streamReader = new StreamReader(stream))
+                _lastFileTime = fileInfo.LastWriteTimeUtc;
+
+                string content;
+                using (var stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    content = streamReader.ReadToEnd();
+                    using (var streamReader = new StreamReader(stream))
+                    {
+                        content = streamReader.ReadToEnd();
+                    }
                 }
+
+                ruleSet = JsonConvert.DeserializeObject<RuleSetDto>(content);
             }
 
-            var ruleSet = JsonConvert.DeserializeObject<RuleSetDto>(content);
-
+            if (ruleSet == null) ruleSet = new RuleSetDto();
             if (ruleSet.Environments == null) ruleSet.Environments = new List<EnvironmentDto>();
             if (ruleSet.Rules == null) ruleSet.Rules = new List<RuleDto>();
 
