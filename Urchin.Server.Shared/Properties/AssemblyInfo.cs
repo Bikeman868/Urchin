@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Urchin.Server.Shared")]
-[assembly: AssemblyDescription("Allows you to embed the Urchin server into your own application or web site. If you want to deploy a stand-alone server on IIS, then head over to GitHub and grab Urchin.Server.Owin instead.")]
+[assembly: AssemblyDescription("Embed the Urchin server into your own application or web site.")]
 [assembly: AssemblyCompany("Martin Halliday")]
 [assembly: AssemblyProduct("Urchin")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
@@ -11,5 +11,5 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.0")]
+[assembly: AssemblyFileVersion("1.0.1.0")]
