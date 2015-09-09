@@ -259,34 +259,34 @@ A: I recommend that you define a class that serializes to the config values you 
    The configuration JSON should be similar to `{"myapp":{"logger":{"filePath":"L:\\logfile.txt"}}}`
 ```
     public class Logger: IDisposable
-	{
-	   private readonly IDisposable _configurationNotifier;
-
-	   public Logger(IConfigurationStore configurationStore)
-	   {
-	      _configurationNotifier = configurationStore.Register("/myapp/logger", SetConfiguration, new LoggerConfiguration());
-	   }
-
-	   public void Dispose()
-	   {
-	      _configurationNotifier.Dispose();
-	   }
-
-	   private void SetConfiguration(LoggerConfiguration loggerConfiguration)
-	   {
-	      // ... etc
-	   }
-
-	   public class LoggerConfiguration
-	   {
-	      public LoggerConfiguration()
-		  {
-		    FilePath = @"C:\Temp\Log.txt";
-		  }
-
-	      public string FilePath { get; set; }
-	   }
-	}
+    {
+      private readonly IDisposable _configurationNotifier;
+      
+      public Logger(IConfigurationStore configurationStore)
+      {
+        _configurationNotifier = configurationStore.Register("/myapp/logger", SetConfiguration, new LoggerConfiguration());
+      }
+      
+      public void Dispose()
+      {
+        _configurationNotifier.Dispose();
+      }
+      
+      private void SetConfiguration(LoggerConfiguration loggerConfiguration)
+      {
+        // ... etc
+      }
+      
+      public class LoggerConfiguration
+      {
+        public LoggerConfiguration()
+        {
+          FilePath = @"C:\Temp\Log.txt";
+        }
+        
+        public string FilePath { get; set; }
+      }
+    }
 ```
 ---
 
@@ -299,28 +299,28 @@ A: I recommend that you have 2 or three levels deep, with the application name o
    Urchin, you will have config that has similar structure to what is shown below. In this example class 1
    from module 1 would register for config changes in `/myApp/module1/class1`.
 ```
-   {
-       "myApp":
-	   {
-	       "myClass":{"setting1":value1, "setting2":value2},
-	        "module1":
-			{
-			    "class1":{"setting1":value1, "setting2":value2},
-			    "class2":{"setting1":value1, "setting2":value2},
-			    "class3":{"setting1":value1, "setting2":value2}
-			},
-			"module2":
-			{
-			    "class1":{"setting1":value1, "setting2":value2},
-			    "class2":{"setting1":value1, "setting2":value2},
-			    "class3":{"setting1":value1, "setting2":value2}
-			}
-	   },
-	   "prius":
-	   {
-	   },
-	   "urchin":
-	   {
-	   }
-   }
+    {
+        "myApp":
+        {
+            "myClass":{"setting1":value1, "setting2":value2},
+            "module1":
+            {
+                "class1":{"setting1":value1, "setting2":value2},
+                "class2":{"setting1":value1, "setting2":value2},
+                "class3":{"setting1":value1, "setting2":value2}
+            },
+            "module2":
+            {
+                "class1":{"setting1":value1, "setting2":value2},
+                "class2":{"setting1":value1, "setting2":value2},
+                "class3":{"setting1":value1, "setting2":value2}
+            }
+        },
+        "prius":
+        {
+        },
+        "urchin":
+        {
+        }
+    }
 ```
