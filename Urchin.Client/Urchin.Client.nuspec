@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>$version$</version>
+    <version>1.0.4</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -10,9 +10,12 @@
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Added a default validator that will only accept an object with at least one property</releaseNotes>
+    <releaseNotes>Converted to .Net 4.0 Client Profile</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
+    <summary>Simple application configurtion management. Strong typing and default values. Change notifications
+    for any node in the configuration heirachy. Optional server component provides rules-based centralized
+    repository for the whole enterprise.</summary>
   </metadata>
   <files>
     <file src="..\*.txt" target="" />
