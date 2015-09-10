@@ -11,7 +11,7 @@ namespace Urchin.Server.Shared.DataContracts
         [JsonProperty("environments")]
         public List<EnvironmentDto> Environments { get; set; }
 
-        [JsonProperty("rules")]
-        public RuleVersionDto Rules { get; set; }
+        [JsonProperty("version")]
+        public RuleVersionDto RuleVersion { get; set; }
     }
 }

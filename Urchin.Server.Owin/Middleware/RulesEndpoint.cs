@@ -68,10 +68,10 @@ namespace Urchin.Server.Owin.Middleware
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             var ruleSet = _configRules.GetRuleSet(clientCredentials);
-            if (ruleSet == null || ruleSet.Rules == null)
+            if (ruleSet == null || ruleSet.RuleVersion == null)
                 throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
 
-            return Json(context, ruleSet.Rules);
+            return Json(context, ruleSet.RuleVersion);
         }
 
         private Task CreateRules(IOwinContext context, List<RuleDto> rules)

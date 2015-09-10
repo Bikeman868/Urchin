@@ -51,7 +51,7 @@ namespace Urchin.Server.Tests
             _configRules.SetDefaultEnvironment(null, environmentName);
 
             var draftRules = _configRules.GetRuleSet(null, null);
-            var version = draftRules.Rules.Version;
+            var version = draftRules.RuleVersion.Version;
 
             _configRules.AddRules(null, version, new List<RuleDto>
             {
@@ -96,7 +96,7 @@ namespace Urchin.Server.Tests
             _configRules.SetDefaultEnvironment(null, "Dev");
 
             var draftRules = _configRules.GetRuleSet(null, null);
-            var version = draftRules.Rules.Version;
+            var version = draftRules.RuleVersion.Version;
 
             _configRules.AddRules(null, version, new List<RuleDto>
             {
@@ -176,7 +176,7 @@ namespace Urchin.Server.Tests
             _configRules.SetDefaultEnvironment(null, "Dev");
 
             var draftRules = _configRules.GetRuleSet(null, null);
-            var version = draftRules.Rules.Version;
+            var version = draftRules.RuleVersion.Version;
 
             _configRules.AddRules(null, version, new List<RuleDto>
             {
@@ -388,9 +388,9 @@ namespace Urchin.Server.Tests
             var stagingClient = new ClientCredentials { IpAddress = "192.168.1.99" };
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
-            var productionRules = _configRules.GetRuleSet(productionClient, null).Rules;
-            var stagingRules = _configRules.GetRuleSet(stagingClient, null).Rules;
-            var developmentRules = _configRules.GetRuleSet(developmentClient, null).Rules;
+            var productionRules = _configRules.GetRuleSet(productionClient, null).RuleVersion;
+            var stagingRules = _configRules.GetRuleSet(stagingClient, null).RuleVersion;
+            var developmentRules = _configRules.GetRuleSet(developmentClient, null).RuleVersion;
 
             Assert.AreEqual(3, productionRules.Rules.Count);
             Assert.AreEqual(2, stagingRules.Rules.Count);
@@ -416,7 +416,7 @@ namespace Urchin.Server.Tests
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
             var draftRules = _configRules.GetRuleSet(null, null);
-            var version = draftRules.Rules.Version;
+            var version = draftRules.RuleVersion.Version;
 
             var exception = false;
             try
@@ -440,7 +440,7 @@ namespace Urchin.Server.Tests
                 exception = true;
             }
 
-            var newRules = _configRules.GetRuleSet(productionClient, null).Rules.Rules;
+            var newRules = _configRules.GetRuleSet(productionClient, null).RuleVersion.Rules;
 
             Assert.IsTrue(exception);
             Assert.AreEqual(3, newRules.Count);
@@ -457,7 +457,7 @@ namespace Urchin.Server.Tests
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
             var draftRules = _configRules.GetRuleSet(null, null);
-            var version = draftRules.Rules.Version;
+            var version = draftRules.RuleVersion.Version;
 
             var exception = false;
             try
@@ -481,7 +481,7 @@ namespace Urchin.Server.Tests
                 exception = true;
             }
 
-            var newRules = _configRules.GetRuleSet(productionClient, null).Rules.Rules;
+            var newRules = _configRules.GetRuleSet(productionClient, null).RuleVersion.Rules;
 
             Assert.IsTrue(exception);
             Assert.AreEqual(3, newRules.Count);
@@ -498,7 +498,7 @@ namespace Urchin.Server.Tests
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
             var draftRules = _configRules.GetRuleSet(null, null);
-            var version = draftRules.Rules.Version;
+            var version = draftRules.RuleVersion.Version;
 
             var exception = false;
             try
@@ -519,7 +519,7 @@ namespace Urchin.Server.Tests
                 exception = true;
             }
 
-            var newRules = _configRules.GetRuleSet(productionClient, null).Rules.Rules;
+            var newRules = _configRules.GetRuleSet(productionClient, null).RuleVersion.Rules;
 
             Assert.IsTrue(exception);
             Assert.AreEqual(3, newRules.Count);
@@ -556,7 +556,7 @@ namespace Urchin.Server.Tests
                 });
 
             var draftRules = _configRules.GetRuleSet(null, null);
-            var version = draftRules.Rules.Version;
+            var version = draftRules.RuleVersion.Version;
 
             _configRules.AddRules(null, version, new List<RuleDto>
             {

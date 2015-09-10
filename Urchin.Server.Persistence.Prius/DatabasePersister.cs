@@ -34,7 +34,7 @@ namespace Urchin.Server.Persistence.Prius
             _log = logManager.GetLogger(GetType());
             _mapper = mapper;
 
-            _configNotifier = configurationStore.Register("/urchin/server/persister/repository", SetRepositoryName, "Rules");
+            _configNotifier = configurationStore.Register("/urchin/server/persister/repository", SetRepositoryName, "RuleVersion");
         }
 
         private void SetRepositoryName(string repositoryName)

@@ -24,13 +24,13 @@ namespace Urchin.Server.Owin.Middleware
             IConfigRules configRules)
         {
             _configRules = configRules;
-            _path = new PathString("/rule");
+            _path = new PathString("/rule/{version}");
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
-            if (!_path.IsWildcardMatch(request.Path))
+            if (!_path.IsWildcardMatch(request.Path) || request.Method != "POST")
                 return next.Invoke();
 
             try
@@ -46,16 +46,12 @@ namespace Urchin.Server.Owin.Middleware
                     return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
                 }
 
-                if (request.Method == "POST")
-                    return CreateRule(context, rule);
-
+                return CreateRule(context, rule);
             }
             catch (Exception ex)
             {
                 return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to POST new rule. " + ex.Message });
             }
-
-            return next.Invoke();
         }
 
         private Task CreateRule(IOwinContext context, RuleDto rule)

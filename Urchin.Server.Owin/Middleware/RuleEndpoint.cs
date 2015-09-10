@@ -80,10 +80,10 @@ namespace Urchin.Server.Owin.Middleware
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             var ruleSet = _configRules.GetRuleSet(clientCredentials);
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
+            if (ruleSet == null || ruleSet.RuleVersion == null || ruleSet.RuleVersion.Count == 0)
                 throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
 
-            var matchingRules = ruleSet.Rules.Where(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0).ToList();
+            var matchingRules = ruleSet.RuleVersion.Where(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0).ToList();
 
             if (matchingRules.Count == 1)
                 return Json(context, matchingRules[0]);

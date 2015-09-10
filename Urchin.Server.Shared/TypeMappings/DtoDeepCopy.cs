@@ -42,8 +42,8 @@ namespace Urchin.Server.Shared.TypeMappings
                     dest => dest.Environments,
                     opt => opt.MapFrom(src => src.Environments.DeepClone()))
                 .ForMember(
-                    dest => dest.Rules,
-                    opt => opt.MapFrom(src => src.Rules.DeepClone()));
+                    dest => dest.RuleVersion,
+                    opt => opt.MapFrom(src => src.RuleVersion.DeepClone()));
 
             CreateMap<RuleVersionDto, RuleVersionDto>()
                 .ForMember(

@@ -8,6 +8,9 @@ namespace Urchin.Server.Shared.DataContracts
         [JsonProperty("version")]
         public int Version { get; set; }
 
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
         [JsonProperty("rules")]
         public List<RuleDto> Rules { get; set; }
     }
