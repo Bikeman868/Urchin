@@ -67,8 +67,8 @@ namespace Urchin.Server.Shared.Rules
         public bool SupportsVersioning { get { return false; } }
 
         public List<int> GetVersionNumbers() 
-        { 
-            return null; 
+        {
+            return new List<int> { 0 }; 
         }
 
         public string GetDefaultEnvironment()

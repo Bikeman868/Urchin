@@ -10,14 +10,14 @@ namespace Urchin.Server.Shared.Interfaces
         /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing.
         /// </summary>
-        JObject GetCurrentConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
+        JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
 
         /// <summary>
         /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing, and returns information
         /// about how that configuration was arrived at.
         /// </summary>
-        JObject TraceCurrentConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
+        JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
 
         /// <summary>
         /// Tests a version of the rules by supplying a query, and returning the config
@@ -52,6 +52,11 @@ namespace Urchin.Server.Shared.Interfaces
         /// Overwrites all the environments with new data
         /// </summary>
         void SetEnvironments(IClientCredentials clientCredentials, List<EnvironmentDto> environments);
+
+        /// <summary>
+        /// Changes the version of rules that will be applied in an environment
+        /// </summary>
+        void SetEnvironmentVersion(IClientCredentials clientCredentials, string environmentName, int version);
 
         /// <summary>
         /// Adds a rule to an existing version of the rules
