@@ -47,8 +47,8 @@ namespace Urchin.Server.Owin.Middleware
             {
                 IpAddress = context.Request.RemoteIpAddress
             };
-            if (context.Request.RemoteIpAddress == "::1")
-                context.Request.RemoteIpAddress = "127.0.0.1";
+            if (clientCredentials.IpAddress == "::1")
+                clientCredentials.IpAddress = "127.0.0.1";
 
             context.Set("ClientCredentials", clientCredentials);
 
@@ -68,7 +68,7 @@ namespace Urchin.Server.Owin.Middleware
                         {
                             clientCredentials.IsLoggedOn = true;
                             clientCredentials.Username = sessionToken.Username;
-                            clientCredentials.IsAdministrator = string.Equals(sessionToken.IpAddress, context.Request.RemoteIpAddress, StringComparison.Ordinal);
+                            clientCredentials.IsAdministrator = string.Equals(sessionToken.IpAddress, clientCredentials.IpAddress, StringComparison.Ordinal);
                         }
                     }
                 }
