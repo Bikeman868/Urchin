@@ -41,7 +41,7 @@ namespace Urchin.Server.Shared.TypeMappings
                     {
                         return a.GetTypes().Where(predicate);
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         return new Type[] { };
                     }
