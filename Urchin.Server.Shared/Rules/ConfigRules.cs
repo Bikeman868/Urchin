@@ -133,7 +133,7 @@ namespace Urchin.Server.Shared.Rules
                 if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
                 {
                     var json = ParseJson(rule.ConfigurationData, variables);
-                    config.Merge(json);
+                    config.Merge(json, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
                 }
             }
             return config;
