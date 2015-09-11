@@ -169,7 +169,7 @@ namespace Urchin.Server.Owin
         /// </summary>
         private IDisposable ConfigureUrchinClient(UnityContainer unityContainer)
         {
-            var fileName = "Urchin.config";
+            var fileName = "Urchin.json";
             var thisAssembly = Assembly.GetExecutingAssembly();
             var codeBaseUri = new Uri(thisAssembly.CodeBase);
             if (codeBaseUri.IsFile)
