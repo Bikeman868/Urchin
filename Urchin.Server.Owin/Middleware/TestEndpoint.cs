@@ -17,13 +17,13 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class TestEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public TestEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
+            _ruleData = ruleData;
             _path = new PathString("/test");
         }
 
@@ -74,7 +74,7 @@ namespace Urchin.Server.Owin.Middleware
             string application, 
             string instance)
         {
-            var config = _configRules.TestConfig(ruleSet, environment, machine, application, instance);
+            var config = _ruleData.TestConfig(ruleSet, environment, machine, application, instance);
 
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(config.ToString(Formatting.Indented));

@@ -17,14 +17,14 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class PostRuleEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public PostRuleEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
-            _path = new PathString("/rule/{version}");
+            _ruleData = ruleData;
+            _path = new PathString("/rule/{RuleVersion}");
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
@@ -57,7 +57,7 @@ namespace Urchin.Server.Owin.Middleware
         private Task CreateRule(IOwinContext context, RuleDto rule)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.AddRules(clientCredentials, new List<RuleDto> { rule });
+            _ruleData.AddRules(clientCredentials, new List<RuleDto> { rule });
             return Json(context, new PostResponseDto { Success = true });
         }
     }

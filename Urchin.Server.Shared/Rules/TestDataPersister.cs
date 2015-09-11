@@ -125,5 +125,13 @@ namespace Urchin.Server.Shared.Rules
         public void InsertOrUpdateEnvironment(EnvironmentDto environment)
         {
         }
+
+        public void SetVersionName(int version, string newName)
+        {
+        }
+
+        public void DeleteVersion(int version)
+        {
+        }
     }
 }

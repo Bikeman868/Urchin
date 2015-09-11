@@ -18,13 +18,13 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class DefaultEnvironmentEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public DefaultEnvironmentEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
+            _ruleData = ruleData;
             _path = new PathString("/environment/default");
         }
 
@@ -35,7 +35,18 @@ namespace Urchin.Server.Owin.Middleware
                 return next.Invoke();
 
             if (request.Method == "GET")
-                return GetDefaultEnvironment(context);
+            {
+                try
+                {
+                    return GetDefaultEnvironment(context);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is HttpException) throw;
+                    throw new HttpException((int) HttpStatusCode.InternalServerError,
+                        "Exception getting default environment. " + ex.Message, ex);
+                }
+            }
 
             JToken requestBody;
             try
@@ -71,7 +82,7 @@ namespace Urchin.Server.Owin.Middleware
         private Task GetDefaultEnvironment(IOwinContext context)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            var rules = _configRules.GetRuleSet(clientCredentials);
+            var rules = _ruleData.GetRuleSet(clientCredentials);
             return Json(context, rules.DefaultEnvironmentName);
         }
 
@@ -84,7 +95,7 @@ namespace Urchin.Server.Owin.Middleware
                 return Json(context, new PostResponseDto { Success = false, ErrorMessage = "The default environment name is too long" });
 
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.SetDefaultEnvironment(clientCredentials, requestBody);
+            _ruleData.SetDefaultEnvironment(clientCredentials, requestBody);
 
             return Json(context, new PostResponseDto { Success = true });
         }

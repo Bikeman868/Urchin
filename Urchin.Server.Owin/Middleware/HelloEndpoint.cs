@@ -25,8 +25,7 @@ namespace Urchin.Server.Owin.Middleware
             content.Append("Hello from Urchin Server on ");
             content.Append(Environment.MachineName);
 
-            context.Response.ContentType = "text/plain";
-            return context.Response.WriteAsync(content.ToString());
+            return PlainText(context, content);
         }
     }
 }

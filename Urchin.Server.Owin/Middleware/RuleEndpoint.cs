@@ -11,19 +11,18 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
-using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
     public class RuleEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public RuleEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
+            _ruleData = ruleData;
             _path = new PathString("/rule/{name}");
         }
 
@@ -43,9 +42,20 @@ namespace Urchin.Server.Owin.Middleware
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _path.Value);
 
             var ruleName = pathSegmnts[1];
-            
+
             if (request.Method == "GET")
-                return GetRule(context, ruleName);
+            {
+                try
+                {
+                    return GetRule(context, ruleName);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is HttpException) throw;
+                    throw new HttpException((int)HttpStatusCode.InternalServerError, 
+                        "Exception retrieving rule " + ruleName + ". " + ex.Message, ex);
+                }
+            }
 
             try
             {
@@ -79,7 +89,7 @@ namespace Urchin.Server.Owin.Middleware
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-            var ruleSet = _configRules.GetRuleSet(clientCredentials);
+            var ruleSet = _ruleData.GetRuleSet(clientCredentials);
             if (ruleSet == null || ruleSet.RuleVersion == null || ruleSet.RuleVersion.Count == 0)
                 throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
 
@@ -97,14 +107,14 @@ namespace Urchin.Server.Owin.Middleware
         private Task UpdateRule(IOwinContext context, string name, RuleDto rule)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.UpdateRule(clientCredentials, name, rule);
+            _ruleData.UpdateRule(clientCredentials, name, rule);
             return Json(context, new PostResponseDto { Success = true });
         }
 
         private Task DeleteRule(IOwinContext context, string name)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.DeleteRule(clientCredentials, name);
+            _ruleData.DeleteRule(clientCredentials, name);
             return Json(context, new PostResponseDto { Success = true });
         }
     }

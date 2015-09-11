@@ -125,12 +125,13 @@
     <Compile Include="Middleware\ApiBase.cs" />
     <Compile Include="Middleware\FailedSetupMiddleware.cs" />
     <Compile Include="Middleware\LogonEndpoint.cs" />
+    <Compile Include="Middleware\VersionEndpoint.cs" />
+    <Compile Include="Middleware\VersionsEndpoint.cs" />
     <Compile Include="Middleware\UiEndpoint.cs" />
     <Compile Include="Middleware\DefaultEnvironmentEndpoint.cs" />
     <Compile Include="Middleware\PostRuleEndpoint.cs" />
     <Compile Include="Middleware\RuleEndpoint.cs" />
     <Compile Include="Middleware\EnvironmentsEndpoint.cs" />
-    <Compile Include="Middleware\RuleDataEndpoint.cs" />
     <Compile Include="Middleware\TestEndpoint.cs" />
     <Compile Include="Middleware\RulesEndpoint.cs" />
     <Compile Include="Middleware\TraceEndpoint.cs" />

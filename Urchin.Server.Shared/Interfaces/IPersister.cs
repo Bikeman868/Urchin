@@ -11,6 +11,8 @@ namespace Urchin.Server.Shared.Interfaces
 
         bool SupportsVersioning { get; }
         List<int> GetVersionNumbers();
+        void SetVersionName(int version, string newName);
+        void DeleteVersion(int version);
 
         IEnumerable<string> GetRuleNames(int version);
         RuleDto GetRule(int version, string name);

@@ -198,8 +198,8 @@ Client applications should call this endpoint to obtain their configuration data
 When you GET this endpoint, it returns JSON document defining the configuration for an instance 
 of application running on a specific machine in a specific environment.
 
-If you are using the Urchin client and server together, you should point the Urchin client to 
-this endpoint on the server.
+If you are using the Urchin client and server together, you should configure the Urchin client to 
+GET its configuration from this endpoint.
 
 The query string parameters are:
 

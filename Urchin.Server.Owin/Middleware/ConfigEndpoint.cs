@@ -15,13 +15,13 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class ConfigEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public ConfigEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
+            _ruleData = ruleData;
             _path = new PathString("/config");
         }
 
@@ -42,12 +42,20 @@ namespace Urchin.Server.Owin.Middleware
             if (string.IsNullOrWhiteSpace(application))
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Application parameter is required");
 
-            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            try
+            {
+                var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+                var config = _ruleData.GetConfig(clientCredentials, environment, machine, application, instance);
 
-            var config = _configRules.GetConfig(clientCredentials, environment, machine, application, instance);
-
-            context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(config.ToString(Formatting.None));
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync(config.ToString(Formatting.None));
+            }
+            catch (Exception ex)
+            {
+                if (ex is HttpException) throw;
+                throw new HttpException((int)HttpStatusCode.InternalServerError,
+                    "Exception getting application configuration. " + ex.Message, ex);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ using Urchin.Server.Shared.Interfaces;
 
 namespace Urchin.Server.Shared.Rules
 {
-    public class ConfigRules: IConfigRules
+    public class RuleData: IRuleData
     {
         private readonly IMapper _mapper;
         private readonly IPersister _persister;
@@ -20,7 +20,7 @@ namespace Urchin.Server.Shared.Rules
         private List<RuleVersionDto> _rules;
         private int _highestVersionNumber;
 
-        public ConfigRules(IMapper mapper, IPersister persister)
+        public RuleData(IMapper mapper, IPersister persister)
         {
             _mapper = mapper;
             _persister = persister;
@@ -28,12 +28,30 @@ namespace Urchin.Server.Shared.Rules
             ReloadFromPersister();
         }
 
-        public void Clear(IClientCredentials clientCredentials)
+        #region Methods to support unit tests - do not call from application code
+
+        public void UnitTest_Clear()
         {
             _defaultEnvironmentName = "Development";
             _environments = new List<EnvironmentDto>();
             _rules = new List<RuleVersionDto>();
         }
+
+        public RuleSetDto UnitTest_GetRuleSet(IClientCredentials clientCredentials, int? version)
+        {
+            var ruleSet = new RuleSetDto
+            {
+                DefaultEnvironmentName = _defaultEnvironmentName,
+                Environments = _mapper.Map<List<EnvironmentDto>, List<EnvironmentDto>>(_environments),
+                RuleVersion = GetRuleVersion(clientCredentials, version)
+            };
+
+            return ruleSet;
+        }
+
+        #endregion
+
+        #region Querying for application config
 
         public JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
         {
@@ -101,77 +119,46 @@ namespace Urchin.Server.Shared.Rules
             return response;
         }
 
-        public JObject TestConfig(RuleSetDto ruleSet, string environment, string machine, string application, string instance)
+        public JObject TestConfig(IClientCredentials clientCredentials, int version, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
-
-            if (ruleSet == null || ruleSet.RuleVersion == null || ruleSet.RuleVersion.Rules == null || ruleSet.RuleVersion.Rules.Count == 0)
-                return new JObject();
-
-            // Note that since the entire rule set is provided by the caller, no credentials check is needed here
 
             var environmentDto = LookupEnvironment(environment, machine);
             if (environmentDto == null)
                 return new JObject();
 
-            var applicableRules = GetApplicableRules(ruleSet.RuleVersion, environmentDto, machine, application, instance);
+            var ruleVersion = EnsureVersion(version);
+
+            if (ruleVersion == null || ruleVersion.Rules == null || ruleVersion.Rules.Count == 0)
+                return new JObject();
+
+            var blockedEnvironments = GetBlockedEnvironments(clientCredentials);
+            if (blockedEnvironments != null)
+            {
+                if (blockedEnvironments.Any(e => String.Equals(e.EnvironmentName, environmentDto.EnvironmentName, StringComparison.InvariantCultureIgnoreCase)))
+                    return new JObject();
+            }
+
+            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, machine, application, instance);
             return MergeRules(applicableRules, environmentDto, machine, application, instance);
         }
 
-        public RuleSetDto GetRuleSet(IClientCredentials clientCredentials, int? version)
+        #endregion
+
+        #region Environment administration
+
+        public string GetDefaultEnvironment()
         {
-            if (!version.HasValue) version = GetDraftVersion();
-            var ruleVersion = EnsureVersion(version.Value);
-
-            if (ruleVersion == null) return null;
-
-            var blockedEnvironments = GetBlockedEnvironments(clientCredentials) ?? new List<EnvironmentDto>();
-            var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
-            var blockedEnvironmentNames = blockedEnvironments.Select(e => e.EnvironmentName.ToLower()).ToList();
-
-            Func<RuleDto, int, bool> isAllowed = (r, i) =>
-            {
-                if (!string.IsNullOrEmpty(r.Environment))
-                    if (blockedEnvironmentNames.Contains(r.Environment.ToLower())) return false;
-
-                if (!string.IsNullOrEmpty(r.Machine))
-                    if (blockedMachineNemes.Contains(r.Machine.ToLower())) return false;
-
-                return true;
-            };
-
-            var ruleSet = new RuleSetDto
-            {
-                DefaultEnvironmentName = _defaultEnvironmentName,
-                Environments = _mapper.Map<List<EnvironmentDto>, List<EnvironmentDto>>(_environments),
-                RuleVersion = new RuleVersionDto 
-                {
-                    Version = ruleVersion.Version,
-                    Rules = _mapper.Map<IEnumerable<RuleDto>, List<RuleDto>>(ruleVersion.Rules.Where(isAllowed))
-                }
-            };
-
-            return ruleSet;
+            return _defaultEnvironmentName;
         }
 
-        public int SetRuleSet(IClientCredentials clientCredentials, RuleSetDto ruleSet, bool asNewVersion)
+        public List<EnvironmentDto> GetEnvironments(IClientCredentials clientCredentials)
         {
-            SetEnvironments(clientCredentials, ruleSet.Environments);
-            SetDefaultEnvironment(clientCredentials, ruleSet.DefaultEnvironmentName);
-
-            if (asNewVersion)
-            {
-                var version = ++_highestVersionNumber;
-                CreateRuleVersion(version);
-                AddRules(clientCredentials, version, ruleSet.RuleVersion.Rules);
-                return version;
-            }
-
-            foreach (var rule in ruleSet.RuleVersion.Rules)
-                UpdateRule(clientCredentials, ruleSet.RuleVersion.Version, rule.RuleName, rule);
-
-            return ruleSet.RuleVersion.Version;
+            var environments = _environments;
+            return environments == null 
+                ? null
+                : _mapper.Map<List<EnvironmentDto>, List<EnvironmentDto>>(environments);
         }
 
         public void SetDefaultEnvironment(IClientCredentials clientCredentials, string environmentName)
@@ -257,7 +244,7 @@ namespace Urchin.Server.Shared.Rules
             var blockedEnvironments = GetBlockedEnvironments(clientCredentials);
 
             if (blockedEnvironments != null && blockedEnvironments.Any(e => string.Equals(e.EnvironmentName, environmentName, StringComparison.InvariantCultureIgnoreCase)))
-                throw new Exception("You do not have permission to chenge the rule version for the " + environmentName + " environment");
+                throw new Exception("You do not have permission to chenge the rule RuleVersion for the " + environmentName + " environment");
 
             lock (environments)
             {
@@ -270,13 +257,49 @@ namespace Urchin.Server.Shared.Rules
             }
         }
 
+
+        #endregion
+
+        #region Rule administration
+
+        public RuleVersionDto GetRuleVersion(IClientCredentials clientCredentials, int? version = null)
+        {
+            if (!version.HasValue) version = GetDraftVersion();
+            var ruleVersion = EnsureVersion(version.Value);
+
+            if (ruleVersion == null) return null;
+
+            var blockedEnvironments = GetBlockedEnvironments(clientCredentials) ?? new List<EnvironmentDto>();
+            var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
+            var blockedEnvironmentNames = blockedEnvironments.Select(e => e.EnvironmentName.ToLower()).ToList();
+
+            Func<RuleDto, int, bool> isAllowed = (r, i) =>
+            {
+                if (!string.IsNullOrEmpty(r.Environment))
+                    if (blockedEnvironmentNames.Contains(r.Environment.ToLower())) return false;
+
+                if (!string.IsNullOrEmpty(r.Machine))
+                    if (blockedMachineNemes.Contains(r.Machine.ToLower())) return false;
+
+                return true;
+            };
+
+            var filteredVersion = new RuleVersionDto
+            {
+                Version = ruleVersion.Version,
+                Rules = _mapper.Map<IEnumerable<RuleDto>, List<RuleDto>>(ruleVersion.Rules.Where(isAllowed))
+            };
+
+            return filteredVersion;
+        }
+
         public void AddRules(IClientCredentials clientCredentials, int version, List<RuleDto> newRules)
         {
             if (newRules == null) return;
 
             var ruleVersion = EnsureVersion(version);
             if (ruleVersion == null)
-                throw new Exception("There is no version of the rules with this version number");
+                throw new Exception("There is no RuleVersion of the rules with this RuleVersion number");
 
             var blockedEnvironments = GetBlockedEnvironments(clientCredentials) ?? new List<EnvironmentDto>();
             var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
@@ -314,7 +337,7 @@ namespace Urchin.Server.Shared.Rules
         {
             var ruleVersion = EnsureVersion(version);
             if (ruleVersion == null)
-                throw new Exception("There is no version of the rules with this version number");
+                throw new Exception("There is no RuleVersion of the rules with this RuleVersion number");
 
             var blockedEnvironments = GetBlockedEnvironments(clientCredentials) ?? new List<EnvironmentDto>();
 
@@ -402,6 +425,91 @@ namespace Urchin.Server.Shared.Rules
             DeleteRule(ruleVersion, name);
         }
 
+        #endregion
+
+        #region Version administration
+
+        public void RenameVersion(IClientCredentials clientCredentials, int version, string newName)
+        {
+            var ruleVersion = EnsureVersion(version);
+            if (ruleVersion == null)
+                return;
+
+            ruleVersion.Name = newName;
+            _persister.SetVersionName(version, newName);
+        }
+
+        public List<VersionNameDto> GetVersions()
+        {
+            var versionNumbers = _persister.GetVersionNumbers();
+
+            var result = versionNumbers
+                .Select(v => new VersionNameDto
+                {
+                    Version = v,
+                    Name = EnsureVersion(v).Name
+                })
+                .ToList();
+
+            return result;
+        }
+
+        public void DeleteVersion(IClientCredentials clientCredentials, int version)
+        {
+            var environments = _environments;
+            if (environments != null)
+            {
+                lock (environments)
+                {
+                    if (environments.Any(e => e.Version == version))
+                        throw new Exception("You can not delete version " + version + 
+                            " because it is in use by an environment");
+                }
+            }
+
+            _persister.DeleteVersion(version);
+
+            var rules = _rules;
+            if (rules != null)
+            {
+                lock(rules)
+                {
+                    rules.RemoveAll(r => r.Version == version);
+                    _rules = rules;
+                }
+            }
+        }
+
+        public void DeleteOldVersions()
+        {
+            var environments = _environments;
+            if (environments == null || environments.Count == 0) return;
+
+            int lowestVersion;
+            lock (environments)
+            {
+                lowestVersion = environments.Aggregate(int.MaxValue, (m, e) => e.Version < m ? e.Version : m);
+            }
+
+            var versionsToDelete = _persister.GetVersionNumbers().Where(v => v < lowestVersion);
+            foreach(var version in versionsToDelete)
+            {
+                _persister.DeleteVersion(version);
+            }
+
+            var rules = _rules;
+            if (rules != null)
+            {
+                lock (rules)
+                {
+                    rules.RemoveAll(r => r.Version < lowestVersion);
+                    _rules = rules;
+                }
+            }
+        }
+
+        #endregion
+
         #region Private methods
 
         private int GetDraftVersion()
@@ -420,7 +528,7 @@ namespace Urchin.Server.Shared.Rules
                 {
                     var highestVersion = EnsureVersion(_highestVersionNumber);
                     if (highestVersion == null)
-                        throw new Exception("Internal error, highest version does not exist");
+                        throw new Exception("Internal error, highest RuleVersion does not exist");
 
                     version = _highestVersionNumber + 1;
                     var ruleVersion = CreateRuleVersion(version);
@@ -645,22 +753,22 @@ namespace Urchin.Server.Shared.Rules
             var rules = _rules;
             lock (rules)
             {
-                RuleVersionDto version;
+                RuleVersionDto ruleVersion;
                 if (_persister.SupportsVersioning)
                 {
-                    version = rules.FirstOrDefault(r => r.Version == versionNumber);
-                    if (version == null)
+                    ruleVersion = rules.FirstOrDefault(r => r.Version == versionNumber);
+                    if (ruleVersion == null)
                     {
                         var ruleList = _persister.GetAllRules(versionNumber);
                         if (ruleList != null)
                         {
-                            version = new RuleVersionDto
+                            ruleVersion = new RuleVersionDto
                             {
                                 Version = versionNumber,
                                 Rules = ruleList.ToList()
                             };
-                            SetEvaluationOrder(version);
-                            rules.Add(version);
+                            SetEvaluationOrder(ruleVersion);
+                            rules.Add(ruleVersion);
                         }
                     }
                 }
@@ -668,24 +776,24 @@ namespace Urchin.Server.Shared.Rules
                 {
                     if (rules.Count == 0)
                     {
-                        version = new RuleVersionDto
+                        ruleVersion = new RuleVersionDto
                         {
                             Rules = _persister.GetAllRules(0).ToList()
                         };
-                        SetEvaluationOrder(version);
-                        rules.Add(version);
+                        SetEvaluationOrder(ruleVersion);
+                        rules.Add(ruleVersion);
                     }
                     return rules[0];
                 }
-                return version;
+                return ruleVersion;
             }
         }
 
-        private void DeleteRule(RuleVersionDto version, string name)
+        private void DeleteRule(RuleVersionDto ruleVersion, string name)
         {
-            _persister.DeleteRule(version.Version, name);
+            _persister.DeleteRule(ruleVersion.Version, name);
 
-            var rules = version.Rules;
+            var rules = ruleVersion.Rules;
             lock (rules)
             {
                 rules.RemoveAll(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0);
@@ -697,7 +805,7 @@ namespace Urchin.Server.Shared.Rules
             var ruleVersion = new RuleVersionDto
             {
                 Version = versionNumber,
-                Name = "Version " + versionNumber,
+                Name = "RuleVersion " + versionNumber,
                 Rules = new List<RuleDto>()
             };
 

@@ -3,14 +3,8 @@ using Newtonsoft.Json;
 
 namespace Urchin.Server.Shared.DataContracts
 {
-    public class RuleVersionDto
+    public class RuleVersionDto : VersionNameDto
     {
-        [JsonProperty("version")]
-        public int Version { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
         [JsonProperty("rules")]
         public List<RuleDto> Rules { get; set; }
     }

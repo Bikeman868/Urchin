@@ -17,13 +17,13 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class RulesEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public RulesEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
+            _ruleData = ruleData;
             _path = new PathString("/rules");
         }
 
@@ -67,7 +67,7 @@ namespace Urchin.Server.Owin.Middleware
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-            var ruleSet = _configRules.GetRuleSet(clientCredentials);
+            var ruleSet = _ruleData.GetRuleSet(clientCredentials);
             if (ruleSet == null || ruleSet.RuleVersion == null)
                 throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
 
@@ -77,7 +77,7 @@ namespace Urchin.Server.Owin.Middleware
         private Task CreateRules(IOwinContext context, List<RuleDto> rules)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.AddRules(clientCredentials, rules);
+            _ruleData.AddRules(clientCredentials, rules);
             return Json(context, new PostResponseDto { Success = true });
         }
 
@@ -86,7 +86,7 @@ namespace Urchin.Server.Owin.Middleware
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             foreach (var rule in rules)
-                _configRules.UpdateRule(clientCredentials, rule.RuleName, rule);
+                _ruleData.UpdateRule(clientCredentials, rule.RuleName, rule);
 
             return Json(context, new PostResponseDto { Success = true });
         }

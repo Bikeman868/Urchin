@@ -8,7 +8,7 @@ namespace Urchin.Server.Shared.DataContracts
         [JsonProperty("name")]
         public string EnvironmentName { get; set; }
 
-        [JsonProperty("version")]
+        [JsonProperty("RuleVersion")]
         public int Version { get; set; }
 
         [JsonProperty("machines")]

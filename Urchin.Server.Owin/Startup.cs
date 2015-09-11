@@ -45,7 +45,7 @@ namespace Urchin.Server.Owin
         private UnityContainer ConfigureUnity()
         {
             var unityContainer = new UnityContainer();
-            unityContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IRuleData, RuleData>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<ILogManager, LogManager>(new ContainerControlledLifetimeManager());
 

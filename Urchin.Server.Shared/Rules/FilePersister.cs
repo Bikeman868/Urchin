@@ -135,6 +135,21 @@ namespace Urchin.Server.Shared.Rules
             _environments.Add(environment);
             SaveChanges();
         }
+
+        public void SetVersionName(int version, string newName)
+        {
+            CheckForUpdate();
+            foreach (var rule in _ruleVersions.Where(r => r.Version == version))
+                rule.Name = newName;
+            SaveChanges();
+        }
+
+        public void DeleteVersion(int version)
+        {
+            CheckForUpdate();
+            _ruleVersions.RemoveAll(r => r.Version == version);
+            SaveChanges();
+        }
         
         #region Private methods
 
@@ -257,6 +272,5 @@ namespace Urchin.Server.Shared.Rules
             public List<RuleVersionDto> RuleVersions { get; set; }
             public List<RuleDto> Rules { get; set; }
         }
-
     }
 }
