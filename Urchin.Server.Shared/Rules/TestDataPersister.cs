@@ -8,27 +8,60 @@ namespace Urchin.Server.Shared.Rules
 {
     public class TestDataPersister: IPersister
     {
-        private readonly string _defaultEnvironment;
-        private readonly List<RuleDto> _rules;
         private readonly List<EnvironmentDto> _environments;
+        private readonly List<RuleVersionDto> _rules; 
+
+        private string _defaultEnvironment;
 
         public TestDataPersister()
         {
             _defaultEnvironment = "Development";
 
-            _rules = new List<RuleDto>
+            _rules = new List<RuleVersionDto>
             {
-                new RuleDto
+                new RuleVersionDto
                 {
-                    RuleName = "DevelopmentEnvironment",
-                    Environment = "Development",
-                    ConfigurationData = "{\"debug\":true}"
+                    Name = "Version 1",
+                    Version = 1,
+                    Rules = new List<RuleDto>
+                    {
+                        new RuleDto
+                        {
+                            RuleName = "DevelopmentEnvironment",
+                            Environment = "Development",
+                            ConfigurationData = "{\"debug\":true}"
+                        },
+                        new RuleDto
+                        {
+                            RuleName = "Root",
+                            ConfigurationData =
+                                "{\"environment\":\"($environment$)\",\"machine\":\"($machine$)\",\"application\":\"($application$)\",\"debug\":false}"
+                        }
+                    }
                 },
-                new RuleDto
+                new RuleVersionDto
                 {
-                    RuleName = "Root",
-                    ConfigurationData =
-                        "{\"environment\":\"($environment$)\",\"machine\":\"($machine$)\",\"application\":\"($application$)\",\"debug\":false}"
+                    Name = "Version 2",
+                    Version = 2,
+                    Rules = new List<RuleDto>
+                    {
+                        new RuleDto
+                        {
+                            RuleName = "DevelopmentEnvironment",
+                            Environment = "Development",
+                            ConfigurationData = "{\"debug\":true, \"test\":\"($test$)\"}"
+                        },
+                        new RuleDto
+                        {
+                            RuleName = "Root",
+                            ConfigurationData =
+                                "{\"environment\":\"($environment$)\",\"machine\":\"($machine$)\",\"application\":\"($application$)\",\"debug\":false}",
+                            Variables = new List<VariableDeclarationDto>
+                            {
+                                new VariableDeclarationDto {VariableName = "test", SubstitutionValue = "This is a test"}
+                            }
+                        }
+                    }
                 }
             };
 
@@ -36,7 +69,9 @@ namespace Urchin.Server.Shared.Rules
             {
                 new EnvironmentDto 
                 {
-                    EnvironmentName = "Production", Machines = new List<string>(),
+                    EnvironmentName = "Production", 
+                    Version = 1,
+                    Machines = new List<string>(),
                     SecurityRules = new List<SecurityRuleDto>
                     {
                         new SecurityRuleDto
@@ -48,32 +83,43 @@ namespace Urchin.Server.Shared.Rules
                 },
                 new EnvironmentDto 
                 {
-                    EnvironmentName = "Staging", Machines = new List<string>(),
+                    EnvironmentName = "Staging",
+                    Version = 1,
+                    Machines = new List<string>(),
                     SecurityRules = new List<SecurityRuleDto>{}
                 },
                 new EnvironmentDto 
                 {
-                    EnvironmentName = "Integration", Machines = new List<string>(),
+                    EnvironmentName = "Integration", 
+                    Version = 2,
+                    Machines = new List<string>(),
                     SecurityRules = new List<SecurityRuleDto>{}
                 },
                 new EnvironmentDto 
                 {
-                    EnvironmentName = "Test", Machines = new List<string>(),
+                    EnvironmentName = "Test", 
+                    Version = 2,
+                    Machines = new List<string>(),
+                    SecurityRules = new List<SecurityRuleDto>{}
+                },
+                new EnvironmentDto 
+                {
+                    EnvironmentName = "Development", 
+                    Version = 2,
+                    Machines = new List<string>(),
                     SecurityRules = new List<SecurityRuleDto>{}
                 }
             };
         }
-
-        public bool SupportsVersioning { get { return false; } }
 
         public string CheckHealth()
         {
             return "Test data persister";
         }
 
-        public List<int> GetVersionNumbers() 
+        public List<int> GetVersionNumbers()
         {
-            return new List<int> { 0 }; 
+            return _rules.Select(r => r.Version).ToList();
         }
 
         public string GetDefaultEnvironment()
@@ -83,29 +129,47 @@ namespace Urchin.Server.Shared.Rules
 
         public void SetDefaultEnvironment(string name)
         {
+            _defaultEnvironment = name;
         }
 
         public IEnumerable<string> GetRuleNames(int version)
         {
-            return _rules.Select(r => r.RuleName);
+            var ruleVersion = _rules.FirstOrDefault(r => r.Version == version);
+            if (ruleVersion == null) return null;
+            return ruleVersion.Rules.Select(r => r.RuleName);
         }
 
         public RuleDto GetRule(int version, string name)
         {
-            return _rules.FirstOrDefault(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
+            var ruleVersion = _rules.FirstOrDefault(r => r.Version == version);
+            if (ruleVersion == null) return null;
+
+            return ruleVersion.Rules.FirstOrDefault(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public IEnumerable<RuleDto> GetAllRules(int version)
         {
-            return _rules;
+            var ruleVersion = _rules.FirstOrDefault(r => r.Version == version);
+            if (ruleVersion == null) return null;
+
+            return ruleVersion.Rules;
         }
 
         public void DeleteRule(int version, string name)
         {
+            var ruleVersion = _rules.FirstOrDefault(r => r.Version == version);
+            if (ruleVersion == null) return;
+
+            ruleVersion.Rules.RemoveAll(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public void InsertOrUpdateRule(int version, RuleDto rule)
         {
+            var ruleVersion = _rules.FirstOrDefault(r => r.Version == version);
+            if (ruleVersion == null) return;
+
+            ruleVersion.Rules.RemoveAll(r => string.Equals(r.RuleName, rule.RuleName, StringComparison.InvariantCultureIgnoreCase));
+            ruleVersion.Rules.Add(rule);
         }
 
         public IEnumerable<string> GetEnvironmentNames()
@@ -125,18 +189,26 @@ namespace Urchin.Server.Shared.Rules
 
         public void DeleteEnvironment(string name)
         {
+            _environments.RemoveAll(e => string.Equals(e.EnvironmentName, name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public void InsertOrUpdateEnvironment(EnvironmentDto environment)
         {
+            DeleteEnvironment(environment.EnvironmentName);
+            _environments.Add(environment);
         }
 
         public void SetVersionName(int version, string newName)
         {
+            var ruleVersion = _rules.FirstOrDefault(r => r.Version == version);
+            if (ruleVersion == null) return;
+
+            ruleVersion.Name = newName;
         }
 
         public void DeleteVersion(int version)
         {
+            _rules.RemoveAll(r => r.Version == version);
         }
     }
 }

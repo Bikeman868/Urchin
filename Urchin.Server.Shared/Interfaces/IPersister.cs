@@ -11,7 +11,6 @@ namespace Urchin.Server.Shared.Interfaces
         string GetDefaultEnvironment();
         void SetDefaultEnvironment(string name);
 
-        bool SupportsVersioning { get; }
         List<int> GetVersionNumbers();
         void SetVersionName(int version, string newName);
         void DeleteVersion(int version);

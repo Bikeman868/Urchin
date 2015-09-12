@@ -50,8 +50,6 @@ namespace Urchin.Server.Shared.Rules
             SaveChanges();
         }
 
-        public bool SupportsVersioning { get { return true; } }
-
         public List<int> GetVersionNumbers()
         {
             CheckForUpdate();

@@ -11,94 +11,58 @@ using Urchin.Server.Shared.TypeMappings;
 namespace Urchin.Server.Tests
 {
     [TestFixture]
-    public class ConfigRulesTests
+    public class RuleDataTests
     {
-        private RuleData _configRules;
+        private RuleData _ruleData;
 
         [SetUp]
         public void Initialize()
         {
             var mapper = new Mapper();
             var persister = new TestDataPersister();
-            _configRules = new RuleData(mapper, persister);
-        }
-
-        [Test]
-        public void Should_return_empty_rule_set()
-        {
-            _configRules.UnitTest_Clear();
-            var config = _configRules.GetConfig(null, null, "myMachine", "myApp", null);
-
-            Assert.IsNotNull(config);
-            Assert.AreEqual(0, config.Properties().Count());
+            _ruleData = new RuleData(mapper, persister);
         }
 
         [Test]
         public void Should_return_simple_configuration()
         {
-            const string environmentName = "Integration";
-
-            _configRules.UnitTest_Clear();
-
-            _configRules.SetEnvironments(null, new List<EnvironmentDto>
-                {
-                    new EnvironmentDto
-                    {
-                        EnvironmentName = environmentName
-                    }
-                });
-
-            _configRules.SetDefaultEnvironment(null, environmentName);
-
-            var draftRules = _configRules.UnitTest_GetRuleSet(null, null);
-            var version = draftRules.RuleVersion.Version;
-
-            _configRules.AddRules(null, version, new List<RuleDto>
-            {
-                new RuleDto
-                {
-                    RuleName = "root",
-                    ConfigurationData = "{test:876}"
-                }
-            });
-
-            _configRules.SetEnvironmentVersion(null, environmentName, version);
-
-            var config = _configRules.GetConfig(null, null, "myMachine", "myApp", null);
+            var config = _ruleData.GetConfig(null, null, "myMachine", "myApp", null);
 
             Assert.IsNotNull(config);
-            Assert.AreEqual(876, config["test"].Value<int>());
+            Assert.IsTrue(config["debug"].Value<bool>());
         }
 
         [Test]
         public void Should_lookup_environment_from_machine_name()
         {
-            _configRules.UnitTest_Clear();
+            _ruleData.UnitTest_Clear();
 
-            _configRules.SetEnvironments(null, new List<EnvironmentDto>
+            _ruleData.RenameVersion(null, 1, "First version");
+
+            _ruleData.SetEnvironments(null, new List<EnvironmentDto>
             {
                 new EnvironmentDto
                 {
                     EnvironmentName = "Prod",
-                    Machines = new List<string>{"WEB1", "WEB2"}
+                    Machines = new List<string>{"WEB1", "WEB2"},
+                    Version = 1
                 },
                 new EnvironmentDto
                 {
                     EnvironmentName = "Test",
-                    Machines = new List<string>{"TEST1", "TEST2"}
+                    Machines = new List<string>{"TEST1", "TEST2"},
+                    Version = 1
                 },
                 new EnvironmentDto
                 {
-                    EnvironmentName = "Dev"
+                    EnvironmentName = "Dev",
+                    Version = 1
                 }
 
             });
-            _configRules.SetDefaultEnvironment(null, "Dev");
+            _ruleData.SetDefaultEnvironment(null, "Dev");
 
-            var draftRules = _configRules.UnitTest_GetRuleSet(null, null);
-            var version = draftRules.RuleVersion.Version;
-
-            _configRules.AddRules(null, version, new List<RuleDto>
+            _ruleData.AddRules(null, 1, new List<RuleDto>
             {
                 new RuleDto
                 {
@@ -121,12 +85,12 @@ namespace Urchin.Server.Tests
             });
 
 
-            var web1Config = _configRules.GetConfig(null, null, "web1", "web", null);
-            var web2Config = _configRules.GetConfig(null, null, "web2", "web", null);
-            var test1Config = _configRules.GetConfig(null, null, "test1", "web", null);
-            var test2Config = _configRules.GetConfig(null, null, "test2", "web", null);
-            var dev1Config = _configRules.GetConfig(null, null, "devmachine", "web", null);
-            var dev2Config = _configRules.GetConfig(null, "prod", "devmachine", "web", null);
+            var web1Config = _ruleData.GetConfig(null, null, "web1", "web", null);
+            var web2Config = _ruleData.GetConfig(null, null, "web2", "web", null);
+            var test1Config = _ruleData.GetConfig(null, null, "test1", "web", null);
+            var test2Config = _ruleData.GetConfig(null, null, "test2", "web", null);
+            var dev1Config = _ruleData.GetConfig(null, null, "devmachine", "web", null);
+            var dev2Config = _ruleData.GetConfig(null, "prod", "devmachine", "web", null);
 
             Assert.IsNotNull(web1Config);
             Assert.IsNotNull(web2Config);
@@ -152,33 +116,37 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_support_variable_substitution()
         {
-            _configRules.UnitTest_Clear();
-            _configRules.SetDefaultEnvironment(null, "Development");
+            _ruleData.UnitTest_Clear();
 
-            _configRules.SetEnvironments(null, new List<EnvironmentDto>
+            const int version = 1;
+
+            _ruleData.RenameVersion(null, version, "First version");
+
+            _ruleData.SetEnvironments(null, new List<EnvironmentDto>
             {
                 new EnvironmentDto
                 {
                     EnvironmentName = "Prod",
-                    Machines = new List<string>{"WEB1", "WEB2"}
+                    Machines = new List<string>{"WEB1", "WEB2"},
+                    Version = version
                 },
                 new EnvironmentDto
                 {
                     EnvironmentName = "Test",
-                    Machines = new List<string>{"TEST1", "TEST2"}
+                    Machines = new List<string>{"TEST1", "TEST2"},
+                    Version = version
                 },
                 new EnvironmentDto
                 {
-                    EnvironmentName = "Dev"
+                    EnvironmentName = "Dev",
+                    Version = version
                 }
 
             });
-            _configRules.SetDefaultEnvironment(null, "Dev");
+            _ruleData.SetDefaultEnvironment(null, "Dev");
 
-            var draftRules = _configRules.UnitTest_GetRuleSet(null, null);
-            var version = draftRules.RuleVersion.Version;
 
-            _configRules.AddRules(null, version, new List<RuleDto>
+            _ruleData.AddRules(null, version, new List<RuleDto>
             {
                 new RuleDto
                 {
@@ -215,10 +183,10 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var configApp1Prod = _configRules.GetConfig(null, "Prod", "WEB1", "Application1", null);
-            var configApp2Prod = _configRules.GetConfig(null, "Prod", "WEB2", "Application2", null);
-            var configApp1Test = _configRules.GetConfig(null, "Test", "WEB3", "Application1", null);
-            var configApp2Test = _configRules.GetConfig(null, "Test", "WEB4", "Application2", null);
+            var configApp1Prod = _ruleData.GetConfig(null, "Prod", "WEB1", "Application1", null);
+            var configApp2Prod = _ruleData.GetConfig(null, "Prod", "WEB2", "Application2", null);
+            var configApp1Test = _ruleData.GetConfig(null, "Test", "WEB3", "Application1", null);
+            var configApp2Test = _ruleData.GetConfig(null, "Test", "WEB4", "Application2", null);
 
             Assert.AreEqual("Database", configApp1Prod["log"]["method"].Value<string>());
             Assert.AreEqual("Database", configApp2Prod["log"]["method"].Value<string>());
@@ -229,12 +197,12 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_secure_restricted_environments()
         {
-            _configRules.UnitTest_Clear();
+            _ruleData.UnitTest_Clear();
             SetupSecureEnvironments();
-            _configRules.SetDefaultEnvironment(null, "Production");
+            _ruleData.SetDefaultEnvironment(null, "Production");
 
             var devClient = new ClientCredentials { IpAddress = "192.168.3.54" };
-            var config1 = _configRules.UnitTest_GetRuleSet(devClient, null);
+            var config1 = _ruleData.UnitTest_GetRuleSet(devClient, null);
 
             Assert.AreEqual(3, config1.Environments.Count);
 
@@ -246,7 +214,7 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("web2", config1.Environments[0].Machines[1]);
             Assert.AreEqual("web3", config1.Environments[0].Machines[2]);
 
-            _configRules.SetEnvironments(devClient, new List<EnvironmentDto> 
+            _ruleData.SetEnvironments(devClient, new List<EnvironmentDto> 
             {
                 new EnvironmentDto
                 {
@@ -260,7 +228,7 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var config2 = _configRules.UnitTest_GetRuleSet(devClient, null);
+            var config2 = _ruleData.UnitTest_GetRuleSet(devClient, null);
 
             Assert.AreEqual(3, config2.Environments.Count);
 
@@ -282,7 +250,7 @@ namespace Urchin.Server.Tests
 
             var stagingClient = new ClientCredentials { IpAddress = "192.168.1.2" };
 
-            _configRules.SetEnvironments(stagingClient, new List<EnvironmentDto> 
+            _ruleData.SetEnvironments(stagingClient, new List<EnvironmentDto> 
             {
                 new EnvironmentDto
                 {
@@ -296,7 +264,7 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var config3 = _configRules.UnitTest_GetRuleSet(stagingClient, null);
+            var config3 = _ruleData.UnitTest_GetRuleSet(stagingClient, null);
 
             Assert.AreEqual(2, config3.Environments.Count);
 
@@ -313,7 +281,7 @@ namespace Urchin.Server.Tests
 
             var prodClient = new ClientCredentials { IpAddress = "192.168.0.2" };
 
-            _configRules.SetEnvironments(prodClient, new List<EnvironmentDto> 
+            _ruleData.SetEnvironments(prodClient, new List<EnvironmentDto> 
             {
                 new EnvironmentDto
                 {
@@ -327,7 +295,7 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var config4 = _configRules.UnitTest_GetRuleSet(prodClient, null);
+            var config4 = _ruleData.UnitTest_GetRuleSet(prodClient, null);
 
             Assert.AreEqual(2, config4.Environments.Count);
 
@@ -344,24 +312,24 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_not_retrieve_config_from_restricted_environment()
         {
-            _configRules.UnitTest_Clear();
+            _ruleData.UnitTest_Clear();
             SetupSecureEnvironments();
 
             var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
             var stagingClient = new ClientCredentials { IpAddress = "192.168.1.99" };
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
-            var web1Production = _configRules.GetConfig(productionClient, "", "web1", "myApp", "");
-            var web1Staging = _configRules.GetConfig(stagingClient, "", "web1", "myApp", "");
-            var web1Development = _configRules.GetConfig(developmentClient, "", "web1", "myApp", "");
+            var web1Production = _ruleData.GetConfig(productionClient, "", "web1", "myApp", "");
+            var web1Staging = _ruleData.GetConfig(stagingClient, "", "web1", "myApp", "");
+            var web1Development = _ruleData.GetConfig(developmentClient, "", "web1", "myApp", "");
 
-            var stage2Production = _configRules.GetConfig(productionClient, "", "stage2", "myApp", "");
-            var stage2Staging = _configRules.GetConfig(stagingClient, "", "stage2", "myApp", "");
-            var stage2Development = _configRules.GetConfig(developmentClient, "", "stage2", "myApp", "");
+            var stage2Production = _ruleData.GetConfig(productionClient, "", "stage2", "myApp", "");
+            var stage2Staging = _ruleData.GetConfig(stagingClient, "", "stage2", "myApp", "");
+            var stage2Development = _ruleData.GetConfig(developmentClient, "", "stage2", "myApp", "");
 
-            var dev1Production = _configRules.GetConfig(productionClient, "", "dev1", "myApp", "");
-            var dev1Staging = _configRules.GetConfig(stagingClient, "", "dev1", "myApp", "");
-            var dev1Development = _configRules.GetConfig(developmentClient, "", "dev1", "myApp", "");
+            var dev1Production = _ruleData.GetConfig(productionClient, "", "dev1", "myApp", "");
+            var dev1Staging = _ruleData.GetConfig(stagingClient, "", "dev1", "myApp", "");
+            var dev1Development = _ruleData.GetConfig(developmentClient, "", "dev1", "myApp", "");
 
             const string emptyConfig = "{}";
 
@@ -381,16 +349,16 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_not_retrieve_rules_from_restricted_environment()
         {
-            _configRules.UnitTest_Clear();
+            _ruleData.UnitTest_Clear();
             SetupSecureEnvironments();
 
             var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
             var stagingClient = new ClientCredentials { IpAddress = "192.168.1.99" };
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
-            var productionRules = _configRules.UnitTest_GetRuleSet(productionClient, null).RuleVersion;
-            var stagingRules = _configRules.UnitTest_GetRuleSet(stagingClient, null).RuleVersion;
-            var developmentRules = _configRules.UnitTest_GetRuleSet(developmentClient, null).RuleVersion;
+            var productionRules = _ruleData.UnitTest_GetRuleSet(productionClient, null).RuleVersion;
+            var stagingRules = _ruleData.UnitTest_GetRuleSet(stagingClient, null).RuleVersion;
+            var developmentRules = _ruleData.UnitTest_GetRuleSet(developmentClient, null).RuleVersion;
 
             Assert.AreEqual(3, productionRules.Rules.Count);
             Assert.AreEqual(2, stagingRules.Rules.Count);
@@ -409,19 +377,19 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_not_add_rules_for_restricted_environments()
         {
-            _configRules.UnitTest_Clear();
+            _ruleData.UnitTest_Clear();
             SetupSecureEnvironments();
 
             var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
-            var draftRules = _configRules.UnitTest_GetRuleSet(null, null);
+            var draftRules = _ruleData.UnitTest_GetRuleSet(null, null);
             var version = draftRules.RuleVersion.Version;
 
             var exception = false;
             try
             {
-                _configRules.AddRules(
+                _ruleData.AddRules(
                     developmentClient, 
                     version,
                     new List<RuleDto>
@@ -440,7 +408,7 @@ namespace Urchin.Server.Tests
                 exception = true;
             }
 
-            var newRules = _configRules.UnitTest_GetRuleSet(productionClient, null).RuleVersion.Rules;
+            var newRules = _ruleData.UnitTest_GetRuleSet(productionClient, null).RuleVersion.Rules;
 
             Assert.IsTrue(exception);
             Assert.AreEqual(3, newRules.Count);
@@ -450,19 +418,19 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_not_add_rules_for_restricted_machines()
         {
-            _configRules.UnitTest_Clear();
+            _ruleData.UnitTest_Clear();
             SetupSecureEnvironments();
 
             var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
-            var draftRules = _configRules.UnitTest_GetRuleSet(null, null);
+            var draftRules = _ruleData.UnitTest_GetRuleSet(null, null);
             var version = draftRules.RuleVersion.Version;
 
             var exception = false;
             try
             {
-                _configRules.AddRules(
+                _ruleData.AddRules(
                     developmentClient, 
                     version,
                     new List<RuleDto>
@@ -481,7 +449,7 @@ namespace Urchin.Server.Tests
                 exception = true;
             }
 
-            var newRules = _configRules.UnitTest_GetRuleSet(productionClient, null).RuleVersion.Rules;
+            var newRules = _ruleData.UnitTest_GetRuleSet(productionClient, null).RuleVersion.Rules;
 
             Assert.IsTrue(exception);
             Assert.AreEqual(3, newRules.Count);
@@ -491,19 +459,19 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_not_update_rules_for_restricted_environments()
         {
-            _configRules.UnitTest_Clear();
+            _ruleData.UnitTest_Clear();
             SetupSecureEnvironments();
 
             var productionClient = new ClientCredentials { IpAddress = "192.168.0.32" };
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
-            var draftRules = _configRules.UnitTest_GetRuleSet(null, null);
+            var draftRules = _ruleData.UnitTest_GetRuleSet(null, null);
             var version = draftRules.RuleVersion.Version;
 
             var exception = false;
             try
             {
-                _configRules.UpdateRule(
+                _ruleData.UpdateRule(
                     developmentClient, 
                     version,
                     "Production Environment",
@@ -519,7 +487,7 @@ namespace Urchin.Server.Tests
                 exception = true;
             }
 
-            var newRules = _configRules.UnitTest_GetRuleSet(productionClient, null).RuleVersion.Rules;
+            var newRules = _ruleData.UnitTest_GetRuleSet(productionClient, null).RuleVersion.Rules;
 
             Assert.IsTrue(exception);
             Assert.AreEqual(3, newRules.Count);
@@ -529,11 +497,14 @@ namespace Urchin.Server.Tests
 
         private void SetupSecureEnvironments()
         {
-            _configRules.SetEnvironments(null, new List<EnvironmentDto>
+            const int version = 1;
+
+            _ruleData.SetEnvironments(null, new List<EnvironmentDto>
                 {
                     new EnvironmentDto
                     {
                         EnvironmentName = "Production",
+                        Version = version,
                         Machines = new List<string>{"web1", "web2", "web3"},
                         SecurityRules = new List<SecurityRuleDto>
                         {
@@ -543,6 +514,7 @@ namespace Urchin.Server.Tests
                     new EnvironmentDto
                     {
                         EnvironmentName = "Staging",
+                        Version = version,
                         Machines = new List<string>{"stage1", "stage2", "stage3"},
                         SecurityRules = new List<SecurityRuleDto>
                         {
@@ -551,14 +523,12 @@ namespace Urchin.Server.Tests
                     },
                     new EnvironmentDto
                     {
-                        EnvironmentName = "Development"
+                        EnvironmentName = "Development",
+                        Version = version
                     }
                 });
 
-            var draftRules = _configRules.UnitTest_GetRuleSet(null, null);
-            var version = draftRules.RuleVersion.Version;
-
-            _configRules.AddRules(null, version, new List<RuleDto>
+            _ruleData.AddRules(null, version, new List<RuleDto>
             {
                 new RuleDto
                 {
@@ -580,7 +550,7 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            _configRules.SetDefaultEnvironment(null, "Development");
+            _ruleData.SetDefaultEnvironment(null, "Development");
         }
 
         private class ClientCredentials : IClientCredentials

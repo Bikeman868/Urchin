@@ -72,7 +72,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ConfigRulesTests.cs" />
+    <Compile Include="RuleDataTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

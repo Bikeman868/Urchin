@@ -76,8 +76,6 @@ namespace Urchin.Server.Persistence.Prius
 
         #region Versions
 
-        public bool SupportsVersioning { get { return true; } }
-
         public List<int> GetVersionNumbers()
         {
             using (var context = _contextFactory.Create(_repositoryName))
