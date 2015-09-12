@@ -19,6 +19,7 @@ USE `urchin`;
 CREATE TABLE IF NOT EXISTS `environments` (
   `Id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `Version` int(11) DEFAULT NULL,
   PRIMARY KEY (`Id`),
   UNIQUE KEY `ix_Name` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -234,7 +235,12 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetEnvironment`(IN `environmentName` VARCHAR(50))
 BEGIN
-	SELECT environmentName AS Name;
+	SELECT
+		e.Id,
+		e.Name,
+		e.Version
+	FROM Environments e
+	WHERE e.Name = environmentName;
 END//
 DELIMITER ;
 
@@ -439,7 +445,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure urchin.sp_InsertUpdateEnvironment
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertUpdateEnvironment`(IN `environmentName` VARCHAR(50))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertUpdateEnvironment`(IN `environmentName` VARCHAR(50), IN `version` INT)
 BEGIN
 	DECLARE environmentId INT UNSIGNED;
 	
@@ -451,16 +457,22 @@ BEGIN
 	IF environmentId IS NULL THEN
 		INSERT IGNORE INTO Environments
 		(
-			Name
+			Name,
+			Version
 		) VALUES (
-			environmentName
+			environmentName,
+			version
 		);
-
-		SELECT e.Id 
+		SELECT e.Id
 		INTO environmentId
 		FROM Environments e
 		WHERE e.Name = environmentName;
 	END IF;
+	
+	UPDATE Environments e
+	SET e.Version = version
+	WHERE e.Id = environmentId;
+	
 END//
 DELIMITER ;
 
