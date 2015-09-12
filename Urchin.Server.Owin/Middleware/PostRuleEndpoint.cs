@@ -35,6 +35,20 @@ namespace Urchin.Server.Owin.Middleware
 
             try
             {
+                var pathSegmnts = request.Path.Value
+                    .Split('/')
+                    .Where(p => !string.IsNullOrWhiteSpace(p))
+                    .Select(HttpUtility.UrlDecode)
+                    .ToArray();
+
+                if (pathSegmnts.Length < 2)
+                    throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _path.Value);
+
+                var versionText = pathSegmnts[1];
+                int version;
+                if (!int.TryParse(versionText, out version))
+                    throw new HttpException((int)HttpStatusCode.BadRequest, "The version must be a whole number " + _path.Value);
+
                 RuleDto rule;
                 try
                 {
@@ -46,7 +60,7 @@ namespace Urchin.Server.Owin.Middleware
                     return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
                 }
 
-                return CreateRule(context, rule);
+                return CreateRule(context, version, rule);
             }
             catch (Exception ex)
             {
@@ -54,10 +68,10 @@ namespace Urchin.Server.Owin.Middleware
             }
         }
 
-        private Task CreateRule(IOwinContext context, RuleDto rule)
+        private Task CreateRule(IOwinContext context, int version, RuleDto rule)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _ruleData.AddRules(clientCredentials, 1, new List<RuleDto> { rule });
+            _ruleData.AddRules(clientCredentials, version, new List<RuleDto> { rule });
             return Json(context, new PostResponseDto { Success = true });
         }
     }

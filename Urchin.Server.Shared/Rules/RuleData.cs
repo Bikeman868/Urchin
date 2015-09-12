@@ -18,7 +18,6 @@ namespace Urchin.Server.Shared.Rules
         private string _defaultEnvironmentName;
         private List<EnvironmentDto> _environments;
         private List<RuleVersionDto> _rules;
-        private int _highestVersionNumber;
 
         public RuleData(IMapper mapper, IPersister persister)
         {
@@ -106,6 +105,8 @@ namespace Urchin.Server.Shared.Rules
                 }
             }
 
+            var serializedEnvironment = JsonConvert.SerializeObject(environmentDto);
+
             var applicableRules = GetApplicableRules(ruleVersion, environmentDto, machine, application, instance);
             var serializedRules = JsonConvert.SerializeObject(applicableRules);
 
@@ -113,6 +114,7 @@ namespace Urchin.Server.Shared.Rules
             var serializedVariables = JsonConvert.SerializeObject(variables);
 
             response["config"] = MergeRules(applicableRules, environmentDto, machine, application, instance);
+            response["environment"] = JToken.Parse(serializedEnvironment);
             response["variables"] = JToken.Parse(serializedVariables);
             response["matchingRules"] = JToken.Parse(serializedRules);
 
@@ -515,29 +517,30 @@ namespace Urchin.Server.Shared.Rules
 
         private int GetDraftVersion()
         {
-            int version;
+            var highestVersionNumber = _persister.GetVersionNumbers().Aggregate(0, (s, v) => v > s ? v : s);
+            highestVersionNumber = _rules.Aggregate(highestVersionNumber, (s, r) => r.Version > s ? r.Version : s);
 
-            if (_rules == null || _rules.Count == 0)
+            var highestEnvironmentVersion = _environments.Aggregate(0, (s, e) => e.Version > s ? e.Version : s);
+            var draftVersion = highestEnvironmentVersion >= highestVersionNumber ? highestEnvironmentVersion + 1 : highestVersionNumber;
+
+            if (draftVersion == 0)
             {
-                version = 1;
-                CreateRuleVersion(version);
+                draftVersion = 1;
+                CreateRuleVersion(draftVersion);
             }
             else
             {
-                version = _highestVersionNumber;
-                if (_environments.Any(e => e.Version == version))
+                if (draftVersion > highestVersionNumber)
                 {
-                    var highestVersion = EnsureVersion(_highestVersionNumber);
+                    var highestVersion = EnsureVersion(highestVersionNumber);
                     if (highestVersion == null)
                         throw new Exception("Internal error, highest version does not exist");
 
-                    version = _highestVersionNumber + 1;
-                    var ruleVersion = CreateRuleVersion(version);
+                    var ruleVersion = CreateRuleVersion(draftVersion);
                     ruleVersion.Rules = _mapper.Map<List<RuleDto>, List<RuleDto>>(highestVersion.Rules);
                 }
             }
-            _highestVersionNumber = version;
-            return version;
+            return draftVersion;
         }
 
         private void SetEvaluationOrder(RuleVersionDto ruleVersion)
@@ -746,7 +749,6 @@ namespace Urchin.Server.Shared.Rules
             _defaultEnvironmentName = _persister.GetDefaultEnvironment();
             _environments = _persister.GetAllEnvironments().ToList();
             _rules = new List<RuleVersionDto>();
-            _highestVersionNumber = _persister.GetVersionNumbers().Aggregate(0, (s, v) => v > s ? v : s);
         }
 
         private RuleVersionDto EnsureVersion(int versionNumber)

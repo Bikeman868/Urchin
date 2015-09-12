@@ -98,6 +98,48 @@ CREATE TABLE IF NOT EXISTS `versions` (
 -- Data exporting was unselected.
 
 
+-- Dumping structure for procedure urchin.ip_EnsureVersion
+DELIMITER //
+CREATE DEFINER=`martin`@`%` PROCEDURE `ip_EnsureVersion`(IN `version` INT)
+BEGIN
+	IF NOT EXISTS 
+		(
+			SELECT v.Name 
+			FROM Versions v 
+			WHERE v.Version = version
+		) THEN
+		INSERT INTO Versions (
+			Version,
+			Name
+		) VALUES (
+			version,
+			CONCAT('Version ', version)
+		);
+	END IF;
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure urchin.ip_UpdateSetting
+DELIMITER //
+CREATE DEFINER=`root`@`%` PROCEDURE `ip_UpdateSetting`(IN `settingName` VARCHAR(50), IN `settingValue` TEXT)
+BEGIN
+	INSERT IGNORE INTO Settings(
+			Name, 
+			Value
+		) VALUES (
+			settingName,
+			settingValue
+		);
+		
+	UPDATE Settings s
+	SET s.Value = settingValue
+	WHERE s.Name = settingName;
+
+END//
+DELIMITER ;
+
+
 -- Dumping structure for procedure urchin.sp_DeleteEnvironment
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteEnvironment`(IN `environmentName` VARCHAR(50))
@@ -361,11 +403,11 @@ DELIMITER ;
 
 -- Dumping structure for procedure urchin.sp_InsertEnvironmentMachine
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertEnvironmentMachine`(IN `environmentName` VARCHAR(50), IN `machineName` VARCHAR(50))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertEnvironmentMachine`(IN `environmentName` VARCHAR(50), IN `environmentVersion` INT, IN `machineName` VARCHAR(50))
 BEGIN
 	DECLARE environmentId INT UNSIGNED;
 
-	CALL sp_InsertUpdateEnvironment(environmentName);
+	CALL sp_InsertUpdateEnvironment(environmentName, environmentVersion);
 	
 	SELECT e.Id
 	INTO environmentId
@@ -386,11 +428,11 @@ DELIMITER ;
 
 -- Dumping structure for procedure urchin.sp_InsertEnvironmentSecurity
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertEnvironmentSecurity`(IN `environmentName` VARCHAR(50), IN `startIP` VARCHAR(15), IN `endIp` VARCHAR(15))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertEnvironmentSecurity`(IN `environmentName` VARCHAR(50), IN `environmentVersion` INT, IN `startIP` VARCHAR(15), IN `endIp` VARCHAR(15))
 BEGIN
 	DECLARE environmentId INT UNSIGNED;
 
-	CALL sp_InsertUpdateEnvironment(environmentName);
+	CALL sp_InsertUpdateEnvironment(environmentName, environmentVersion);
 	
 	SELECT e.Id
 	INTO environmentId
@@ -484,7 +526,8 @@ BEGIN
 	DECLARE environmentId INT UNSIGNED;
 	DECLARE ruleId INT UNSIGNED;
 	
-	CALL sp_InsertUpdateEnvironment(environment);
+	CALL ip_EnsureVersion(version);
+	CALL sp_InsertUpdateEnvironment(environment, version);
 	
 	SELECT e.Id 
 	INTO environmentId
@@ -546,8 +589,7 @@ BEGIN
 	);
 	
 	UPDATE Versions v
-	SET
-		v.Name = name
+	SET v.Name = name
 	WHERE v.Version = version;
 END//
 DELIMITER ;
@@ -557,7 +599,7 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_UpdateAdministratorPassword`(IN `newPassword` VARCHAR(50))
 BEGIN
-	CALL sp_UpdateSetting('AdministratorPassword', newPassword);
+	CALL ip_UpdateSetting('AdministratorPassword', newPassword);
 END//
 DELIMITER ;
 
@@ -566,27 +608,7 @@ DELIMITER ;
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_UpdateDefaultEnvironment`(IN `environmentName` VARCHAR(50))
 BEGIN
-	CALL sp_UpdateSetting('DefaultEnvironment', environmentName);
-END//
-DELIMITER ;
-
-
--- Dumping structure for procedure urchin.sp_UpdateSetting
-DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_UpdateSetting`(IN `settingName` VARCHAR(50), IN `settingValue` TEXT)
-BEGIN
-	INSERT IGNORE INTO Settings(
-			Name, 
-			Value
-		) VALUES (
-			settingName,
-			settingValue
-		);
-		
-	UPDATE Settings s
-	SET s.Value = settingValue
-	WHERE s.Name = settingName;
-
+	CALL ip_UpdateSetting('DefaultEnvironment', environmentName);
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

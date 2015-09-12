@@ -336,6 +336,7 @@ namespace Urchin.Server.Persistence.Prius
                 using (var command = _commandFactory.CreateStoredProcedure("sp_InsertUpdateEnvironment"))
                 {
                     command.AddParameter("environmentName", environment.EnvironmentName);
+                    command.AddParameter("version", environment.Version);
                     context.ExecuteNonQuery(command);
                 }
 
@@ -350,6 +351,7 @@ namespace Urchin.Server.Persistence.Prius
                     using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentMachine"))
                     {
                         command.AddParameter("environmentName", environment.EnvironmentName);
+                        command.AddParameter("environmentVersion", environment.Version);
                         var machineName = command.AddParameter("machineName", SqlDbType.NVarChar, ParameterDirection.Input);
                         foreach (var machine in environment.Machines)
                         {
@@ -370,6 +372,7 @@ namespace Urchin.Server.Persistence.Prius
                     using (var command = _commandFactory.CreateStoredProcedure("sp_InsertEnvironmentSecurity"))
                     {
                         command.AddParameter("environmentName", environment.EnvironmentName);
+                        command.AddParameter("environmentVersion", environment.Version);
                         var startIp = command.AddParameter("startIp", SqlDbType.NVarChar, ParameterDirection.Input);
                         var endIp = command.AddParameter("endIp", SqlDbType.NVarChar, ParameterDirection.Input);
                         foreach (var securityRule in environment.SecurityRules)
