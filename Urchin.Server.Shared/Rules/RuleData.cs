@@ -119,7 +119,7 @@ namespace Urchin.Server.Shared.Rules
             return response;
         }
 
-        public JObject TestConfig(IClientCredentials clientCredentials, int version, string environment, string machine, string application, string instance)
+        public JObject TestConfig(IClientCredentials clientCredentials, int? version, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -128,7 +128,8 @@ namespace Urchin.Server.Shared.Rules
             if (environmentDto == null)
                 return new JObject();
 
-            var ruleVersion = EnsureVersion(version);
+            if (!version.HasValue) version = GetDraftVersion();
+            var ruleVersion = EnsureVersion(version.Value);
 
             if (ruleVersion == null || ruleVersion.Rules == null || ruleVersion.Rules.Count == 0)
                 return new JObject();
@@ -244,7 +245,7 @@ namespace Urchin.Server.Shared.Rules
             var blockedEnvironments = GetBlockedEnvironments(clientCredentials);
 
             if (blockedEnvironments != null && blockedEnvironments.Any(e => string.Equals(e.EnvironmentName, environmentName, StringComparison.InvariantCultureIgnoreCase)))
-                throw new Exception("You do not have permission to chenge the rule RuleVersion for the " + environmentName + " environment");
+                throw new Exception("You do not have permission to change the rule version for the " + environmentName + " environment");
 
             lock (environments)
             {
@@ -299,7 +300,7 @@ namespace Urchin.Server.Shared.Rules
 
             var ruleVersion = EnsureVersion(version);
             if (ruleVersion == null)
-                throw new Exception("There is no RuleVersion of the rules with this RuleVersion number");
+                throw new Exception("There is no version of the rules with this RuleVersion number");
 
             var blockedEnvironments = GetBlockedEnvironments(clientCredentials) ?? new List<EnvironmentDto>();
             var blockedMachineNemes = GetBlockedMachines(blockedEnvironments);
@@ -337,7 +338,7 @@ namespace Urchin.Server.Shared.Rules
         {
             var ruleVersion = EnsureVersion(version);
             if (ruleVersion == null)
-                throw new Exception("There is no RuleVersion of the rules with this RuleVersion number");
+                throw new Exception("There is no version of the rules with this RuleVersion number");
 
             var blockedEnvironments = GetBlockedEnvironments(clientCredentials) ?? new List<EnvironmentDto>();
 
@@ -528,7 +529,7 @@ namespace Urchin.Server.Shared.Rules
                 {
                     var highestVersion = EnsureVersion(_highestVersionNumber);
                     if (highestVersion == null)
-                        throw new Exception("Internal error, highest RuleVersion does not exist");
+                        throw new Exception("Internal error, highest version does not exist");
 
                     version = _highestVersionNumber + 1;
                     var ruleVersion = CreateRuleVersion(version);
@@ -805,7 +806,7 @@ namespace Urchin.Server.Shared.Rules
             var ruleVersion = new RuleVersionDto
             {
                 Version = versionNumber,
-                Name = "RuleVersion " + versionNumber,
+                Name = "Version " + versionNumber,
                 Rules = new List<RuleDto>()
             };
 

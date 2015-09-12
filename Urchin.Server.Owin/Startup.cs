@@ -127,17 +127,20 @@ namespace Urchin.Server.Owin
         {
             try
             {
+                // This must be the first endpoint because it establishes client credentials
                 app.Use(unityContainer.Resolve<Middleware.LogonEndpoint>().Invoke);
+
                 app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.UiEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.VersionEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.VersionsEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.RuleDataEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.TestEndpoint>().Invoke);
             }
             catch (Exception ex)

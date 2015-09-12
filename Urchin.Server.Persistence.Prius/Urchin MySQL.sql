@@ -1,8 +1,8 @@
 -- --------------------------------------------------------
--- Host:                         devdb1
--- Server version:               10.0.14-MariaDB - mariadb.org binary distribution
+-- Host:                         127.0.0.1
+-- Server version:               5.6.26-log - MySQL Community Server (GPL)
 -- Server OS:                    Win64
--- HeidiSQL Version:             9.2.0.4947
+-- HeidiSQL Version:             9.3.0.4984
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -10,13 +10,13 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
--- Dumping database structure for Urchin
-CREATE DATABASE IF NOT EXISTS `Urchin` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
-USE `Urchin`;
+-- Dumping database structure for urchin
+CREATE DATABASE IF NOT EXISTS `urchin` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
+USE `urchin`;
 
 
--- Dumping structure for table Urchin.Environments
-CREATE TABLE IF NOT EXISTS `Environments` (
+-- Dumping structure for table urchin.environments
+CREATE TABLE IF NOT EXISTS `environments` (
   `Id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`Id`),
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS `Environments` (
 -- Data exporting was unselected.
 
 
--- Dumping structure for table Urchin.Machines
-CREATE TABLE IF NOT EXISTS `Machines` (
+-- Dumping structure for table urchin.machines
+CREATE TABLE IF NOT EXISTS `machines` (
   `EnvironmentId` int(10) unsigned NOT NULL,
   `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`EnvironmentId`,`Name`),
@@ -37,9 +37,10 @@ CREATE TABLE IF NOT EXISTS `Machines` (
 -- Data exporting was unselected.
 
 
--- Dumping structure for table Urchin.Rules
-CREATE TABLE IF NOT EXISTS `Rules` (
+-- Dumping structure for table urchin.rules
+CREATE TABLE IF NOT EXISTS `rules` (
   `Id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `Version` int(11) unsigned NOT NULL DEFAULT '0',
   `Name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `EnvironmentId` int(10) unsigned DEFAULT NULL,
   `Machine` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -47,14 +48,14 @@ CREATE TABLE IF NOT EXISTS `Rules` (
   `Instance` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Config` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`Id`),
-  UNIQUE KEY `Name` (`Name`)
+  UNIQUE KEY `Name` (`Name`,`Version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Data exporting was unselected.
 
 
--- Dumping structure for table Urchin.SecurityRules
-CREATE TABLE IF NOT EXISTS `SecurityRules` (
+-- Dumping structure for table urchin.securityrules
+CREATE TABLE IF NOT EXISTS `securityrules` (
   `EnvironmentId` int(11) unsigned NOT NULL,
   `StartIp` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   `EndIp` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -64,8 +65,8 @@ CREATE TABLE IF NOT EXISTS `SecurityRules` (
 -- Data exporting was unselected.
 
 
--- Dumping structure for table Urchin.Settings
-CREATE TABLE IF NOT EXISTS `Settings` (
+-- Dumping structure for table urchin.settings
+CREATE TABLE IF NOT EXISTS `settings` (
   `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Value` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`Name`)
@@ -74,8 +75,8 @@ CREATE TABLE IF NOT EXISTS `Settings` (
 -- Data exporting was unselected.
 
 
--- Dumping structure for table Urchin.Variables
-CREATE TABLE IF NOT EXISTS `Variables` (
+-- Dumping structure for table urchin.variables
+CREATE TABLE IF NOT EXISTS `variables` (
   `RuleId` int(11) NOT NULL,
   `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Value` text COLLATE utf8_unicode_ci,
@@ -86,7 +87,17 @@ CREATE TABLE IF NOT EXISTS `Variables` (
 -- Data exporting was unselected.
 
 
--- Dumping structure for procedure Urchin.sp_DeleteEnvironment
+-- Dumping structure for table urchin.versions
+CREATE TABLE IF NOT EXISTS `versions` (
+  `Version` int(11) unsigned NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`Version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for procedure urchin.sp_DeleteEnvironment
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteEnvironment`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -106,7 +117,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_DeleteEnvironmentMachines
+-- Dumping structure for procedure urchin.sp_DeleteEnvironmentMachines
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteEnvironmentMachines`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -124,7 +135,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_DeleteEnvironmentSecurity
+-- Dumping structure for procedure urchin.sp_DeleteEnvironmentSecurity
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteEnvironmentSecurity`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -141,16 +152,19 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_DeleteRule
+-- Dumping structure for procedure urchin.sp_DeleteRule
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteRule`(IN `ruleName` VARCHAR(50))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteRule`(IN `ruleName` VARCHAR(50), IN `version` INT)
 BEGIN
 	DECLARE ruleId INT UNSIGNED;
 	
 	SELECT r.Id
 	INTO ruleId
 	FROM Rules r
-	WHERE r.Name = ruleName;
+	WHERE 
+		r.Name = ruleName
+			AND
+		r.Version = version;
 
 	DELETE FROM v USING Variables AS v
 	WHERE v.RuleId = ruleId;
@@ -161,16 +175,19 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_DeleteRuleVariables
+-- Dumping structure for procedure urchin.sp_DeleteRuleVariables
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteRuleVariables`(IN `ruleName` VARCHAR(50))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteRuleVariables`(IN `ruleName` VARCHAR(50), IN `version` INT)
 BEGIN
 	DECLARE ruleId INT UNSIGNED;
 	
 	SELECT r.Id
 	INTO ruleId
 	FROM Rules r
-	WHERE r.Name = ruleName;
+	WHERE 
+		r.Name = ruleName
+			AND
+		r.Version = version;
 
 	DELETE FROM v USING Variables AS v
 	WHERE v.RuleId = ruleId;
@@ -178,7 +195,20 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetAdministratorPassword
+-- Dumping structure for procedure urchin.sp_DeleteVersion
+DELIMITER //
+CREATE DEFINER=`martin`@`%` PROCEDURE `sp_DeleteVersion`(IN `version` INT)
+BEGIN
+	DELETE FROM v USING Variables AS v
+	WHERE v.RuleId IN (SELECT r.RuleId FROM Rules r WHERE r.Version = version);
+
+	DELETE FROM r USING Rules AS r
+	WHERE r.Version = version;
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure urchin.sp_GetAdministratorPassword
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetAdministratorPassword`()
 BEGIN
@@ -189,7 +219,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetDefaultEnvironment
+-- Dumping structure for procedure urchin.sp_GetDefaultEnvironment
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetDefaultEnvironment`()
 BEGIN
@@ -200,7 +230,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetEnvironment
+-- Dumping structure for procedure urchin.sp_GetEnvironment
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetEnvironment`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -209,7 +239,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetEnvironmentMachines
+-- Dumping structure for procedure urchin.sp_GetEnvironmentMachines
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetEnvironmentMachines`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -227,7 +257,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetEnvironmentNames
+-- Dumping structure for procedure urchin.sp_GetEnvironmentNames
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetEnvironmentNames`()
 BEGIN
@@ -237,7 +267,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetEnvironmentSecurity
+-- Dumping structure for procedure urchin.sp_GetEnvironmentSecurity
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetEnvironmentSecurity`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -257,9 +287,9 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetRule
+-- Dumping structure for procedure urchin.sp_GetRule
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetRule`(IN `ruleName` VARCHAR(50))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetRule`(IN `ruleName` VARCHAR(50), IN `version` INT)
 BEGIN
 	SELECT
 		r.Name,
@@ -271,31 +301,38 @@ BEGIN
 	FROM 
 		Rules r LEFT JOIN
 		Environments e ON r.EnvironmentId = e.Id
-	WHERE r.Name = ruleName;
+	WHERE 
+		r.Name = ruleName
+			AND
+		r.Version = version;
 END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetRuleNames
+-- Dumping structure for procedure urchin.sp_GetRuleNames
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetRuleNames`()
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetRuleNames`(IN `version` INT)
 BEGIN
 	SELECT r.Name
-	FROM Rules r;
+	FROM Rules r
+	WHERE r.Version = version;
 END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_GetRuleVariables
+-- Dumping structure for procedure urchin.sp_GetRuleVariables
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetRuleVariables`(IN `ruleName` VARCHAR(50))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetRuleVariables`(IN `ruleName` VARCHAR(50), IN `version` INT)
 BEGIN
 	DECLARE ruleId INT UNSIGNED;
 	
 	SELECT r.Id
 	INTO ruleId
 	FROM Rules r
-	WHERE r.Name = ruleName;
+	WHERE 
+		r.Name = ruleName
+			AND
+		r.Version = version;
 
 	SELECT 
 		v.Name,
@@ -306,7 +343,17 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_InsertEnvironmentMachine
+-- Dumping structure for procedure urchin.sp_GetVersionNumbers
+DELIMITER //
+CREATE DEFINER=`martin`@`%` PROCEDURE `sp_GetVersionNumbers`()
+BEGIN
+	SELECT version
+	FROM Versions;
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure urchin.sp_InsertEnvironmentMachine
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertEnvironmentMachine`(IN `environmentName` VARCHAR(50), IN `machineName` VARCHAR(50))
 BEGIN
@@ -331,7 +378,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_InsertEnvironmentSecurity
+-- Dumping structure for procedure urchin.sp_InsertEnvironmentSecurity
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertEnvironmentSecurity`(IN `environmentName` VARCHAR(50), IN `startIP` VARCHAR(15), IN `endIp` VARCHAR(15))
 BEGIN
@@ -358,16 +405,19 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_InsertRuleVariable
+-- Dumping structure for procedure urchin.sp_InsertRuleVariable
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertRuleVariable`(IN `ruleName` VARCHAR(50), IN `variableName` VARCHAR(50), IN `variableValue` TEXT)
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertRuleVariable`(IN `ruleName` VARCHAR(50), IN `version` INT, IN `variableName` VARCHAR(50), IN `variableValue` TEXT)
 BEGIN
 	DECLARE ruleId INT UNSIGNED;
 
 	SELECT r.Id
 	INTO ruleId
 	FROM Rules r
-	WHERE r.Name = ruleName;
+	WHERE 
+		r.Name = ruleName
+			AND
+		r.Version = version;
 
 	INSERT IGNORE INTO Variables
 	(
@@ -387,7 +437,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_InsertUpdateEnvironment
+-- Dumping structure for procedure urchin.sp_InsertUpdateEnvironment
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertUpdateEnvironment`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -415,9 +465,9 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_InsertUpdateRule
+-- Dumping structure for procedure urchin.sp_InsertUpdateRule
 DELIMITER //
-CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertUpdateRule`(IN `ruleName` VARCHAR(50), IN `application` VARCHAR(50), IN `environment` VARCHAR(50), IN `instance` VARCHAR(50), IN `machine` VARCHAR(50), IN `config` TEXT)
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertUpdateRule`(IN `ruleName` VARCHAR(50), IN `version` INT, IN `application` VARCHAR(50), IN `environment` VARCHAR(50), IN `instance` VARCHAR(50), IN `machine` VARCHAR(50), IN `config` TEXT)
 BEGIN
 	DECLARE environmentId INT UNSIGNED;
 	DECLARE ruleId INT UNSIGNED;
@@ -432,6 +482,7 @@ BEGIN
 	INSERT IGNORE INTO Rules
 	(
 		Name,
+		Version,
 		Application,
 		EnvironmentId,
 		Machine,
@@ -439,6 +490,7 @@ BEGIN
 		Config
 	) VALUES (
 		ruleName,
+		version,
 		application,
 		environmentId,
 		machine,
@@ -449,11 +501,15 @@ BEGIN
 	SELECT r.Id
 	INTO ruleId
 	FROM Rules r
-	WHERE r.Name = ruleName;
+	WHERE 
+		r.Name = ruleName
+			AND
+		r.Version = version;
 	
 	UPDATE Rules r
 	SET
 		r.Name = ruleName,
+		r.Version = version,
 		r.Application = application,
 		r.EnvironmentId = environmentId,
 		r.Machine = machine,
@@ -464,7 +520,28 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_UpdateAdministratorPassword
+-- Dumping structure for procedure urchin.sp_InsertUpdateVersion
+DELIMITER //
+CREATE DEFINER=`martin`@`%` PROCEDURE `sp_InsertUpdateVersion`(IN `version` INT, IN `name` VARCHAR(50))
+BEGIN
+	INSERT IGNORE INTO Versions
+	(
+		Version,
+		Name
+	) VALUES (
+		version,
+		name
+	);
+	
+	UPDATE Versions v
+	SET
+		v.Name = name
+	WHERE v.Version = version;
+END//
+DELIMITER ;
+
+
+-- Dumping structure for procedure urchin.sp_UpdateAdministratorPassword
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_UpdateAdministratorPassword`(IN `newPassword` VARCHAR(50))
 BEGIN
@@ -473,7 +550,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_UpdateDefaultEnvironment
+-- Dumping structure for procedure urchin.sp_UpdateDefaultEnvironment
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_UpdateDefaultEnvironment`(IN `environmentName` VARCHAR(50))
 BEGIN
@@ -482,7 +559,7 @@ END//
 DELIMITER ;
 
 
--- Dumping structure for procedure Urchin.sp_UpdateSetting
+-- Dumping structure for procedure urchin.sp_UpdateSetting
 DELIMITER //
 CREATE DEFINER=`root`@`%` PROCEDURE `sp_UpdateSetting`(IN `settingName` VARCHAR(50), IN `settingValue` TEXT)
 BEGIN

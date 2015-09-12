@@ -113,7 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <None Include="Urchin.json" />
+    <Content Include="Urchin.json" />
     <Content Include="Ui\web\favicon.ico" />
     <Content Include="Ui\web\index.html" />
     <Content Include="Ui\web\styles.css" />
@@ -160,12 +160,6 @@
     <Content Include="Ui\web\Html\HtmlBuilder.dart" />
     <Content Include="Ui\web\Html\JsonHighlighter.dart" />
     <None Include="Urchin.json.postman_collection" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

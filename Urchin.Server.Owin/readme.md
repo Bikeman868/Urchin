@@ -320,10 +320,13 @@ Retrievs a list of all of the rules in a specific version. This allows you to re
 details by making a GET request to `/rule/{version}/{name}` later.
 
 #### The `/test/{version}` Endpoint
+GET this endpoint to retrieve an application config for a specific version of the rules.
+
 This allows you test a version of the rules before applying them to an environment, making them
 live to application instances. When you GET the `/config` endpoint it will query the version
 of rules that applies to that query by looking at the machine name and environment name passed
-in the query. This endpoint gives you a way to test other versions of rules.
+in the query. This endpoint gives you a way to test other versions of rules, not the one assigned
+to the machine's environment.
 
 If you omit the version number, then the current draft version of the rules will be tested.
 

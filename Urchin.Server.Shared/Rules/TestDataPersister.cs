@@ -66,6 +66,11 @@ namespace Urchin.Server.Shared.Rules
 
         public bool SupportsVersioning { get { return false; } }
 
+        public string CheckHealth()
+        {
+            return "Test data persister";
+        }
+
         public List<int> GetVersionNumbers() 
         {
             return new List<int> { 0 }; 

@@ -9,13 +9,13 @@ namespace Urchin.Server.Shared.Interfaces
         #region Querying for application config
 
         /// <summary>
-        /// Gets the configuration of an application using the current configuration RuleVersion
+        /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing.
         /// </summary>
         JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
 
         /// <summary>
-        /// Gets the configuration of an application using the current configuration RuleVersion
+        /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing, and returns information
         /// about how that configuration was arrived at.
         /// </summary>
@@ -25,7 +25,7 @@ namespace Urchin.Server.Shared.Interfaces
         /// Tests a version of the rules by supplying a query, and returning the config
         /// that would be returned if these rules were saved.
         /// </summary>
-        JObject TestConfig(IClientCredentials clientCredentials, int version, string environment, string machine, string application, string instance);
+        JObject TestConfig(IClientCredentials clientCredentials, int? version, string environment, string machine, string application, string instance);
 
         #endregion
 
@@ -52,7 +52,7 @@ namespace Urchin.Server.Shared.Interfaces
         void SetEnvironments(IClientCredentials clientCredentials, List<EnvironmentDto> environments);
 
         /// <summary>
-        /// Changes the RuleVersion of rules that will be applied in an environment
+        /// Changes the version of rules that will be applied in an environment
         /// </summary>
         void SetEnvironmentVersion(IClientCredentials clientCredentials, string environmentName, int version);
 
@@ -67,17 +67,17 @@ namespace Urchin.Server.Shared.Interfaces
         RuleVersionDto GetRuleVersion(IClientCredentials clientCredentials, int? version = null);
 
         /// <summary>
-        /// Adds a rule to an existing RuleVersion of the rules
+        /// Adds a rule to an existing version of the rules
         /// </summary>
         void AddRules(IClientCredentials clientCredentials, int version, List<RuleDto> newRules);
 
         /// <summary>
-        /// Replaces a rule in an existing RuleVersion of the rules
+        /// Replaces a rule in an existing version of the rules
         /// </summary>
         void UpdateRule(IClientCredentials clientCredentials, int version, string oldName, RuleDto rules);
 
         /// <summary>
-        /// Deletes a rule from an existing RuleVersion of the rules
+        /// Deletes a rule from an existing version of the rules
         /// </summary>
         void DeleteRule(IClientCredentials clientCredentials, int version, string name);
 
@@ -101,7 +101,7 @@ namespace Urchin.Server.Shared.Interfaces
         void DeleteVersion(IClientCredentials clientCredentials, int version);
 
         /// <summary>
-        /// Deletes all versions older than the oldest RuleVersion assigned to an environment
+        /// Deletes all versions older than the oldest version assigned to an environment
         /// </summary>
         void DeleteOldVersions();
 

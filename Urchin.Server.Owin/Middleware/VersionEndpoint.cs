@@ -1,9 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
@@ -48,7 +52,12 @@ namespace Urchin.Server.Owin.Middleware
                     throw new HttpException((int)HttpStatusCode.BadRequest, "Version must be a number greater than zero.");
 
                 if (request.Method == "PUT")
-                    return RenameVersion(context, version);
+                {
+                    VersionDto versionDto;
+                    using (var sr = new StreamReader(request.Body, Encoding.UTF8))
+                        versionDto = JsonConvert.DeserializeObject<VersionDto>(sr.ReadToEnd());
+                    return RenameVersion(context, version, versionDto);
+                }
 
                 if (request.Method == "DELETE")
                     return DeleteVersion(context, version);
@@ -62,10 +71,11 @@ namespace Urchin.Server.Owin.Middleware
             return next.Invoke();
         }
 
-        private Task RenameVersion(IOwinContext context, int version)
+        private Task RenameVersion(IOwinContext context, int version, VersionDto versionDto)
         {
+            
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _ruleData.RenameVersion(clientCredentials, version);
+            _ruleData.RenameVersion(clientCredentials, version, versionDto.Name);
             return Json(context, new PostResponseDto { Success = true });
         }
 
@@ -74,6 +84,12 @@ namespace Urchin.Server.Owin.Middleware
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
             _ruleData.DeleteVersion(clientCredentials, version);
             return Json(context, new PostResponseDto { Success = true });
+        }
+
+        private class VersionDto
+        {
+            [JsonProperty("name")]
+            public string Name { get; set; }
         }
     }
 }

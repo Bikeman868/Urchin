@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using Urchin.Client.Interfaces;
 using Urchin.Server.Shared.DataContracts;
@@ -25,6 +26,15 @@ namespace Urchin.Server.Shared.Rules
             _ruleVersions = new List<RuleVersionDto>();
 
             _configNotifier = configurationStore.Register("/urchin/server/persister/filePath", SetFilePath, "rules.txt");
+        }
+
+        public string CheckHealth()
+        {
+            var content = new StringBuilder();
+            content.AppendLine("File persister using file '" + _filePath + "'.");
+            content.AppendLine("File contains " + GetVersionNumbers().Count + " versions of the rules.");
+            content.AppendLine("File defines " + String.Join(", ", GetEnvironmentNames()) + " environments.");
+            return content.ToString();
         }
 
         public string GetDefaultEnvironment()

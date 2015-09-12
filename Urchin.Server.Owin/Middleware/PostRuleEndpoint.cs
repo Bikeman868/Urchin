@@ -24,7 +24,7 @@ namespace Urchin.Server.Owin.Middleware
             IRuleData ruleData)
         {
             _ruleData = ruleData;
-            _path = new PathString("/rule/{RuleVersion}");
+            _path = new PathString("/rule/{version}");
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
@@ -57,7 +57,7 @@ namespace Urchin.Server.Owin.Middleware
         private Task CreateRule(IOwinContext context, RuleDto rule)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _ruleData.AddRules(clientCredentials, new List<RuleDto> { rule });
+            _ruleData.AddRules(clientCredentials, 1, new List<RuleDto> { rule });
             return Json(context, new PostResponseDto { Success = true });
         }
     }

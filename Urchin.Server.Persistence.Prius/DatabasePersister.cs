@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Data;
 using System.Linq;
+using System.Text;
 using Common.Logging;
 using Prius.Contracts.Interfaces;
 using Urchin.Client.Interfaces;
@@ -34,14 +34,19 @@ namespace Urchin.Server.Persistence.Prius
             _log = logManager.GetLogger(GetType());
             _mapper = mapper;
 
-            _configNotifier = configurationStore.Register("/urchin/server/persister/repository", SetRepositoryName, "RuleVersion");
+            _configNotifier = configurationStore.Register("/urchin/server/persister/repository", SetRepositoryName, "Urchin");
         }
 
-        private void SetRepositoryName(string repositoryName)
+        public string CheckHealth()
         {
-            _log.Info(m => m("Using '{0}' Prius repository for Urchin configuration rules", repositoryName));
-            _repositoryName = repositoryName;
+            var content = new StringBuilder();
+            content.AppendLine("Prius persister using repository '" + _repositoryName + "'.");
+            content.AppendLine("Database contains " + GetVersionNumbers().Count + " versions of the rules.");
+            content.AppendLine("Database defines " + String.Join(", ", GetEnvironmentNames()) + " environments.");
+            return content.ToString();
         }
+
+        #region Default environment
 
         public string GetDefaultEnvironment()
         {
@@ -67,12 +72,67 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public IEnumerable<string> GetRuleNames()
+        #endregion
+
+        #region Versions
+
+        public bool SupportsVersioning { get { return true; } }
+
+        public List<int> GetVersionNumbers()
+        {
+            using (var context = _contextFactory.Create(_repositoryName))
+            {
+                using (var command = _commandFactory.CreateStoredProcedure("sp_GetVersionNumbers"))
+                {
+                    using (var reader = context.ExecuteReader(command))
+                    {
+                        var versionNumbers = new List<int>();
+                        while (reader.Read())
+                        {
+                            versionNumbers.Add(reader.Get<int>(0));
+                        }
+                        return versionNumbers;
+                    }
+                }
+            }
+        }
+
+        public void SetVersionName(int version, string newName)
+        {
+            using (var context = _contextFactory.Create(_repositoryName))
+            {
+                using (var command = _commandFactory.CreateStoredProcedure("sp_InsertUpdateVersion"))
+                {
+                    command.AddParameter("name", newName);
+                    command.AddParameter("version", version);
+                    context.ExecuteNonQuery(command);
+                }
+            }
+        }
+
+        public void DeleteVersion(int version)
+        {
+            using (var context = _contextFactory.Create(_repositoryName))
+            {
+                using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteVersion"))
+                {
+                    command.AddParameter("version", version);
+                    context.ExecuteNonQuery(command);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Rules
+
+        public IEnumerable<string> GetRuleNames(int version)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
                 using (var command = _commandFactory.CreateStoredProcedure("sp_GetRuleNames"))
                 {
+                    command.AddParameter("version", version);
                     using (var reader = context.ExecuteReader(command))
                     {
                         var ruleNames = new List<string>();
@@ -86,7 +146,7 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public RuleDto GetRule(string name)
+        public RuleDto GetRule(int version, string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
@@ -94,6 +154,7 @@ namespace Urchin.Server.Persistence.Prius
                 using (var command = _commandFactory.CreateStoredProcedure("sp_GetRule"))
                 {
                     command.AddParameter("ruleName", name);
+                    command.AddParameter("version", version);
                     using (var data = context.ExecuteEnumerable<RuleRecord>(command))
                     {
                         ruleRecord = data.FirstOrDefault();
@@ -105,6 +166,7 @@ namespace Urchin.Server.Persistence.Prius
                 using (var command = _commandFactory.CreateStoredProcedure("sp_GetRuleVariables"))
                 {
                     command.AddParameter("ruleName", name);
+                    command.AddParameter("version", version);
                     using (var data = context.ExecuteEnumerable<VariableRecord>(command))
                     {
                         ruleDto.Variables = _mapper.Map<IEnumerable<VariableRecord>, List<Shared.DataContracts.VariableDeclarationDto>>(data);
@@ -114,24 +176,25 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
-        public IEnumerable<RuleDto> GetAllRules()
+        public IEnumerable<RuleDto> GetAllRules(int version)
         {
-            return GetRuleNames().Select(GetRule).ToList();
+            return GetRuleNames(version).Select(n => GetRule(version, n)).ToList();
         }
 
-        public void DeleteRule(string name)
+        public void DeleteRule(int version, string name)
         {
             using (var context = _contextFactory.Create(_repositoryName))
             {
                 using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteRule"))
                 {
                     command.AddParameter("ruleName", name);
+                    command.AddParameter("version", version);
                     context.ExecuteNonQuery(command);
                 }
             }
         }
 
-        public void InsertOrUpdateRule(RuleDto rule)
+        public void InsertOrUpdateRule(int version, RuleDto rule)
         {
             _log.Info(m => m("Updating '{0}' rule", rule.RuleName));
             using (var context = _contextFactory.Create(_repositoryName))
@@ -139,6 +202,7 @@ namespace Urchin.Server.Persistence.Prius
                 using (var command = _commandFactory.CreateStoredProcedure("sp_InsertUpdateRule"))
                 {
                     command.AddParameter("ruleName", rule.RuleName);
+                    command.AddParameter("version", version);
                     command.AddParameter("application", rule.Application);
                     command.AddParameter("environment", rule.Environment);
                     command.AddParameter("instance", rule.Instance);
@@ -149,6 +213,7 @@ namespace Urchin.Server.Persistence.Prius
                 using (var command = _commandFactory.CreateStoredProcedure("sp_DeleteRuleVariables"))
                 {
                     command.AddParameter("ruleName", rule.RuleName);
+                    command.AddParameter("version", version);
                     context.ExecuteNonQuery(command);
                 }
                 if (rule.Variables != null && rule.Variables.Count > 0)
@@ -156,6 +221,7 @@ namespace Urchin.Server.Persistence.Prius
                     using (var command = _commandFactory.CreateStoredProcedure("sp_InsertRuleVariable"))
                     {
                         command.AddParameter("ruleName", rule.RuleName);
+                        command.AddParameter("version", version);
                         var variableName = command.AddParameter("variableName", SqlDbType.NVarChar, ParameterDirection.Input);
                         var variableValue = command.AddParameter("variableValue", SqlDbType.NVarChar, ParameterDirection.Input);
                         foreach (var variable in rule.Variables)
@@ -168,6 +234,10 @@ namespace Urchin.Server.Persistence.Prius
                 }
             }
         }
+
+        #endregion
+
+        #region Environments
 
         public IEnumerable<string> GetEnvironmentNames()
         {
@@ -313,5 +383,17 @@ namespace Urchin.Server.Persistence.Prius
 
             }
         }
+
+        #endregion
+
+        #region Private methods
+
+        private void SetRepositoryName(string repositoryName)
+        {
+            _log.Info(m => m("Using '{0}' Prius repository for Urchin configuration rules", repositoryName));
+            _repositoryName = repositoryName;
+        }
+
+        #endregion
     }
 }

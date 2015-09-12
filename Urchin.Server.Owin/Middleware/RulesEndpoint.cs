@@ -18,23 +18,43 @@ namespace Urchin.Server.Owin.Middleware
     public class RulesEndpoint: ApiBase
     {
         private readonly IRuleData _ruleData;
-        private readonly PathString _path;
+        private readonly PathString _draftRulesPath;
+        private readonly PathString _versionRulesPath;
 
         public RulesEndpoint(
             IRuleData ruleData)
         {
             _ruleData = ruleData;
-            _path = new PathString("/rules");
+            _draftRulesPath = new PathString("/rules");
+            _versionRulesPath = new PathString("/rules/{version}");
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
-            if (!_path.IsWildcardMatch(request.Path))
+
+            if (_draftRulesPath.IsWildcardMatch(request.Path) && request.Method == "GET")
+                return GetDraftRules(context);
+
+            if (!_versionRulesPath.IsWildcardMatch(request.Path))
                 return next.Invoke();
 
+            var pathSegmnts = request.Path.Value
+                .Split('/')
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Select(HttpUtility.UrlDecode)
+                .ToArray();
+
+            if (pathSegmnts.Length < 2)
+                throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _versionRulesPath.Value);
+
+            var versionText = pathSegmnts[1];
+            int version;
+            if (!int.TryParse(versionText, out version))
+                throw new HttpException((int)HttpStatusCode.BadRequest, "The version must be a whole number " + _versionRulesPath.Value);
+                
             if (request.Method == "GET")
-                return GetRules(context);
+                return GetRules(context, version);
 
             List<RuleDto> rules;
             try
@@ -50,10 +70,10 @@ namespace Urchin.Server.Owin.Middleware
             try
             {
                 if (request.Method == "POST")
-                    return CreateRules(context, rules);
+                    return CreateRules(context, rules, version);
 
                 if (request.Method == "PUT")
-                    return UpdateRules(context, rules);
+                    return UpdateRules(context, rules, version);
             }
             catch (Exception ex)
             {
@@ -63,30 +83,41 @@ namespace Urchin.Server.Owin.Middleware
             return next.Invoke();
         }
 
-        private Task GetRules(IOwinContext context)
+        private Task GetRules(IOwinContext context, int version)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-            var ruleSet = _ruleData.GetRuleSet(clientCredentials);
-            if (ruleSet == null || ruleSet.RuleVersion == null)
-                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
+            var ruleVersion = _ruleData.GetRuleVersion(clientCredentials, version);
+            if (ruleVersion == null)
+                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules with that version number");
 
-            return Json(context, ruleSet.RuleVersion);
+            return Json(context, ruleVersion);
         }
 
-        private Task CreateRules(IOwinContext context, List<RuleDto> rules)
+        private Task GetDraftRules(IOwinContext context)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _ruleData.AddRules(clientCredentials, rules);
+
+            var ruleVersion = _ruleData.GetRuleVersion(clientCredentials);
+            if (ruleVersion == null)
+                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
+
+            return Json(context, ruleVersion);
+        }
+
+        private Task CreateRules(IOwinContext context, List<RuleDto> rules, int version)
+        {
+            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            _ruleData.AddRules(clientCredentials, version, rules);
             return Json(context, new PostResponseDto { Success = true });
         }
 
-        private Task UpdateRules(IOwinContext context, List<RuleDto> rules)
+        private Task UpdateRules(IOwinContext context, IEnumerable<RuleDto> rules, int version)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
             foreach (var rule in rules)
-                _ruleData.UpdateRule(clientCredentials, rule.RuleName, rule);
+                _ruleData.UpdateRule(clientCredentials, version, rule.RuleName, rule);
 
             return Json(context, new PostResponseDto { Success = true });
         }

@@ -81,9 +81,7 @@ namespace Urchin.Server.Owin.Middleware
 
         private Task GetDefaultEnvironment(IOwinContext context)
         {
-            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            var rules = _ruleData.GetRuleSet(clientCredentials);
-            return Json(context, rules.DefaultEnvironmentName);
+            return Json(context, _ruleData.GetDefaultEnvironment());
         }
 
         private Task UpdateDefaultEnvironment(IOwinContext context, string requestBody)

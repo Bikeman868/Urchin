@@ -6,6 +6,8 @@ namespace Urchin.Server.Shared.Interfaces
 {
     public interface IPersister
     {
+        string CheckHealth();
+
         string GetDefaultEnvironment();
         void SetDefaultEnvironment(string name);
 

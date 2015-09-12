@@ -15,17 +15,17 @@ namespace Urchin.Server.Owin.Middleware
     /// <summary>
     /// This middleware behaves a lot like the static files middleware with the
     /// following differences:
-    /// - Files can be versioned. The RuleVersion number comes from /urchin/server/RuleVersion in the config file.
+    /// - Files can be versioned. The version number comes from /urchin/server/version in the config file.
     /// - It maps the url /ui/* onto the physical path ui/build/web/*
     /// - It maps the url /favicon.ico onto the physical path ui/web/favicon.ico
-    /// - If the url includes a RuleVersion:
-    ///    * If the RuleVersion in the url does not match the current RuleVersion a 404 is returned.
-    ///    * If the RuleVersion in the url is the the current RuleVersion, the RuleVersion number is
+    /// - If the url includes a version:
+    ///    * If the version in the url does not match the current version a 404 is returned.
+    ///    * If the version in the url is the the current version, the version number is
     ///      stripped out to get the name of the file to serve, and the file is served with
     ///      an expiry date, allowing the browser to cache the file.
-    ///  - If the url does not include a RuleVersion the file file is served to the browser with
+    ///  - If the url does not include a version the file file is served to the browser with
     ///    no caching enabled so the browser will request the resource every time.
-    ///  - In HTML files, the string {_v_} is replaced with the current RuleVersion number before
+    ///  - In HTML files, the string {_v_} is replaced with the current version number before
     ///    being sent to the browser. This should be added to all links that refer to resources
     ///    such as javascript, css and images.
     /// </summary>
@@ -46,7 +46,7 @@ namespace Urchin.Server.Owin.Middleware
             IConfigurationStore configurationStore)
         {
             _disposables = new List<IDisposable>();
-            _disposables.Add(configurationStore.Register("/urchin/server/RuleVersion", v => _version = v, 1));
+            _disposables.Add(configurationStore.Register("/urchin/server/version", v => _version = v, 1));
             _disposables.Add(configurationStore.Register("/urchin/server/ui/url", p => _uiRootUrlPathPattern = new PathString(p), "/ui"));
             _disposables.Add(configurationStore.Register("/urchin/server/ui/faviconUrl", u => _faviconUrlPath = new PathString(u), "/favicon.ico"));
             _disposables.Add(configurationStore.Register("/urchin/server/ui/physicalPath", PhysicalPathChanged, "~/ui/build/web"));
