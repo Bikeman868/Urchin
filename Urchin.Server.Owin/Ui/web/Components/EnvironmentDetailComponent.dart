@@ -32,9 +32,10 @@ class EnvironmentDetailComponent
 		ApplicationEvents.onEnvironmentSelected.listen(_environmentSelected);
 	}
 
-	void _environmentSelected(EnvironmentSelectedEvent e)
+	void _environmentSelected(EnvironmentSelectedEvent e) async
 	{
-		EnvironmentDto environment = _data.environments[e.environmentName];
+		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
+		EnvironmentDto environment = environments[e.environmentName];
 
 		_heading1.text = 'Machines in ' + environment.name + ' Environment';
 		_heading2.text = 'Security for ' + environment.name + ' Environment';

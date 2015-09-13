@@ -45,11 +45,13 @@ class RuleDetailComponent
 		ApplicationEvents.onRuleSelected.listen(_ruleSelected);
 	}
 
-	void _ruleSelected(RuleSelectedEvent e)
+	void _ruleSelected(RuleSelectedEvent e) async
 	{
 		var ruleName = e.ruleName;
 
-		RuleDto rule = _data.rules[ruleName];
+		VersionData versionData = _data.getVersion(1);
+		RuleVersionDto ruleVersion = await versionData.getRules();
+		RuleDto rule = ruleVersion.rules[ruleName];
 
 		_heading.text = rule.name + ' Rule';
 		_ruleName.text = rule.name;

@@ -23,13 +23,13 @@ class Data
 		_environments = null;
 		_versions = null;
 
-		for(var v in _versionedData)
-			v.reload();
+		for(var version in _versionedData.values)
+			version.reload();
 
 		ApplicationEvents.dataRefreshed(this);
 	}
 
-	Future<Map<String, EnvironmentDto>> get environments async
+	Future<Map<String, EnvironmentDto>> getEnvironments() async
 	{
 		if (_environments == null)
 		{
@@ -38,7 +38,7 @@ class Data
 		return _environments;
 	}
 
-	Future<List<VersionDto>> get versions async
+	Future<List<VersionDto>> getVersions() async
 	{
 		if (_versions == null)
 		{
@@ -69,7 +69,7 @@ class VersionData
 	int version;
 
 	List<String> _ruleNames;
-	Map<String, RuleDto> _rules;
+	RuleVersionDto _rules;
 
 	VersionData(this.version);
 
@@ -79,20 +79,26 @@ class VersionData
 		_rules = null;
 	}
 
-	Future<List<String>> get ruleNames async
+	Future<List<String>> getRuleNames() async
 	{
 		if (_ruleNames == null)
 		{
-			_ruleNames = await Server.getRuleNames(version);
+			if (version == null || version < 1)
+				_ruleNames = await Server.getDraftRuleNames();
+			else
+				_ruleNames = await Server.getRuleNames(version);
 		}
 		return _ruleNames;
 	}
 
-	Future<Map<String, RuleDto>> get rules async
+	Future<RuleVersionDto> getRules() async
 	{
-		if (_rules == null)
+		if (_rules == null || version < 1)
 		{
-			_rules = await Server.getRules(version);
+			if (version == null)
+				_rules = await Server.getDraftRules();
+			else
+				_rules = await Server.getRules(version);
 		}
 		return _rules;
 	}

@@ -58,18 +58,18 @@ class VersionDto extends Dto
 
 class RuleVersionDto extends VersionDto
 {
-	List<RuleDto> rules;
+	Map<String, RuleDto> rules;
 
 	RuleVersionDto(Map json): super(json)
 	{
-		rules = new List<RuleDto>();
+		rules = new Map<String, RuleDto>();
     
 		List jsonRules = json['rules'];
 		if (jsonRules != null)
 		{
 			for (var r in jsonRules)
 			{
-				rules.add(new RuleDto(r));
+				rules[r['name']] = new RuleDto(r);
 			}
 		}
 	}

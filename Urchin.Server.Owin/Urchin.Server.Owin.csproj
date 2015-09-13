@@ -123,8 +123,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Middleware\ApiBase.cs" />
+    <Compile Include="Middleware\NotFoundMiddleware.cs" />
     <Compile Include="Middleware\FailedSetupMiddleware.cs" />
     <Compile Include="Middleware\LogonEndpoint.cs" />
+    <Compile Include="Middleware\RuleNamesEndpoint.cs" />
     <Compile Include="Middleware\VersionEndpoint.cs" />
     <Compile Include="Middleware\VersionsEndpoint.cs" />
     <Compile Include="Middleware\UiEndpoint.cs" />

@@ -1,5 +1,8 @@
 import 'dart:html';
 import 'dart:async';
+import 'dart:convert';
+
+import 'Dto.dart';
 
 class Server
 {
@@ -9,12 +12,12 @@ class Server
 	static Future<List<VersionDto>> getVersions() async
 	{
 		String response = await HttpRequest.getString('/versions');
-		List<Map> mapList = JSON.decode(response);
+		List<Map> versionsJson = JSON.decode(response);
 
 		var versions = new List<RuleVersion>();
-		for (Map v in mapList)
+		for (Map versionJson in versionsJson)
 		{
-			versions.add(new VersionDto(v));
+			versions.add(new VersionDto(versionJson));
 		}
 		return versions;
 	}
@@ -40,41 +43,26 @@ class Server
 //
 	static Future<List<String>> getRuleNames(int version) async
 	{
-		String response = await HttpRequest.getString('/rulenames/' + version );
-		List<Map> rules = JSON.decode(response);
-
-		var ruleNames = new List<String>();
-		for (Map r in rules)
-		{
-			ruleNames.add(r['name']);
-		}
-		return ruleNames;
+		String response = await HttpRequest.getString('/rulenames/' + version.toString() );
+		return JSON.decode(response);
 	}
   
-	static Future<Map<String, RuleDto>> getRules(int version)  async
+	static Future<List<String>> getDraftRuleNames() async
 	{
-		String response = await HttpRequest.getString('/rules/' + version);
-		List<Map> rules = JSON.decode(response);
-
-		var rules = new Map<String, RuleDto>();
-		for (Map r in rules)
-		{
-			rules.add(r['name'], new RuleDto(r));
-		}
-		return rules;
+		String response = await HttpRequest.getString('/rulenames');
+		return JSON.decode(response);
+	}
+  
+	static Future<RuleVersionDto> getRules(int version)  async
+	{
+		String response = await HttpRequest.getString('/rules/' + version.toString());
+		return new RuleVersionDto(JSON.decode(response));
 	}
 
-	static Future<Map<String, RuleDto>> getDraftRules() async
+	static Future<RuleVersionDto> getDraftRules() async
 	{
 		String response = await HttpRequest.getString('/rules');
-		List<Map> rules = JSON.decode(response);
-
-		var rules = new Map<String, RuleDto>();
-		for (Map r in rules)
-		{
-			rules.add(r['name'], new RuleDto(r));
-		}
-		return rules;
+		return new RuleVersionDto(JSON.decode(response));
 	}
 
 	static Future<HttpRequest> addRules(int version, List<RuleDto> rules) 
@@ -118,13 +106,13 @@ class Server
 //
 	static Future<Map<String, EnvironmentDto>> getEnvironments() async
 	{
-		HttpRequest request = await HttpRequest.getString('/environments');
-		List<Map> environmentList = JSON.decode(request);
+		String response = await HttpRequest.getString('/environments');
+		List<Map> environmentsJson = JSON.decode(response);
 
 		var environments = new Map<String, EnvironmentDto>();
-		for (Map environment in environmentList)
+		for (Map environmentJson in environmentsJson)
 		{
-			environments[environment['name']] = new EnvironmentDto(environment);
+			environments[environmentJson['name']] = new EnvironmentDto(environmentJson);
 		}
 		return environments;
 	}

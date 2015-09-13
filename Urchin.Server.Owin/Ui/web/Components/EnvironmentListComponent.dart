@@ -18,7 +18,7 @@ class EnvironmentListComponent
 		heading.text = 'Environments';
 		containerDiv.children.add(heading);
 
-		Map<String, EnvironmentDto> environments = await _data.environments;
+		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
 		if (environments != null)
 		{
 			var list = new UListElement();
