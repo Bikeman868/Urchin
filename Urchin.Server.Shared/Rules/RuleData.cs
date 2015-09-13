@@ -326,7 +326,12 @@ namespace Urchin.Server.Shared.Rules
                 if (rules.Exists(r => string.Equals(r.RuleName, newRule.RuleName, StringComparison.InvariantCultureIgnoreCase)))
                     throw new Exception("There is already a rule with the name " + newRule.RuleName);
 
-                if (!string.IsNullOrEmpty(newRule.Environment))
+                if (string.IsNullOrEmpty(newRule.Environment))
+                {
+                    if (blockedEnvironments.Count > 0)
+                        throw new Exception("You do not have permission to add rules that affect all environments");
+                }
+                else
                 {
                     if (blockedEnvironmentNames.Contains(newRule.Environment.ToLower()))
                         throw new Exception("You do not have permission to add rules for the " + newRule.Environment + " environment");
