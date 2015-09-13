@@ -12,6 +12,7 @@ class RuleListComponent
 	Data _data;
 	HtmlBuilder _builder;
 	Element _ruleList;
+	StreamSubscription<DataRefreshedEvent> _onDataRefreshedSubscription;
 
 	RuleListComponent(this._data)
 	{
@@ -19,8 +20,14 @@ class RuleListComponent
 		_builder.addBlockText('Rules', className: 'panelTitle');
 		_ruleList = _builder.addList(className: 'selectionList');
 
-		ApplicationEvents.onDataRefreshed.listen(_dataRefreshed);
+		_onDataRefreshedSubscription = ApplicationEvents.onDataRefreshed.listen(_dataRefreshed);
 		_dataChanged(_data);
+	}
+
+	void dispose()
+	{
+		_onDataRefreshedSubscription.cancel();
+		_onDataRefreshedSubscription = null;
 	}
   
 	void displayIn(containerDiv)

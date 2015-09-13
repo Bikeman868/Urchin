@@ -23,6 +23,8 @@ class LogonComponent
 	InputElement _passwordInputElement;
 	Element _logOffButton;
 
+	StreamSubscription<UserChangedEvent> _onUserChangedSubscription;
+
 	LogonComponent(Data data)
 	{
 		_data = data;
@@ -41,9 +43,15 @@ class LogonComponent
 		var buttonContainer = _loggedOffUi.addContainer();
 	    _logOffButton = _loggedOffUi.addButton('Logon', _logonClick, className: 'toolBarButton', parent: buttonContainer);
 
-		ApplicationEvents.onUserChanged.listen(_userChanged);
+		_onUserChangedSubscription = ApplicationEvents.onUserChanged.listen(_userChanged);
 	}
 
+	void dispose()
+	{
+		_onUserChangedSubscription.cancel();
+		_onUserChangedSubscription = null;
+	}
+  
 	void displayIn(Element container)
 	{
 		_container = container;

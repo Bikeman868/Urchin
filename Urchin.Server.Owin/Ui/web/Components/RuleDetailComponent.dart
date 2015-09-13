@@ -21,6 +21,8 @@ class RuleDetailComponent
 	Element _config;
 	Element _variables;
 
+	StreamSubscription<RuleSelectedEvent> _onRuleSelectedSubscription;
+
 	RuleDetailComponent(this._data);
   
 	void displayIn(containerDiv)
@@ -42,9 +44,15 @@ class RuleDetailComponent
 
 		formBuilder.addTo(containerDiv);
 
-		ApplicationEvents.onRuleSelected.listen(_ruleSelected);
+		_onRuleSelectedSubscription = ApplicationEvents.onRuleSelected.listen(_ruleSelected);
 	}
 
+	void dispose()
+	{
+		_onRuleSelectedSubscription.cancel();
+		_onRuleSelectedSubscription = null;
+	}
+  
 	void _ruleSelected(RuleSelectedEvent e) async
 	{
 		var ruleName = e.ruleName;

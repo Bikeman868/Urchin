@@ -15,6 +15,14 @@ import 'Components/LogonComponent.dart';
 
 Data data;
 
+RuleListComponent _ruleListComponent;
+RuleDetailComponent _ruleDetailComponent;
+EnvironmentListComponent _environmentListComponent;
+EnvironmentDetailComponent _environmentDetailComponent;
+TestQueryComponent _testQueryComponent;
+LogonComponent _logonComponent;
+ToolBarComponent _toolBarComponent;
+
 main() async
 { 
   data = new Data();
@@ -23,18 +31,23 @@ main() async
 
 void _setupUI()
 {
+	_ruleListComponent = new RuleListComponent(data);
+	_ruleDetailComponent = new RuleDetailComponent(data);
+	_environmentListComponent = new EnvironmentListComponent(data);
+	_environmentDetailComponent = new EnvironmentDetailComponent(data);
+	_testQueryComponent = new TestQueryComponent();
+	_logonComponent = new LogonComponent(data);
+	_toolBarComponent = new ToolBarComponent();
+
 	var userDiv = querySelector('#userDiv');
-	var logon = new LogonComponent(data);
-	logon.displayIn(userDiv);
+	_logonComponent.displayIn(userDiv);
 
 	var toolBarDiv = querySelector('#toolBarDiv');
-	var toolBar = new ToolBarComponent();
-	toolBar.displayIn(toolBarDiv);
+	_toolBarComponent.displayIn(toolBarDiv);
 
 	_setupRulesTab();
 
 	ApplicationEvents.onTabChanged.listen(_tabChanged);
-
 }
 
 void _tabChanged(TabChangedEvent e)
@@ -54,11 +67,8 @@ void _setupRulesTab()
   centreDiv.children.clear(); 
   rightDiv.children.clear(); 
 
-  var ruleList = new RuleListComponent(data);
-  ruleList.displayIn(leftDiv);
-
-  var ruleDetailComponent = new RuleDetailComponent(data);
-  ruleDetailComponent.displayIn(centreDiv);
+  _ruleListComponent.displayIn(leftDiv);
+  _ruleDetailComponent.displayIn(centreDiv);
 }
 
 void _setupEnvironmentsTab()
@@ -71,11 +81,8 @@ void _setupEnvironmentsTab()
   centreDiv.children.clear(); 
   rightDiv.children.clear(); 
 
-  var environmentList = new EnvironmentListComponent(data);
-  environmentList.displayIn(leftDiv);
-
-  var environmentDetailComponent = new EnvironmentDetailComponent(data);
-  environmentDetailComponent.displayIn(centreDiv);
+  _environmentListComponent.displayIn(leftDiv);
+  _environmentDetailComponent.displayIn(centreDiv);
 }
 
 void _setupTestTab()
@@ -103,7 +110,6 @@ void _setupTestTab()
   div2.classes.add('instruction');
   leftDiv.children.add(div2);
 
-  var testQueryComponent = new TestQueryComponent();
-  testQueryComponent.displayIn(centreDiv);
+  _testQueryComponent.displayIn(centreDiv);
 }
 
