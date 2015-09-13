@@ -33,18 +33,20 @@ class RuleListComponent
 		_dataChanged(e.data);
 	}
 
-	void _dataChanged(Data data)
+	void _dataChanged(Data data) async
 	{
 		_data = data;
 		_ruleList.children.clear();
 
-		Map<String, RuleDto> rules = data.rules;
+		VersionData versionData = data.getVersion(1);
+		List<String> rules = await versionData.ruleNames;
+
 		if (rules != null)
 		{
-			for (RuleDto rule in rules.values)
+			for (String rule in rules.values)
 			{
 				var element = new LIElement();
-				element.text = rule.name;
+				element.text = rule;
 				element.classes.add('ruleName');
 				element.classes.add('selectionItem');
 				element.onClick.listen(_ruleClicked);

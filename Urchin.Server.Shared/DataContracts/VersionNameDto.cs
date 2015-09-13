@@ -4,7 +4,7 @@ namespace Urchin.Server.Shared.DataContracts
 {
     public class VersionNameDto
     {
-        [JsonProperty("RuleVersion")]
+        [JsonProperty("version")]
         public int Version { get; set; }
 
         [JsonProperty("name")]

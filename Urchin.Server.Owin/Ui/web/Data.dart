@@ -4,56 +4,96 @@ import 'dart:async';
 
 import 'Dto.dart';
 import 'Server.dart';
+import 'ApplicationEvents.dart';
 
 class Data
 {
-	List<String> ruleNames;
-	Map<String, RuleDto> rules;
-	Map<String, EnvironmentDto> environments;
+	Map<int, VersionData> _versionedData;
+	Map<String, EnvironmentDto> _environments;
+	List<VersionDto> _versions;
 
-	Future<Data> loadAll() async
+	Data()
 	{
-		await loadRuleNames();
-		await loadRules();
-		await loadEnvironments();
-		return this;
+		_versionedData = new Map<int, VersionData>();
+		ApplicationEvents.onUserChanged.listen(_userChanged);
 	}
 
-	loadRuleNames() async
+	reload()
 	{
-		String content = await Server.getRules();
-		List<Map> rules = JSON.decode(content);
+		_environments = null;
+		_versions = null;
 
-		var ruleNames = new List<String>();
-		for (Map rule in rules)
-		{
-			ruleNames.add(rule['name']);
-		}
-		this.ruleNames = ruleNames;
+		for(var v in _versionedData)
+			v.reload();
+
+		ApplicationEvents.dataRefreshed(this);
 	}
 
-	loadRules() async 
+	Future<Map<String, EnvironmentDto>> get environments async
 	{
-		var rules = new Map<String, RuleDto>();
-		for (String ruleName in this.ruleNames)
+		if (_environments == null)
 		{
-			String content = await Server.getRule(ruleName);
-			Map rule = JSON.decode(content);
-			rules[ruleName] = new RuleDto(rule);
+			_environments = await Server.getEnvironments();
 		}
-		this.rules = rules;
+		return _environments;
 	}
 
-	loadEnvironments() async
+	Future<List<VersionDto>> get versions async
 	{
-		String content = await Server.getEnvironments();
-		List<Map> environmentList = JSON.decode(content);
-
-		var environments = new Map<String, EnvironmentDto>();
-		for (Map environment in environmentList)
+		if (_versions == null)
 		{
-			environments[environment['name']] = new EnvironmentDto(environment);
+			_versions = await Server.getVersions();
 		}
-		this.environments = environments;
+		return _versions;
+	}
+
+	VersionData getVersion(int version)
+	{
+		VersionData result = _versionedData[version];
+		if (result == null)
+		{
+			result = new VersionData(version);
+			_versionedData[version] = result;
+		}
+		return result;
+	}
+
+	void _userChanged(UserChangedEvent e)
+	{
+		reload();
+	}
+}
+
+class VersionData
+{
+	int version;
+
+	List<String> _ruleNames;
+	Map<String, RuleDto> _rules;
+
+	VersionData(this.version);
+
+	reload()
+	{
+		_ruleNames = null;
+		_rules = null;
+	}
+
+	Future<List<String>> get ruleNames async
+	{
+		if (_ruleNames == null)
+		{
+			_ruleNames = await Server.getRuleNames(version);
+		}
+		return _ruleNames;
+	}
+
+	Future<Map<String, RuleDto>> get rules async
+	{
+		if (_rules == null)
+		{
+			_rules = await Server.getRules(version);
+		}
+		return _rules;
 	}
 }

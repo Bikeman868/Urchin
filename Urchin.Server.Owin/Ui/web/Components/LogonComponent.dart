@@ -65,9 +65,6 @@ class LogonComponent
 		{
 			_loggedOffUi.displayIn(_container);
 		}
-
-		var loadAll = _data.loadAll();
-		loadAll.then((data) => ApplicationEvents.dataRefreshed(data));
 	}
 
 	void _logonClick(MouseEvent e)

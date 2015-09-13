@@ -11,14 +11,14 @@ class EnvironmentListComponent
 	Data _data;
 	EnvironmentListComponent(this._data);
   
-	void displayIn(containerDiv)
+	void displayIn(containerDiv) async
 	{
 		var heading = new SpanElement();
 		heading.classes.add('panelTitle');
 		heading.text = 'Environments';
 		containerDiv.children.add(heading);
 
-		Map<String, EnvironmentDto> environments = _data.environments;
+		Map<String, EnvironmentDto> environments = await _data.environments;
 		if (environments != null)
 		{
 			var list = new UListElement();

@@ -193,6 +193,7 @@ Client applications should call this endpoint to obtain their configuration data
 | GET    | /config      | machine, application, environment, instance | http://localhost/urchin/config?machine=mymachine&application=testapp |
 | GET    | /trace       | machine, application, environment, instance | http://localhost/urchin/trace?machine=mymachine&application=testapp |
 | GET    | /hello       |              | http://localhost/urchin/trace?machine=mymachine&application=testapp |
+| GET    | /test/{version} | machine, application, environment, instance | http://localhost/urchin/test?machine=mymachine&application=testapp |
 
 #### The `/config` Endpoint
 When you GET this endpoint, it returns JSON document defining the configuration for an instance 
@@ -220,6 +221,17 @@ return the configuration data you wanted.
 When you GET this endpoint the Urchin server will return a hello message. This is useful for making sure 
 the server is running, and reachable over the network. You can also use this in health check monitors.
 
+#### The `/test/{version}` Endpoint
+GET this endpoint to retrieve an application config for a specific version of the rules.
+
+This allows you test a version of the rules before applying them to an environment, making them
+live to application instances. When you GET the `/config` endpoint it will query the version
+of rules that applies to that query by looking at the machine name and environment name passed
+in the query. This endpoint gives you a way to test other versions of rules, not the one assigned
+to the machine's environment.
+
+If you omit the version number, then the current draft version of the rules will be tested.
+
 ### Rule Management REST Interface
 These endpoints are used by the management UI to allow the server configuration to be configured.
 You can also use these endpoints in your own software to query or modify the rules data.
@@ -230,6 +242,7 @@ You can also use these endpoints in your own software to query or modify the rul
 | DELETE | /versions               |              | http://localhost/urchin/versions            |
 | PUT    | /version/{version}      |              | http://localhost/urchin/version/12          |
 | DELETE | /version/{version}      |              | http://localhost/urchin/version/12          |
+| GET    | /rulenames/{version}    |              | http://localhost/urchin/ruledata            |
 | GET    | /rules/{version}        |              | http://localhost/urchin/rules/2             |
 | GET    | /rules                  |              | http://localhost/urchin/rules               |
 | POST   | /rules/{version}        |              | http://localhost/urchin/rules/1             |
@@ -242,8 +255,6 @@ You can also use these endpoints in your own software to query or modify the rul
 | PUT    | /environments           |              | http://localhost/urchin/environments        |
 | GET    | /environment/default    |              | http://localhost/urchin/environment/default |
 | PUT    | /environment/default    |              | http://localhost/urchin/environment/default |
-| GET    | /rulenames/{version}    |              | http://localhost/urchin/ruledata            |
-| POST   | /test/{version}         | machine, application, environment, instance | http://localhost/urchin/test?machine=mymachine&application=testapp |
 
 
 #### The `/versions` Endpoint
@@ -318,17 +329,6 @@ an environment when it requests configuration data.
 #### The `/rulenames/{version}` Endpoint
 Retrievs a list of all of the rules in a specific version. This allows you to retrieve the rule
 details by making a GET request to `/rule/{version}/{name}` later.
-
-#### The `/test/{version}` Endpoint
-GET this endpoint to retrieve an application config for a specific version of the rules.
-
-This allows you test a version of the rules before applying them to an environment, making them
-live to application instances. When you GET the `/config` endpoint it will query the version
-of rules that applies to that query by looking at the machine name and environment name passed
-in the query. This endpoint gives you a way to test other versions of rules, not the one assigned
-to the machine's environment.
-
-If you omit the version number, then the current draft version of the rules will be tested.
 
 ## Recommended best practice for rule configuration
 There are many ways you can organize your rules. If you are new to Urchin, I recommend you try this
