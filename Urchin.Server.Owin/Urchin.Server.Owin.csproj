@@ -161,6 +161,7 @@
     <Content Include="Ui\web\Components\LogonComponent.dart" />
     <Content Include="Ui\web\Html\HtmlBuilder.dart" />
     <Content Include="Ui\web\Html\JsonHighlighter.dart" />
+    <Content Include="Ui\web\Components\HelpComponent.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

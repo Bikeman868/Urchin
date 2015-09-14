@@ -9,7 +9,10 @@ import '../ApplicationEvents.dart';
 class EnvironmentListComponent
 {
 	Data _data;
-	EnvironmentListComponent(this._data);
+
+	EnvironmentListComponent(this._data)
+	{
+	}
   
 	void displayIn(containerDiv) async
 	{

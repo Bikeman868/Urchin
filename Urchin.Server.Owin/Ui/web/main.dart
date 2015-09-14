@@ -12,6 +12,7 @@ import 'Components/EnvironmentListComponent.dart';
 import 'Components/EnvironmentDetailComponent.dart';
 import 'Components/TestQueryComponent.dart';
 import 'Components/LogonComponent.dart';
+import 'Components/HelpComponent.dart';
 
 Data data;
 
@@ -22,15 +23,28 @@ EnvironmentDetailComponent _environmentDetailComponent;
 TestQueryComponent _testQueryComponent;
 LogonComponent _logonComponent;
 ToolBarComponent _toolBarComponent;
+HelpComponent _helpComponent;
+
+Element _leftDiv;
+Element _centreDiv;
+Element _rightDiv;
+Element _userDiv;
+Element _toolBarDiv;
 
 main() async
 { 
-  data = new Data();
-  _setupUI();
+	data = new Data();
+	_setupUI();
 }
 
 void _setupUI()
 {
+	_leftDiv = querySelector('#leftDiv');
+	_centreDiv = querySelector('#centreDiv');
+	_rightDiv = querySelector('#rightDiv');
+	_userDiv = querySelector('#userDiv');
+	_toolBarDiv = querySelector('#toolBarDiv');
+
 	_ruleListComponent = new RuleListComponent(data);
 	_ruleDetailComponent = new RuleDetailComponent(data);
 	_environmentListComponent = new EnvironmentListComponent(data);
@@ -38,12 +52,11 @@ void _setupUI()
 	_testQueryComponent = new TestQueryComponent();
 	_logonComponent = new LogonComponent(data);
 	_toolBarComponent = new ToolBarComponent();
+	_helpComponent = new HelpComponent();
 
-	var userDiv = querySelector('#userDiv');
-	_logonComponent.displayIn(userDiv);
-
-	var toolBarDiv = querySelector('#toolBarDiv');
-	_toolBarComponent.displayIn(toolBarDiv);
+	_logonComponent.displayIn(_userDiv);
+	_toolBarComponent.displayIn(_toolBarDiv);
+	_helpComponent.displayIn(_rightDiv);
 
 	_setupRulesTab();
 
@@ -55,61 +68,40 @@ void _tabChanged(TabChangedEvent e)
 	if (e.tabName == 'Rules') _setupRulesTab();
 	if (e.tabName == 'Environments') _setupEnvironmentsTab();
 	if (e.tabName == 'Test Query') _setupTestTab();
+	if (e.tabName == 'Versions') _setupVersionsTab();
+}
+
+void _clearUI()
+{
+	_leftDiv.children.clear(); 
+	_centreDiv.children.clear(); 
 }
 
 void _setupRulesTab()
 {
-  var leftDiv = querySelector('#leftDiv');
-  var centreDiv = querySelector('#centreDiv');
-  var rightDiv = querySelector('#rightDiv');
+	_clearUI(); 
 
-  leftDiv.children.clear(); 
-  centreDiv.children.clear(); 
-  rightDiv.children.clear(); 
-
-  _ruleListComponent.displayIn(leftDiv);
-  _ruleDetailComponent.displayIn(centreDiv);
+	_ruleListComponent.displayIn(_leftDiv);
+	_ruleDetailComponent.displayIn(_centreDiv);
 }
 
 void _setupEnvironmentsTab()
 {
-  var leftDiv = querySelector('#leftDiv');
-  var centreDiv = querySelector('#centreDiv');
-  var rightDiv = querySelector('#rightDiv');
+	_clearUI(); 
 
-  leftDiv.children.clear(); 
-  centreDiv.children.clear(); 
-  rightDiv.children.clear(); 
-
-  _environmentListComponent.displayIn(leftDiv);
-  _environmentDetailComponent.displayIn(centreDiv);
+	_environmentListComponent.displayIn(_leftDiv);
+	_environmentDetailComponent.displayIn(_centreDiv);
 }
 
 void _setupTestTab()
 {
-  var leftDiv = querySelector('#leftDiv');
-  var centreDiv = querySelector('#centreDiv');
-  var rightDiv = querySelector('#rightDiv');
+	_clearUI(); 
 
-  leftDiv.children.clear(); 
-  centreDiv.children.clear(); 
-  rightDiv.children.clear(); 
+	_testQueryComponent.displayIn(_centreDiv);
+}
 
-  var div1 = new DivElement();
-  div1.text = 
-	'Use this page to test the configuration that will be returned '
-	'to each application on each machine.';
-  div1.classes.add('instruction');
-  leftDiv.children.add(div1);
-
-  var div2 = new DivElement();
-  div2.text = 
-	'Note that this request goes '
-	'back to the server, so any changes you made on your browser will not '
-	'be reflected in the results until you save your changes back to the server';
-  div2.classes.add('instruction');
-  leftDiv.children.add(div2);
-
-  _testQueryComponent.displayIn(centreDiv);
+void _setupVersionsTab()
+{
+	_clearUI(); 
 }
 

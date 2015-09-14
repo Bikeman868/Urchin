@@ -21,6 +21,19 @@ class HtmlBuilder
 			container.children.add(e);
 	}
 
+	Element addHeading(
+		int level,
+		String text, 
+		{
+			List<String> classNames, 
+			String className, 
+			Element parent
+		})
+	{
+		var heading = new Element.html('<h' + level.toString() + '>' + text + '</h' + level.toString() + '>');
+		return _addElement(heading, classNames, className, parent);
+	}
+
 	Element addInlineText(
 		String html, 
 		{
@@ -109,6 +122,17 @@ class HtmlBuilder
 	{
 		var list = new UListElement();
 		return _addElement(list, classNames, className, parent);
+	}
+
+	Element addListElement(string html, Element parent,
+		{
+			List<String> classNames, 
+			String className
+		})
+	{
+		var listElement = new LIElement();
+		listElement.innerHtml = html;
+		return _addElement(listElement, classNames, className, parent);
 	}
 
 	Element _addElement(

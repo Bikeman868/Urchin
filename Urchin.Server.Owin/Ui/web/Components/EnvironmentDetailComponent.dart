@@ -11,6 +11,8 @@ class EnvironmentDetailComponent
 {
 	Data _data;
 
+	FormBuilder _form;
+
 	Element _heading1;
 	Element _heading2;
 	Element _heading3;
@@ -21,27 +23,28 @@ class EnvironmentDetailComponent
 
 	StreamSubscription<EnvironmentSelectedEvent> _onEnvironmentSelectedSubscription;
 
-	EnvironmentDetailComponent(this._data);
-  
-	void displayIn(containerDiv)
+	EnvironmentDetailComponent(this._data)
 	{
-		var formBuilder = new FormBuilder();
-		_heading1 = formBuilder.addHeading('Machines in this environment', 1);
-		_version = formBuilder.addLabeledField('Version of rules');
-		_heading2 = formBuilder.addHeading('Machines in this environment', 2);
-		_machines = formBuilder.addList('machineList');
-		_heading3 = formBuilder.addHeading('Security for this environment', 2);
-		_rules = formBuilder.addList('securityRuleList');
-
-		formBuilder.addTo(containerDiv);
+		_form = new FormBuilder();
+		_heading1 = _form.addHeading('Machines in this environment', 1);
+		_version = _form.addLabeledField('Version of rules');
+		_heading2 = _form.addHeading('Machines in this environment', 2);
+		_machines = _form.addList('machineList');
+		_heading3 = _form.addHeading('Security for this environment', 2);
+		_rules = _form.addList('securityRuleList');
 
 		_onEnvironmentSelectedSubscription = ApplicationEvents.onEnvironmentSelected.listen(_environmentSelected);
 	}
-
+  
 	void dispose()
 	{
 		_onEnvironmentSelectedSubscription.cancel();
 		_onEnvironmentSelectedSubscription = null;
+	}
+
+	void displayIn(containerDiv)
+	{
+		_form.addTo(containerDiv);
 	}
 
 	void _environmentSelected(EnvironmentSelectedEvent e) async

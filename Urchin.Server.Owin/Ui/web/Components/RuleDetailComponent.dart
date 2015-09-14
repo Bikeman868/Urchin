@@ -12,6 +12,8 @@ class RuleDetailComponent
 {
 	Data _data;
 
+	FormBuilder _form;
+
 	SpanElement _heading;
 	SpanElement _ruleName;
 	SpanElement _machine;
@@ -23,36 +25,37 @@ class RuleDetailComponent
 
 	StreamSubscription<RuleSelectedEvent> _onRuleSelectedSubscription;
 
-	RuleDetailComponent(this._data);
-  
-	void displayIn(containerDiv)
+	RuleDetailComponent(this._data)
 	{
-		var formBuilder = new FormBuilder();
+		_form = new FormBuilder();
 
-		_heading = formBuilder.addHeading('Rule Details', 1);
-		_ruleName = formBuilder.addLabeledField('Rule name:');
-		_machine = formBuilder.addLabeledField('Machine name:');
-		_environment = formBuilder.addLabeledField('Environment name:');
-		_instance = formBuilder.addLabeledField('Instance name:');
-		_application = formBuilder.addLabeledField('Application name:');
+		_heading = _form.addHeading('Rule Details', 1);
+		_ruleName = _form.addLabeledField('Rule name:');
+		_machine = _form.addLabeledField('Machine name:');
+		_environment = _form.addLabeledField('Environment name:');
+		_instance = _form.addLabeledField('Instance name:');
+		_application = _form.addLabeledField('Application name:');
 
-		formBuilder.addHeading('Configuration', 2);
-		_config = formBuilder.addContainer();
+		_form.addHeading('Configuration', 2);
+		_config = _form.addContainer();
 
-		formBuilder.addHeading('Variables', 2);
-		_variables = formBuilder.addContainer();
-
-		formBuilder.addTo(containerDiv);
+		_form.addHeading('Variables', 2);
+		_variables = _form.addContainer();
 
 		_onRuleSelectedSubscription = ApplicationEvents.onRuleSelected.listen(_ruleSelected);
 	}
-
+  
 	void dispose()
 	{
 		_onRuleSelectedSubscription.cancel();
 		_onRuleSelectedSubscription = null;
 	}
   
+	void displayIn(containerDiv)
+	{
+		_form.addTo(containerDiv);
+	}
+
 	void _ruleSelected(RuleSelectedEvent e) async
 	{
 		var ruleName = e.ruleName;

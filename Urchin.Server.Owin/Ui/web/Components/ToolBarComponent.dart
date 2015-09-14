@@ -22,11 +22,13 @@ class ToolBarComponent
 
 		var testButton = _createButton('Test Query');
 		testButton.onClick.listen(_tabChanged);
+
+		var versionsButton = _createButton('Versions');
+		versionsButton.onClick.listen(_tabChanged);
 	}
 
 	void displayIn(containerDiv)
 	{
-		containerDiv.children.clear();
 		for (var button in _buttons)
 			containerDiv.children.add(button);    
 	}
