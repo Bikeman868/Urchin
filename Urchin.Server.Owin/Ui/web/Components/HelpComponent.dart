@@ -147,7 +147,7 @@ class HelpComponent
 		builder.addListElement('Having different config for different situations, for example when the site is in maintenance mode, or part of the system is down for maintenance.', list, className: 'instruction');
 
 		builder.addBlockText(
-			'You don not have to use versions; you can leave all environments at version 1.',
+			'You do not have to use versions; you can leave all environments at version 1.',
 			className: 'instruction');
 
 		builder.displayIn(_paragraphs);

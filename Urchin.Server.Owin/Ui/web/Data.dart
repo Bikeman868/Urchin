@@ -77,6 +77,8 @@ class VersionData
 	{
 		_ruleNames = null;
 		_rules = null;
+
+		ApplicationEvents.versionDataRefreshed(this);
 	}
 
 	Future<List<String>> getRuleNames() async

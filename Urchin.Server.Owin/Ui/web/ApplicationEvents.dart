@@ -34,6 +34,12 @@ class DataRefreshedEvent
 	DataRefreshedEvent(this.data);
 }
 
+class VersionDataRefreshedEvent
+{
+	VersionData versionData;
+	DataRefreshedEvent(this.versionData);
+}
+
 class ApplicationEvents
 {
 	static StreamController<RuleSelectedEvent> _ruleSelectedController = new StreamController.broadcast();
@@ -83,5 +89,13 @@ class ApplicationEvents
 	{
 		print('All data needs to be refreshed');
 		_dataRefreshedController.add(new DataRefreshedEvent(data));
+	}
+
+	static StreamController<VersionDataRefreshedEvent> _versionDataRefreshedController = new StreamController.broadcast();
+	static Stream<VersionDataRefreshedEvent> get onVersionDataRefreshed => _versionDataRefreshedController.stream;
+	static versionDataRefreshed(VersionData versionData)
+	{
+		print('Version ' + versionData.version.toString() + ' data needs to be refreshed');
+		_versionDataRefreshedController.add(new VersionDataRefreshedEvent(versionData));
 	}
 }
