@@ -58,15 +58,14 @@ class RuleDetailComponent
 
 	void _ruleSelected(RuleSelectedEvent e) async
 	{
-		var ruleName = e.ruleName;
+		_heading.text = 'Version ' + e.version.toString() + ' of the ' + e.ruleName + ' rule';
 
 		try
 		{
-			VersionData versionData = _data.getVersion(1);
+			VersionData versionData = _data.getVersion(e.version);
 			RuleVersionDto ruleVersion = await versionData.getRules();
-			RuleDto rule = ruleVersion.rules[ruleName];
+			RuleDto rule = ruleVersion.rules[e.ruleName];
 
-			_heading.text = rule.name + ' Rule';
 			_ruleName.text = rule.name;
 			_machine.text = rule.machine;
 			_environment.text = rule.environment;
@@ -90,7 +89,6 @@ class RuleDetailComponent
 		}
 		catch(e)
 		{
-			_heading.text = ruleName + ' Rule';
 			_ruleName.text = '';
 			_machine.text = '';
 			_environment.text = '';

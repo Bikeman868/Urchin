@@ -13,6 +13,7 @@ class RuleListComponent
 	HtmlBuilder _builder;
 	Element _ruleList;
 	StreamSubscription<DataRefreshedEvent> _onDataRefreshedSubscription;
+	int version;
 
 	RuleListComponent(this._data)
 	{
@@ -42,7 +43,8 @@ class RuleListComponent
 
 	void _dataChanged(Data data) async
 	{
-		VersionData versionData = data.getVersion(1);
+		version = 1;
+		VersionData versionData = data.getVersion(version);
 		List<String> ruleNames = await versionData.getRuleNames();
 
 		_data = data;
@@ -65,6 +67,6 @@ class RuleListComponent
 	void _ruleClicked(MouseEvent e)
 	{
 		Element target = e.target;
-		ApplicationEvents.ruleSelected(target.text);
+		ApplicationEvents.ruleSelected(version, target.text);
 	}
 }

@@ -4,8 +4,9 @@ import 'Data.dart';
 
 class RuleSelectedEvent
 {
+	int version;
 	String ruleName;
-	RuleSelectedEvent(this.ruleName);
+	RuleSelectedEvent(this.version, this.ruleName);
 }
 
 class EnvironmentSelectedEvent
@@ -37,10 +38,10 @@ class ApplicationEvents
 {
 	static StreamController<RuleSelectedEvent> _ruleSelectedController = new StreamController.broadcast();
 	static Stream<RuleSelectedEvent> get onRuleSelected => _ruleSelectedController.stream;
-	static ruleSelected(String name)
+	static ruleSelected(int version, String name)
 	{
-		print('User selected the ' + name + ' rule');
-		_ruleSelectedController.add(new RuleSelectedEvent(name));
+		print('User selected version ' + version.toString() + ' of the ' + name + ' rule');
+		_ruleSelectedController.add(new RuleSelectedEvent(version, name));
 	}
 
 	static StreamController<EnvironmentSelectedEvent> _environmentSelectedController = new StreamController.broadcast();
