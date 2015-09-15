@@ -205,6 +205,8 @@ namespace Urchin.Server.Shared.Rules
             }
             else
             {
+                _defaultEnvironmentName = fileContents.DefaultEnvironmentName;
+                _environments = fileContents.Environments ?? new List<EnvironmentDto>();
                 if (fileContents.RuleVersions == null || fileContents.RuleVersions.Count == 0)
                 {
                     _ruleVersions = new List<RuleVersionDto>();
@@ -216,14 +218,14 @@ namespace Urchin.Server.Shared.Rules
                             Version = 1,
                             Rules = fileContents.Rules
                         });
+                        foreach (var environment in _environments)
+                            environment.Version = 1;
                     }
                 }
                 else
                 {
                     _ruleVersions = fileContents.RuleVersions;
                 }
-                _defaultEnvironmentName = fileContents.DefaultEnvironmentName;
-                _environments = fileContents.Environments ?? new List<EnvironmentDto>();
             }
         }
 

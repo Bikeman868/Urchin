@@ -60,30 +60,44 @@ class RuleDetailComponent
 	{
 		var ruleName = e.ruleName;
 
-		VersionData versionData = _data.getVersion(1);
-		RuleVersionDto ruleVersion = await versionData.getRules();
-		RuleDto rule = ruleVersion.rules[ruleName];
-
-		_heading.text = rule.name + ' Rule';
-		_ruleName.text = rule.name;
-		_machine.text = rule.machine;
-		_environment.text = rule.environment;
-		_instance.text = rule.instance;
-		_application.text = rule.application;
-
-		JsonHighlighter.displayIn(_config, rule.config);
-
-		_variables.children.clear();
-		if (rule.variables != null && rule.variables.length > 0)
+		try
 		{
-			var formBuilder = new FormBuilder();
-			for (var variable in rule.variables)
+			VersionData versionData = _data.getVersion(1);
+			RuleVersionDto ruleVersion = await versionData.getRules();
+			RuleDto rule = ruleVersion.rules[ruleName];
+
+			_heading.text = rule.name + ' Rule';
+			_ruleName.text = rule.name;
+			_machine.text = rule.machine;
+			_environment.text = rule.environment;
+			_instance.text = rule.instance;
+			_application.text = rule.application;
+
+			JsonHighlighter.displayIn(_config, rule.config);
+
+			_variables.children.clear();
+			if (rule.variables != null && rule.variables.length > 0)
 			{
-				formBuilder.addHeading(variable.name, 3);
-				var value = formBuilder.addContainer();
-				JsonHighlighter.displayIn(value, variable.value);
+				var formBuilder = new FormBuilder();
+				for (var variable in rule.variables)
+				{
+					formBuilder.addHeading(variable.name, 3);
+					var value = formBuilder.addContainer();
+					JsonHighlighter.displayIn(value, variable.value);
+				}
+				formBuilder.addTo(_variables);
 			}
-			formBuilder.addTo(_variables);
+		}
+		catch(e)
+		{
+			_heading.text = ruleName + ' Rule';
+			_ruleName.text = '';
+			_machine.text = '';
+			_environment.text = '';
+			_instance.text = '';
+			_application.text = '';
+			_config.text = '';
+			_variables.children.clear();
 		}
 	}
 }

@@ -63,14 +63,18 @@ class HelpComponent
 			'the matching rules twice. On the first pass it will make a list of all the variables '
 			'and their values, with more specific rules overriding less specific ones. On '
 			'the second pass it will substitute variable references with their values and merge the '
-			'configuration JSON. Note that the configuration JSON does not have to be valid'
-			'when it contains variable references, but must be valid after the varibale values'
+			'configuration JSON. Note that the configuration JSON does not have to be valid '
+			'when it contains variable references, but must be valid after the varibale values '
 			'are substituted',
 			className: 'instruction');
 
 		builder.addBlockText(
 			'The following variables are pre-defined and can be used in any rules: '
 			r'($machine$) ($instance$) ($application$) and ($environment$).', 
+			className: 'instruction');
+
+		builder.addBlockText(
+			'In this release variables can not be defined in terms of other variables ',
 			className: 'instruction');
 
 		builder.displayIn(_paragraphs);
