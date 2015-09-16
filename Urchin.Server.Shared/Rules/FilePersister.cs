@@ -216,6 +216,7 @@ namespace Urchin.Server.Shared.Rules
                         _ruleVersions.Add(new RuleVersionDto
                         {
                             Version = 1,
+                            Name = "First version",
                             Rules = fileContents.Rules
                         });
                         foreach (var environment in _environments)
@@ -225,6 +226,9 @@ namespace Urchin.Server.Shared.Rules
                 else
                 {
                     _ruleVersions = fileContents.RuleVersions;
+                    foreach (var ruleVersion in _ruleVersions)
+                        if (string.IsNullOrEmpty(ruleVersion.Name))
+                            ruleVersion.Name = "Version " + ruleVersion.Version;
                 }
             }
         }

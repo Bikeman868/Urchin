@@ -464,7 +464,7 @@ namespace Urchin.Server.Shared.Rules
                 .Select(v => new VersionNameDto
                 {
                     Version = v,
-                    Name = EnsureVersion(v, true).Name
+                    Name = EnsureVersion(v, true).Name ?? "Version " + v
                 })
                 .ToList();
 

@@ -15,6 +15,12 @@ class EnvironmentSelectedEvent
 	EnvironmentSelectedEvent(this.environmentName);
 }
 
+class VersionSelectedEvent
+{
+	int version;
+	VersionSelectedEvent(this.version);
+}
+
 class TabChangedEvent
 {
 	String tabName;
@@ -37,7 +43,7 @@ class DataRefreshedEvent
 class VersionDataRefreshedEvent
 {
 	VersionData versionData;
-	DataRefreshedEvent(this.versionData);
+	VersionDataRefreshedEvent(this.versionData);
 }
 
 class ApplicationEvents
@@ -56,6 +62,14 @@ class ApplicationEvents
 	{
 		print('User selected the ' + name + ' environment');
 		_environmentSelectedController.add(new EnvironmentSelectedEvent(name));
+	}
+
+	static StreamController<VersionSelectedEvent> _versionSelectedController = new StreamController.broadcast();
+	static Stream<VersionSelectedEvent> get onVersionSelected => _versionSelectedController.stream;
+	static versionSelected(int version)
+	{
+		print('User selected version ' + version.toString());
+		_versionSelectedController.add(new VersionSelectedEvent(version));
 	}
 
 	static StreamController<TabChangedEvent> _tabChangedController = new StreamController.broadcast();

@@ -32,6 +32,7 @@ class VersionListComponent
 				element.text = version.version.toString() + ' - ' + version.name;
 				element.classes.add('versionName');
 				element.classes.add('selectionItem');
+				element.attributes['version'] = version.version.toString();
 				element.onClick.listen(versionClicked);
 				list.children.add(element);
 			}
@@ -42,6 +43,7 @@ class VersionListComponent
 	void versionClicked(MouseEvent e)
 	{
 		LIElement target = e.target;
-		//ApplicationEvents.environmentSelected(target.text);
+		var version = int.parse(target.attributes['version']);
+		ApplicationEvents.versionSelected(version);
 	}
 }
