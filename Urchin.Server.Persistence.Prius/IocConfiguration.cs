@@ -4,7 +4,8 @@ using Common.Logging;
 using Prius.Contracts.Interfaces;
 using Prius.Orm.Commands;
 using Prius.Orm.Connections;
-using Prius.Orm.Data;
+using Prius.Orm.Enumeration;
+using Prius.Orm.Results;
 using Urchin.Server.Shared.Interfaces;
 
 using IMapper = Prius.Contracts.Interfaces.IMapper;
