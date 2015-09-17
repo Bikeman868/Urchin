@@ -21,7 +21,7 @@ class VersionListComponent
 		heading.text = 'Versions';
 		containerDiv.children.add(heading);
 
-		Map<String, VersionDto> versions = await _data.getVersions();
+		List<VersionDto> versions = await _data.getVersions();
 		if (versions != null)
 		{
 			var list = new UListElement();

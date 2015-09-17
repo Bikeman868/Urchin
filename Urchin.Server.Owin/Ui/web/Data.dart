@@ -47,13 +47,20 @@ class Data
 		return _versions;
 	}
 
-	VersionData getVersion(int version)
+	Future<VersionData> getVersion(int version) async
 	{
 		VersionData result = _versionedData[version];
 		if (result == null)
 		{
-			result = new VersionData(version);
-			_versionedData[version] = result;
+			var versions = await getVersions();
+			for (var versionDto in versions)
+			{
+				if (versionDto.version == version)
+				{
+					result = new VersionData(versionDto);
+					_versionedData[version] = result;
+				}
+			}
 		}
 		return result;
 	}
@@ -66,7 +73,7 @@ class Data
 
 class VersionData
 {
-	int version;
+	VersionDto version;
 
 	List<String> _ruleNames;
 	RuleVersionDto _rules;
@@ -85,22 +92,22 @@ class VersionData
 	{
 		if (_ruleNames == null)
 		{
-			if (version == null || version < 1)
+			if (version == null || version.version < 1)
 				_ruleNames = await Server.getDraftRuleNames();
 			else
-				_ruleNames = await Server.getRuleNames(version);
+				_ruleNames = await Server.getRuleNames(version.version);
 		}
 		return _ruleNames;
 	}
 
 	Future<RuleVersionDto> getRules() async
 	{
-		if (_rules == null || version < 1)
+		if (_rules == null)
 		{
-			if (version == null)
+			if (version == null || version.version < 1)
 				_rules = await Server.getDraftRules();
 			else
-				_rules = await Server.getRules(version);
+				_rules = await Server.getRules(version.version);
 		}
 		return _rules;
 	}

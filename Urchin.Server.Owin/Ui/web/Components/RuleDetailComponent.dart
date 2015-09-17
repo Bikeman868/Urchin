@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Html/FormBuilder.dart';
+import '../Html/HtmlBuilder.dart';
 import '../Html/JsonHighlighter.dart';
 import '../Dto.dart';
 import '../Data.dart';
@@ -12,8 +13,9 @@ class RuleDetailComponent
 {
 	Data _data;
 
-	FormBuilder _form;
+	HtmlBuilder _html;
 
+	Element _ruleDetail;
 	SpanElement _heading;
 	SpanElement _ruleName;
 	SpanElement _machine;
@@ -27,20 +29,25 @@ class RuleDetailComponent
 
 	RuleDetailComponent(this._data)
 	{
-		_form = new FormBuilder();
+		_html = new HtmlBuilder();
+		_heading = _html.addHeading(2, 'Rule Details');
+		_ruleDetail = _html.addContainer();
+		_ruleDetail.hidden = true;
 
-		_heading = _form.addHeading('Rule Details', 1);
-		_ruleName = _form.addLabeledField('Rule name:');
-		_machine = _form.addLabeledField('Machine name:');
-		_environment = _form.addLabeledField('Environment name:');
-		_instance = _form.addLabeledField('Instance name:');
-		_application = _form.addLabeledField('Application name:');
+		var form = new FormBuilder();
 
-		_form.addHeading('Configuration', 2);
-		_config = _form.addContainer();
+		_ruleName = form.addLabeledField('Rule name:');
+		_machine = form.addLabeledField('Machine name:');
+		_environment = form.addLabeledField('Environment name:');
+		_instance = form.addLabeledField('Instance name:');
+		_application = form.addLabeledField('Application name:');
 
-		_form.addHeading('Variables', 2);
-		_variables = _form.addContainer();
+		form.addHeading('Configuration', 2);
+		_config = form.addContainer();
+
+		form.addHeading('Variables', 2);
+		_variables = form.addContainer();
+		form.addTo(_ruleDetail);
 
 		_onRuleSelectedSubscription = ApplicationEvents.onRuleSelected.listen(_ruleSelected);
 	}
@@ -53,16 +60,24 @@ class RuleDetailComponent
   
 	void displayIn(containerDiv)
 	{
-		_form.addTo(containerDiv);
+		_html.addTo(containerDiv);
 	}
 
 	void _ruleSelected(RuleSelectedEvent e) async
 	{
+		if (e.version == null || e.ruleName == null)
+		{
+			_heading.text = 'No rule selected';
+			_ruleDetail.hidden = true;
+			return;
+		}
+
 		_heading.text = 'Version ' + e.version.toString() + ' of the ' + e.ruleName + ' rule';
+		_ruleDetail.hidden = false;
 
 		try
 		{
-			VersionData versionData = _data.getVersion(e.version);
+			VersionData versionData = await _data.getVersion(e.version);
 			RuleVersionDto ruleVersion = await versionData.getRules();
 			RuleDto rule = ruleVersion.rules[e.ruleName];
 
@@ -89,13 +104,7 @@ class RuleDetailComponent
 		}
 		catch(e)
 		{
-			_ruleName.text = '';
-			_machine.text = '';
-			_environment.text = '';
-			_instance.text = '';
-			_application.text = '';
-			_config.text = '';
-			_variables.children.clear();
+			_ruleDetail.hidden = true;
 		}
 	}
 }

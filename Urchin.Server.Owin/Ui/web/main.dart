@@ -14,6 +14,7 @@ import 'Components/TestQueryComponent.dart';
 import 'Components/LogonComponent.dart';
 import 'Components/HelpComponent.dart';
 import 'Components/VersionListComponent.dart';
+import 'Components/VersionDetailComponent.dart';
 
 Data data;
 
@@ -26,6 +27,7 @@ LogonComponent _logonComponent;
 ToolBarComponent _toolBarComponent;
 HelpComponent _helpComponent;
 VersionListComponent _versionListComponent;
+VersionDetailComponent _versionDetailComponent;
 
 Element _leftDiv;
 Element _centreDiv;
@@ -56,6 +58,7 @@ void _setupUI()
 	_toolBarComponent = new ToolBarComponent();
 	_helpComponent = new HelpComponent();
 	_versionListComponent = new VersionListComponent(data);
+	_versionDetailComponent = new VersionDetailComponent(data);
 
 	_logonComponent.displayIn(_userDiv);
 	_toolBarComponent.displayIn(_toolBarDiv);
@@ -108,5 +111,7 @@ void _setupVersionsTab()
 	_clearUI(); 
 
 	_versionListComponent.displayIn(_leftDiv);
+	_versionDetailComponent.displayIn(_centreDiv);
+	_ruleDetailComponent.displayIn(_centreDiv);
 }
 

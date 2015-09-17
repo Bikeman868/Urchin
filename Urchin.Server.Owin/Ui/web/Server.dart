@@ -14,7 +14,7 @@ class Server
 		String response = await HttpRequest.getString('/versions');
 		List<Map> versionsJson = JSON.decode(response);
 
-		var versions = new List<RuleVersion>();
+		var versions = new List<VersionDto>();
 		for (Map versionJson in versionsJson)
 		{
 			versions.add(new VersionDto(versionJson));

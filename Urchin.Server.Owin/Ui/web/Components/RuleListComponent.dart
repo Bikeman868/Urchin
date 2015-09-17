@@ -44,7 +44,7 @@ class RuleListComponent
 	void _dataChanged(Data data) async
 	{
 		version = 1;
-		VersionData versionData = data.getVersion(version);
+		VersionData versionData = await data.getVersion(version);
 		List<String> ruleNames = await versionData.getRuleNames();
 
 		_data = data;

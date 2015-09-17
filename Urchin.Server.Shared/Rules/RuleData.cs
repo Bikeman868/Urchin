@@ -352,7 +352,7 @@ namespace Urchin.Server.Shared.Rules
 
         public void UpdateRule(IClientCredentials clientCredentials, int version, string oldName, RuleDto rule)
         {
-            var ruleVersion = EnsureVersion(version, true);
+            var ruleVersion = EnsureVersion(version, false);
             if (ruleVersion == null)
                 throw new Exception("There is no version of the rules with this RuleVersion number");
 

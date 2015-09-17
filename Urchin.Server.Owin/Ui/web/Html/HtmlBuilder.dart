@@ -124,7 +124,7 @@ class HtmlBuilder
 		return _addElement(list, classNames, className, parent);
 	}
 
-	Element addListElement(string html, Element parent,
+	Element addListElement(String html, Element parent,
 		{
 			List<String> classNames, 
 			String className

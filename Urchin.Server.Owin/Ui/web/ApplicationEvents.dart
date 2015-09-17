@@ -52,7 +52,11 @@ class ApplicationEvents
 	static Stream<RuleSelectedEvent> get onRuleSelected => _ruleSelectedController.stream;
 	static ruleSelected(int version, String name)
 	{
-		print('User selected version ' + version.toString() + ' of the ' + name + ' rule');
+		if (version == null || name == null)
+			print('Rule deselected');
+		else
+			print('User selected version ' + version.toString() + ' of the ' + name + ' rule');
+
 		_ruleSelectedController.add(new RuleSelectedEvent(version, name));
 	}
 
@@ -60,7 +64,11 @@ class ApplicationEvents
 	static Stream<EnvironmentSelectedEvent> get onEnvironmentSelected => _environmentSelectedController.stream;
 	static environmentSelected(String name)
 	{
-		print('User selected the ' + name + ' environment');
+		if (name == null)
+			print('Environment deselected');
+		else
+			print('User selected the ' + name + ' environment');
+
 		_environmentSelectedController.add(new EnvironmentSelectedEvent(name));
 	}
 
@@ -68,7 +76,11 @@ class ApplicationEvents
 	static Stream<VersionSelectedEvent> get onVersionSelected => _versionSelectedController.stream;
 	static versionSelected(int version)
 	{
-		print('User selected version ' + version.toString());
+		if (version == null)
+			print('Version deselected');
+		else
+			print('User selected version ' + version.toString());
+
 		_versionSelectedController.add(new VersionSelectedEvent(version));
 	}
 

@@ -64,7 +64,7 @@ namespace Urchin.Server.Shared.Rules
         {
             CheckForUpdate();
 
-            var ruleVersion = GetVersion(version);
+            var ruleVersion = GetVersion(version, false);
             return ruleVersion == null ? new List<string>() : ruleVersion.Rules.Select(r => r.RuleName);
         }
 
@@ -72,7 +72,7 @@ namespace Urchin.Server.Shared.Rules
         {
             CheckForUpdate();
 
-            var ruleVersion = GetVersion(version);
+            var ruleVersion = GetVersion(version, false);
             if (ruleVersion == null) return null;
 
             return ruleVersion.Rules.FirstOrDefault(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
@@ -82,7 +82,7 @@ namespace Urchin.Server.Shared.Rules
         {
             CheckForUpdate();
 
-            var ruleVersion = GetVersion(version);
+            var ruleVersion = GetVersion(version, false);
             if (ruleVersion == null) return null;
 
             return ruleVersion.Rules;
@@ -92,7 +92,7 @@ namespace Urchin.Server.Shared.Rules
         {
             CheckForUpdate();
 
-            var ruleVersion = GetVersion(version);
+            var ruleVersion = GetVersion(version, false);
             if (ruleVersion == null) return;
 
             ruleVersion.Rules.RemoveAll(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
@@ -103,7 +103,7 @@ namespace Urchin.Server.Shared.Rules
         {
             CheckForUpdate();
 
-            var ruleVersion = GetVersion(version);
+            var ruleVersion = GetVersion(version, true);
             if (ruleVersion == null) return;
 
             ruleVersion.Rules.RemoveAll(r => string.Equals(r.RuleName, rule.RuleName, StringComparison.InvariantCultureIgnoreCase));
@@ -147,15 +147,19 @@ namespace Urchin.Server.Shared.Rules
         public void SetVersionName(int version, string newName)
         {
             CheckForUpdate();
-            foreach (var rule in _ruleVersions.Where(r => r.Version == version))
-                rule.Name = newName;
+
+            var ruleVersion = GetVersion(version, true);
+            ruleVersion.Name = newName;
+
             SaveChanges();
         }
 
         public void DeleteVersion(int version)
         {
             CheckForUpdate();
+
             _ruleVersions.RemoveAll(r => r.Version == version);
+
             SaveChanges();
         }
         
@@ -271,10 +275,32 @@ namespace Urchin.Server.Shared.Rules
             }
         }
 
-        private RuleVersionDto GetVersion(int version)
+        private RuleVersionDto GetVersion(int version, bool createIfMissing)
         {
-            if (_ruleVersions == null) return null;
-            return _ruleVersions.FirstOrDefault(r => r.Version == version);
+            RuleVersionDto ruleVersion = null;
+            if (createIfMissing)
+            {
+                if (_ruleVersions == null)
+                    _ruleVersions = new List<RuleVersionDto>();
+
+                ruleVersion = _ruleVersions.FirstOrDefault(r => r.Version == version);
+                if (ruleVersion == null)
+                {
+                    ruleVersion = new RuleVersionDto
+                    {
+                        Name = "Version " + version,
+                        Version = version,
+                        Rules = new List<RuleDto>()
+                    };
+                    _ruleVersions.Add(ruleVersion);
+                }
+            }
+            else
+            {
+                if (_ruleVersions != null)
+                    ruleVersion = _ruleVersions.FirstOrDefault(r => r.Version == version);
+            }
+            return ruleVersion;
         }
 
         #endregion
