@@ -11,20 +11,19 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
-using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
     public class RuleEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public RuleEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
-            _path = new PathString("/rule/{name}");
+            _ruleData = ruleData;
+            _path = new PathString("/rule/{version}/{name}");
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
@@ -39,18 +38,34 @@ namespace Urchin.Server.Owin.Middleware
                 .Select(HttpUtility.UrlDecode)
                 .ToArray();
 
-            if (pathSegmnts.Length < 2)
+            if (pathSegmnts.Length < 3)
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _path.Value);
 
-            var ruleName = pathSegmnts[1];
-            
+            var versionText = pathSegmnts[1];
+            int version;
+            if (!int.TryParse(versionText, out version))
+                throw new HttpException((int)HttpStatusCode.BadRequest, "The version must be a whole number " + _path.Value);
+
+            var ruleName = pathSegmnts[2];
+
             if (request.Method == "GET")
-                return GetRule(context, ruleName);
+            {
+                try
+                {
+                    return GetRule(context, version, ruleName);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is HttpException) throw;
+                    throw new HttpException((int)HttpStatusCode.InternalServerError, 
+                        "Exception retrieving rule " + ruleName + ". " + ex.Message, ex);
+                }
+            }
 
             try
             {
                 if (request.Method == "DELETE")
-                    return DeleteRule(context, ruleName);
+                    return DeleteRule(context, version, ruleName);
 
                 RuleDto rule;
                 try
@@ -64,7 +79,7 @@ namespace Urchin.Server.Owin.Middleware
                 }
 
                 if (request.Method == "PUT")
-                    return UpdateRule(context, ruleName, rule);
+                    return UpdateRule(context, version, ruleName, rule);
 
             }
             catch (Exception ex)
@@ -75,36 +90,36 @@ namespace Urchin.Server.Owin.Middleware
             return next.Invoke();
         }
 
-        private Task GetRule(IOwinContext context, string name)
+        private Task GetRule(IOwinContext context, int version, string name)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-            var ruleSet = _configRules.GetRuleSet(clientCredentials);
-            if (ruleSet == null || ruleSet.Rules == null || ruleSet.Rules.Count == 0)
-                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server");
+            var ruleVersion = _ruleData.GetRuleVersion(clientCredentials, version);
+            if (ruleVersion == null)
+                throw new HttpException((int)HttpStatusCode.NoContent, "There are no rules defined on the server with this version");
 
-            var matchingRules = ruleSet.Rules.Where(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0).ToList();
+            var matchingRules = ruleVersion.Rules.Where(r => string.Compare(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase) == 0).ToList();
 
             if (matchingRules.Count == 1)
                 return Json(context, matchingRules[0]);
 
             if (matchingRules.Count == 0)
-                throw new HttpException((int)HttpStatusCode.NotFound, "There are no rules called " + name);
+                throw new HttpException((int)HttpStatusCode.NotFound, "There are no rules called " + name + " in version " + version);
 
-            throw new HttpException((int)HttpStatusCode.NoContent, "There are multiple rules with the name " + name);
+            throw new HttpException((int)HttpStatusCode.NoContent, "There are multiple rules with the name " + name + " in version " + version);
         }
 
-        private Task UpdateRule(IOwinContext context, string name, RuleDto rule)
+        private Task UpdateRule(IOwinContext context, int version, string name, RuleDto rule)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.UpdateRule(clientCredentials, name, rule);
+            _ruleData.UpdateRule(clientCredentials, version, name, rule);
             return Json(context, new PostResponseDto { Success = true });
         }
 
-        private Task DeleteRule(IOwinContext context, string name)
+        private Task DeleteRule(IOwinContext context, int version, string name)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.DeleteRule(clientCredentials, name);
+            _ruleData.DeleteRule(clientCredentials, version, name);
             return Json(context, new PostResponseDto { Success = true });
         }
     }

@@ -45,6 +45,36 @@ class RuleDto extends Dto
 	set config(String value) => json['config'] = value;
 }
 
+class VersionDto extends Dto
+{
+	VersionDto(Map json): super(json){}
+
+	String get name => json['name'];
+	set name(String value) => json['name'] = value;
+  
+	int get version => json['version'];
+	set version(int value) => json['version'] = value;
+}
+
+class RuleVersionDto extends VersionDto
+{
+	Map<String, RuleDto> rules;
+
+	RuleVersionDto(Map json): super(json)
+	{
+		rules = new Map<String, RuleDto>();
+    
+		List jsonRules = json['rules'];
+		if (jsonRules != null)
+		{
+			for (var r in jsonRules)
+			{
+				rules[r['name']] = new RuleDto(r);
+			}
+		}
+	}
+}
+
 class VariableDto extends Dto
 {
 	VariableDto(Map json): super(json){}
@@ -76,6 +106,9 @@ class EnvironmentDto extends Dto
 
 	String get name => json['name'];
 	set name(String value) => json['name'] = value;
+  
+	int get version => json['version'];
+	set version(int value) => json['version'] = value;
   
 	List<String> get machines => json['machines'];
 	set machines(List<String> value) => json['machines'] = value;

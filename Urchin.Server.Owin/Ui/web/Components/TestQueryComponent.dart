@@ -8,6 +8,8 @@ import '../Server.dart';
 
 class TestQueryComponent
 {
+	FormBuilder _form;
+
 	SpanElement _heading1;
 	InputElement _machineInput;
 	InputElement _applicationInput;
@@ -18,22 +20,25 @@ class TestQueryComponent
 	SpanElement _heading2;
 	Element _resultsContainer;
 
+	TestQueryComponent()
+	{
+		_form = new FormBuilder();
+
+		_heading1 = _form.addHeading('Test Query', 1);
+
+		_machineInput = _form.addLabeledEdit('Machine:');
+		_applicationInput = _form.addLabeledEdit('Application:');
+		_instanceInput = _form.addLabeledEdit('Instance:');
+		_environmentInput = _form.addLabeledEdit('Environment:');
+		_buttons = _form.addButtons(['Test'], [testClicked]);
+
+		_heading2 = _form.addHeading('Results', 1);
+		_resultsContainer = _form.addContainer();
+	}
+
 	void displayIn(containerDiv)
 	{
-		var formBuilder = new FormBuilder();
-
-		_heading1 = formBuilder.addHeading('Test Query', 1);
-
-		_machineInput = formBuilder.addLabeledEdit('Machine:');
-		_applicationInput = formBuilder.addLabeledEdit('Application:');
-		_instanceInput = formBuilder.addLabeledEdit('Instance:');
-		_environmentInput = formBuilder.addLabeledEdit('Environment:');
-		_buttons = formBuilder.addButtons(['Test'], [testClicked]);
-
-		_heading2 = formBuilder.addHeading('Results', 1);
-		_resultsContainer = formBuilder.addContainer();
-
-		formBuilder.addTo(containerDiv);
+		_form.addTo(containerDiv);
 	}
 
 	testClicked(MouseEvent e)

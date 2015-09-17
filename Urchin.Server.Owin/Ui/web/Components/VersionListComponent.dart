@@ -6,11 +6,11 @@ import '../Dto.dart';
 import '../Data.dart';
 import '../ApplicationEvents.dart';
 
-class EnvironmentListComponent
+class VersionListComponent
 {
 	Data _data;
 
-	EnvironmentListComponent(this._data)
+	VersionListComponent(this._data)
 	{
 	}
   
@@ -18,30 +18,32 @@ class EnvironmentListComponent
 	{
 		var heading = new SpanElement();
 		heading.classes.add('panelTitle');
-		heading.text = 'Environments';
+		heading.text = 'Versions';
 		containerDiv.children.add(heading);
 
-		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
-		if (environments != null)
+		List<VersionDto> versions = await _data.getVersions();
+		if (versions != null)
 		{
 			var list = new UListElement();
 			list.classes.add("selectionList");
-			for (EnvironmentDto environment in environments.values)
+			for (VersionDto version in versions)
 			{
 				var element = new LIElement();
-				element.text = environment.name;
-				element.classes.add('environmentName');
+				element.text = version.version.toString() + ' - ' + version.name;
+				element.classes.add('versionName');
 				element.classes.add('selectionItem');
-				element.onClick.listen(environmentClicked);
+				element.attributes['version'] = version.version.toString();
+				element.onClick.listen(versionClicked);
 				list.children.add(element);
 			}
 			containerDiv.children.add(list);
 		}
 	}
 
-	void environmentClicked(MouseEvent e)
+	void versionClicked(MouseEvent e)
 	{
 		LIElement target = e.target;
-		ApplicationEvents.environmentSelected(target.text);
+		var version = int.parse(target.attributes['version']);
+		ApplicationEvents.versionSelected(version);
 	}
 }

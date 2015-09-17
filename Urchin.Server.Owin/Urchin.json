@@ -7,20 +7,20 @@
 	    "persister":
 	    {
 	      "filePath":"c:\\temp\\rules.txt",
-		    "repository":"rules"
+		  "repository":"urchin"
         },
 	    "ui":
 	    {
 	      "url":"/ui",
-	      "physicalPath":"~/ui/build/web",
-		    "faviconUrl":"/favicon.ico",
-		    "cache": false
+	      "physicalPath":"~/ui/web",
+		  "faviconUrl":"/favicon.ico",
+		  "cache": false
 	    },
 	    "logon":
 	    {
 	      "administratorPassword":"password",
-		    "sessionExpiry":"00:45:00",
-		    "cookieName":"urchin_session_token"
+		  "sessionExpiry":"00:45:00",
+		  "cookieName":"urchin_session_token"
 	    }
 	  }
   },
@@ -30,10 +30,10 @@
     "databases":
 	  [ 
 	    {
-	      "name":"urchinRules", 
-		    "type":"MySql", 
-		    "connectionString":"Server=localhost;Port=3306;Uid=USER;Pwd=PASSWORD;Database=Urchin",
-		    "enabled":true
+	      "name":"urchin", 
+		  "type":"MySql", 
+		  "connectionString":"Server=localhost;Port=3306;Uid=urchin;Pwd=password;Database=Urchin",
+		  "enabled":true
 	    } 
 	  ],
 	  "fallbackPolicies":
@@ -43,8 +43,8 @@
 	  "repositories":
 	  [
 	    {
-	      "name":"rules", 
-		    "clusters":[ { "databases":["urchinRules"], "fallbackPolicy":"dontFailover" } ]
+	      "name":"urchin", 
+		  "clusters":[ { "databases":["urchin"], "fallbackPolicy":"dontFailover" } ]
 	    }
 	  ]
   }

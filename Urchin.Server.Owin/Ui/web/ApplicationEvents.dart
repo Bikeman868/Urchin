@@ -4,14 +4,21 @@ import 'Data.dart';
 
 class RuleSelectedEvent
 {
+	int version;
 	String ruleName;
-	RuleSelectedEvent(this.ruleName);
+	RuleSelectedEvent(this.version, this.ruleName);
 }
 
 class EnvironmentSelectedEvent
 {
 	String environmentName;
 	EnvironmentSelectedEvent(this.environmentName);
+}
+
+class VersionSelectedEvent
+{
+	int version;
+	VersionSelectedEvent(this.version);
 }
 
 class TabChangedEvent
@@ -33,26 +40,55 @@ class DataRefreshedEvent
 	DataRefreshedEvent(this.data);
 }
 
+class VersionDataRefreshedEvent
+{
+	VersionData versionData;
+	VersionDataRefreshedEvent(this.versionData);
+}
+
 class ApplicationEvents
 {
 	static StreamController<RuleSelectedEvent> _ruleSelectedController = new StreamController.broadcast();
 	static Stream<RuleSelectedEvent> get onRuleSelected => _ruleSelectedController.stream;
-	static ruleSelected(String name)
+	static ruleSelected(int version, String name)
 	{
-		_ruleSelectedController.add(new RuleSelectedEvent(name));
+		if (version == null || name == null)
+			print('Rule deselected');
+		else
+			print('User selected version ' + version.toString() + ' of the ' + name + ' rule');
+
+		_ruleSelectedController.add(new RuleSelectedEvent(version, name));
 	}
 
 	static StreamController<EnvironmentSelectedEvent> _environmentSelectedController = new StreamController.broadcast();
 	static Stream<EnvironmentSelectedEvent> get onEnvironmentSelected => _environmentSelectedController.stream;
 	static environmentSelected(String name)
 	{
+		if (name == null)
+			print('Environment deselected');
+		else
+			print('User selected the ' + name + ' environment');
+
 		_environmentSelectedController.add(new EnvironmentSelectedEvent(name));
+	}
+
+	static StreamController<VersionSelectedEvent> _versionSelectedController = new StreamController.broadcast();
+	static Stream<VersionSelectedEvent> get onVersionSelected => _versionSelectedController.stream;
+	static versionSelected(int version)
+	{
+		if (version == null)
+			print('Version deselected');
+		else
+			print('User selected version ' + version.toString());
+
+		_versionSelectedController.add(new VersionSelectedEvent(version));
 	}
 
 	static StreamController<TabChangedEvent> _tabChangedController = new StreamController.broadcast();
 	static Stream<TabChangedEvent> get onTabChanged => _tabChangedController.stream;
 	static tabChanged(String name)
 	{
+		print('User changed to the ' + name + ' tab');
 		_tabChangedController.add(new TabChangedEvent(name));
 	}
 
@@ -62,15 +98,30 @@ class ApplicationEvents
 	{
 		var isLoggedOn = userName != null && userName.length > 0;
 		if (isLoggedOn)
+		{
+			print('User logged on as ' + userName);
 			_userChangedController.add(new UserChangedEvent(true, userName: userName));
+		}
 		else
+		{
+			print('User logged off');
 			_userChangedController.add(new UserChangedEvent(false));
+		}
 	}
 
 	static StreamController<DataRefreshedEvent> _dataRefreshedController = new StreamController.broadcast();
 	static Stream<DataRefreshedEvent> get onDataRefreshed => _dataRefreshedController.stream;
 	static dataRefreshed(Data data)
 	{
+		print('All data needs to be refreshed');
 		_dataRefreshedController.add(new DataRefreshedEvent(data));
+	}
+
+	static StreamController<VersionDataRefreshedEvent> _versionDataRefreshedController = new StreamController.broadcast();
+	static Stream<VersionDataRefreshedEvent> get onVersionDataRefreshed => _versionDataRefreshedController.stream;
+	static versionDataRefreshed(VersionData versionData)
+	{
+		print('Version ' + versionData.version.toString() + ' data needs to be refreshed');
+		_versionDataRefreshedController.add(new VersionDataRefreshedEvent(versionData));
 	}
 }

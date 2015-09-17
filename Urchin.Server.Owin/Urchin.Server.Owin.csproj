@@ -113,7 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <None Include="Urchin.json" />
+    <Content Include="Urchin.json" />
     <Content Include="Ui\web\favicon.ico" />
     <Content Include="Ui\web\index.html" />
     <Content Include="Ui\web\styles.css" />
@@ -123,14 +123,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Middleware\ApiBase.cs" />
+    <Compile Include="Middleware\NotFoundMiddleware.cs" />
     <Compile Include="Middleware\FailedSetupMiddleware.cs" />
     <Compile Include="Middleware\LogonEndpoint.cs" />
+    <Compile Include="Middleware\RuleNamesEndpoint.cs" />
+    <Compile Include="Middleware\VersionEndpoint.cs" />
+    <Compile Include="Middleware\VersionsEndpoint.cs" />
     <Compile Include="Middleware\UiEndpoint.cs" />
     <Compile Include="Middleware\DefaultEnvironmentEndpoint.cs" />
     <Compile Include="Middleware\PostRuleEndpoint.cs" />
     <Compile Include="Middleware\RuleEndpoint.cs" />
     <Compile Include="Middleware\EnvironmentsEndpoint.cs" />
-    <Compile Include="Middleware\RuleDataEndpoint.cs" />
     <Compile Include="Middleware\TestEndpoint.cs" />
     <Compile Include="Middleware\RulesEndpoint.cs" />
     <Compile Include="Middleware\TraceEndpoint.cs" />
@@ -158,13 +161,10 @@
     <Content Include="Ui\web\Components\LogonComponent.dart" />
     <Content Include="Ui\web\Html\HtmlBuilder.dart" />
     <Content Include="Ui\web\Html\JsonHighlighter.dart" />
+    <Content Include="Ui\web\Components\HelpComponent.dart" />
+    <Content Include="Ui\web\Components\VersionListComponent.dart" />
+    <Content Include="Ui\web\Components\VersionDetailComponent.dart" />
     <None Include="Urchin.json.postman_collection" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

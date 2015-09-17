@@ -56,18 +56,26 @@ namespace Urchin.Server.Owin.Middleware
         public Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
-            
+
             if (request.Method != "GET")
                 return next.Invoke();
 
-            if (_uiRootUrlPathPattern.IsWildcardMatch(request.Path))
-                return ServeUiRoot(context);
+            try
+            {
+                if (_uiRootUrlPathPattern.IsWildcardMatch(request.Path))
+                    return ServeUiRoot(context);
 
-            if (request.Path.StartsWith(_uiRootUrlPathPattern))
-                return ServeUi(context);
-           
-            if (_faviconUrlPath.IsWildcardMatch(request.Path))
-                return ServeFavicon(context);
+                if (request.Path.StartsWith(_uiRootUrlPathPattern))
+                    return ServeUi(context);
+
+                if (_faviconUrlPath.IsWildcardMatch(request.Path))
+                    return ServeFavicon(context);
+            }
+            catch (Exception ex)
+            {
+                if (ex is HttpException) throw;
+                throw new HttpException((int)HttpStatusCode.InternalServerError, ex.Message, ex);
+            }
 
             return next.Invoke();
         }

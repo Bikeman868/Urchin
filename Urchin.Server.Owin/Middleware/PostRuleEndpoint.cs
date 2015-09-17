@@ -17,24 +17,38 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class PostRuleEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public PostRuleEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
-            _path = new PathString("/rule");
+            _ruleData = ruleData;
+            _path = new PathString("/rule/{version}");
         }
 
         public Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
-            if (!_path.IsWildcardMatch(request.Path))
+            if (!_path.IsWildcardMatch(request.Path) || request.Method != "POST")
                 return next.Invoke();
 
             try
             {
+                var pathSegmnts = request.Path.Value
+                    .Split('/')
+                    .Where(p => !string.IsNullOrWhiteSpace(p))
+                    .Select(HttpUtility.UrlDecode)
+                    .ToArray();
+
+                if (pathSegmnts.Length < 2)
+                    throw new HttpException((int)HttpStatusCode.BadRequest, "Path has too few segments. Expecting " + _path.Value);
+
+                var versionText = pathSegmnts[1];
+                int version;
+                if (!int.TryParse(versionText, out version))
+                    throw new HttpException((int)HttpStatusCode.BadRequest, "The version must be a whole number " + _path.Value);
+
                 RuleDto rule;
                 try
                 {
@@ -46,22 +60,18 @@ namespace Urchin.Server.Owin.Middleware
                     return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
                 }
 
-                if (request.Method == "POST")
-                    return CreateRule(context, rule);
-
+                return CreateRule(context, version, rule);
             }
             catch (Exception ex)
             {
                 return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to POST new rule. " + ex.Message });
             }
-
-            return next.Invoke();
         }
 
-        private Task CreateRule(IOwinContext context, RuleDto rule)
+        private Task CreateRule(IOwinContext context, int version, RuleDto rule)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.AddRules(clientCredentials, new List<RuleDto> { rule });
+            _ruleData.AddRules(clientCredentials, version, new List<RuleDto> { rule });
             return Json(context, new PostResponseDto { Success = true });
         }
     }

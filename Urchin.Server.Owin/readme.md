@@ -193,13 +193,14 @@ Client applications should call this endpoint to obtain their configuration data
 | GET    | /config      | machine, application, environment, instance | http://localhost/urchin/config?machine=mymachine&application=testapp |
 | GET    | /trace       | machine, application, environment, instance | http://localhost/urchin/trace?machine=mymachine&application=testapp |
 | GET    | /hello       |              | http://localhost/urchin/trace?machine=mymachine&application=testapp |
+| GET    | /test/{version} | machine, application, environment, instance | http://localhost/urchin/test?machine=mymachine&application=testapp |
 
 #### The `/config` Endpoint
 When you GET this endpoint, it returns JSON document defining the configuration for an instance 
 of application running on a specific machine in a specific environment.
 
-If you are using the Urchin client and server together, you should point the Urchin client to 
-this endpoint on the server.
+If you are using the Urchin client and server together, you should configure the Urchin client to 
+GET its configuration from this endpoint.
 
 The query string parameters are:
 
@@ -220,46 +221,91 @@ return the configuration data you wanted.
 When you GET this endpoint the Urchin server will return a hello message. This is useful for making sure 
 the server is running, and reachable over the network. You can also use this in health check monitors.
 
+#### The `/test/{version}` Endpoint
+GET this endpoint to retrieve an application config for a specific version of the rules.
+
+This allows you test a version of the rules before applying them to an environment, making them
+live to application instances. When you GET the `/config` endpoint it will query the version
+of rules that applies to that query by looking at the machine name and environment name passed
+in the query. This endpoint gives you a way to test other versions of rules, not the one assigned
+to the machine's environment.
+
+If you omit the version number, then the current draft version of the rules will be tested.
+
 ### Rule Management REST Interface
 These endpoints are used by the management UI to allow the server configuration to be configured.
 You can also use these endpoints in your own software to query or modify the rules data.
 
-| Method | Relative URL  | Query string | Example URL |
-| ------ | ------------- |------------- | ----------- |
-| GET    | /rules        |              | http://localhost/urchin/rules |
-| POST   | /rules        |              | http://localhost/urchin/rules |
-| PUT    | /rules        |              | http://localhost/urchin/rules |
-| GET    | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
-| PUT    | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
-| POST   | /rule         |              | http://localhost/urchin/rule |
-| DELETE | /rule/{name}  |              | http://localhost/urchin/rule/rule1 |
-| GET    | /environments |              | http://localhost/urchin/environments |
-| PUT    | /environments |              | http://localhost/urchin/environments |
-| GET    | /environment/default |       | http://localhost/urchin/environment/default |
-| PUT    | /environment/default |       | http://localhost/urchin/environment/default |
-| GET    | /ruledata     |              | http://localhost/urchin/ruledata |
-| POST   | /test         | machine, application, environment, instance | http://localhost/urchin/test?machine=mymachine&application=testapp |
+| Method | Relative URL            | Query string | Example URL                                 |
+| ------ | ----------------------- |------------- | ------------------------------------------- |
+| GET    | /versions               |              | http://localhost/urchin/versions            |
+| DELETE | /versions               |              | http://localhost/urchin/versions            |
+| PUT    | /version/{version}      |              | http://localhost/urchin/version/12          |
+| DELETE | /version/{version}      |              | http://localhost/urchin/version/12          |
+| GET    | /rulenames/{version}    |              | http://localhost/urchin/ruledata            |
+| GET    | /rules/{version}        |              | http://localhost/urchin/rules/2             |
+| GET    | /rules                  |              | http://localhost/urchin/rules               |
+| POST   | /rules/{version}        |              | http://localhost/urchin/rules/1             |
+| PUT    | /rules/{version}        |              | http://localhost/urchin/rules/3             |
+| GET    | /rule/{version}/{name}  |              | http://localhost/urchin/rule/1/rule1        |
+| PUT    | /rule/{version}/{name}  |              | http://localhost/urchin/rule/5/rule1        |
+| POST   | /rule/{version}         |              | http://localhost/urchin/rule/1              |
+| DELETE | /rule/{version}/{name}  |              | http://localhost/urchin/rule/3/rule1        |
+| GET    | /environments           |              | http://localhost/urchin/environments        |
+| PUT    | /environments           |              | http://localhost/urchin/environments        |
+| GET    | /environment/default    |              | http://localhost/urchin/environment/default |
+| PUT    | /environment/default    |              | http://localhost/urchin/environment/default |
 
+
+#### The `/versions` Endpoint
+GET this endpoint to retrieve a list of versions on the server. Each version has a sequential
+version number and a name.
+
+When you GET /rules and do not provide a version number, the most recent version of the rules
+are returned. It is assumed that you are retrieving the rules for editing, so it the most recent
+version is assigned to an environment, a new version is created which is a copy of the most recent
+version. This is the only way that new versions get created.
+
+DELETE this endpoint to remove all old versions. The versions that will be deleted are the ones
+whose version number is less than the lowest version number assigned to an environment. For example
+is version 9 is in production, version 11 in staging and version 16 in development, then the draft
+version for editing will be version 17, and calling DELETE on the `/versions' endpoint will delete
+all versions prior to version 9.
+
+#### The `/version/{version}` Endpoint
+PUT this endpoint to change the name of a version. Only the name can be changed, the version
+numbers are sequential from 1 and can not be changed.
+
+DELETE this endpoint to remove a specific version from the server. If this version is currently
+assigned to an environment then an error will be returmed.
 
 #### The `/rules` Endpoint
-GET this endpoint to retrieve a list of the rules. The returned JSON includes the name of the rule
-and the conditions under which this rule applies.
+GET this endpoint to retrieve a list of the rules. The returned JSON includes the name of the rule,
+the conditions under which this rule applies.
 
-POST this endpoint to create a new set of rules. The format of the POST body is identical to the
-response you GET from this endpoint. Rule names must be unique. Each rule can include a set of
-conditions in which that rule applies. You can not supply the valiables and config data for each 
-rule with this endpoint. Set these details by doing PUT to the `/rule/{name}` endpoint.
+When you GET this endpoint, you can optionally specify a version number. If you specify a version
+number, this is the verson of the rules that will be returned. If you do not specify a version
+number, then a draft version of the rules are returned. The draft version will have the highest
+version number, and will not be in use in any environment. If the current highest version number
+is assigned to an environment, then this version will be copied to create a new draft version.
+
+POST this endpoint to completely replace the current rules. The version number must be
+provided. The format of the POST body is identical to the response you GET from this endpoint. 
+Rule names must be unique. Each rule can include a set of conditions in which that rule applies.
+You can not supply the valiables and config data for each rule with this endpoint. Set these 
+details by doing PUT to the `/rule/{version}/{name}` endpoint.
 
 PUT this endpoint to update one or more existing rules. This endpoint does not allow you to change
-the name of the rule. If you want to rename a rule, PUT the `/rule/{name}` endpoint instead.
+the name of the rule. If you want to rename a rule, PUT the `/rule/{version}/{name}` endpoint
+instead.
 
-#### The `/rule` Endpoint
-GET this endpoint to retrieve the full details of an individual rule by name.
+#### The `/rule/{version}/{name}` Endpoint
+GET this endpoint to retrieve the full details of an individual rule by name and version.
 
-PUT this endpoint to update a rule by name, or to rename a rule. An error is returned if the
-rule does not exist. The format of the request body is identical to the response you receive from GET.
-The name in the URL should be the name of an existing rule to replace. The name passed in the body
-of the request should be the new name of the rule.
+PUT this endpoint to update a rule by name and version, or to rename a rule. An error is 
+returned if the rule does not exist. The format of the request body is identical to the 
+response you receive from GET. The name in the URL should be the name of an existing rule to 
+replace. The name passed in the body of the request should be the new name of the rule.
 
 DELETE this endpoint to remove a rule from the server.
 
@@ -268,8 +314,9 @@ response you receive from GET. Note that in this case the name of an existing ru
 in the URL. If a rule with this name already exists you will get an error response.
 
 #### The `/environments` Endpoint
-When you GET this endpoint, the server returns a list of the environments, and the machines in each
-of those environments.
+When you GET this endpoint, the server returns a list of the environments, the machines in each
+of those environments, the version number of the rules to apply to that environment, and the 
+security restrictions for each environment.
 
 When you PUT with the same format of data, all of the environment data on the server is overwritten
 with whatever you PUT.
@@ -279,15 +326,9 @@ Allows you to GET and PUT the name of the environment to use for all machines th
 in one of the environments. Note that this only applies if the client application does not supply
 an environment when it requests configuration data.
 
-#### The `/ruledata` Endpoint
-Retrievs the entire rule database from the server. This allows you to modify it and pass it to the
-`/test` endpoint to test your changes before commiting them to the server.
-
-#### The `/test` Endpoint
-This allows you to post an entire rule database with all environments and rules plus a query, and
-test what the query would return if you POSTed this data to the server. This provides a way
-to GET the `/ruledata` then edit and test changes before finally POSTing the new rules back to the
-server.
+#### The `/rulenames/{version}` Endpoint
+Retrievs a list of all of the rules in a specific version. This allows you to retrieve the rule
+details by making a GET request to `/rule/{version}/{name}` later.
 
 ## Recommended best practice for rule configuration
 There are many ways you can organize your rules. If you are new to Urchin, I recommend you try this

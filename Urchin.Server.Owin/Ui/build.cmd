@@ -1,0 +1,2 @@
+cls
+pub build

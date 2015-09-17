@@ -17,13 +17,13 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class EnvironmentsEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public EnvironmentsEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
+            _ruleData = ruleData;
             _path = new PathString("/environments");
         }
 
@@ -34,7 +34,18 @@ namespace Urchin.Server.Owin.Middleware
                 return next.Invoke();
 
             if (request.Method == "GET")
-                return GetEnvironments(context);
+            {
+                try
+                {
+                    return GetEnvironments(context);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is HttpException) throw;
+                    throw new HttpException((int) HttpStatusCode.InternalServerError,
+                        "Exception getting list of environments. " + ex.Message, ex);
+                }
+            }
 
             List<EnvironmentDto> environments;
             try
@@ -70,14 +81,14 @@ namespace Urchin.Server.Owin.Middleware
         private Task GetEnvironments(IOwinContext context)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            var rules = _configRules.GetRuleSet(clientCredentials);
-            return Json(context, rules.Environments);
+            var environments = _ruleData.GetEnvironments(clientCredentials);
+            return Json(context, environments);
         }
 
         private Task UpdateEnvironments(IOwinContext context, List<EnvironmentDto> environments)
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-            _configRules.SetEnvironments(clientCredentials, environments);
+            _ruleData.SetEnvironments(clientCredentials, environments);
             return Json(context, new PostResponseDto { Success = true });
         }
     }

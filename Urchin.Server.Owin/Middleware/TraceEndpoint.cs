@@ -8,6 +8,7 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
+using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
 using Urchin.Server.Shared.Rules;
 
@@ -15,13 +16,13 @@ namespace Urchin.Server.Owin.Middleware
 {
     public class TraceEndpoint: ApiBase
     {
-        private readonly IConfigRules _configRules;
+        private readonly IRuleData _ruleData;
         private readonly PathString _path;
 
         public TraceEndpoint(
-            IConfigRules configRules)
+            IRuleData ruleData)
         {
-            _configRules = configRules;
+            _ruleData = ruleData;
             _path = new PathString("/trace");
         }
 
@@ -42,12 +43,20 @@ namespace Urchin.Server.Owin.Middleware
             if (string.IsNullOrWhiteSpace(application))
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Application parameter is required");
 
-            var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
+            try
+            {
+                var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-            var config = _configRules.TraceConfig(clientCredentials, environment, machine, application, instance);
+                var config = _ruleData.TraceConfig(clientCredentials, environment, machine, application, instance);
 
-            context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(config.ToString(Formatting.Indented));
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync(config.ToString(Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                if (ex is HttpException) throw;
+                throw new HttpException((int)HttpStatusCode.InternalServerError, ex.Message, ex);
+            }
         }
     }
 }

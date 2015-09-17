@@ -12,6 +12,8 @@ class RuleListComponent
 	Data _data;
 	HtmlBuilder _builder;
 	Element _ruleList;
+	StreamSubscription<DataRefreshedEvent> _onDataRefreshedSubscription;
+	int version;
 
 	RuleListComponent(this._data)
 	{
@@ -19,8 +21,14 @@ class RuleListComponent
 		_builder.addBlockText('Rules', className: 'panelTitle');
 		_ruleList = _builder.addList(className: 'selectionList');
 
-		ApplicationEvents.onDataRefreshed.listen(_dataRefreshed);
+		_onDataRefreshedSubscription = ApplicationEvents.onDataRefreshed.listen(_dataRefreshed);
 		_dataChanged(_data);
+	}
+
+	void dispose()
+	{
+		_onDataRefreshedSubscription.cancel();
+		_onDataRefreshedSubscription = null;
 	}
   
 	void displayIn(containerDiv)
@@ -33,18 +41,21 @@ class RuleListComponent
 		_dataChanged(e.data);
 	}
 
-	void _dataChanged(Data data)
+	void _dataChanged(Data data) async
 	{
+		version = 1;
+		VersionData versionData = await data.getVersion(version);
+		List<String> ruleNames = await versionData.getRuleNames();
+
 		_data = data;
 		_ruleList.children.clear();
 
-		Map<String, RuleDto> rules = data.rules;
-		if (rules != null)
+		if (ruleNames != null)
 		{
-			for (RuleDto rule in rules.values)
+			for (String ruleName in ruleNames)
 			{
 				var element = new LIElement();
-				element.text = rule.name;
+				element.text = ruleName;
 				element.classes.add('ruleName');
 				element.classes.add('selectionItem');
 				element.onClick.listen(_ruleClicked);
@@ -56,6 +67,6 @@ class RuleListComponent
 	void _ruleClicked(MouseEvent e)
 	{
 		Element target = e.target;
-		ApplicationEvents.ruleSelected(target.text);
+		ApplicationEvents.ruleSelected(version, target.text);
 	}
 }

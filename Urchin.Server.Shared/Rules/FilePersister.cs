@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using Urchin.Client.Interfaces;
 using Urchin.Server.Shared.DataContracts;
@@ -14,18 +15,155 @@ namespace Urchin.Server.Shared.Rules
         private readonly IDisposable _configNotifier;
         private string _filePath;
         private DateTime _lastFileTime;
-        private RuleSetDto _ruleSet;
+        private string _defaultEnvironmentName;
+        private List<EnvironmentDto> _environments;
+        private List<RuleVersionDto> _ruleVersions;
 
         public FilePersister(IConfigurationStore configurationStore)
         {
-            _ruleSet = new RuleSetDto
-            {
-                Environments = new List<EnvironmentDto>(), 
-                Rules = new List<RuleDto>()
-            };
+            _defaultEnvironmentName = "Development";
+            _environments = new List<EnvironmentDto>();
+            _ruleVersions = new List<RuleVersionDto>();
 
             _configNotifier = configurationStore.Register("/urchin/server/persister/filePath", SetFilePath, "rules.txt");
         }
+
+        public string CheckHealth()
+        {
+            var content = new StringBuilder();
+            content.AppendLine("File persister using file '" + _filePath + "'.");
+            content.AppendLine("File contains " + GetVersionNumbers().Count + " versions of the rules.");
+            content.AppendLine("File defines " + String.Join(", ", GetEnvironmentNames()) + " environments.");
+            return content.ToString();
+        }
+
+        public string GetDefaultEnvironment()
+        {
+            CheckForUpdate();
+            return _defaultEnvironmentName;
+        }
+
+        public void SetDefaultEnvironment(string name)
+        {
+            CheckForUpdate();
+            _defaultEnvironmentName = name;
+            SaveChanges();
+        }
+
+        public List<int> GetVersionNumbers()
+        {
+            CheckForUpdate();
+
+            if (_ruleVersions == null)
+                return new List<int>();
+
+            return _ruleVersions.Select(r => r.Version).ToList();
+        }
+
+        public IEnumerable<string> GetRuleNames(int version)
+        {
+            CheckForUpdate();
+
+            var ruleVersion = GetVersion(version, false);
+            return ruleVersion == null ? new List<string>() : ruleVersion.Rules.Select(r => r.RuleName);
+        }
+
+        public RuleDto GetRule(int version, string name)
+        {
+            CheckForUpdate();
+
+            var ruleVersion = GetVersion(version, false);
+            if (ruleVersion == null) return null;
+
+            return ruleVersion.Rules.FirstOrDefault(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public IEnumerable<RuleDto> GetAllRules(int version)
+        {
+            CheckForUpdate();
+
+            var ruleVersion = GetVersion(version, false);
+            if (ruleVersion == null) return null;
+
+            return ruleVersion.Rules;
+        }
+
+        public void DeleteRule(int version, string name)
+        {
+            CheckForUpdate();
+
+            var ruleVersion = GetVersion(version, false);
+            if (ruleVersion == null) return;
+
+            ruleVersion.Rules.RemoveAll(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
+            SaveChanges();
+        }
+
+        public void InsertOrUpdateRule(int version, RuleDto rule)
+        {
+            CheckForUpdate();
+
+            var ruleVersion = GetVersion(version, true);
+            if (ruleVersion == null) return;
+
+            ruleVersion.Rules.RemoveAll(r => string.Equals(r.RuleName, rule.RuleName, StringComparison.InvariantCultureIgnoreCase));
+            ruleVersion.Rules.Add(rule);
+
+            SaveChanges();
+        }
+
+        public IEnumerable<string> GetEnvironmentNames()
+        {
+            CheckForUpdate();
+            return _environments.Select(e => e.EnvironmentName);
+        }
+
+        public EnvironmentDto GetEnvironment(string name)
+        {
+            CheckForUpdate();
+            return _environments.FirstOrDefault(e => string.Equals(e.EnvironmentName, name, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public IEnumerable<EnvironmentDto> GetAllEnvironments()
+        {
+            CheckForUpdate();
+            return _environments;
+        }
+
+        public void DeleteEnvironment(string name)
+        {
+            _environments.RemoveAll(e => string.Equals(e.EnvironmentName, name, StringComparison.InvariantCultureIgnoreCase));
+            SaveChanges();
+        }
+
+        public void InsertOrUpdateEnvironment(EnvironmentDto environment)
+        {
+            CheckForUpdate();
+            _environments.RemoveAll(e => string.Equals(e.EnvironmentName, environment.EnvironmentName, StringComparison.InvariantCultureIgnoreCase));
+            _environments.Add(environment);
+            SaveChanges();
+        }
+
+        public void SetVersionName(int version, string newName)
+        {
+            CheckForUpdate();
+
+            var ruleVersion = GetVersion(version, true);
+            ruleVersion.Name = newName;
+
+            SaveChanges();
+        }
+
+        public void DeleteVersion(int version)
+        {
+            CheckForUpdate();
+
+            _ruleVersions.RemoveAll(r => r.Version == version);
+
+            SaveChanges();
+        }
+        
+        #region Private methods
 
         private void SetFilePath(string filePath)
         {
@@ -45,8 +183,8 @@ namespace Urchin.Server.Shared.Rules
         private void Reload()
         {
             var fileInfo = new FileInfo(_filePath);
-            RuleSetDto ruleSet = null;
 
+            FileContents fileContents = null;
             if (fileInfo.Exists)
             {
                 _lastFileTime = fileInfo.LastWriteTimeUtc;
@@ -60,14 +198,43 @@ namespace Urchin.Server.Shared.Rules
                     }
                 }
 
-                ruleSet = JsonConvert.DeserializeObject<RuleSetDto>(content);
+                fileContents = JsonConvert.DeserializeObject<FileContents>(content);
             }
 
-            if (ruleSet == null) ruleSet = new RuleSetDto();
-            if (ruleSet.Environments == null) ruleSet.Environments = new List<EnvironmentDto>();
-            if (ruleSet.Rules == null) ruleSet.Rules = new List<RuleDto>();
-
-            _ruleSet = ruleSet;
+            if (fileContents == null)
+            {
+                _defaultEnvironmentName = "Development";
+                _environments = new List<EnvironmentDto>();
+                _ruleVersions = new List<RuleVersionDto>();
+            }
+            else
+            {
+                _defaultEnvironmentName = fileContents.DefaultEnvironmentName;
+                _environments = fileContents.Environments ?? new List<EnvironmentDto>();
+                if (fileContents.RuleVersions == null || fileContents.RuleVersions.Count == 0)
+                {
+                    _ruleVersions = new List<RuleVersionDto>();
+                    if (fileContents.Rules != null && fileContents.Rules.Count > 0)
+                    {
+                        // This is here for backward compatibility with old file format before versioning
+                        _ruleVersions.Add(new RuleVersionDto
+                        {
+                            Version = 1,
+                            Name = "First version",
+                            Rules = fileContents.Rules
+                        });
+                        foreach (var environment in _environments)
+                            environment.Version = 1;
+                    }
+                }
+                else
+                {
+                    _ruleVersions = fileContents.RuleVersions;
+                    foreach (var ruleVersion in _ruleVersions)
+                        if (string.IsNullOrEmpty(ruleVersion.Name))
+                            ruleVersion.Name = "Version " + ruleVersion.Version;
+                }
+            }
         }
 
         private void CheckForUpdate()
@@ -83,7 +250,13 @@ namespace Urchin.Server.Shared.Rules
         {
             if (_filePath == null) return;
 
-            var content = JsonConvert.SerializeObject(_ruleSet, Formatting.Indented);
+            var fileContents = new FileContents
+            {
+                DefaultEnvironmentName = _defaultEnvironmentName,
+                Environments = _environments,
+                RuleVersions = _ruleVersions
+            };
+            var content = JsonConvert.SerializeObject(fileContents, Formatting.Indented);
 
             try
             {
@@ -102,82 +275,42 @@ namespace Urchin.Server.Shared.Rules
             }
         }
 
-        public string GetDefaultEnvironment()
+        private RuleVersionDto GetVersion(int version, bool createIfMissing)
         {
-            CheckForUpdate();
-            return _ruleSet.DefaultEnvironmentName;
+            RuleVersionDto ruleVersion = null;
+            if (createIfMissing)
+            {
+                if (_ruleVersions == null)
+                    _ruleVersions = new List<RuleVersionDto>();
+
+                ruleVersion = _ruleVersions.FirstOrDefault(r => r.Version == version);
+                if (ruleVersion == null)
+                {
+                    ruleVersion = new RuleVersionDto
+                    {
+                        Name = "Version " + version,
+                        Version = version,
+                        Rules = new List<RuleDto>()
+                    };
+                    _ruleVersions.Add(ruleVersion);
+                }
+            }
+            else
+            {
+                if (_ruleVersions != null)
+                    ruleVersion = _ruleVersions.FirstOrDefault(r => r.Version == version);
+            }
+            return ruleVersion;
         }
 
-        public void SetDefaultEnvironment(string name)
-        {
-            CheckForUpdate();
-            _ruleSet.DefaultEnvironmentName = name;
-            SaveChanges();
-        }
+        #endregion
 
-        public IEnumerable<string> GetRuleNames()
+        private class FileContents
         {
-            CheckForUpdate();
-            return _ruleSet.Rules.Select(r => r.RuleName);
-        }
-
-        public RuleDto GetRule(string name)
-        {
-            CheckForUpdate();
-            return _ruleSet.Rules.FirstOrDefault(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        public IEnumerable<RuleDto> GetAllRules()
-        {
-            CheckForUpdate();
-            return _ruleSet.Rules;
-        }
-
-        public void DeleteRule(string name)
-        {
-            CheckForUpdate();
-            _ruleSet.Rules.RemoveAll(r => string.Equals(r.RuleName, name, StringComparison.InvariantCultureIgnoreCase));
-            SaveChanges();
-        }
-
-        public void InsertOrUpdateRule(RuleDto rule)
-        {
-            CheckForUpdate();
-            _ruleSet.Rules.RemoveAll(r => string.Equals(r.RuleName, rule.RuleName, StringComparison.InvariantCultureIgnoreCase));
-            _ruleSet.Rules.Add(rule);
-            SaveChanges();
-        }
-
-        public IEnumerable<string> GetEnvironmentNames()
-        {
-            CheckForUpdate();
-            return _ruleSet.Environments.Select(e => e.EnvironmentName);
-        }
-
-        public EnvironmentDto GetEnvironment(string name)
-        {
-            CheckForUpdate();
-            return _ruleSet.Environments.FirstOrDefault(e => string.Equals(e.EnvironmentName, name, StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        public IEnumerable<EnvironmentDto> GetAllEnvironments()
-        {
-            CheckForUpdate();
-            return _ruleSet.Environments;
-        }
-
-        public void DeleteEnvironment(string name)
-        {
-            _ruleSet.Environments.RemoveAll(e => string.Equals(e.EnvironmentName, name, StringComparison.InvariantCultureIgnoreCase));
-            SaveChanges();
-        }
-
-        public void InsertOrUpdateEnvironment(EnvironmentDto environment)
-        {
-            CheckForUpdate();
-            _ruleSet.Environments.RemoveAll(e => string.Equals(e.EnvironmentName, environment.EnvironmentName, StringComparison.InvariantCultureIgnoreCase));
-            _ruleSet.Environments.Add(environment);
-            SaveChanges();
+            public string DefaultEnvironmentName { get; set; }
+            public List<EnvironmentDto> Environments { get; set; }
+            public List<RuleVersionDto> RuleVersions { get; set; }
+            public List<RuleDto> Rules { get; set; }
         }
     }
 }

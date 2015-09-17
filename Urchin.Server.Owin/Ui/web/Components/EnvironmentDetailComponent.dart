@@ -11,33 +11,52 @@ class EnvironmentDetailComponent
 {
 	Data _data;
 
+	FormBuilder _form;
+
 	Element _heading1;
 	Element _heading2;
+	Element _heading3;
 	Element _environmentName;
+	Element _version;
 	Element _machines;
 	Element _rules;
 
-	EnvironmentDetailComponent(this._data);
-  
-	void displayIn(containerDiv)
+	StreamSubscription<EnvironmentSelectedEvent> _onEnvironmentSelectedSubscription;
+
+	EnvironmentDetailComponent(this._data)
 	{
-		var formBuilder = new FormBuilder();
-		_heading1 = formBuilder.addHeading('Machines in this environment', 2);
-		_machines = formBuilder.addList('machineList');
-		_heading2 = formBuilder.addHeading('Security for this environment', 2);
-		_rules = formBuilder.addList('securityRuleList');
+		_form = new FormBuilder();
+		_heading1 = _form.addHeading('Machines in this environment', 1);
+		_version = _form.addLabeledField('Version of rules');
+		_heading2 = _form.addHeading('Machines in this environment', 2);
+		_machines = _form.addList('machineList');
+		_heading3 = _form.addHeading('Security for this environment', 2);
+		_rules = _form.addList('securityRuleList');
 
-		formBuilder.addTo(containerDiv);
-
-		ApplicationEvents.onEnvironmentSelected.listen(_environmentSelected);
+		_onEnvironmentSelectedSubscription = ApplicationEvents.onEnvironmentSelected.listen(_environmentSelected);
+	}
+  
+	void dispose()
+	{
+		_onEnvironmentSelectedSubscription.cancel();
+		_onEnvironmentSelectedSubscription = null;
 	}
 
-	void _environmentSelected(EnvironmentSelectedEvent e)
+	void displayIn(containerDiv)
 	{
-		EnvironmentDto environment = _data.environments[e.environmentName];
+		_form.addTo(containerDiv);
+	}
 
-		_heading1.text = 'Machines in ' + environment.name + ' Environment';
-		_heading2.text = 'Security for ' + environment.name + ' Environment';
+	void _environmentSelected(EnvironmentSelectedEvent e) async
+	{
+		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
+		EnvironmentDto environment = environments[e.environmentName];
+
+		_heading1.text = environment.name + ' Environment';
+		_heading2.text = 'Machines in ' + environment.name + ' Environment';
+		_heading3.text = 'Security for ' + environment.name + ' Environment';
+
+		_version.text = environment.version.toString();
 
 		_machines.children.clear();
 		if (environment.machines != null)

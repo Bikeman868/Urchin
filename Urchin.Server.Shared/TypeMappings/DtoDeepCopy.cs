@@ -27,7 +27,10 @@ namespace Urchin.Server.Shared.TypeMappings
             CreateMap<EnvironmentDto, EnvironmentDto>()
                 .ForMember(
                     dest => dest.Machines,
-                    opt => opt.MapFrom(src => src.Machines.DeepClone()));
+                    opt => opt.MapFrom(src => src.Machines.DeepClone()))
+                .ForMember(
+                    dest => dest.SecurityRules,
+                    opt => opt.MapFrom(src => src.SecurityRules.DeepClone()));
 
             CreateMap<RuleDto, RuleDto>()
                 .ForMember(
@@ -39,8 +42,15 @@ namespace Urchin.Server.Shared.TypeMappings
                     dest => dest.Environments,
                     opt => opt.MapFrom(src => src.Environments.DeepClone()))
                 .ForMember(
+                    dest => dest.RuleVersion,
+                    opt => opt.MapFrom(src => src.RuleVersion.DeepClone()));
+
+            CreateMap<RuleVersionDto, RuleVersionDto>()
+                .ForMember(
                     dest => dest.Rules,
                     opt => opt.MapFrom(src => src.Rules.DeepClone()));
+
+            CreateMap<SecurityRuleDto, SecurityRuleDto>();
 
             CreateMap<VariableDeclarationDto, VariableDeclarationDto>();
         }

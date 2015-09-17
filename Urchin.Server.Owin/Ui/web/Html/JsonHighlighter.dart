@@ -29,6 +29,7 @@ class JsonHighlighter
     
 		String currentState()
 		{
+			if (stateStack.length == 0) return '';
 			return stateStack[0];
 		}
   
@@ -91,7 +92,8 @@ class JsonHighlighter
 			{
 				if (c == '{')
 				{
-					lineBreak();
+					if (currentState() != 'array')
+						lineBreak();
 					append(c);
 					indentLevel = indentLevel + 3;
 					lineBreak();

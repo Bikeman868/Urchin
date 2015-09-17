@@ -45,7 +45,7 @@ namespace Urchin.Server.Owin
         private UnityContainer ConfigureUnity()
         {
             var unityContainer = new UnityContainer();
-            unityContainer.RegisterType<IConfigRules, ConfigRules>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IRuleData, RuleData>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<ILogManager, LogManager>(new ContainerControlledLifetimeManager());
 
@@ -127,18 +127,28 @@ namespace Urchin.Server.Owin
         {
             try
             {
+                // This must be the first endpoint because it establishes client credentials
                 app.Use(unityContainer.Resolve<Middleware.LogonEndpoint>().Invoke);
+
+                // These endpoints are called by production servers
                 app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
+
+                // These endpoints are for administration only and have very low throughput
                 app.Use(unityContainer.Resolve<Middleware.UiEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.VersionEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.VersionsEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
+                app.Use(unityContainer.Resolve<Middleware.RuleNamesEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.RuleDataEndpoint>().Invoke);
                 app.Use(unityContainer.Resolve<Middleware.TestEndpoint>().Invoke);
+
+                // This must be the last endpoint because it always returns a 404
+                app.Use(unityContainer.Resolve<Middleware.NotFoundMiddleware>().Invoke);
             }
             catch (Exception ex)
             {
