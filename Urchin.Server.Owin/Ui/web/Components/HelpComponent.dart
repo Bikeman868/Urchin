@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Html/HtmlBuilder.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 
 class HelpComponent
 {
@@ -22,7 +22,7 @@ class HelpComponent
 		_paragraphs = _html.addContainer();
 
 		_displayRulesInstructions();
-		_onTabChangedSubscription = ApplicationEvents.onTabChanged.listen(_tabChanged);
+		_onTabChangedSubscription = AppEvents.tabChanged.listen(_tabChanged);
 	}
   
 	void dispose()

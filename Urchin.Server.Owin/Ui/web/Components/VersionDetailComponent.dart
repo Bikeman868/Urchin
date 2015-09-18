@@ -5,7 +5,7 @@ import 'dart:async';
 import '../Html/FormBuilder.dart';
 import '../Dto.dart';
 import '../Data.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 
 class VersionDetailComponent
 {
@@ -19,7 +19,7 @@ class VersionDetailComponent
 	Element _name;
 	Element _rules;
 
-	StreamSubscription<VersionSelectedEvent> _onVersionSelectedSubscription;
+	StreamSubscription<VersionSelectedEvent> _versionSelectedSubscription;
 
 	VersionDetailComponent(this._data)
 	{
@@ -30,13 +30,13 @@ class VersionDetailComponent
 		_heading2 = _form.addHeading('Rules in this version', 2);
 		_rules = _form.addList('ruleList');
 
-		_onVersionSelectedSubscription = ApplicationEvents.onVersionSelected.listen(_versionSelected);
+		_versionSelectedSubscription = AppEvents.versionSelected.listen(_versionSelected);
 	}
   
 	void dispose()
 	{
-		_onVersionSelectedSubscription.cancel();
-		_onVersionSelectedSubscription = null;
+		_versionSelectedSubscription.cancel();
+		_versionSelectedSubscription = null;
 	}
 
 	void displayIn(containerDiv)
@@ -71,12 +71,12 @@ class VersionDetailComponent
 				_rules.children.add(element);
 			}
 		}
-		ApplicationEvents.ruleSelected(versionNumber, null);
+		AppEvents.ruleSelected.raise(new RuleSelectedEvent(versionNumber, null));
 	}
 
 	void _ruleClicked(MouseEvent e)
 	{
 		Element target = e.target;
-		ApplicationEvents.ruleSelected(int.parse(_version.text), target.text);
+		AppEvents.ruleSelected.raise(new RuleSelectedEvent(int.parse(_version.text), target.text));
 	}
 }

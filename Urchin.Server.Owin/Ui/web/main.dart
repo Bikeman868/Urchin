@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'Data.dart';
-import 'ApplicationEvents.dart';
+import 'AppEvents.dart';
 
 import 'Components/RuleListComponent.dart';
 import 'Components/ToolBarComponent.dart';
@@ -66,7 +66,7 @@ void _setupUI()
 
 	_setupRulesTab();
 
-	ApplicationEvents.onTabChanged.listen(_tabChanged);
+	AppEvents.tabChanged.listen(_tabChanged);
 }
 
 void _tabChanged(TabChangedEvent e)

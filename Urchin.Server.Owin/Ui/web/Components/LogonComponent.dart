@@ -5,7 +5,7 @@ import 'dart:async';
 import '../Dto.dart';
 import '../Data.dart';
 import '../Server.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 import '../Html/HtmlBuilder.dart';
 
 class LogonComponent
@@ -43,7 +43,7 @@ class LogonComponent
 		var buttonContainer = _loggedOffUi.addContainer();
 	    _logOffButton = _loggedOffUi.addButton('Logon', _logonClick, className: 'toolBarButton', parent: buttonContainer);
 
-		_onUserChangedSubscription = ApplicationEvents.onUserChanged.listen(_userChanged);
+		_onUserChangedSubscription = AppEvents.userChanged.listen(_userChanged);
 	}
 
 	void dispose()
@@ -57,7 +57,7 @@ class LogonComponent
 		_container = container;
 
 		var getLoggedOnUser = Server.getLoggedOnUser();
-		getLoggedOnUser.then((userName) => ApplicationEvents.userChanged(userName));
+		getLoggedOnUser.then((userName) => AppEvents.userChanged.raise(new UserChangedEvent(userName)));
 	}
 
 	void _userChanged(UserChangedEvent e)
@@ -88,7 +88,7 @@ class LogonComponent
 					if (postResponse.success)
 					{
 						_passwordInputElement.value = '';
-						ApplicationEvents.userChanged(_userNameInputElement.value);
+						AppEvents.userChanged.raise(new UserChangedEvent(true, userName: _userNameInputElement.value));
 					}
 					else
 					{
@@ -111,7 +111,7 @@ class LogonComponent
 
 	void _loggedOff(HttpRequest request)
 	{
-		ApplicationEvents.userChanged('');
+		AppEvents.userChanged.raise(new UserChangedEvent(false));
 	}
   
 }

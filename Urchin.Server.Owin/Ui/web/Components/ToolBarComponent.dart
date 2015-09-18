@@ -4,7 +4,7 @@ import 'dart:async';
 
 import '../Dto.dart';
 import '../Data.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 
 class ToolBarComponent
 {
@@ -47,6 +47,6 @@ class ToolBarComponent
 	void _tabChanged(MouseEvent e)
 	{
 		SpanElement target = e.target;
-		ApplicationEvents.tabChanged(target.text);
+		AppEvents.tabChanged.raise(new TabChangedEvent(target.text));
 	}
   }

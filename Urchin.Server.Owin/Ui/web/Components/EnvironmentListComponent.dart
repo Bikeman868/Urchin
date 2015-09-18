@@ -4,7 +4,7 @@ import 'dart:async';
 
 import '../Dto.dart';
 import '../Data.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 
 class EnvironmentListComponent
 {
@@ -42,6 +42,6 @@ class EnvironmentListComponent
 	void environmentClicked(MouseEvent e)
 	{
 		LIElement target = e.target;
-		ApplicationEvents.environmentSelected(target.text);
+		AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(target.text));
 	}
 }

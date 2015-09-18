@@ -4,7 +4,7 @@ import 'dart:async';
 
 import '../Dto.dart';
 import '../Data.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 
 class VersionListComponent
 {
@@ -44,6 +44,6 @@ class VersionListComponent
 	{
 		LIElement target = e.target;
 		var version = int.parse(target.attributes['version']);
-		ApplicationEvents.versionSelected(version);
+		AppEvents.versionSelected.raise(new VersionSelectedEvent(version));
 	}
 }

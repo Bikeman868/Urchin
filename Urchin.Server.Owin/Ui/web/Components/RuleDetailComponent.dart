@@ -7,7 +7,7 @@ import '../Html/HtmlBuilder.dart';
 import '../Html/JsonHighlighter.dart';
 import '../Dto.dart';
 import '../Data.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 
 class RuleDetailComponent
 {
@@ -25,7 +25,7 @@ class RuleDetailComponent
 	Element _config;
 	Element _variables;
 
-	StreamSubscription<RuleSelectedEvent> _onRuleSelectedSubscription;
+	StreamSubscription<RuleSelectedEvent> _ruleSelectedSubscription;
 
 	RuleDetailComponent(this._data)
 	{
@@ -49,13 +49,13 @@ class RuleDetailComponent
 		_variables = form.addContainer();
 		form.addTo(_ruleDetail);
 
-		_onRuleSelectedSubscription = ApplicationEvents.onRuleSelected.listen(_ruleSelected);
+		_ruleSelectedSubscription = AppEvents.ruleSelected.listen(_ruleSelected);
 	}
   
 	void dispose()
 	{
-		_onRuleSelectedSubscription.cancel();
-		_onRuleSelectedSubscription = null;
+		_ruleSelectedSubscription.cancel();
+		_ruleSelectedSubscription = null;
 	}
   
 	void displayIn(containerDiv)

@@ -152,7 +152,7 @@
     <Content Include="Ui\web\Components\ToolBarComponent.dart" />
     <Content Include="Ui\web\Data.dart" />
     <Content Include="Ui\web\Server.dart" />
-    <Content Include="Ui\web\ApplicationEvents.dart" />
+    <Content Include="Ui\web\AppEvents.dart" />
     <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
     <Content Include="Ui\web\Components\EnvironmentListComponent.dart" />
     <Content Include="Ui\web\Components\EnvironmentDetailComponent.dart" />

@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'Dto.dart';
 import 'Server.dart';
-import 'ApplicationEvents.dart';
+import 'AppEvents.dart';
 
 class Data
 {
@@ -15,7 +15,7 @@ class Data
 	Data()
 	{
 		_versionedData = new Map<int, VersionData>();
-		ApplicationEvents.onUserChanged.listen(_userChanged);
+		AppEvents.userChanged.listen(_userChanged);
 	}
 
 	reload()
@@ -26,7 +26,7 @@ class Data
 		for(var version in _versionedData.values)
 			version.reload();
 
-		ApplicationEvents.dataRefreshed(this);
+		AppEvents.dataRefreshed.raise(new DataRefreshedEvent(this));
 	}
 
 	Future<Map<String, EnvironmentDto>> getEnvironments() async
@@ -85,7 +85,7 @@ class VersionData
 		_ruleNames = null;
 		_rules = null;
 
-		ApplicationEvents.versionDataRefreshed(this);
+		AppEvents.versionDataRefreshed.raise(new VersionDataRefreshedEvent(this));
 	}
 
 	Future<List<String>> getRuleNames() async

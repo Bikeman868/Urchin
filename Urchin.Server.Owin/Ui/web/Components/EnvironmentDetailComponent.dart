@@ -5,7 +5,7 @@ import 'dart:async';
 import '../Html/FormBuilder.dart';
 import '../Dto.dart';
 import '../Data.dart';
-import '../ApplicationEvents.dart';
+import '../AppEvents.dart';
 
 class EnvironmentDetailComponent
 {
@@ -21,7 +21,7 @@ class EnvironmentDetailComponent
 	Element _machines;
 	Element _rules;
 
-	StreamSubscription<EnvironmentSelectedEvent> _onEnvironmentSelectedSubscription;
+	StreamSubscription<EnvironmentSelectedEvent> _environmentSelectedSubscription;
 
 	EnvironmentDetailComponent(this._data)
 	{
@@ -33,13 +33,13 @@ class EnvironmentDetailComponent
 		_heading3 = _form.addHeading('Security for this environment', 2);
 		_rules = _form.addList('securityRuleList');
 
-		_onEnvironmentSelectedSubscription = ApplicationEvents.onEnvironmentSelected.listen(_environmentSelected);
+		_environmentSelectedSubscription = AppEvents.environmentSelected.listen(_environmentSelected);
 	}
   
 	void dispose()
 	{
-		_onEnvironmentSelectedSubscription.cancel();
-		_onEnvironmentSelectedSubscription = null;
+		_environmentSelectedSubscription.cancel();
+		_environmentSelectedSubscription = null;
 	}
 
 	void displayIn(containerDiv)
