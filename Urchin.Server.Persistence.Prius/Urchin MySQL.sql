@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `versions` (
 
 -- Dumping structure for procedure urchin.ip_EnsureVersion
 DELIMITER //
-CREATE DEFINER=`martin`@`%` PROCEDURE `ip_EnsureVersion`(IN `version` INT)
+CREATE DEFINER=`root`@`%` PROCEDURE `ip_EnsureVersion`(IN `version` INT)
 BEGIN
 	IF NOT EXISTS 
 		(
@@ -240,7 +240,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure urchin.sp_DeleteVersion
 DELIMITER //
-CREATE DEFINER=`martin`@`%` PROCEDURE `sp_DeleteVersion`(IN `version` INT)
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_DeleteVersion`(IN `version` INT)
 BEGIN
 	DELETE FROM v USING Variables AS v
 	WHERE v.RuleId IN (SELECT r.RuleId FROM Rules r WHERE r.Version = version);
@@ -393,7 +393,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure urchin.sp_GetVersionNumbers
 DELIMITER //
-CREATE DEFINER=`martin`@`%` PROCEDURE `sp_GetVersionNumbers`()
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_GetVersionNumbers`()
 BEGIN
 	SELECT version
 	FROM Versions;
@@ -577,7 +577,7 @@ DELIMITER ;
 
 -- Dumping structure for procedure urchin.sp_InsertUpdateVersion
 DELIMITER //
-CREATE DEFINER=`martin`@`%` PROCEDURE `sp_InsertUpdateVersion`(IN `version` INT, IN `name` VARCHAR(50))
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_InsertUpdateVersion`(IN `version` INT, IN `name` VARCHAR(50))
 BEGIN
 	INSERT IGNORE INTO Versions
 	(
