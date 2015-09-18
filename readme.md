@@ -20,12 +20,20 @@ A rules based centralized enterprise configuration management solution for .Net
 * Rules for determining environment from machine so that this is an optional parameter.
 * Variable declaration and substitution.
 * IP based security with administrator logon to override.
+* Versioning of rules with different versions active in each environment.
 
 ## Things that Urchin does _not_ do
 * I can't find any way to get ASP.NET to give up on using the web.config file for
   its configuration settings. Microsoft provide no flexibility or extensibility at
   all in this area, so fo now, you can only use Urchin for settings specific to
   your application.
+  
+## Known issues
+* If you try to update the environments from a machine that does not have access
+  the REST API does not update the environments, but is returns a success response.
+* In a production deployment the versioned assets do not get served properly. This
+  is not a problem in the development environment. There may be some specific
+  production environment setups where this problem occurs.
 
 ## Contents
 | Component | Description |
@@ -36,17 +44,16 @@ A rules based centralized enterprise configuration management solution for .Net
 | `Urchin.Server.Shared` | Core server-side technology. Shared by hosting options |
 
 ## Project Status
-The client is complete and fully usable. It has a comprehensive set of unit tests.
+The client is complete and fully stable. It has a comprehensive set of unit tests.
 
 The client can retrieve configuration from a file, or a URI. The URI method can be used to retrieve 
 configuration from the Urchin server; which gives you rule based centralized configuration
 management.
 
-The server is ready, and has had some testing in a development environment. I am going to build it
-into our production environment this week. You can configure the server to store its rules in a 
-single file in json format or in a database. The database persister uses Prius ORM, which supports 
-Microsoft SQL Server, MySQL and Postgresql, but so far I have only created database schema and 
-stored procedures for MySQL.
+The server is ready, and is deployed in one production environment that I know of. You can 
+configure the server to store its rules in a single file in json format or in a database. 
+The database persister uses Prius ORM, which supports Microsoft SQL Server, MySQL and 
+Postgresql, but so far I have only created database schema and stored procedures for MySQL.
 
 The server has a REST API for managing the rule database. If you are using the file persister, then 
 you can edit the file and the changes will be picked up and applied by the server. If you are using 
@@ -54,17 +61,13 @@ the Prius persister to save changes to a database, and you edit the database dir
 to recycle the IIS app pool to pick up the changes.
 
 A UI for managing rules is in development, so far you can view the rules and environments, and run 
-test queries, but the rules can not be edited via the UI. This feature will be built after versioning.
+test queries, but the rules can not be edited via the UI.
 
 ## Next Steps
 If you want to contribute to this project, these are the next most important tasks
 
 * Write scripts to create databases for Microsoft SQL Server and Postgresql.
-* Implement versioning, so that draft rules can be created and tested before going live.
-* Choose which version of the rules are used in each environment so that new rules can be
-  tried in staging before being made live in production for example.
-* Add editing of the most recent version of the rules and environment management to the UI.
-
+* Add the ability to modify rules and environments via the UI.
 
 ## FAQ
 
