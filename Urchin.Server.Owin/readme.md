@@ -18,7 +18,7 @@ To get going in development, you need to :
 4. Type `pub build` into the command prompt. This will compile all the Dart
    code into JavaScript.
 5. Open the solution in Visual Studio.
-6. Change the config.txt file and set the persister file path.
+6. Change the urchin.json file and set the persister file path.
 7. Hit the run button and try these URLs:
 
    (http://localhost:60626/hello)[http://localhost:60626/hello]
@@ -38,7 +38,7 @@ To get going in development, you need to :
 > If you want to set breakpoints and step through Dart code, then you wil need to install the
 > Dartium browser. This is a version of Chrome with the Dart VM built into it. It cab run Dart
 > code natively without compillation to JavaScript. When running the solution in Dartium, you can
-> configure the server to serve .dart files to the browser by editing config.txt and changing the 
+> configure the server to serve .dart files to the browser by editing urchin.json and changing the 
 > setting for `/urchin/server/ui/physicalPath` from `~/ui/build/web` to `~/ui/web`.
 
 ### Production environment
@@ -51,7 +51,7 @@ These are the steps to making a production build:
 4. Copy the files to a folder on your web server (required).
 5. Copy dlls from Urchin.Server.Persistence.Prius (required for database persistence).
 6. Configure a new web site in IIS to point to the new folder (required).
-7. Alter web.config and config.txt files to match your system (required).
+7. Alter urchin.json file to match your system (required).
 
 #### Downloading the source code from GitHub
 
@@ -90,7 +90,7 @@ For the main server, copy:
 | From | To |
 | ------- | -------- |
 | web.config | web.config |
-| config.txt | config.txt |
+| urchin.json | urchin.json |
 | bin\\*.dll | bin\\*.dll |
 
 For the optional management UI, copy:
@@ -109,23 +109,30 @@ For the optional database persistence, copy:
 | Urchin.Server.Persistence.Prius\\bin\\Release\\Prius.Contracts.dll | bin\\Prius.Contracts.dll |
 | Urchin.Server.Persistence.Prius\\bin\\Release\\Prius.Orm.dll       | bin\\Prius.Orm.dll |
 
-#### Customize web.config and config.txt
+#### Customize urchin.json file
 
-You will need to edit the web.config and config.txt and adjust them to suit your production environment.
+You will need to edit the `urchin.json` file and adjust it to suit your production environment.
+
+> Note that you do not need to modify the `web.config` file. In particular DO NOT enable the
+> IIS static file handler as this will break the UI.
+
 In the simplest scenario where rules are stored in a file, you just need to specify the location
 of this file, and make sure that IIS can overwrite its contents.
 
-You also need to change the `/urchin/server/ui/physicalPath` from  to `~/ui/web` development. The 
-default value is `~/ui/build/web`, and you need to change it to `~/ui` for production.
+You must change the `/urchin/server/ui/physicalPath` setting to `~/ui`.
+
+> Note that in a development environment you will need to set the ui physical path to either
+> `~/ui/web` to debug the UI using the Dartium browser, or `~/ui/build/web` to work with any
+> browser, but losing the ability to debug the Dart code.
 
 Detailed configuration instructions follow.
 
 ## Configuration
 The Urchin server uses the Urchin client to manage its configuration file - nothing like eating
-your own dog food. The configuration is stored in the config.txt file.
+your own dog food. The configuration is stored in the urchin.json file.
 
 If you are using the default file persister, then you should configure the location of the rules
-file in config.txt. Note that this file is in JSON format, and directory separators are reserved
+file in urchin.json. Note that this file is in JSON format, and directory separators are reserved
 characters in JSON and must be escaped.
 
 If you are using the Prius persister, then you need to configure the name of the Prius repository
@@ -142,7 +149,7 @@ This NuGet package is used for logging. You can configure it via the web.config 
 
 ### Prius Package
 This NuGet package is used for database persistence, and is optional. If you are using it, then
-you need to configure it in the config.txt file. The config.txt file already contains a boilerplate
+you need to configure it in the urchin.json file. The urchin.json file already contains a boilerplate
 configuration for MySQL, you need just need to customize the connection string for the location
 and logon credentials of your MySQL instance.
 
