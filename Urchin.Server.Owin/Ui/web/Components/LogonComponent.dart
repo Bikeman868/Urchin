@@ -17,10 +17,12 @@ class LogonComponent
 	HtmlBuilder _loggedOffUi;
 
 	Element _userNameSpanElement;
+	Element _ipAddress1;
 	Element _logOnButton;
   
 	InputElement _userNameInputElement;
 	InputElement _passwordInputElement;
+	Element _ipAddress2;
 	Element _logOffButton;
 
 	StreamSubscription<UserChangedEvent> _onUserChangedSubscription;
@@ -29,21 +31,52 @@ class LogonComponent
 	{
 		_data = data;
 
-		_loggedOnUi = new HtmlBuilder();
-		_userNameSpanElement = _loggedOnUi.addInlineText('');
-		_logOnButton = _loggedOnUi.addButton('Logoff', _logoffClick, className: 'toolBarButton');
-
-		_loggedOffUi = new HtmlBuilder();
-		var userNameContainer = _loggedOffUi.addContainer();
-		_loggedOffUi.addInlineText('Username&nbsp;', parent: userNameContainer);
-	    _userNameInputElement = _loggedOffUi.addInput(className: 'inputLogon', parent: userNameContainer);
-		var passwordContainer = _loggedOffUi.addContainer();
-		_loggedOffUi.addInlineText('Password&nbsp;', parent: passwordContainer);
-	    _passwordInputElement = _loggedOffUi.addPassword(className: 'inputLogon', parent: passwordContainer);
-		var buttonContainer = _loggedOffUi.addContainer();
-	    _logOffButton = _loggedOffUi.addButton('Logon', _logonClick, className: 'toolBarButton', parent: buttonContainer);
+		_buildLoggedOnUI();
+		_buildLoggedOffUI();
 
 		_onUserChangedSubscription = AppEvents.userChanged.listen(_userChanged);
+	}
+
+	void _buildLoggedOnUI()
+	{
+		_loggedOnUi = new HtmlBuilder();
+
+		var table = _loggedOnUi.addTable();
+		var row1 = _loggedOnUi.addTableRow(table);
+		var row2 = _loggedOnUi.addTableRow(table);
+
+		var cell1_1 = _loggedOnUi.addTableCell(row1);
+		var cell1_2 = _loggedOnUi.addTableCell(row1);
+		var cell2_1 = _loggedOnUi.addTableCell(row2);
+		var cell2_2 = _loggedOnUi.addTableCell(row2);
+
+		_userNameSpanElement = _loggedOnUi.addInlineText('', parent: cell1_1);
+		_ipAddress1 = _loggedOnUi.addInlineText('', parent: cell2_1);
+		_logOffButton = _loggedOnUi.addButton('Logoff', _logoffClick, className: 'toolBarButton', parent: cell2_2);
+	}
+
+	void _buildLoggedOffUI()
+	{
+		_loggedOffUi = new HtmlBuilder();
+
+		var table = _loggedOffUi.addTable();
+		var row1 = _loggedOffUi.addTableRow(table);
+		var row2 = _loggedOffUi.addTableRow(table);
+		var row3 = _loggedOffUi.addTableRow(table);
+
+		var cell1_1 = _loggedOffUi.addTableCell(row1);
+		var cell1_2 = _loggedOffUi.addTableCell(row1);
+		var cell2_1 = _loggedOffUi.addTableCell(row2);
+		var cell2_2 = _loggedOffUi.addTableCell(row2);
+		var cell3_1 = _loggedOffUi.addTableCell(row3);
+		var cell3_2 = _loggedOffUi.addTableCell(row3);
+
+		_loggedOffUi.addInlineText('Username', parent: cell1_1);
+	    _userNameInputElement = _loggedOffUi.addInput(className: 'inputLogon', parent: cell1_2);
+		_loggedOffUi.addInlineText('Password', parent: cell2_1);
+	    _passwordInputElement = _loggedOffUi.addPassword(className: 'inputLogon', parent: cell2_2);
+		_ipAddress2 = _loggedOffUi.addInlineText('', parent: cell3_1);
+	    _logOnButton = _loggedOffUi.addButton('Logon', _logonClick, className: 'toolBarButton', parent: cell3_2);
 	}
 
 	void dispose()
@@ -52,17 +85,24 @@ class LogonComponent
 		_onUserChangedSubscription = null;
 	}
   
-	void displayIn(Element container)
+	void displayIn(Element container) async
 	{
 		_container = container;
 
-		var getLoggedOnUser = Server.getLoggedOnUser();
-		getLoggedOnUser.then((userName) => AppEvents.userChanged.raise(new UserChangedEvent(userName)));
+		ClientCredentials user = await Server.getLoggedOnUser();
+		var e = new UserChangedEvent(user.isLoggedOn, user.userName, user.ipAddress);
+		AppEvents.userChanged.raise(e);
 	}
 
 	void _userChanged(UserChangedEvent e)
 	{
 		_userNameSpanElement.text = e.userName;
+
+		if (e.ipAddress != null)
+		{
+			_ipAddress1.text = e.ipAddress;
+			_ipAddress2.text = e.ipAddress;
+		}
 
 		if (e.isLoggedOn)
 		{
@@ -88,7 +128,7 @@ class LogonComponent
 					if (postResponse.success)
 					{
 						_passwordInputElement.value = '';
-						AppEvents.userChanged.raise(new UserChangedEvent(true, userName: _userNameInputElement.value));
+						AppEvents.userChanged.raise(new UserChangedEvent(true, _userNameInputElement.value, null));
 					}
 					else
 					{
@@ -111,7 +151,7 @@ class LogonComponent
 
 	void _loggedOff(HttpRequest request)
 	{
-		AppEvents.userChanged.raise(new UserChangedEvent(false));
+		AppEvents.userChanged.raise(new UserChangedEvent(false, null, null));
 	}
   
 }

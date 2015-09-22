@@ -73,6 +73,54 @@ class HtmlBuilder
 		return _addElement(div, classNames, className, parent);
 	}
     
+	TableElement addTable(
+		{
+			List<String> classNames, 
+			String className, 
+			Element parent
+		})
+	{
+		var table = new TableElement();
+		return _addElement(table, classNames, className, parent);
+	}
+    
+	TableRowElement addTableRow(
+		TableElement table,
+		{
+			String rowClassName,
+			List<Object> columns,
+			String cellClassName
+		})
+	{
+		var row = table.addRow();
+		if (rowClassName != null && !rowClassName.isEmpty)
+			row.classes.add(rowClassName);
+
+		if (columns != null)
+		{
+			for (var column in columns)
+			{
+				addTableCell(row, column, cellClassName);
+			}
+		}
+		return row;
+	}
+
+	TableCellElement addTableCell(
+		TableRowElement row,
+		{
+			String cell,
+			String cellClassName
+		})
+	{
+		var cellElement = row.addCell();
+		if (cell != null)
+			cellElement.innerHtml = cell;
+		if (cellClassName != null && !cellClassName.isEmpty)
+			cellElement.classes.add(cellClassName);
+		return cellElement;
+	}
+    
 	Element addButton(
 		String html, 
 		EventListener onClick,

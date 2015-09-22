@@ -76,8 +76,7 @@ namespace Urchin.Server.Owin.Middleware
 
             if (request.Method == "GET" && _userPath.IsWildcardMatch(request.Path))
             {
-                context.Response.ContentType = "text/plain";
-                return context.Response.WriteAsync(clientCredentials.Username ?? "");
+                return Json(context, clientCredentials);
             }
 
             if (request.Method != "POST")

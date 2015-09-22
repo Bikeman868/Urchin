@@ -31,7 +31,8 @@ class UserChangedEvent
 {
 	String userName;
 	bool isLoggedOn;
-	UserChangedEvent(this.isLoggedOn, { this.userName });
+	String ipAddress;
+	UserChangedEvent(this.isLoggedOn, this.userName, this.ipAddress);
 }
 
 class DataRefreshedEvent

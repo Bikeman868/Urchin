@@ -133,3 +133,13 @@ class PostResponseDto extends Dto
 	bool get error => json['error'];
 	bool get id => json['id'];
 }
+
+class ClientCredentials extends Dto
+{
+	ClientCredentials(Map json): super(json){}
+
+	String get ipAddress => json['ip'];
+	bool get isAdmin => json['admin'];
+	bool get isLoggedOn => json['loggedOn'];
+	String get userName => json['userName'];
+}

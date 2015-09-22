@@ -197,9 +197,11 @@ class Server
 //
 //-- Logon related server methods ------------------------------------------------------------------------------
 //
-	static Future<String> getLoggedOnUser()
-		=> HttpRequest.getString(
-			'/user');
+	static Future<ClientCredentials> getLoggedOnUser() async
+	{
+		String response = await HttpRequest.getString('/user');
+		return new ClientCredentials(JSON.decode(response));
+	}
 
 	static Future<HttpRequest> logon(String userName, String password)
 		=> HttpRequest.request(
