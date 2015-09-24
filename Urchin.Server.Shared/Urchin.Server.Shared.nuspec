@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Added IP based security with administrator password override</releaseNotes>
+    <releaseNotes>Added versioning of rules with different versions in each environment</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
     <summary>Allows you to build an Urchin server into your application or web site. If you want a 

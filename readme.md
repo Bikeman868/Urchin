@@ -29,11 +29,7 @@ A rules based centralized enterprise configuration management solution for .Net
   your application.
   
 ## Known issues
-* If you try to update the environments from a machine that does not have access
-  the REST API does not update the environments, but is returns a success response.
-* In a production deployment the versioned assets do not get served properly. This
-  is not a problem in the development environment. There may be some specific
-  production environment setups where this problem occurs.
+* None at this time. Please contact the owner if you are experiencing any problems.
 
 ## Contents
 | Component | Description |
