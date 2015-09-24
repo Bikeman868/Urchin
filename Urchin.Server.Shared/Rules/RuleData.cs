@@ -397,8 +397,11 @@ namespace Urchin.Server.Shared.Rules
                 }
             }
 
-            DeleteRule(ruleVersion, oldName);
-            DeleteRule(ruleVersion, rule.RuleName);
+            _persister.DeleteRule(ruleVersion.Version, oldName);
+            _persister.DeleteRule(ruleVersion.Version, rule.RuleName);
+
+            rules.RemoveAll(r => string.Compare(r.RuleName, oldName, StringComparison.InvariantCultureIgnoreCase) == 0);
+            rules.RemoveAll(r => string.Compare(r.RuleName, rule.RuleName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
             _persister.InsertOrUpdateRule(version, rule);
             rules.Add(rule);
