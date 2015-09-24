@@ -201,13 +201,17 @@ namespace Urchin.Server.Shared.Rules
             Func<EnvironmentDto, EnvironmentDto, bool> eq =
                 (e1, e2) => string.Equals(e1.EnvironmentName, e2.EnvironmentName, StringComparison.InvariantCultureIgnoreCase);
 
+            var someUpdatesBlocked = false;
+
             lock (currentEnvironments)
             {
                 if (environments == null || environments.Count == 0)
                 {
                     foreach (var environment in currentEnvironments)
                     {
-                        if (!blockedEnvironments.Any(e => eq(e, environment)))
+                        if (blockedEnvironments.Any(e => eq(e, environment)))
+                            someUpdatesBlocked = true;
+                        else
                             toDelete.Add(environment.EnvironmentName);
                     }
                 }
@@ -215,13 +219,17 @@ namespace Urchin.Server.Shared.Rules
                 {
                     foreach (var environment in currentEnvironments)
                     {
-                        if (!blockedEnvironments.Any(e => eq(e, environment)))
+                        if (blockedEnvironments.Any(e => eq(e, environment)))
+                            someUpdatesBlocked = true;
+                        else
                             toDelete.Add(environment.EnvironmentName);
                     }
 
                     foreach (var environment in environments)
                     {
-                        if (!blockedEnvironments.Any(e => eq(e, environment)))
+                        if (blockedEnvironments.Any(e => eq(e, environment)))
+                            someUpdatesBlocked = true;
+                        else
                             toAdd.Add(environment);
                     }
                 }
@@ -245,6 +253,9 @@ namespace Urchin.Server.Shared.Rules
             }
 
             _environments = currentEnvironments;
+
+            if (someUpdatesBlocked)
+                throw new Exception("Some environments were not updated because you don't have permission");
         }
 
         public void SetEnvironmentVersion(IClientCredentials clientCredentials, string environmentName, int version)
@@ -346,7 +357,7 @@ namespace Urchin.Server.Shared.Rules
                 _persister.InsertOrUpdateRule(version, newRule);
                 rules.Add(newRule);
             }
-
+            SetEvaluationOrder(rules);
             ruleVersion.Rules = rules;
         }
 
@@ -404,7 +415,9 @@ namespace Urchin.Server.Shared.Rules
             rules.RemoveAll(r => string.Compare(r.RuleName, rule.RuleName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
             _persister.InsertOrUpdateRule(version, rule);
+
             rules.Add(rule);
+            SetEvaluationOrder(rules);
 
             ruleVersion.Rules = rules;
         }
@@ -559,9 +572,14 @@ namespace Urchin.Server.Shared.Rules
 
         private void SetEvaluationOrder(RuleVersionDto ruleVersion)
         {
-            if (ruleVersion.Rules != null)
+            SetEvaluationOrder(ruleVersion.Rules);
+        }
+
+        private void SetEvaluationOrder(List<RuleDto> rules)
+        {
+            if (rules != null)
             {
-                foreach (var rule in ruleVersion.Rules)
+                foreach (var rule in rules)
                 {
                     rule.EvaluationOrder = string.Empty;
                     if (!string.IsNullOrWhiteSpace(rule.Instance)) rule.EvaluationOrder += 'D';
@@ -569,7 +587,7 @@ namespace Urchin.Server.Shared.Rules
                     if (!string.IsNullOrWhiteSpace(rule.Application)) rule.EvaluationOrder += 'B';
                     if (!string.IsNullOrWhiteSpace(rule.Environment)) rule.EvaluationOrder += 'A';
                 }
-                ruleVersion.Rules.Sort(new RuleComparer());
+                rules.Sort(new RuleComparer());
             }
         }
 
