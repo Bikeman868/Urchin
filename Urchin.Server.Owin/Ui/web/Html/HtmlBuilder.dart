@@ -62,6 +62,27 @@ class HtmlBuilder
 		return _addElement(div, classNames, className, parent);
 	}
   
+	Element addImage(
+		String url, 
+		{
+			String altText,
+			String popupText,
+			List<String> classNames, 
+			String className, 
+			Element parent,
+			EventListener onClick
+		})
+	{
+		var img = new ImageElement();
+		if (url != null)
+			img.src = url;
+		if (onClick != null)
+			img.onClick.listen(onClick);
+		if (altText != null)
+			img.alt = altText;
+		return _addElement(img, classNames, className, parent);
+	}
+  
 	Element addContainer(
 		{
 			List<String> classNames, 
