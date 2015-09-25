@@ -13,6 +13,13 @@ div
     margin: 0;
 }
 
+h1
+{
+    font-size:35px;
+    padding-left:12px;
+    margin:5px;
+}
+
 #topDiv
 {
     background: gray;
@@ -22,6 +29,7 @@ div
     padding-bottom: 2px;
     padding-left: 10px;
     padding-right: 10px;
+    height:90px;
 }
 
 #middleDiv
@@ -81,6 +89,12 @@ div
     width: 200px;
 }
 
+#updateDiv
+{
+    float: right;
+    width: 200px;
+}
+
 span.button
 {
     cursor: pointer;
@@ -92,6 +106,7 @@ span.button
     position: relative;
     padding: 10px 10px 4px 4px;
     font-size: 14px;
+    border: 1px solid transparent;
 }
 
 .toolBarButton:hover
@@ -162,6 +177,7 @@ span.button
 {
     margin: 4px;
     padding: 2px;
+    border: 1px solid transparent;
 }
 
 .selectionItem:hover

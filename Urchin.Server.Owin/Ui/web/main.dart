@@ -15,6 +15,7 @@ import 'Components/LogonComponent.dart';
 import 'Components/HelpComponent.dart';
 import 'Components/VersionListComponent.dart';
 import 'Components/VersionDetailComponent.dart';
+import 'Components/UpdateComponent.dart';
 
 Data data;
 
@@ -28,12 +29,14 @@ ToolBarComponent _toolBarComponent;
 HelpComponent _helpComponent;
 VersionListComponent _versionListComponent;
 VersionDetailComponent _versionDetailComponent;
+UpdateComponent _updateComponent;
 
 Element _leftDiv;
 Element _centreDiv;
 Element _rightDiv;
 Element _userDiv;
 Element _toolBarDiv;
+Element _updateDiv;
 
 main() async
 { 
@@ -48,6 +51,7 @@ void _setupUI()
 	_rightDiv = querySelector('#rightDiv');
 	_userDiv = querySelector('#userDiv');
 	_toolBarDiv = querySelector('#toolBarDiv');
+	_updateDiv = querySelector('#updateDiv');
 
 	_ruleListComponent = new RuleListComponent(data);
 	_ruleDetailComponent = new RuleDetailComponent(data);
@@ -59,10 +63,12 @@ void _setupUI()
 	_helpComponent = new HelpComponent();
 	_versionListComponent = new VersionListComponent(data);
 	_versionDetailComponent = new VersionDetailComponent(data);
+	_updateComponent = new UpdateComponent(data);
 
 	_logonComponent.displayIn(_userDiv);
 	_toolBarComponent.displayIn(_toolBarDiv);
 	_helpComponent.displayIn(_rightDiv);
+	_updateComponent.displayIn(_updateDiv);
 
 	_setupRulesTab();
 

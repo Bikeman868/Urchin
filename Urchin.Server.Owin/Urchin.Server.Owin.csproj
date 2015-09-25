@@ -164,6 +164,7 @@
     <Content Include="Ui\web\Components\HelpComponent.dart" />
     <Content Include="Ui\web\Components\VersionListComponent.dart" />
     <Content Include="Ui\web\Components\VersionDetailComponent.dart" />
+    <Content Include="Ui\web\Components\UpdateComponent.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />
