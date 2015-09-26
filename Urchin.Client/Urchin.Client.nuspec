@@ -8,6 +8,7 @@
     <owners>$author$</owners>
     <licenseUrl>http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</licenseUrl>
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/Bikeman868/Urchin/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Converted to .Net 4.0 Client Profile</releaseNotes>
