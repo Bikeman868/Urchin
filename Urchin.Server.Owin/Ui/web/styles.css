@@ -88,6 +88,17 @@ td
     width: auto;
 }
 
+#logoDiv
+{
+    float: left;
+    width: auto;
+}
+
+#logoDiv img 
+{
+    height: 110px;
+}
+
 #userDiv
 {
     float: right;
