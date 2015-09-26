@@ -3,10 +3,12 @@ import 'dart:html';
 class HtmlBuilder
 {
 	List<Element> _elements;
+	String _version;
 
 	HtmlBuilder()
 	{
 		_elements = new List<Element>();
+		_version = querySelector('#version').value;
 	}
 
 	displayIn(Element container)
@@ -75,7 +77,7 @@ class HtmlBuilder
 	{
 		var img = new ImageElement();
 		if (url != null)
-			img.src = url;
+			img.src = url.replaceAll(r'{_v_}', _version);
 		if (onClick != null)
 			img.onClick.listen(onClick);
 		if (altText != null)

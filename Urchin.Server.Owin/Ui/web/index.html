@@ -6,25 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urchin Rule Management UI</title>
-    <link rel="shortcut icon" href="/ui/favicon{_v_}.ico" />
+    <link rel="shortcut icon" href="ui/favicon{_v_}.ico" />
     <link rel="stylesheet" href="/ui/styles{_v_}.css" />
-    <script async src="/ui/main{_v_}.dart" type="application/dart"></script>
-    <script async src="/ui/packages/browser/dart.js"></script>
+    <script async src="ui/main{_v_}.dart" type="application/dart"></script>
+    <script async src="ui/packages/browser/dart.js"></script>
 </head>
 
 <body>
-
+    <input type="hidden" id="version" value="{_v_}" />
     <div id="topDiv">
         <div id="headingDiv">
             <h1>Urchin</h1>
             <div id="toolBarDiv"></div>
         </div>
         <div id="userDiv"></div>
-        <div id="updateDiv">
-            <img id="downloadButton" class="imageButton" alt="Download" src="/ui/images/download{_v_}.gif"/>
-            <img id="uploadButton" class="imageButton" alt="Upload" src="/ui/images/upload{_v_}.gif" />
-            <div id="changesDiv"></div>
-        </div>
+        <div id="updateDiv"></div>
     </div>
 
     <div id="middleDiv">
