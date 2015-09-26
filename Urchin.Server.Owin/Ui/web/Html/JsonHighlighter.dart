@@ -54,6 +54,7 @@ class JsonHighlighter
 		append(c)
 		{
 			if (endOfLine) lineBreak();
+			if (span == null) newSpan();
 			span.innerHtml = span.innerHtml + c;
 		}
 

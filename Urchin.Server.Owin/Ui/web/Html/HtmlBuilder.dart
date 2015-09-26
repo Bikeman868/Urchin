@@ -110,14 +110,14 @@ class HtmlBuilder
 		TableRowElement row,
 		{
 			String cell,
-			String cellClassName
+			String className
 		})
 	{
 		var cellElement = row.addCell();
 		if (cell != null)
 			cellElement.innerHtml = cell;
-		if (cellClassName != null && !cellClassName.isEmpty)
-			cellElement.classes.add(cellClassName);
+		if (className != null && !className.isEmpty)
+			cellElement.classes.add(className);
 		return cellElement;
 	}
     

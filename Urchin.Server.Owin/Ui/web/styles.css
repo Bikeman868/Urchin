@@ -13,6 +13,11 @@ div
     margin: 0;
 }
 
+td
+{
+    vertical-align: top;
+}
+
 #topDiv
 {
     background: gray;
@@ -251,4 +256,8 @@ span.jsonString
     margin-bottom: 10px;
     margin-left: 5px;
     margin-right: 5px;
+}
+td.variableName
+{
+    width:150px;
 }

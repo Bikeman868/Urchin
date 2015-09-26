@@ -92,14 +92,16 @@ class RuleDetailComponent
 			_variables.children.clear();
 			if (rule.variables != null && rule.variables.length > 0)
 			{
-				var formBuilder = new FormBuilder();
+				var htmlBuilder = new HtmlBuilder();
+				var table = htmlBuilder.addTable();
 				for (var variable in rule.variables)
 				{
-					formBuilder.addHeading(variable.name, 3);
-					var value = formBuilder.addContainer();
+					var row = htmlBuilder.addTableRow(table);
+					htmlBuilder.addTableCell(row, cell: variable.name, className: 'variableName');
+					var value = htmlBuilder.addTableCell(row);
 					JsonHighlighter.displayIn(value, variable.value);
 				}
-				formBuilder.addTo(_variables);
+				htmlBuilder.addTo(_variables);
 			}
 		}
 		catch(e)
