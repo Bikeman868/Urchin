@@ -5,9 +5,10 @@ import 'dart:async';
 import '../Html/FormBuilder.dart';
 import '../Html/HtmlBuilder.dart';
 import '../Html/JsonHighlighter.dart';
-import '../Dto.dart';
-import '../Data.dart';
-import '../AppEvents.dart';
+import '../Model/Dto.dart';
+import '../Model/Data.dart';
+import '../Model/VersionData.dart';
+import '../Events/AppEvents.dart';
 
 class RuleDetailComponent
 {

@@ -2,8 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'Data.dart';
-import 'AppEvents.dart';
+import 'Model/Data.dart';
+import 'Events/AppEvents.dart';
 
 import 'Components/RuleListComponent.dart';
 import 'Components/ToolBarComponent.dart';

@@ -2,15 +2,27 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
+import 'VersionData.dart';
 import 'Dto.dart';
-import 'Server.dart';
-import 'AppEvents.dart';
+import '../Server.dart';
+import '../Events/AppEvents.dart';
+import '../Events/SubscriptionEvent.dart';
+
+class DataEvent
+{
+	Data data;
+	DataEvent(this.data);
+}
 
 class Data
 {
 	Map<int, VersionData> _versionedData;
 	Map<String, EnvironmentDto> _environments;
 	List<VersionDto> _versions;
+
+	SubscriptionEvent<DataEvent> refreshedEvent = new SubscriptionEvent<DataEvent>();
+	SubscriptionEvent<DataEvent> versionAddedEvent = new SubscriptionEvent<DataEvent>();
+	SubscriptionEvent<DataEvent> versionDeletedEvent = new SubscriptionEvent<DataEvent>();
 
 	Data()
 	{
@@ -26,7 +38,7 @@ class Data
 		for(var version in _versionedData.values)
 			version.reload();
 
-		AppEvents.dataRefreshed.raise(new DataRefreshedEvent(this));
+		refreshedEvent.raise(new DataEvent(this));
 	}
 
 	Future<Map<String, EnvironmentDto>> getEnvironments() async
@@ -68,47 +80,5 @@ class Data
 	void _userChanged(UserChangedEvent e)
 	{
 		reload();
-	}
-}
-
-class VersionData
-{
-	VersionDto version;
-
-	List<String> _ruleNames;
-	RuleVersionDto _rules;
-
-	VersionData(this.version);
-
-	reload()
-	{
-		_ruleNames = null;
-		_rules = null;
-
-		AppEvents.versionDataRefreshed.raise(new VersionDataRefreshedEvent(this));
-	}
-
-	Future<List<String>> getRuleNames() async
-	{
-		if (_ruleNames == null)
-		{
-			if (version == null || version.version < 1)
-				_ruleNames = await Server.getDraftRuleNames();
-			else
-				_ruleNames = await Server.getRuleNames(version.version);
-		}
-		return _ruleNames;
-	}
-
-	Future<RuleVersionDto> getRules() async
-	{
-		if (_rules == null)
-		{
-			if (version == null || version.version < 1)
-				_rules = await Server.getDraftRules();
-			else
-				_rules = await Server.getRules(version.version);
-		}
-		return _rules;
 	}
 }

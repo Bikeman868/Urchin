@@ -113,6 +113,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="Ui\web\images\download.gif" />
+    <Content Include="Ui\web\images\logo.gif" />
+    <Content Include="Ui\web\images\upload.gif" />
     <Content Include="Urchin.json" />
     <Content Include="Ui\web\favicon.ico" />
     <Content Include="Ui\web\index.html" />
@@ -147,12 +150,12 @@
     <Content Include="readme.md" />
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
-    <Content Include="Ui\web\Dto.dart" />
+    <Content Include="Ui\web\Model\Dto.dart" />
     <Content Include="Ui\web\Components\RuleListComponent.dart" />
     <Content Include="Ui\web\Components\ToolBarComponent.dart" />
-    <Content Include="Ui\web\Data.dart" />
+    <Content Include="Ui\web\Model\Data.dart" />
     <Content Include="Ui\web\Server.dart" />
-    <Content Include="Ui\web\AppEvents.dart" />
+    <Content Include="Ui\web\Events\AppEvents.dart" />
     <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
     <Content Include="Ui\web\Components\EnvironmentListComponent.dart" />
     <Content Include="Ui\web\Components\EnvironmentDetailComponent.dart" />
@@ -165,6 +168,10 @@
     <Content Include="Ui\web\Components\VersionListComponent.dart" />
     <Content Include="Ui\web\Components\VersionDetailComponent.dart" />
     <Content Include="Ui\web\Components\UpdateComponent.dart" />
+    <Content Include="Ui\web\Events\SubscriptionEvent.dart" />
+    <Content Include="Ui\web\Model\VersionData.dart" />
+    <None Include="Ui\build.cmd" />
+    <None Include="Ui\pubspec.lock" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

@@ -2,10 +2,10 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Dto.dart';
-import '../Data.dart';
+import '../Model/Dto.dart';
+import '../Model/Data.dart';
 import '../Server.dart';
-import '../AppEvents.dart';
+import '../Events/AppEvents.dart';
 import '../Html/HtmlBuilder.dart';
 
 class UpdateComponent

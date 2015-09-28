@@ -2,9 +2,10 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Dto.dart';
-import '../Data.dart';
-import '../AppEvents.dart';
+import '../Model/Dto.dart';
+import '../Model/Data.dart';
+import '../Model/VersionData.dart';
+import '../Events/AppEvents.dart';
 import '../Html/HtmlBuilder.dart';
 
 class RuleListComponent
@@ -12,7 +13,7 @@ class RuleListComponent
 	Data _data;
 	HtmlBuilder _builder;
 	Element _ruleList;
-	StreamSubscription<DataRefreshedEvent> _dataRefreshedSubscription;
+	StreamSubscription<DataEvent> _dataRefreshedSubscription;
 	int version;
 
 	RuleListComponent(this._data)
@@ -21,7 +22,7 @@ class RuleListComponent
 		_builder.addBlockText('Rules', className: 'panelTitle');
 		_ruleList = _builder.addList(className: 'selectionList');
 
-		_dataRefreshedSubscription = AppEvents.dataRefreshed.listen(_dataRefreshed);
+		_dataRefreshedSubscription = _data.refreshedEvent.listen(_dataRefreshed);
 		_dataChanged(_data);
 	}
 
@@ -36,7 +37,7 @@ class RuleListComponent
 		_builder.displayIn(containerDiv);
 	}
 
-	void _dataRefreshed(DataRefreshedEvent e)
+	void _dataRefreshed(DataEvent e)
 	{
 		_dataChanged(e.data);
 	}

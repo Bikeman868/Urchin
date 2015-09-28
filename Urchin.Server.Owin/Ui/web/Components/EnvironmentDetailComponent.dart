@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Html/FormBuilder.dart';
-import '../Dto.dart';
-import '../Data.dart';
-import '../AppEvents.dart';
+import '../Model/Dto.dart';
+import '../Model/Data.dart';
+import '../Events/AppEvents.dart';
 
 class EnvironmentDetailComponent
 {

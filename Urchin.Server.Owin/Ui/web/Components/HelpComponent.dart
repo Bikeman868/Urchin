@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Html/HtmlBuilder.dart';
-import '../AppEvents.dart';
+import '../Events/AppEvents.dart';
 
 class HelpComponent
 {

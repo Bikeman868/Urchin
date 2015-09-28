@@ -2,9 +2,10 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Dto.dart';
-import '../Data.dart';
-import '../AppEvents.dart';
+import '../Model/Dto.dart';
+import '../Model/Data.dart';
+import '../Model/VersionData.dart';
+import '../Events/AppEvents.dart';
 
 class VersionListComponent
 {
