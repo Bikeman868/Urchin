@@ -8,7 +8,8 @@ class HtmlBuilder
 	HtmlBuilder()
 	{
 		_elements = new List<Element>();
-		_version = querySelector('#version').value;
+		InputElement version = querySelector('#version');
+		_version = version.value;
 	}
 
 	displayIn(Element container)
