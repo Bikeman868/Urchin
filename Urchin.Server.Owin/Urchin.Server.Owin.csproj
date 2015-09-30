@@ -172,6 +172,8 @@
     <Content Include="Ui\web\Model\VersionData.dart" />
     <None Include="Ui\build.cmd" />
     <None Include="Ui\pubspec.lock" />
+    <Content Include="Ui\web\DataBinding\Binding.dart" />
+    <Content Include="Ui\web\DataBinding\TextInputBinding.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />
