@@ -600,13 +600,18 @@ namespace Urchin.Server.Shared.Rules
         {
             var variables = MergeVariables(rules, environment, machine, application, instance);
 
+            var mergeSettings = new JsonMergeSettings 
+            { 
+                MergeArrayHandling = MergeArrayHandling.Replace
+            };
+
             var config = new JObject();
             foreach (var rule in rules)
             {
                 if (!string.IsNullOrWhiteSpace(rule.ConfigurationData))
                 {
                     var json = ParseJson(rule.ConfigurationData, variables);
-                    config.Merge(json);
+                    config.Merge(json, mergeSettings);
                 }
             }
             return config;
