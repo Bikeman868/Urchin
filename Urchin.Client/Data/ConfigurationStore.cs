@@ -113,7 +113,14 @@ namespace Urchin.Client.Data
                 {
                     var jValue = json as JValue;
                     if (jValue == null) return default(T);
-                    return (T) Convert.ChangeType(jValue.Value, resultType);
+
+                    if (typeof(T) == typeof(DateTime))
+                        return (T)(object)DateTime.Parse(jValue.Value.ToString());
+
+                    if (typeof(T) == typeof(TimeSpan))
+                        return (T)(object)TimeSpan.Parse(jValue.Value.ToString());
+
+                    return (T)Convert.ChangeType(jValue.Value, resultType);
                 }
 
                 return JsonConvert.DeserializeObject<T>(jsonText);
