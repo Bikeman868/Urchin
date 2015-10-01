@@ -14,13 +14,15 @@ class EnvironmentViewModel
 
 	EnvironmentDto _environmentModel;
 	EnvironmentViewModel get environmentModel => _environmentModel;
-	void set environmentModel(EnvironmentDto value)
+	void set environmentModel(EnvironmentDto model)
 	{
-        name.setter = (String text) { value.name = text; };
-        name.getter = () => value.name;
+		_environmentModel = model;
+
+        name.setter = (String text) { model.name = text; };
+        name.getter = () => model.name;
         
-        version.setter = (int i) { value.version = i; };
-        version.getter = () => value.version;
+        version.setter = (int i) { model.version = i; };
+        version.getter = () => model.version;
 	}
 
 }

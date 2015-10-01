@@ -69,7 +69,7 @@ class IntBinding extends Binding<int>
 			{
 				return null;
 			}
-		}
+		};
 	}
 }
 

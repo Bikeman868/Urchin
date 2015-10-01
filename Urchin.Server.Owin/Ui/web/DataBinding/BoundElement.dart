@@ -41,12 +41,6 @@ abstract class BoundElement<TB, TE>
 	StreamSubscription<String> _bindingSubscription;
 	StreamSubscription<Event> _elementSubscription;
   
-	BoundElement(TE element, Binding<TB> binding)
-	{
-		this.element = element;
-		this.binding = binding;
-	}
-  
 	void dispose()
 	{
 		binding = null;
@@ -54,5 +48,5 @@ abstract class BoundElement<TB, TE>
 	}
   
 	void _onBindingChange(String text);
-	StreamSubscription<Event> _subscribeToElement(TE element);
+	StreamSubscription<Event> _subscribeToElement(Element element);
 }

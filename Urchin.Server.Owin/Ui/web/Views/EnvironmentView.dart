@@ -5,11 +5,24 @@ import '../ViewModels/EnvironmentViewModel.dart';
 
 class EnvironmentView
 {
-	SpanElement name = new SpanElement();
-	SpanElement version = new SpanElement();
+	SpanElement name;
+	BoundLabel _nameBinding;
+
+	SpanElement version;
+	BoundLabel _versionBinding;
+
+	EnvironmentView()
+	{
+		name = new SpanElement();
+		version = new SpanElement();
+
+		_nameBinding = new BoundLabel(name);
+		_versionBinding = new BoundLabel(version);
+	}
 
 	void bind(EnvironmentViewModel viewModel)
 	{
-		viewModel.name.
+		_nameBinding.binding = viewModel.name;
+		_versionBinding.binding = viewModel.version;
 	}
 }

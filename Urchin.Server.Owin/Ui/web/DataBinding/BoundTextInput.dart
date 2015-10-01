@@ -4,6 +4,11 @@ import 'BoundElement.dart';
 
 class BoundTextInput<T> extends BoundElement<T, InputElement>
 {
+	BoundTextInput (InputElement element)
+	{
+		this.element = element;
+	}
+	
 	void _onBindingChange(String text)
 	{
 		if (_element != null)
@@ -17,7 +22,7 @@ class BoundTextInput<T> extends BoundElement<T, InputElement>
   
 	void _onBlur(Event e)
 	{
-		if (!binding.setProperty(input.value))
+		if (!binding.setProperty(element.value))
 			e.preventDefault();
 	}
 }
