@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Html/FormBuilder.dart';
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
-import '../Model/VersionData.dart';
+import '../Models/Dto.dart';
+import '../Models/Data.dart';
+import '../Models/VersionData.dart';
 import '../Events/AppEvents.dart';
 
 class VersionDetailComponent

@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'Model/Data.dart';
+import 'Models/Data.dart';
 import 'Events/AppEvents.dart';
 
 import 'Components/RuleListComponent.dart';

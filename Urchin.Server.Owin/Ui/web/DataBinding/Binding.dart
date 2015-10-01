@@ -6,8 +6,9 @@ typedef T PropertyGetFunction<T>();
 typedef void PropertySetFunction<T>(T value);
 
 // Provides two-way data binding with parsing and formatting
-// The binding is associated with a single data value, but can be bound
-// to multiple controls.
+// The binding is associated with a single data value in a model
+// and many UI elements. A view model is basically a collection
+// of these Binding<T> objects that connect the views to the models.
 class Binding<T>
 {
 	PropertyGetFunction<T> getter;
@@ -24,7 +25,7 @@ class Binding<T>
 	String getProperty()
 	{
 		if (getter == null || formatter == null)
-		return null;
+			return null;
     
 		T value = getter();
 		return formatter(value);
@@ -74,7 +75,7 @@ class IntBinding extends Binding<int>
 
 class StringBinding extends Binding<String>
 {
-	IntBinding()
+	StringBinding()
 	{
 		formatter = (String s) => s;
 		parser = (String text) => text;

@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:async';
 import 'dart:convert';
 
-import 'Model/Dto.dart';
+import 'Models/Dto.dart';
 
 class Server
 {

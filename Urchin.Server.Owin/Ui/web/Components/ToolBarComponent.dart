@@ -2,8 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
+import '../Models/Dto.dart';
+import '../Models/Data.dart';
 import '../Events/AppEvents.dart';
 
 class ToolBarComponent

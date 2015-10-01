@@ -6,12 +6,11 @@ import '../Html/FormBuilder.dart';
 import '../Models/Dto.dart';
 import '../Models/Data.dart';
 import '../Events/AppEvents.dart';
-import '../DataBinding/BoundLabel.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
 
-class EnvironmentDetailComponent
+class EnvironmentEditorComponent
 {
-	Data _data;
+	EnvironmentViewModel _viewModel;
 
 	FormBuilder _form;
 
@@ -25,7 +24,7 @@ class EnvironmentDetailComponent
 
 	StreamSubscription<EnvironmentSelectedEvent> _environmentSelectedSubscription;
 
-	EnvironmentDetailComponent(this._data)
+	EnvironmentEditorComponent(this._viewModel)
 	{
 		_form = new FormBuilder();
 		_heading1 = _form.addHeading('Machines in this environment', 1);
@@ -53,7 +52,6 @@ class EnvironmentDetailComponent
 	{
 		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
 		EnvironmentDto environment = environments[e.environmentName];
-		EnvironmentViewModel viewModel = new EnvironmentViewModel(environment);
 
 		_heading1.text = environment.name + ' Environment';
 		_heading2.text = 'Machines in ' + environment.name + ' Environment';
