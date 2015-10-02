@@ -12,8 +12,8 @@ class BoundTextInput<T> extends BoundElement<T, InputElement>
 	
 	void onBindingChange(String text)
 	{
-		if (_element != null)
-			_element.value = text;
+		if (element != null)
+			element.value = text;
 	}
 
 	StreamSubscription<Event> subscribeToElement(InputElement element)

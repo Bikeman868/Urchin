@@ -18,22 +18,22 @@ class EnvironmentView
 	Element _machines;
 	Element _rules;
 
-	BoundLabel _nameBinding;
-	BoundLabel _versionBinding;
+	BoundTextInput _nameBinding;
+	BoundTextInput _versionBinding;
 
 	EnvironmentView([EnvironmentViewModel viewModel])
 	{
 		_form = new FormBuilder();
 		_heading1 = _form.addHeading('Environment Details', 1);
-		_name = _form.addLabeledField('Environment name');
-		_version = _form.addLabeledField('Version of rules');
+		_name = _form.addLabeledEdit('Environment name');
+		_version = _form.addLabeledEdit('Version of rules');
 		_heading2 = _form.addHeading('Machines in this environment', 2);
 		_machines = _form.addList('machineList');
 		_heading3 = _form.addHeading('Security for this environment', 2);
 		_rules = _form.addList('securityRuleList');
 
-		_nameBinding = new BoundLabel(_name);
-		_versionBinding = new BoundLabel(_version);
+		_nameBinding = new BoundTextInput(_name);
+		_versionBinding = new BoundTextInput(_version);
 
 		this.viewModel = viewModel;
 	}

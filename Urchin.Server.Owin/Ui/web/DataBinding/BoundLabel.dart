@@ -10,10 +10,10 @@ class BoundLabel<T> extends BoundElement<T, Element>
 		this.element = element;
 	}
 	
-	void _onBindingChange(String text)
+	void onBindingChange(String text)
 	{
-		if (_element != null)
-			_element.innerHtml = text;
+		if (element != null)
+			element.innerHtml = text;
 	}
 
 	StreamSubscription<Event> subscribeToElement(Element element)
