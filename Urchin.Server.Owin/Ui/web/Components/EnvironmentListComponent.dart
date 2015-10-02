@@ -4,6 +4,7 @@ import 'dart:async';
 
 import '../Models/Dto.dart';
 import '../Models/Data.dart';
+import '../Models/EnvironmentDto.dart';
 import '../Events/AppEvents.dart';
 
 class EnvironmentListComponent

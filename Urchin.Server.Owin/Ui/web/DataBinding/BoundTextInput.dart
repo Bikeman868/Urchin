@@ -1,6 +1,7 @@
 ﻿import 'dart:html';
 import 'Binding.dart';
 import 'BoundElement.dart';
+import '../Events/SubscriptionEvent.dart';
 
 class BoundTextInput<T> extends BoundElement<T, InputElement>
 {
@@ -9,13 +10,13 @@ class BoundTextInput<T> extends BoundElement<T, InputElement>
 		this.element = element;
 	}
 	
-	void _onBindingChange(String text)
+	void onBindingChange(String text)
 	{
 		if (_element != null)
 			_element.value = text;
 	}
 
-	StreamSubscription<Event> _subscribeToElement(InputElement element)
+	StreamSubscription<Event> subscribeToElement(InputElement element)
 	{
 		return element.onBlur.listen(_onBlur);
 	}

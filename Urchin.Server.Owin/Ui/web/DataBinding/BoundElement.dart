@@ -1,8 +1,12 @@
-﻿import 'Binding.dart';
+﻿import 'dart:async';
+import 'dart:html';
+import 'Binding.dart';
+import '../Events/SubscriptionEvent.dart';
 
 // Base class for UI elements that bind to view models
 abstract class BoundElement<TB, TE>
 {
+	Binding<TB> _binding;
 	Binding<TB> get binding => _binding;
 	void set binding(Binding<TB> value)
 	{
@@ -19,6 +23,7 @@ abstract class BoundElement<TB, TE>
 		}
 	}
 
+	TE _element;
 	TE get element => _element;
 	void set element(TE value)
 	{
@@ -36,8 +41,6 @@ abstract class BoundElement<TB, TE>
 			_onBindingChange(_binding.getProperty());
 	}
 
-	Binding<TB> _binding;
-	TE _element;
 	StreamSubscription<String> _bindingSubscription;
 	StreamSubscription<Event> _elementSubscription;
   
@@ -47,6 +50,6 @@ abstract class BoundElement<TB, TE>
 		element = null;
 	}
   
-	void _onBindingChange(String text);
-	StreamSubscription<Event> _subscribeToElement(Element element);
+	void onBindingChange(String text);
+	StreamSubscription<Event> subscribeToElement(TE element);
 }

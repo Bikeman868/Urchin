@@ -8,14 +8,14 @@ class Dto
 	bool isModified;
 	bool _loading;
 
-	void _startLoading(Map json)
+	void startLoading(Map json)
 	{
 		_loading = true;
 		this.json = json;
 		isModified = false;
 	}
 
-	void _finishedLoading()
+	void finishedLoading()
 	{
 		_loading = false;
 	}
@@ -24,6 +24,12 @@ class Dto
 	{
 		if (!_loading)
 			isModified = true;
+	}
+
+	void setProperty(String name, dynamic value)
+	{
+		json[name] = value;
+		_propertyModified();
 	}
 }
 
@@ -38,7 +44,7 @@ class RuleDto extends Dto
 
 	void Reload(Map json)
 	{
-		_startLoading(json);
+		startLoading(json);
 
 		variables = new List<VariableDto>();
     
@@ -51,50 +57,26 @@ class RuleDto extends Dto
 			}
 		}
 
-		_finishedLoading();
+		finishedLoading();
 	}
   
 	String get name => json['name'];
-	set name(String value) 
-	{
-		json['name'] = value;
-		_propertyModified();
-	}
+	set name(String value) { setProperty('name', value); }
   
 	String get machine => json['machine'];
-	set machine(String value)
-	{
-		json['machine'] = value;
-		_propertyModified();
-	}
+	set machine(String value) { setProperty('machine', value); }
   
 	String get application => json['application'];
-	set application(String value)
-	{
-		json['application'] = value;
-		_propertyModified();
-	}
+	set application(String value) { setProperty('application', value); }
   
 	String get environment => json['environment'];
-	set environment(String value)
-	{
-		json['environment'] = value;
-		_propertyModified();
-	}
+	set environment(String value) { setProperty('environment', value); }
   
 	String get instance => json['instance'];
-	set instance(String value)
-	{
-		json['instance'] = value;
-		_propertyModified();
-	}
+	set instance(String value) { setProperty('instance', value); }
 
 	String get config => json['config'];
-	set config(String value)
-	{
-		json['config'] = value;
-		_propertyModified();
-	}
+	set config(String value) { setProperty('config', value); }
 }
 
 class VersionDto extends Dto
@@ -106,23 +88,15 @@ class VersionDto extends Dto
 
 	void Reload(Map json)
 	{
-		_startLoading(json);
-		_finishedLoading();
+		startLoading(json);
+		finishedLoading();
 	}
 
 	String get name => json['name'];
-	set name(String value)
-	{
-		json['name'] = value;
-		_propertyModified();
-	}
+	set name(String value) { setProperty('name', value); }
   
 	int get version => json['version'];
-	set version(int value)
-	{
-		json['version'] = value;
-		_propertyModified();
-	}
+	set version(int value) { setProperty('version', value); }
 }
 
 class RuleVersionDto extends VersionDto
@@ -136,7 +110,7 @@ class RuleVersionDto extends VersionDto
 
 	void Reload(Map json)
 	{
-		_startLoading(json);
+		startLoading(json);
 
 		rules = new Map<String, RuleDto>();
     
@@ -149,7 +123,7 @@ class RuleVersionDto extends VersionDto
 			}
 		}
 
-		_finishedLoading();
+		finishedLoading();
 	}
 }
 
@@ -162,72 +136,15 @@ class VariableDto extends Dto
 
 	void Reload(Map json)
 	{
-		_startLoading(json);
-		_finishedLoading();
+		startLoading(json);
+		finishedLoading();
 	}
 
 	String get name => json['name'];
-	set name(String value)
-	{
-		json['name'] = value;
-		_propertyModified();
-	}
+	set name(String value) { setProperty('name', value); }
   
 	String get value => json['value'];
-	set value(String value)
-	{
-		json['value'] = value;
-		_propertyModified();
-	}
-}
-
-class EnvironmentDto extends Dto
-{
-	List<SecurityRuleDto> securityRules;
-
-	EnvironmentDto(Map json)
-	{
-		Reload(json);
-	}
-
-	void Reload(Map json)
-	{
-		_startLoading(json);
-
-		securityRules = new List<SecurityRuleDto>();
-    
-		List jsonRules = json['securityRules'];
-		if (jsonRules != null)
-		{
-			for (Map r in jsonRules)
-			{
-				securityRules.add(new SecurityRuleDto(r));
-			}
-		}
-
-		_finishedLoading();
-	}
-
-	String get name => json['name'];
-	set name(String value)
-	{
-		json['name'] = value;
-		_propertyModified();
-	}
-  
-	int get version => json['version'];
-	set version(int value)
-	{
-		json['version'] = value;
-		_propertyModified();
-	}
-  
-	List<String> get machines => json['machines'];
-	set machines(List<String> value)
-	{
-		json['machines'] = value;
-		_propertyModified();
-	}
+	set value(String value) { setProperty('value', value); }
 }
 
 class SecurityRuleDto extends Dto
@@ -239,23 +156,15 @@ class SecurityRuleDto extends Dto
 
 	void Reload(Map json)
 	{
-		_startLoading(json);
-		_finishedLoading();
+		startLoading(json);
+		finishedLoading();
 	}
 
 	String get startIp => json['startIp'];
-	set startIp(String value)
-	{
-		json['startIp'] = value;
-		_propertyModified();
-	}
+	set startIp(String value) { setProperty('startIp', value); }
   
 	String get endIp => json['endIp'];
-	set endIp(String value)
-	{
-		json['endIp'] = value;
-		_propertyModified();
-	}
+	set endIp(String value) { setProperty('endIp', value); }
 }
 
 class PostResponseDto extends Dto
@@ -267,8 +176,8 @@ class PostResponseDto extends Dto
 
 	void Reload(Map json)
 	{
-		_startLoading(json);
-		_finishedLoading();
+		startLoading(json);
+		finishedLoading();
 	}
 
 	bool get success => json['success'];
@@ -285,8 +194,8 @@ class ClientCredentials extends Dto
 
 	void Reload(Map json)
 	{
-		_startLoading(json);
-		_finishedLoading();
+		startLoading(json);
+		finishedLoading();
 	}
 
 	String get ipAddress => json['ip'];

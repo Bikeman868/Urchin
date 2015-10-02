@@ -3,64 +3,77 @@ import 'dart:html';
 
 void main() 
 {
-  int value = 3;
+  Model model1 = new Model();
+  model1.userName = 'Martin';
+  model1.ipAddress = 123;
   
-  Binding<int> binding = new Binding<int>();
-  binding.getter = () => value;
-  binding.setter = (int i) 
-  {
-    if (i > 100) i = 100;
-    if (i < 0) i = 0;
-    value = i;
-  };
-  binding.formatter = (int i) => i.toString();
-  binding.parser = (String text) 
-  {
-    try
-    {
-    	return int.parse(text);
-    }
-    on Exception
-    {
-      return null;
-    }
-  };
+  Model model2 = new Model();
+  model2.userName = 'Daisy';
+  model2.ipAddress = 321;
+    
+	ViewModel viewModel1 = new ViewModel(model1);
+	ViewModel viewModel2 = new ViewModel(model2);
+
+  View view1 = new View(viewModel1);
+  View view2 = new View(viewModel1);
   
-  InputElement input1 = new InputElement();
-  BoundTextInput input1Binding = new BoundTextInput(input1);
-  input1Binding.binding = binding;
+  var button1 = new ButtonElement();
+  button1.text = 'Model2';
+  button1.onClick.listen((Event e) { viewModel1.model = model2; });
   
-  InputElement input2 = new InputElement();
-  BoundTextInput input2Binding = new BoundTextInput(input2);
-  input2Binding.binding = binding;
+  var button2 = new ButtonElement();
+  button2.text = 'ViewModel2';
+  button2.onClick.listen((Event e) { view1.viewModel = viewModel2; });
   
   var middleDiv = querySelector('#middleDiv');
-  middleDiv.children.add(input1);
-  middleDiv.children.add(input2);
+  middleDiv.children.clear();
+  middleDiv.children.add(button1);
+  middleDiv.children.add(button2);
+  view1.addTo(middleDiv);
+  view2.addTo(middleDiv);
 }
 
 class View
 {
-	InputElement userNameElement;
+	InputElement userName;
 	BoundTextInput _userNameBinding;
 
-	InputElement ipAddressElement;
+	InputElement ipAddress;
 	BoundTextInput _ipAddressBinding;
 
-	View()
+	View([ViewModel viewModel])
 	{
-		userNameElement = new InputElement();
-		ipAddressElement = new InputElement();
+    userName = new InputElement();
+    ipAddress = new InputElement();
 
-		_userNameBinding = new BoundTextInput(userNameElement);
-		_ipAddressBinding = new BoundTextInput(ipAddressElement);
-	}
+    _userNameBinding = new BoundTextInput(userName);
+		_ipAddressBinding = new BoundTextInput(ipAddress);
 
-	void bind(ViewModel viewModel)
-	{
-		_userNameBinding.binding = viewModel.userName;
-		_ipAddressBinding.binding = viewModel.ipAddress;
-	}
+    this.viewModel = viewModel;
+		}
+  
+  ViewModel _viewModel;
+  ViewModel get viewModel => _viewModel;
+  void set viewModel(ViewModel value)
+  {
+    _viewModel = value;
+    if (value == null)
+    {
+      _userNameBinding.binding = null;
+      _ipAddressBinding.binding = null;
+    }
+    else
+    {
+      _userNameBinding.binding = value.userName;
+      _ipAddressBinding.binding = value.ipAddress;
+    }
+  }
+  
+  void addTo(Element container)
+  {
+    container.children.add(userName);
+    container.children.add(ipAddress);
+  }
 }
 
 class ViewModel
@@ -68,6 +81,11 @@ class ViewModel
     StringBinding userName = new StringBinding();
     IntBinding ipAddress = new IntBinding();
 
+  ViewModel([Model model])
+  {
+    this.model = model;
+  }
+  
 	Model _model;
 	Model get model => _model;
 	void set model(Model value)
@@ -189,6 +207,7 @@ class SubscriptionEvent<E>
 
 abstract class BoundElement<TB, TE>
 {
+	Binding<TB> _binding;
 	Binding<TB> get binding => _binding;
 	void set binding(Binding<TB> value)
 	{
@@ -205,6 +224,7 @@ abstract class BoundElement<TB, TE>
 		}
 	}
 
+	TE _element;
 	TE get element => _element;
 	void set element(TE value)
 	{
@@ -222,8 +242,6 @@ abstract class BoundElement<TB, TE>
 			_onBindingChange(_binding.getProperty());
 	}
 
-	Binding<TB> _binding;
-	TE _element;
 	StreamSubscription<String> _bindingSubscription;
 	StreamSubscription<Event> _elementSubscription;
   

@@ -6,23 +6,21 @@ class EnvironmentViewModel
     StringBinding name = new StringBinding();
     IntBinding version = new IntBinding();
 
-	void dispose()
+	EnvironmentViewModel([EnvironmentDto model])
 	{
-		name.dispose();
-		version.dispose();
+		this.model = model;
 	}
 
-	EnvironmentDto _environmentModel;
-	EnvironmentViewModel get environmentModel => _environmentModel;
-	void set environmentModel(EnvironmentDto model)
+	EnvironmentDto _model;
+	EnvironmentDto get model => _model;
+	void set model(EnvironmentDto value)
 	{
-		_environmentModel = model;
+		_model = value;
 
-        name.setter = (String text) { model.name = text; };
-        name.getter = () => model.name;
+        name.setter = (String text) { value.name = text; };
+        name.getter = () => value.name;
         
-        version.setter = (int i) { model.version = i; };
-        version.getter = () => model.version;
+        version.setter = (int i) { value.version = i; };
+        version.getter = () => value.version;
 	}
-
 }

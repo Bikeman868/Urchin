@@ -1,5 +1,7 @@
 ﻿import 'dart:html';
+import 'dart:async';
 import 'BoundElement.dart';
+import '../Events/SubscriptionEvent.dart';
 
 class BoundLabel<T> extends BoundElement<T, Element>
 {
@@ -14,8 +16,9 @@ class BoundLabel<T> extends BoundElement<T, Element>
 			_element.innerHtml = text;
 	}
 
-	StreamSubscription<Event> _subscribeToElement(TE element)
+	StreamSubscription<Event> subscribeToElement(Element element)
 	{
 		return null;
 	}
 }
+

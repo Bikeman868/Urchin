@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'VersionData.dart';
 import 'Dto.dart';
+import 'EnvironmentDto.dart';
 import '../Server.dart';
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'Models/Dto.dart';
+import 'Models/EnvironmentDto.dart';
 
 class Server
 {
