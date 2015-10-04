@@ -2,13 +2,14 @@
 import 'dart:convert';
 import 'dart:async';
 
-import 'Dto.dart';
+import '../Models/ModelBase.dart';
+import '../Models/SecurityRuleModel.dart';
 
-class EnvironmentDto extends Dto
+class EnvironmentModel extends ModelBase
 {
-	List<SecurityRuleDto> securityRules;
+	List<SecurityRuleModel> securityRules;
 
-	EnvironmentDto(Map json)
+	EnvironmentModel(Map json)
 	{
 		Reload(json);
 	}
@@ -17,14 +18,14 @@ class EnvironmentDto extends Dto
 	{
 		startLoading(json);
 
-		securityRules = new List<SecurityRuleDto>();
+		securityRules = new List<SecurityRuleModel>();
     
 		List jsonRules = json['securityRules'];
 		if (jsonRules != null)
 		{
 			for (Map r in jsonRules)
 			{
-				securityRules.add(new SecurityRuleDto(r));
+				securityRules.add(new SecurityRuleModel(r));
 			}
 		}
 

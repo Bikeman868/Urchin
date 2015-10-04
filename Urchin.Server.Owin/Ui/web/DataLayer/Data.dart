@@ -2,10 +2,12 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'VersionData.dart';
-import 'Dto.dart';
-import 'EnvironmentDto.dart';
+import '../DataLayer/VersionData.dart';
 import '../Server.dart';
+
+import '../Models/VersionModel.dart';
+import '../Models/EnvironmentModel.dart';
+
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';
 
@@ -18,8 +20,8 @@ class DataEvent
 class Data
 {
 	Map<int, VersionData> _versionedData;
-	Map<String, EnvironmentDto> _environments;
-	List<VersionDto> _versions;
+	Map<String, EnvironmentModel> _environments;
+	List<VersionModel> _versions;
 
 	SubscriptionEvent<DataEvent> refreshedEvent = new SubscriptionEvent<DataEvent>();
 	SubscriptionEvent<DataEvent> versionAddedEvent = new SubscriptionEvent<DataEvent>();
@@ -42,7 +44,7 @@ class Data
 		refreshedEvent.raise(new DataEvent(this));
 	}
 
-	Future<Map<String, EnvironmentDto>> getEnvironments() async
+	Future<Map<String, EnvironmentModel>> getEnvironments() async
 	{
 		if (_environments == null)
 		{
@@ -51,7 +53,7 @@ class Data
 		return _environments;
 	}
 
-	Future<List<VersionDto>> getVersions() async
+	Future<List<VersionModel>> getVersions() async
 	{
 		if (_versions == null)
 		{
@@ -66,11 +68,11 @@ class Data
 		if (result == null)
 		{
 			var versions = await getVersions();
-			for (var versionDto in versions)
+			for (var versionModel in versions)
 			{
-				if (versionDto.version == version)
+				if (versionModel.version == version)
 				{
-					result = new VersionData(versionDto);
+					result = new VersionData(versionModel);
 					_versionedData[version] = result;
 				}
 			}

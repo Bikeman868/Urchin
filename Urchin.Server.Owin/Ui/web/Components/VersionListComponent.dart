@@ -2,9 +2,9 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Models/Dto.dart';
-import '../Models/Data.dart';
-import '../Models/VersionData.dart';
+import '../DataLayer/Data.dart';
+import '../DataLayer/VersionData.dart';
+import '../Models/VersionModel.dart';
 import '../Events/AppEvents.dart';
 
 class VersionListComponent
@@ -22,12 +22,12 @@ class VersionListComponent
 		heading.text = 'Versions';
 		containerDiv.children.add(heading);
 
-		List<VersionDto> versions = await _data.getVersions();
+		List<VersionModel> versions = await _data.getVersions();
 		if (versions != null)
 		{
 			var list = new UListElement();
 			list.classes.add("selectionList");
-			for (VersionDto version in versions)
+			for (VersionModel version in versions)
 			{
 				var element = new LIElement();
 				element.text = version.version.toString() + ' - ' + version.name;

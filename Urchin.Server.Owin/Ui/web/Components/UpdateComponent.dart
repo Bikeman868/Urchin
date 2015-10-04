@@ -2,8 +2,7 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Models/Dto.dart';
-import '../Models/Data.dart';
+import '../DataLayer/Data.dart';
 import '../Server.dart';
 import '../Events/AppEvents.dart';
 import '../Html/HtmlBuilder.dart';

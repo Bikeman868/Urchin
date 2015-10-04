@@ -1,19 +1,19 @@
 ﻿import '../DataBinding/Binding.dart';
-import '../Models/EnvironmentDto.dart';
+import '../Models/EnvironmentModel.dart';
 
 class EnvironmentViewModel
 {
     StringBinding name = new StringBinding();
     IntBinding version = new IntBinding();
 
-	EnvironmentViewModel([EnvironmentDto model])
+	EnvironmentViewModel([EnvironmentModel model])
 	{
 		this.model = model;
 	}
 
-	EnvironmentDto _model;
-	EnvironmentDto get model => _model;
-	void set model(EnvironmentDto value)
+	EnvironmentModel _model;
+	EnvironmentModel get model => _model;
+	void set model(EnvironmentModel value)
 	{
 		_model = value;
 

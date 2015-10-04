@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Html/FormBuilder.dart';
-import '../Models/Dto.dart';
-import '../Models/Data.dart';
-import '../Models/EnvironmentDto.dart';
+import '../DataLayer/Data.dart';
+import '../Models/EnvironmentModel.dart';
 import '../Events/AppEvents.dart';
 import '../DataBinding/BoundLabel.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
@@ -36,8 +35,8 @@ class EnvironmentDetailComponent
 
 	void _environmentSelected(EnvironmentSelectedEvent e) async
 	{
-		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
-		EnvironmentDto environment = environments[e.environmentName];
+		Map<String, EnvironmentModel> environments = await _data.getEnvironments();
+		EnvironmentModel environment = environments[e.environmentName];
 		EnvironmentViewModel viewModel = new EnvironmentViewModel(environment);
 		_view.viewModel = viewModel;
 
@@ -57,7 +56,7 @@ class EnvironmentDetailComponent
 		_rules.children.clear();
 		if (environment.securityRules != null)
 		{
-			for (SecurityRuleDto rule in environment.securityRules)
+			for (SecurityRuleModel rule in environment.securityRules)
 			{
 				var element = new LIElement();
 				element.text = 'Allowed IP ' + rule.startIp + ' => ' + rule.endIp;

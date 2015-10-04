@@ -2,9 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Models/Dto.dart';
-import '../Models/Data.dart';
-import '../Models/VersionData.dart';
+import '../DataLayer/Data.dart';
+import '../DataLayer/VersionData.dart';
 import '../Events/AppEvents.dart';
 import '../Html/HtmlBuilder.dart';
 

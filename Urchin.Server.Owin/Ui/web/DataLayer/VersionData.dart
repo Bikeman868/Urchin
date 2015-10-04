@@ -2,7 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'Dto.dart';
+import '../Models/RuleVersionModel.dart';
+import '../Models/VersionModel.dart';
 import '../Server.dart';
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';
@@ -15,10 +16,10 @@ class VersionDataEvent
 
 class VersionData
 {
-	VersionDto version;
+	VersionModel version;
 
 	List<String> _ruleNames;
-	RuleVersionDto _rules;
+	RuleVersionModel _rules;
 
 	SubscriptionEvent<VersionDataEvent> refreshedEvent = new SubscriptionEvent<VersionDataEvent>();
 	SubscriptionEvent<VersionDataEvent> modifiedEvent = new SubscriptionEvent<VersionDataEvent>();
@@ -46,7 +47,7 @@ class VersionData
 		return _ruleNames;
 	}
 
-	Future<RuleVersionDto> getRules() async
+	Future<RuleVersionModel> getRules() async
 	{
 		if (_rules == null)
 		{

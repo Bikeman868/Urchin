@@ -2,9 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Models/Dto.dart';
-import '../Models/Data.dart';
-import '../Models/EnvironmentDto.dart';
+import '../DataLayer/Data.dart';
+import '../Models/EnvironmentModel.dart';
 import '../Events/AppEvents.dart';
 
 class EnvironmentListComponent
@@ -22,12 +21,12 @@ class EnvironmentListComponent
 		heading.text = 'Environments';
 		containerDiv.children.add(heading);
 
-		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
+		Map<String, EnvironmentModel> environments = await _data.getEnvironments();
 		if (environments != null)
 		{
 			var list = new UListElement();
 			list.classes.add("selectionList");
-			for (EnvironmentDto environment in environments.values)
+			for (EnvironmentModel environment in environments.values)
 			{
 				var element = new LIElement();
 				element.text = environment.name;

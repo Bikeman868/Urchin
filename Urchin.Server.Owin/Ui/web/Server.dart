@@ -2,23 +2,29 @@ import 'dart:html';
 import 'dart:async';
 import 'dart:convert';
 
-import 'Models/Dto.dart';
-import 'Models/EnvironmentDto.dart';
+import 'Models/ClientCredentialsModel.dart';
+import 'Models/EnvironmentModel.dart';
+import 'Models/PostResponseModel.dart';
+import 'Models/RuleModel.dart';
+import 'Models/RuleVersionModel.dart';
+import 'Models/SecurityRuleModel.dart';
+import 'Models/VariableModel.dart';
+import 'Models/VersionModel.dart';
 
 class Server
 {
 //
 //-- Version related server methods -----------------------------------------------------------------
 //
-	static Future<List<VersionDto>> getVersions() async
+	static Future<List<VersionModel>> getVersions() async
 	{
 		String response = await HttpRequest.getString('/versions');
 		List<Map> versionsJson = JSON.decode(response);
 
-		var versions = new List<VersionDto>();
+		var versions = new List<VersionModel>();
 		for (Map versionJson in versionsJson)
 		{
-			versions.add(new VersionDto(versionJson));
+			versions.add(new VersionModel(versionJson));
 		}
 		return versions;
 	}
@@ -28,7 +34,7 @@ class Server
 			'/versions', 
 			method: 'DELETE');
 
-	static Future<HttpRequest> updateVersion(int version, VersionDto versionDto)  async
+	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)  async
 		=> HttpRequest.request(
 			'/version/' + version, 
 			method: 'PUT',
@@ -54,26 +60,26 @@ class Server
 		return JSON.decode(response);
 	}
   
-	static Future<RuleVersionDto> getRules(int version)  async
+	static Future<RuleVersionModel> getRules(int version)  async
 	{
 		String response = await HttpRequest.getString('/rules/' + version.toString());
-		return new RuleVersionDto(JSON.decode(response));
+		return new RuleVersionModel(JSON.decode(response));
 	}
 
-	static Future<RuleVersionDto> getDraftRules() async
+	static Future<RuleVersionModel> getDraftRules() async
 	{
 		String response = await HttpRequest.getString('/rules');
-		return new RuleVersionDto(JSON.decode(response));
+		return new RuleVersionModel(JSON.decode(response));
 	}
 
-	static Future<HttpRequest> addRules(int version, List<RuleDto> rules) 
+	static Future<HttpRequest> addRules(int version, List<RuleModel> rules) 
 		=> HttpRequest.request(
 			'/rules/' + version, 
 			method: 'POST',
 			sendData: JSON.encode(rules),
 			mimeType: 'application/json');
 
-	static Future<HttpRequest> updateRules(int version, List<RuleDto> rules) 
+	static Future<HttpRequest> updateRules(int version, List<RuleModel> rules) 
 		=> HttpRequest.request(
 			'/rules/' + version, 
 			method: 'PUT',
@@ -84,14 +90,14 @@ class Server
 		=> HttpRequest.getString(
 			'/rule/' + version + '/' + ruleName);
 
-	static Future<HttpRequest> updateRenameRule(int version, String oldName, RuleDto rule) 
+	static Future<HttpRequest> updateRenameRule(int version, String oldName, RuleModel rule) 
 		=> HttpRequest.request(
 			'/rule/' + version + '/' + oldName, 
 			method: 'PUT',
 			sendData: JSON.encode(rule),
 			mimeType: 'application/json');
 
-	static Future<HttpRequest> addRule(int version, RuleDto rule) 
+	static Future<HttpRequest> addRule(int version, RuleModel rule) 
 		=> HttpRequest.request(
 			'/rule/' + version, 
 			method: 'POST',
@@ -105,20 +111,20 @@ class Server
 //
 //-- Environment ------------------------------------------------------------------------------
 //
-	static Future<Map<String, EnvironmentDto>> getEnvironments() async
+	static Future<Map<String, EnvironmentModel>> getEnvironments() async
 	{
 		String response = await HttpRequest.getString('/environments');
 		List<Map> environmentsJson = JSON.decode(response);
 
-		var environments = new Map<String, EnvironmentDto>();
+		var environments = new Map<String, EnvironmentModel>();
 		for (Map environmentJson in environmentsJson)
 		{
-			environments[environmentJson['name']] = new EnvironmentDto(environmentJson);
+			environments[environmentJson['name']] = new EnvironmentModel(environmentJson);
 		}
 		return environments;
 	}
 
-	static Future<String> replaceEnvironments(List<EnvironmentDto> environments)
+	static Future<String> replaceEnvironments(List<EnvironmentModel> environments)
 		=> HttpRequest.request(
 			'/environments',
 			method: 'PUT',
@@ -198,10 +204,10 @@ class Server
 //
 //-- Logon related server methods ------------------------------------------------------------------------------
 //
-	static Future<ClientCredentials> getLoggedOnUser() async
+	static Future<ClientCredentialsModel> getLoggedOnUser() async
 	{
 		String response = await HttpRequest.getString('/user');
-		return new ClientCredentials(JSON.decode(response));
+		return new ClientCredentialsModel(JSON.decode(response));
 	}
 
 	static Future<HttpRequest> logon(String userName, String password)

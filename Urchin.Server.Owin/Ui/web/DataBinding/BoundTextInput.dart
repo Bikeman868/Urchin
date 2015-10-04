@@ -1,6 +1,8 @@
 ﻿import 'dart:html';
-import 'Binding.dart';
-import 'BoundElement.dart';
+import 'dart:async';
+
+import '../DataBinding/Binding.dart';
+import '../DataBinding/BoundElement.dart';
 import '../Events/SubscriptionEvent.dart';
 
 class BoundTextInput<T> extends BoundElement<T, InputElement>

@@ -145,19 +145,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\OwinExtensions.cs" />
     <Compile Include="Startup.cs" />
-    <None Include="Ui\web\Models\EnvironmentDto.dart" />
+    <Content Include="Ui\web\Models\RuleModel.dart" />
+    <Content Include="Ui\web\Experimental.dart.txt" />
+    <None Include="Ui\web\Models\EnvironmentModel.dart" />
     <Content Include="Ui\web\DataBinding\BoundLabel.dart" />
     <Content Include="Ui\web\DataBinding\BoundElement.dart" />
+    <Content Include="Ui\web\Models\VersionModel.dart" />
+    <Content Include="Ui\web\Models\RuleVersionModel.dart" />
+    <Content Include="Ui\web\Models\VariableModel.dart" />
+    <Content Include="Ui\web\Models\SecurityRuleModel.dart" />
+    <Content Include="Ui\web\Models\PostResponseModel.dart" />
+    <Content Include="Ui\web\Models\ClientCredentialsModel.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.md" />
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
-    <Content Include="Ui\web\Models\Dto.dart" />
+    <Content Include="Ui\web\Models\ModelBase.dart" />
     <Content Include="Ui\web\Components\RuleListComponent.dart" />
     <Content Include="Ui\web\Components\ToolBarComponent.dart" />
-    <Content Include="Ui\web\Models\Data.dart" />
+    <Content Include="Ui\web\DataLayer\Data.dart" />
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\Events\AppEvents.dart" />
     <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
@@ -173,12 +181,11 @@
     <Content Include="Ui\web\Components\VersionDetailComponent.dart" />
     <Content Include="Ui\web\Components\UpdateComponent.dart" />
     <Content Include="Ui\web\Events\SubscriptionEvent.dart" />
-    <Content Include="Ui\web\Models\VersionData.dart" />
+    <Content Include="Ui\web\DataLayer\VersionData.dart" />
     <None Include="Ui\build.cmd" />
     <None Include="Ui\pubspec.lock" />
     <Content Include="Ui\web\DataBinding\Binding.dart" />
     <Content Include="Ui\web\DataBinding\BoundTextInput.dart" />
-    <Content Include="Ui\web\Components\EnvironmentEditorComponent.dart" />
     <Content Include="Ui\web\Views\EnvironmentView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
