@@ -147,6 +147,7 @@
     <Compile Include="Startup.cs" />
     <Content Include="Ui\web\Models\RuleModel.dart" />
     <Content Include="Ui\web\Experimental.dart.txt" />
+    <Content Include="Ui\web\Models\MachineModel.dart" />
     <None Include="Ui\web\Models\EnvironmentModel.dart" />
     <Content Include="Ui\web\DataBinding\BoundLabel.dart" />
     <Content Include="Ui\web\DataBinding\BoundElement.dart" />
@@ -156,6 +157,7 @@
     <Content Include="Ui\web\Models\SecurityRuleModel.dart" />
     <Content Include="Ui\web\Models\PostResponseModel.dart" />
     <Content Include="Ui\web\Models\ClientCredentialsModel.dart" />
+    <Content Include="Ui\web\ViewModels\MachineViewModel.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +190,9 @@
     <Content Include="Ui\web\DataBinding\BoundTextInput.dart" />
     <Content Include="Ui\web\Views\EnvironmentView.dart" />
     <Content Include="Ui\web\Views\EnvironmentListElementView.dart" />
+    <Content Include="Ui\web\ViewModels\MachineListViewModel.dart" />
+    <Content Include="Ui\web\Views\MachineListElementView.dart" />
+    <Content Include="Ui\web\Views\MachineListView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

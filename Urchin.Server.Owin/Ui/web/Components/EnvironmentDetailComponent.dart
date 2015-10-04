@@ -38,18 +38,6 @@ class EnvironmentDetailComponent
 		_view.viewModel = e.environment;
 
 		/*
-		_machines.children.clear();
-		if (environment.machines != null)
-		{
-			for (String machineName in environment.machines)
-			{
-				var element = new LIElement();
-				element.text = machineName;
-				element.classes.add('machineName');
-				_machines.children.add(element);
-			}
-		}
-
 		_rules.children.clear();
 		if (environment.securityRules != null)
 		{

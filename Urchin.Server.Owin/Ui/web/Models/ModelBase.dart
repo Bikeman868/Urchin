@@ -20,7 +20,7 @@ class ModelBase
 		_loading = false;
 	}
 
-	void _propertyModified()
+	void propertyModified()
 	{
 		if (!_loading)
 			isModified = true;
@@ -29,6 +29,6 @@ class ModelBase
 	void setProperty(String name, dynamic value)
 	{
 		json[name] = value;
-		_propertyModified();
+		propertyModified();
 	}
 }
