@@ -11,8 +11,8 @@ class RuleSelectedEvent
 
 class EnvironmentSelectedEvent
 {
-	String environmentName;
-	EnvironmentSelectedEvent(this.environmentName);
+	EnvironmentViewModel environment;
+	EnvironmentSelectedEvent(this.environment);
 }
 
 class VersionSelectedEvent

@@ -30,16 +30,15 @@ class EnvironmentListComponent
 			for (EnvironmentViewModel environment in environments.values)
 			{
 				var view = new EnvironmentListElementView(environment);
-				view.name.onClick.listen(environmentClicked);
+				view.environmentSelected.listen(_environmentSelected);
 				view.addTo(list);
 			}
 			containerDiv.children.add(list);
 		}
 	}
 
-	void environmentClicked(MouseEvent e)
+	void _environmentSelected(EnvironmentSelectedEvent e)
 	{
-		LIElement target = e.target;
-		AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(target.text));
+		AppEvents.environmentSelected.raise(e);
 	}
 }

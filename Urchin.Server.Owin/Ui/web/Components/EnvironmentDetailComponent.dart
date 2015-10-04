@@ -35,8 +35,7 @@ class EnvironmentDetailComponent
 
 	void _environmentSelected(EnvironmentSelectedEvent e) async
 	{
-		Map<String, EnvironmentViewModel> environments = await _data.getEnvironments();
-		_view.viewModel = environments[e.environmentName];
+		_view.viewModel = e.environment;
 
 		/*
 		_machines.children.clear();

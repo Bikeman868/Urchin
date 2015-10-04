@@ -1,4 +1,7 @@
 ﻿import 'dart:html';
+
+import '../Events/SubscriptionEvent.dart';
+import '../Events/AppEvents.dart';
 import '../DataBinding/Binding.dart';
 import '../DataBinding/BoundLabel.dart';
 import '../Models/EnvironmentModel.dart';
@@ -8,12 +11,14 @@ class EnvironmentListElementView
 {
 	LIElement name;
 	BoundLabel _nameBinding;
+	SubscriptionEvent<EnvironmentSelectedEvent> environmentSelected = new SubscriptionEvent<EnvironmentSelectedEvent>();
 
 	EnvironmentListElementView([EnvironmentViewModel viewModel])
 	{
 		name = new LIElement();
 		name.classes.add('environmentName');
 		name.classes.add('selectionItem');
+		name.onClick.listen(_environmentClicked);
 
 		_nameBinding = new BoundLabel(name);
 
@@ -33,6 +38,11 @@ class EnvironmentListElementView
 		{
 			_nameBinding.binding = value.name;
 		}
+	}
+
+	void _environmentClicked(MouseEvent e)
+	{
+		environmentSelected.raise(new EnvironmentSelectedEvent(_viewModel));
 	}
 
 	void addTo(Element container)
