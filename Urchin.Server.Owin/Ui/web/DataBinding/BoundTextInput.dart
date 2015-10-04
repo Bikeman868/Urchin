@@ -1,7 +1,7 @@
 ﻿import 'dart:html';
 import 'dart:async';
 
-import '../DataBinding/Binding.dart';
+import '../DataBinding/PropertyBinding.dart';
 import '../DataBinding/BoundElement.dart';
 import '../Events/SubscriptionEvent.dart';
 

@@ -9,7 +9,7 @@ typedef void PropertySetFunction<T>(T value);
 // The binding is associated with a single data value in a model
 // and many UI elements. A view model is basically a collection
 // of these Binding<T> objects that connect the views to the models.
-class Binding<T>
+class PropertyBinding<T>
 {
 	PropertyGetFunction<T> getter;
 	PropertySetFunction<T> setter;
@@ -17,7 +17,7 @@ class Binding<T>
 	ParseFunction<T> parser;
 	SubscriptionEvent<String> onChange;
   
-	Binding()
+	PropertyBinding()
 	{
 		onChange = new SubscriptionEvent<String>();
 	}
@@ -51,33 +51,5 @@ class Binding<T>
 		}
     
 		return true;
-	}
-}
-
-class IntBinding extends Binding<int>
-{
-	IntBinding()
-	{
-		formatter = (int i) => i.toString();
-		parser = (String text)
-		{
-			try
-			{
-				return int.parse(text);
-			}
-			on Exception
-			{
-				return null;
-			}
-		};
-	}
-}
-
-class StringBinding extends Binding<String>
-{
-	StringBinding()
-	{
-		formatter = (String s) => s;
-		parser = (String text) => text;
 	}
 }

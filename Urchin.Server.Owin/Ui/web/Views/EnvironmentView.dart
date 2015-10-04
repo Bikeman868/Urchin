@@ -1,5 +1,4 @@
 ﻿import 'dart:html';
-import '../DataBinding/Binding.dart';
 import '../DataBinding/BoundLabel.dart';
 import '../DataBinding/BoundTextInput.dart';
 import '../Models/EnvironmentModel.dart';

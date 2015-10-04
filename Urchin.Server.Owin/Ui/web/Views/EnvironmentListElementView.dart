@@ -2,7 +2,6 @@
 
 import '../Events/SubscriptionEvent.dart';
 import '../Events/AppEvents.dart';
-import '../DataBinding/Binding.dart';
 import '../DataBinding/BoundLabel.dart';
 import '../Models/EnvironmentModel.dart';
 import '../ViewModels/EnvironmentViewModel.dart';

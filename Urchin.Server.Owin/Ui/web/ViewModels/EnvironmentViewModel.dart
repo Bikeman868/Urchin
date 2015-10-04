@@ -1,4 +1,5 @@
-﻿import '../DataBinding/Binding.dart';
+﻿import '../DataBinding/StringBinding.dart';
+import '../DataBinding/IntBinding.dart';
 import '../Models/EnvironmentModel.dart';
 import '../ViewModels/MachineViewModel.dart';
 import '../ViewModels/MachineListViewModel.dart';

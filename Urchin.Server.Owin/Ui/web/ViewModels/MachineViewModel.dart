@@ -1,4 +1,4 @@
-﻿import '../DataBinding/Binding.dart';
+﻿import '../DataBinding/StringBinding.dart';
 import '../Models/EnvironmentModel.dart';
 import '../Models/MachineModel.dart';
 

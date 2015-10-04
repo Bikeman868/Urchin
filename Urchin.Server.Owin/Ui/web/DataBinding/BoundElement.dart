@@ -1,15 +1,15 @@
 ﻿import 'dart:async';
 import 'dart:html';
-import 'Binding.dart';
+import 'PropertyBinding.dart';
 import '../Events/SubscriptionEvent.dart';
 
 // Base class for UI elements that bind to view models
 abstract class BoundElement<TB, TE>
 {
 	StreamSubscription<String> _bindingSubscription;
-	Binding<TB> _binding;
-	Binding<TB> get binding => _binding;
-	void set binding(Binding<TB> value)
+	PropertyBinding<TB> _binding;
+	PropertyBinding<TB> get binding => _binding;
+	void set binding(PropertyBinding<TB> value)
 	{
 		if (_bindingSubscription != null)
 		{
