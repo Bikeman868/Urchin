@@ -4,6 +4,7 @@ import 'dart:async';
 
 import '../DataLayer/Data.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
+import '../Views/EnvironmentListElementView.dart';
 import '../Events/AppEvents.dart';
 
 class EnvironmentListComponent
@@ -28,12 +29,9 @@ class EnvironmentListComponent
 			list.classes.add("selectionList");
 			for (EnvironmentViewModel environment in environments.values)
 			{
-				var element = new LIElement();
-				element.text = environment.name.getProperty();
-				element.classes.add('environmentName');
-				element.classes.add('selectionItem');
-				element.onClick.listen(environmentClicked);
-				list.children.add(element);
+				var view = new EnvironmentListElementView(environment);
+				view.name.onClick.listen(environmentClicked);
+				view.addTo(list);
 			}
 			containerDiv.children.add(list);
 		}

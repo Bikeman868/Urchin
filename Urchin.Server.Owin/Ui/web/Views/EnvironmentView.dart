@@ -10,13 +10,13 @@ class EnvironmentView
 {
 	FormBuilder _form;
 
-	Element _heading1;
-	Element _heading2;
-	Element _heading3;
-	Element _name;
-	Element _version;
-	Element _machines;
-	Element _rules;
+	Element heading1;
+	Element heading2;
+	Element heading3;
+	Element name;
+	Element version;
+	Element machines;
+	Element rules;
 
 	BoundTextInput _nameBinding;
 	BoundTextInput _versionBinding;
@@ -24,16 +24,16 @@ class EnvironmentView
 	EnvironmentView([EnvironmentViewModel viewModel])
 	{
 		_form = new FormBuilder();
-		_heading1 = _form.addHeading('Environment Details', 1);
-		_name = _form.addLabeledEdit('Environment name');
-		_version = _form.addLabeledEdit('Version of rules');
-		_heading2 = _form.addHeading('Machines in this environment', 2);
-		_machines = _form.addList('machineList');
-		_heading3 = _form.addHeading('Security for this environment', 2);
-		_rules = _form.addList('securityRuleList');
+		heading1 = _form.addHeading('Environment Details', 1);
+		name = _form.addLabeledEdit('Environment name');
+		version = _form.addLabeledEdit('Version of rules');
+		heading2 = _form.addHeading('Machines in this environment', 2);
+		machines = _form.addList('machineList');
+		heading3 = _form.addHeading('Security for this environment', 2);
+		rules = _form.addList('securityRuleList');
 
-		_nameBinding = new BoundTextInput(_name);
-		_versionBinding = new BoundTextInput(_version);
+		_nameBinding = new BoundTextInput(name);
+		_versionBinding = new BoundTextInput(version);
 
 		this.viewModel = viewModel;
 	}

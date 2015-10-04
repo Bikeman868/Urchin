@@ -187,6 +187,7 @@
     <Content Include="Ui\web\DataBinding\Binding.dart" />
     <Content Include="Ui\web\DataBinding\BoundTextInput.dart" />
     <Content Include="Ui\web\Views\EnvironmentView.dart" />
+    <Content Include="Ui\web\Views\EnvironmentListElementView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />
