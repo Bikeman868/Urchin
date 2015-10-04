@@ -8,6 +8,8 @@ import '../Server.dart';
 import '../Models/VersionModel.dart';
 import '../Models/EnvironmentModel.dart';
 
+import '../ViewModels/EnvironmentViewModel.dart';
+
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';
 
@@ -20,7 +22,7 @@ class DataEvent
 class Data
 {
 	Map<int, VersionData> _versionedData;
-	Map<String, EnvironmentModel> _environments;
+	Map<String, EnvironmentViewModel> _environments;
 	List<VersionModel> _versions;
 
 	SubscriptionEvent<DataEvent> refreshedEvent = new SubscriptionEvent<DataEvent>();
@@ -44,11 +46,16 @@ class Data
 		refreshedEvent.raise(new DataEvent(this));
 	}
 
-	Future<Map<String, EnvironmentModel>> getEnvironments() async
+	Future<Map<String, EnvironmentViewModel>> getEnvironments() async
 	{
 		if (_environments == null)
 		{
-			_environments = await Server.getEnvironments();
+			var environmentModels = await Server.getEnvironments();
+			_environments = new Map<String, EnvironmentViewModel>();
+			for (var name in environmentModels.keys)
+			{
+				_environments[name] = new EnvironmentViewModel(environmentModels[name]);
+			}
 		}
 		return _environments;
 	}

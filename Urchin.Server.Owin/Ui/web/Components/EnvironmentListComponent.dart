@@ -21,15 +21,15 @@ class EnvironmentListComponent
 		heading.text = 'Environments';
 		containerDiv.children.add(heading);
 
-		Map<String, EnvironmentModel> environments = await _data.getEnvironments();
+		Map<String, EnvironmentViewModel> environments = await _data.getEnvironments();
 		if (environments != null)
 		{
 			var list = new UListElement();
 			list.classes.add("selectionList");
-			for (EnvironmentModel environment in environments.values)
+			for (EnvironmentViewModel environment in environments.values)
 			{
 				var element = new LIElement();
-				element.text = environment.name;
+				element.text = environment.name.getProperty();
 				element.classes.add('environmentName');
 				element.classes.add('selectionItem');
 				element.onClick.listen(environmentClicked);
