@@ -36,14 +36,14 @@ class Server
 
 	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)  async
 		=> HttpRequest.request(
-			'/version/' + version, 
+			'/version/' + version.toString(), 
 			method: 'PUT',
 			sendData: JSON.encode(versionDto),
 			mimeType: 'application/json');
   
 	static Future<HttpRequest> deleteVersion(int version)
 		=> HttpRequest.request(
-			'/version/' + version, 
+			'/version/' + version.toString(), 
 			method: 'DELETE');
 //
 //-- Rule related server methods -------------------------------------------------------------------
@@ -74,39 +74,39 @@ class Server
 
 	static Future<HttpRequest> addRules(int version, List<RuleModel> rules) 
 		=> HttpRequest.request(
-			'/rules/' + version, 
+			'/rules/' + version.toString(), 
 			method: 'POST',
 			sendData: JSON.encode(rules),
 			mimeType: 'application/json');
 
 	static Future<HttpRequest> updateRules(int version, List<RuleModel> rules) 
 		=> HttpRequest.request(
-			'/rules/' + version, 
+			'/rules/' + version.toString(), 
 			method: 'PUT',
 			sendData: JSON.encode(rules),
 			mimeType: 'application/json');
 
 	static Future<String> getRule(int version, String ruleName) 
 		=> HttpRequest.getString(
-			'/rule/' + version + '/' + ruleName);
+			'/rule/' + version.toString() + '/' + ruleName);
 
 	static Future<HttpRequest> updateRenameRule(int version, String oldName, RuleModel rule) 
 		=> HttpRequest.request(
-			'/rule/' + version + '/' + oldName, 
+			'/rule/' + version.toString() + '/' + oldName, 
 			method: 'PUT',
 			sendData: JSON.encode(rule),
 			mimeType: 'application/json');
 
 	static Future<HttpRequest> addRule(int version, RuleModel rule) 
 		=> HttpRequest.request(
-			'/rule/' + version, 
+			'/rule/' + version.toString(), 
 			method: 'POST',
 			sendData: JSON.encode(rule),
 			mimeType: 'application/json');
 
-	static Future<String> deleteRule(int version, String ruleName) 
+	static Future<HttpRequest> deleteRule(int version, String ruleName) 
 		=> HttpRequest.request(
-			'/rule/' + version + '/' + ruleName, 
+			'/rule/' + version.toString() + '/' + ruleName, 
 			method: 'DELETE');
 //
 //-- Environment ------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ class Server
 	static Future<String> getDefaultEnvironment()
 		=> HttpRequest.getString('/environment/default');
 
-	static Future<String> setDefaultEnvironment(String environmentName)
+	static Future<HttpRequest> setDefaultEnvironment(String environmentName)
 		=> HttpRequest.request(
 			'/environment/default',
 			method: 'PUT',
@@ -190,7 +190,7 @@ class Server
 		if (application == null || application.isEmpty)
 			throw 'Application name can not be empty';
 
-		var url = '/test/' + version + '?machine=' + machine + '&application=' + application;
+		var url = '/test/' + version.toString() + '?machine=' + machine + '&application=' + application;
 
 		if (environment != null && !environment.isEmpty)
 			url = url + '&environment=' + environment;

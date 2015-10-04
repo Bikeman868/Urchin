@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../DataLayer/Data.dart';
-import '../Models/EnvironmentModel.dart';
+import '../ViewModels/EnvironmentViewModel.dart';
 import '../Events/AppEvents.dart';
 
 class EnvironmentListComponent
