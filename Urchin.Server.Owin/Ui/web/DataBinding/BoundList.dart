@@ -40,6 +40,8 @@ class BoundList<TM, TVM extends ViewModel, TV extends View>
     StreamSubscription<ListEvent> _addSubscription;
     StreamSubscription<ListEvent> _removeSubscription;
     ViewFactory<TVM, TV> viewFactory;
+	bool allowAdd;
+	bool allowRemove;
 
     Element _listContainer;
     Element get listContainer => _listContainer;
@@ -55,34 +57,53 @@ class BoundList<TM, TVM extends ViewModel, TV extends View>
     {
         if (_listContainer != null)
         {
+			_listContainer.classes.add('boundList');
             _listContainer.children.clear();
             if (_binding != null && _binding.viewModels != null)
             {
                 for (var index = 0; index < _binding.viewModels.length; index++)
                 {
-                    var listItem = new DivElement();
+                    var listItem = new DivElement()
+						..classes.add('boundListElement');
                     _listContainer.children.add(listItem);
 
                     var viewContainer = new DivElement();
+					viewContainer.classes.add('boundListView');
                     listItem.children.add(viewContainer);
                     var view = viewFactory(_binding.viewModels[index]);
                     view.addTo(viewContainer);
 
-                    var deleteButton = new ButtonElement()
-                        ..text = 'Delete'
-                        ..onClick.listen(_deleteClicked);
-                    listItem.children.add(deleteButton);
+					if (allowRemove)
+					{
+						var deleteButton = new ButtonElement()
+							..text = 'Delete'
+							..classes.add('boundListDelete')
+							..onClick.listen(_deleteClicked);
+						listItem.children.add(deleteButton);
+					}
                 }
+				if (allowAdd)
+				{
+					var addButton = new ButtonElement()
+						..text = 'New'
+						..classes.add('boundListAdd')
+						..onClick.listen(_addClicked);
+					_listContainer.children.add(addButton);
+				}
             }
         }
     }
   
-    BoundList(this.viewFactory, Element listContainer)
+    BoundList(this.viewFactory, Element listContainer, [this.allowAdd = true, this.allowRemove = true])
     {
         this.listContainer = listContainer;
     }
   
     void _deleteClicked(MouseEvent e)
+    {
+    }
+  
+    void _addClicked(MouseEvent e)
     {
     }
   

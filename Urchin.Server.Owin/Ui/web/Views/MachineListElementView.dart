@@ -12,12 +12,12 @@ import '../ViewModels/MachineViewModel.dart';
 
 class MachineListElementView extends View
 {
-	LIElement name;
+	SpanElement name;
 	BoundLabel _nameBinding;
 
 	MachineListElementView([MachineViewModel viewModel])
 	{
-		name = new LIElement();
+		name = new SpanElement();
 		name.classes.add('machineName');
 
 		_nameBinding = new BoundLabel(name);

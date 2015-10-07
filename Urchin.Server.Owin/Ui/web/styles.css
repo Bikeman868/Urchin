@@ -111,6 +111,46 @@ td
     width: 120px;
 }
 
+.boundList
+{
+}
+
+.boundList:after
+{ 
+   content: " ";
+   display: block; 
+   height: 0; 
+   clear: both;
+}
+
+.boundListElement:after
+{
+   content: " ";
+   display: block; 
+   height: 0; 
+   clear: both;
+}
+
+.boundListView 
+{
+    display: block;
+    float: left;
+}
+
+.boundListDelete
+{
+    display: block;
+    width: 80px;
+    float: right;
+}
+
+.boundListAdd
+{
+    display: block;
+    width: 80px;
+    float: right;
+}
+
 span.button
 {
     cursor: pointer;
