@@ -145,12 +145,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\OwinExtensions.cs" />
     <Compile Include="Startup.cs" />
+    <None Include="Ui\web\DataBinding\BoundList.dart" />
     <Content Include="Ui\web\Models\RuleModel.dart" />
     <Content Include="Ui\web\Experimental.dart.txt" />
     <Content Include="Ui\web\Models\MachineModel.dart" />
     <Content Include="Ui\web\DataBinding\IntBinding.dart" />
     <Content Include="Ui\web\DataBinding\StringBinding.dart" />
     <Content Include="Ui\web\DataBinding\ListBinding.dart" />
+    <Content Include="Ui\web\DataBinding\Types.dart" />
+    <Content Include="Ui\web\DataBinding\View.dart" />
+    <Content Include="Ui\web\DataBinding\ViewModel.dart" />
     <None Include="Ui\web\Models\EnvironmentModel.dart" />
     <Content Include="Ui\web\DataBinding\BoundLabel.dart" />
     <Content Include="Ui\web\DataBinding\BoundElement.dart" />
@@ -193,9 +197,7 @@
     <Content Include="Ui\web\DataBinding\BoundTextInput.dart" />
     <Content Include="Ui\web\Views\EnvironmentView.dart" />
     <Content Include="Ui\web\Views\EnvironmentListElementView.dart" />
-    <Content Include="Ui\web\ViewModels\MachineListViewModel.dart" />
     <Content Include="Ui\web\Views\MachineListElementView.dart" />
-    <Content Include="Ui\web\Views\MachineListView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

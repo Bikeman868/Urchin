@@ -1,8 +1,9 @@
 ﻿import '../DataBinding/StringBinding.dart';
-import '../Models/EnvironmentModel.dart';
+import '../DataBinding/ViewModel.dart';
+
 import '../Models/MachineModel.dart';
 
-class MachineViewModel
+class MachineViewModel extends ViewModel
 {
     StringBinding name = new StringBinding();
 

@@ -17,37 +17,71 @@ void main()
   var viewModels = users.map((m) => new UserViewModel(m)).toList();
   var userViews = viewModels.map((vm) => new UserView(vm)).toList();
   
-  var button1 = new ButtonElement()
-  ..text = 'VM1->M2'
-  ..onClick.listen((Event e) { viewModels[0].model = users[1]; });
+  var buttons = new List<ButtonElement>();
   
-  var button2 = new ButtonElement()
+  buttons.add(new ButtonElement()
   ..text = 'VM1->M1'
-  ..onClick.listen((Event e) { viewModels[0].model = users[0]; });
-    
-  var button3 = new ButtonElement()
-  ..text = 'V1->VM2'
-  ..onClick.listen((Event e) { userViews[0].viewModel = viewModels[1]; });
+  ..onClick.listen((Event e) { viewModels[0].model = users[0]; }));
   
-  var button4 = new ButtonElement()
+  buttons.add(new ButtonElement()
+  ..text = 'VM1->M2'
+  ..onClick.listen((Event e) { viewModels[0].model = users[1]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'VM2->M1'
+  ..onClick.listen((Event e) { viewModels[1].model = users[0]; }));
+    
+  buttons.add(new ButtonElement()
+  ..text = 'VM2->M2'
+  ..onClick.listen((Event e) { viewModels[1].model = users[1]; }));
+    
+  buttons.add(null);
+  
+  buttons.add(new ButtonElement()
   ..text = 'V1->VM1'
-  ..onClick.listen((Event e) { userViews[0].viewModel = viewModels[0]; });
+  ..onClick.listen((Event e) { userViews[0].viewModel = viewModels[0]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'V1->VM2'
+  ..onClick.listen((Event e) { userViews[0].viewModel = viewModels[1]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'V2->VM1'
+  ..onClick.listen((Event e) { userViews[1].viewModel = viewModels[0]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'V2->VM2'
+  ..onClick.listen((Event e) { userViews[1].viewModel = viewModels[1]; }));
   
   var middleDiv = querySelector('#middleDiv');
   middleDiv.children.clear();
-  middleDiv.children.add(button1);
-  middleDiv.children.add(button2);
-  middleDiv.children.add(button3);
-  middleDiv.children.add(button4);
-  middleDiv.children.add(new DivElement());
   
+  for (var button in buttons)
+  {
+    if (button == null)
+	  	middleDiv.children.add(new DivElement());
+  	else
+      middleDiv.children.add(button);
+  }
+  middleDiv.children.add(new DivElement());
+
   for (var view in userViews)
   {
   	view.addTo(middleDiv);
 	  middleDiv.children.add(new DivElement());
   }
   
+  var machineList = new MachineListModel()
+    ..machines.add(new MachineModel()..machine = 'Machine 1')
+    ..machines.add(new MachineModel()..machine = 'Machine 2')
+    ..machines.add(new MachineModel()..machine = 'Machine 3');
+  
+  //var machineListViewModel = new MachineListViewModel(machineList);
+  //new MachineListView(machineListViewModel).addTo(middleDiv);
+  //new MachineListView(machineListViewModel).addTo(middleDiv);
 }
+
+//======================================================================
 
 class UserView extends View
 {
@@ -158,7 +192,9 @@ class MachineView extends View
   }
 }
 
-class UserViewModel extends ViewModel
+//======================================================================
+
+class UserViewModel
 {
     StringBinding userName = new StringBinding();
     IntBinding ipAddress = new IntBinding();
@@ -182,7 +218,7 @@ class UserViewModel extends ViewModel
 	}
 }
 
-class MachineListViewModel extends ViewModel
+class MachineListViewModel
 {
     ListBinding<MachineModel, MachineViewModel> machines;
   
@@ -204,7 +240,7 @@ class MachineListViewModel extends ViewModel
 	}
 }
 
-class MachineViewModel extends ViewModel
+class MachineViewModel
 {
     StringBinding machine = new StringBinding();
 
@@ -224,6 +260,8 @@ class MachineViewModel extends ViewModel
 	}
 }
 
+//======================================================================
+
 class UserModel
 {
 	int ipAddress;
@@ -234,7 +272,7 @@ class UserModel
 
 class MachineListModel
 {
-  List<MachineModel> machines;
+  List<MachineModel> machines = new List<MachineModel>();
 }
 
 class MachineModel 
@@ -242,18 +280,29 @@ class MachineModel
   String machine;
 }
 
+//======================================================================
+
 abstract class View
 {
   void addTo(Element container);
 }
 
-class ViewModel
+//======================================================================
+
+void disposeOf(Object o)
 {
+  try
+  {
+	  reflect(o).type.invoke(#dispose, null);
+  }
+  catch(exception){}
 }
 
+//======================================================================
+
 typedef T ModelFactory<T>();
-typedef TVM ViewModelFactory<TM, TVM extends ViewModel>(TM model);
-typedef TV ViewFactory<TVM extends ViewModel, TV extends View>(TVM viewModel);
+typedef TVM ViewModelFactory<TM, TVM>(TM model);
+typedef TV ViewFactory<TVM, TV extends View>(TVM viewModel);
 
 class ListEvent
 {
@@ -261,7 +310,7 @@ class ListEvent
   ListEvent(this.index);
 }
 
-class ListBinding<TM, TVM extends ViewModel>
+class ListBinding<TM, TVM>
 {
   	ModelFactory<TM> modelFactory;
   	ViewModelFactory<TM, TVM> viewModelFactory;
@@ -331,14 +380,7 @@ class ListBinding<TM, TVM extends ViewModel>
     }
 }
 
-void disposeOf(Object o)
-{
-  try
-  {
-	  reflect(o).type.invoke(#dispose, null);
-  }
-  catch(exception){}
-}
+//======================================================================
 
 typedef String FormatFunction<T>(T value);
 typedef T ParseFunction<T>(String value);
@@ -422,6 +464,8 @@ class StringBinding extends Binding<String>
 	}
 }
 
+//======================================================================
+
 class SubscriptionEvent<E>
 {
 	StreamController<E> _controller = new StreamController.broadcast();
@@ -437,7 +481,9 @@ class SubscriptionEvent<E>
 	}
 }
 
-class BoundList<TM, TVM extends ViewModel, TV extends View>
+//======================================================================
+
+class BoundList<TM, TVM, TV extends View>
 {
   ListBinding<TM, TVM> _binding;
   ListBinding<TM, TVM> get binding => _binding;
@@ -518,6 +564,8 @@ class BoundList<TM, TVM extends ViewModel, TV extends View>
   {
 	}
 }
+
+//======================================================================
 
 abstract class BoundElement<TB, TE>
 {

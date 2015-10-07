@@ -1,12 +1,20 @@
 ﻿import 'dart:html';
+
+import '../Html/FormBuilder.dart';
+
+import '../DataBinding/View.dart';
 import '../DataBinding/BoundLabel.dart';
 import '../DataBinding/BoundTextInput.dart';
-import '../Models/EnvironmentModel.dart';
-import '../ViewModels/EnvironmentViewModel.dart';
-import '../Html/FormBuilder.dart';
-import '../Views/MachineListView.dart';
+import '../DataBinding/BoundList.dart';
 
-class EnvironmentView
+import '../Models/MachineModel.dart';
+
+import '../ViewModels/EnvironmentViewModel.dart';
+import '../ViewModels/MachineViewModel.dart';
+
+import '../Views/MachineListElementView.dart';
+
+class EnvironmentView extends View
 {
 	FormBuilder _form;
 
@@ -20,8 +28,7 @@ class EnvironmentView
 
 	BoundTextInput _nameBinding;
 	BoundTextInput _versionBinding;
-
-	MachineListView _machineListView;
+	BoundList<MachineModel, MachineViewModel, MachineListElementView> _machinesBinding;
 
 	EnvironmentView([EnvironmentViewModel viewModel])
 	{
@@ -36,15 +43,16 @@ class EnvironmentView
 
 		_nameBinding = new BoundTextInput(name);
 		_versionBinding = new BoundTextInput(version);
-
-		_machineListView = new MachineListView();
-		_machineListView.addTo(machines);
+		_machinesBinding = new BoundList<MachineModel, MachineViewModel, MachineListElementView>(
+			(vm) => new MachineListElementView(vm), 
+			machines);
 
 		this.viewModel = viewModel;
 	}
 
 	EnvironmentViewModel _viewModel;
 	EnvironmentViewModel get viewModel => _viewModel;
+
 	void set viewModel(EnvironmentViewModel value)
 	{
 		_viewModel = value;
@@ -52,14 +60,13 @@ class EnvironmentView
 		{
 			_nameBinding.binding = null;
 			_versionBinding.binding = null;
-			_machineListView.viewModel = null;
-			rules.children.clear();
+			_machinesBinding.binding = null;
 		}
 		else
 		{
 			_nameBinding.binding = value.name;
 			_versionBinding.binding = value.version;
-			_machineListView.viewModel = value.machines;
+			_machinesBinding.binding = value.machines;
 		}
 	}
 

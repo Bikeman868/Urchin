@@ -124,7 +124,7 @@ class Server
 		return environments;
 	}
 
-	static Future<String> replaceEnvironments(List<EnvironmentModel> environments)
+	static Future<HttpRequest> replaceEnvironments(List<EnvironmentModel> environments)
 		=> HttpRequest.request(
 			'/environments',
 			method: 'PUT',

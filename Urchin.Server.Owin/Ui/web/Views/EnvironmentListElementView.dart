@@ -2,11 +2,13 @@
 
 import '../Events/SubscriptionEvent.dart';
 import '../Events/AppEvents.dart';
+
+import '../DataBinding/View.dart';
 import '../DataBinding/BoundLabel.dart';
-import '../Models/EnvironmentModel.dart';
+
 import '../ViewModels/EnvironmentViewModel.dart';
 
-class EnvironmentListElementView
+class EnvironmentListElementView extends View
 {
 	LIElement name;
 	BoundLabel _nameBinding;
@@ -26,6 +28,7 @@ class EnvironmentListElementView
 
 	EnvironmentViewModel _viewModel;
 	EnvironmentViewModel get viewModel => _viewModel;
+
 	void set viewModel(EnvironmentViewModel value)
 	{
 		_viewModel = value;

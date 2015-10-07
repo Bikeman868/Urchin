@@ -1,9 +1,5 @@
 ﻿import '../Events/SubscriptionEvent.dart';
-
-typedef String FormatFunction<T>(T value);
-typedef T ParseFunction<T>(String value);
-typedef T PropertyGetFunction<T>();
-typedef void PropertySetFunction<T>(T value);
+import '../DataBinding/Types.dart';
 
 // Provides two-way data binding with parsing and formatting
 // The binding is associated with a single data value in a model

@@ -2,11 +2,15 @@
 
 import '../Events/SubscriptionEvent.dart';
 import '../Events/AppEvents.dart';
+
+import '../DataBinding/View.dart';
 import '../DataBinding/BoundLabel.dart';
+
 import '../Models/MachineModel.dart';
+
 import '../ViewModels/MachineViewModel.dart';
 
-class MachineListElementView
+class MachineListElementView extends View
 {
 	LIElement name;
 	BoundLabel _nameBinding;
@@ -23,6 +27,7 @@ class MachineListElementView
 
 	MachineViewModel _viewModel;
 	MachineViewModel get viewModel => _viewModel;
+
 	void set viewModel(MachineViewModel value)
 	{
 		_viewModel = value;
