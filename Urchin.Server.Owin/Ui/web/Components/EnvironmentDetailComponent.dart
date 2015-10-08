@@ -36,19 +36,5 @@ class EnvironmentDetailComponent
 	void _environmentSelected(EnvironmentSelectedEvent e) async
 	{
 		_view.viewModel = e.environment;
-
-		/*
-		_rules.children.clear();
-		if (environment.securityRules != null)
-		{
-			for (SecurityRuleModel rule in environment.securityRules)
-			{
-				var element = new LIElement();
-				element.text = 'Allowed IP ' + rule.startIp + ' => ' + rule.endIp;
-				element.classes.add('securityRule');
-				_rules.children.add(element);
-			}
-		}
-		*/
 	}
 }

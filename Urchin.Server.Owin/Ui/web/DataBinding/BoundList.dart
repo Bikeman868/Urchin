@@ -33,7 +33,7 @@ class BoundList<TM, TVM extends ViewModel, TV extends View>
         {
             _constructViews();
             _addSubscription = value.onAdd.listen(_onAdd);      
-            _removeSubscription = value.onAdd.listen(_onRemove);      
+            _removeSubscription = value.onRemove.listen(_onRemove);      
         }
     }
   
@@ -78,6 +78,7 @@ class BoundList<TM, TVM extends ViewModel, TV extends View>
 						var deleteButton = new ButtonElement()
 							..text = 'Delete'
 							..classes.add('boundListDelete')
+							..attributes['listIndex'] = index.toString()
 							..onClick.listen(_deleteClicked);
 						listItem.children.add(deleteButton);
 					}
@@ -101,17 +102,29 @@ class BoundList<TM, TVM extends ViewModel, TV extends View>
   
     void _deleteClicked(MouseEvent e)
     {
+		if (_binding != null)
+		{
+			ButtonElement button = e.target;
+			int index = int.parse(button.attributes['listIndex']);
+			_binding.remove(index);
+		}
     }
   
     void _addClicked(MouseEvent e)
     {
+		if (_binding != null)
+		{
+			_binding.add();
+		}
     }
   
     void _onAdd(ListEvent e)
     {
+		_constructViews();
     }
   
     void _onRemove(ListEvent e)
     {
+		_constructViews();
     }
 }

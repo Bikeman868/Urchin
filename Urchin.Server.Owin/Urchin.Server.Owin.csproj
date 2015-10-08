@@ -198,6 +198,8 @@
     <Content Include="Ui\web\Views\EnvironmentView.dart" />
     <Content Include="Ui\web\Views\EnvironmentListElementView.dart" />
     <Content Include="Ui\web\Views\MachineListElementView.dart" />
+    <Content Include="Ui\web\ViewModels\SecurityRuleViewModel.dart" />
+    <Content Include="Ui\web\Views\SecurityRuleListElementView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

@@ -5,14 +5,17 @@ import '../DataBinding/ViewModel.dart';
 
 import '../Models/EnvironmentModel.dart';
 import '../Models/MachineModel.dart';
+import '../Models/SecurityRuleModel.dart';
 
 import '../ViewModels/MachineViewModel.dart';
+import '../ViewModels/SecurityRuleViewModel.dart';
 
 class EnvironmentViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
     ListBinding<MachineModel, MachineViewModel> machines;
+    ListBinding<SecurityRuleModel, SecurityRuleViewModel> rules;
 
 	EnvironmentViewModel([EnvironmentModel model])
 	{
@@ -21,6 +24,9 @@ class EnvironmentViewModel extends ViewModel
 		machines = new ListBinding<MachineModel, MachineViewModel>(
 			() => new MachineModel('New Machine'), 
 			(m) => new MachineViewModel(m));
+		rules = new ListBinding<SecurityRuleModel, SecurityRuleViewModel>(
+			() => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
+			(m) => new SecurityRuleViewModel(m));
 
 		this.model = model;
 	}
@@ -41,6 +47,7 @@ class EnvironmentViewModel extends ViewModel
 			version.getter = null;
 
 			machines.models = null;
+			rules.models = null;
 		}
 		else
 		{
@@ -51,6 +58,7 @@ class EnvironmentViewModel extends ViewModel
 			version.getter = () => value.version;
 
 			machines.models = value.machines;
+			rules.models = value.securityRules;
 		}
 	}
 }

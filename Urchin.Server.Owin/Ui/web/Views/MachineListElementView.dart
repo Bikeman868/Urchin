@@ -5,6 +5,7 @@ import '../Events/AppEvents.dart';
 
 import '../DataBinding/View.dart';
 import '../DataBinding/BoundLabel.dart';
+import '../DataBinding/BoundTextInput.dart';
 
 import '../Models/MachineModel.dart';
 
@@ -12,15 +13,16 @@ import '../ViewModels/MachineViewModel.dart';
 
 class MachineListElementView extends View
 {
-	SpanElement name;
-	BoundLabel _nameBinding;
+	InputElement name;
+	BoundTextInput _nameBinding;
 
 	MachineListElementView([MachineViewModel viewModel])
 	{
-		name = new SpanElement();
-		name.classes.add('machineName');
+		name = new InputElement()
+			..classes.add('machineName')
+			..classes.add('inputField');
 
-		_nameBinding = new BoundLabel(name);
+		_nameBinding = new BoundTextInput(name);
 
 		this.viewModel = viewModel;
 	}

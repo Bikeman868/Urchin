@@ -14,6 +14,7 @@ class MachineViewModel extends ViewModel
 
 	MachineModel _model;
 	MachineModel get model => _model;
+
 	void set model(MachineModel value)
 	{
 		_model = value;

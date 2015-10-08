@@ -8,11 +8,14 @@ import '../DataBinding/BoundTextInput.dart';
 import '../DataBinding/BoundList.dart';
 
 import '../Models/MachineModel.dart';
+import '../Models/SecurityRuleModel.dart';
 
 import '../ViewModels/EnvironmentViewModel.dart';
 import '../ViewModels/MachineViewModel.dart';
+import '../ViewModels/SecurityRuleViewModel.dart';
 
 import '../Views/MachineListElementView.dart';
+import '../Views/SecurityRuleListElementView.dart';
 
 class EnvironmentView extends View
 {
@@ -29,6 +32,7 @@ class EnvironmentView extends View
 	BoundTextInput _nameBinding;
 	BoundTextInput _versionBinding;
 	BoundList<MachineModel, MachineViewModel, MachineListElementView> _machinesBinding;
+	BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView> _rulesBinding;
 
 	EnvironmentView([EnvironmentViewModel viewModel])
 	{
@@ -46,6 +50,9 @@ class EnvironmentView extends View
 		_machinesBinding = new BoundList<MachineModel, MachineViewModel, MachineListElementView>(
 			(vm) => new MachineListElementView(vm), 
 			machines);
+		_rulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView>(
+			(vm) => new SecurityRuleListElementView(vm), 
+			rules);
 
 		this.viewModel = viewModel;
 	}
@@ -61,12 +68,14 @@ class EnvironmentView extends View
 			_nameBinding.binding = null;
 			_versionBinding.binding = null;
 			_machinesBinding.binding = null;
+			_rulesBinding.binding = null;
 		}
 		else
 		{
 			_nameBinding.binding = value.name;
 			_versionBinding.binding = value.version;
 			_machinesBinding.binding = value.machines;
+			_rulesBinding.binding = value.rules;
 		}
 	}
 
