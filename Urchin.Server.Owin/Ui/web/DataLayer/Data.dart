@@ -13,21 +13,11 @@ import '../ViewModels/EnvironmentViewModel.dart';
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';
 
-class DataEvent
-{
-	Data data;
-	DataEvent(this.data);
-}
-
 class Data
 {
 	Map<int, VersionData> _versionedData;
 	Map<String, EnvironmentViewModel> _environments;
 	List<VersionModel> _versions;
-
-	SubscriptionEvent<DataEvent> refreshedEvent = new SubscriptionEvent<DataEvent>();
-	SubscriptionEvent<DataEvent> versionAddedEvent = new SubscriptionEvent<DataEvent>();
-	SubscriptionEvent<DataEvent> versionDeletedEvent = new SubscriptionEvent<DataEvent>();
 
 	Data()
 	{
@@ -43,7 +33,21 @@ class Data
 		for(var version in _versionedData.values)
 			version.reload();
 
-		refreshedEvent.raise(new DataEvent(this));
+		AppEvents.dataLoadedEvent.raise(new DataEvent(this));
+	}
+
+	save()
+	{
+		for(var version in _versionedData.values)
+			version.save();
+
+		_saveEnvironments();
+
+		AppEvents.dataSavedEvent.raise(new DataEvent(this));
+	}
+
+	_saveEnvironments()
+	{
 	}
 
 	Future<Map<String, EnvironmentViewModel>> getEnvironments() async

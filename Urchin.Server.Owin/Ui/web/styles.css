@@ -329,6 +329,17 @@ span.jsonString
   color: forestgreen;
 }
 
+span.saved
+{
+    color: greenyellow;
+}
+
+span.modified
+{
+    color: yellow;
+    background: darkred;
+}
+
 .formButton
 {
     display: table-cell;

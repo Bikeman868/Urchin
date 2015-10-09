@@ -1,5 +1,7 @@
 ﻿import '../Events/SubscriptionEvent.dart';
+import '../Events/AppEvents.dart';
 import '../DataBinding/Types.dart';
+import '../Events/AppEvents.dart';
 
 // Provides two-way data binding with parsing and formatting
 // The binding is associated with a single data value in a model
@@ -13,6 +15,8 @@ class PropertyBinding<T>
 	ParseFunction<T> parser;
 	SubscriptionEvent<String> onChange;
   
+	String _value;
+
 	PropertyBinding()
 	{
 		onChange = new SubscriptionEvent<String>();
@@ -24,19 +28,25 @@ class PropertyBinding<T>
 			return null;
     
 		T value = getter();
-		return formatter(value);
+		_value = formatter(value);
+		return _value;
 	}
   
 	bool setProperty(String text)
 	{
 		if (parser == null)
 			return false;
+
+		if (text == _value)
+			return true;
     
 		T value = parser(text);
     
 		if (value == null)
 			return false;
-    
+
+		_value = text;
+
 		if (setter != null)
 			setter(value);
     
@@ -45,6 +55,8 @@ class PropertyBinding<T>
 			String formattedValue = getProperty();
 			onChange.raise(formattedValue);
 		}
+
+		AppEvents.dataModifiedEvent.raise(null);
     
 		return true;
 	}

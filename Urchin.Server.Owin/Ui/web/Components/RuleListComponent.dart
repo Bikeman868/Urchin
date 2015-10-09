@@ -21,7 +21,7 @@ class RuleListComponent
 		_builder.addBlockText('Rules', className: 'panelTitle');
 		_ruleList = _builder.addList(className: 'selectionList');
 
-		_dataRefreshedSubscription = _data.refreshedEvent.listen(_dataRefreshed);
+		_dataRefreshedSubscription = AppEvents.dataLoadedEvent.listen(_dataRefreshed);
 		_dataChanged(_data);
 	}
 

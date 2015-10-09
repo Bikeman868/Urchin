@@ -36,6 +36,12 @@ class UserChangedEvent
 	UserChangedEvent(this.isLoggedOn, this.userName, this.ipAddress);
 }
 
+class DataEvent
+{
+	Data data;
+	DataEvent(this.data);
+}
+
 class AppEvents
 {
 	static SubscriptionEvent<RuleSelectedEvent> ruleSelected = new SubscriptionEvent<RuleSelectedEvent>();
@@ -43,4 +49,7 @@ class AppEvents
 	static SubscriptionEvent<VersionSelectedEvent> versionSelected = new SubscriptionEvent<VersionSelectedEvent>();
 	static SubscriptionEvent<TabChangedEvent> tabChanged = new SubscriptionEvent<TabChangedEvent>();
 	static SubscriptionEvent<UserChangedEvent> userChanged = new SubscriptionEvent<UserChangedEvent>();
+	static SubscriptionEvent<DataEvent> dataLoadedEvent = new SubscriptionEvent<DataEvent>();
+	static SubscriptionEvent<DataEvent> dataSavedEvent = new SubscriptionEvent<DataEvent>();
+	static SubscriptionEvent<DataEvent> dataModifiedEvent = new SubscriptionEvent<DataEvent>();
 }

@@ -8,12 +8,6 @@ import '../Server.dart';
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';
 
-class VersionDataEvent
-{
-	VersionData versionData;
-	VersionDataEvent(this.versionData);
-}
-
 class VersionData
 {
 	VersionModel version;
@@ -21,18 +15,16 @@ class VersionData
 	List<String> _ruleNames;
 	RuleVersionModel _rules;
 
-	SubscriptionEvent<VersionDataEvent> refreshedEvent = new SubscriptionEvent<VersionDataEvent>();
-	SubscriptionEvent<VersionDataEvent> modifiedEvent = new SubscriptionEvent<VersionDataEvent>();
-	SubscriptionEvent<VersionDataEvent> deletedEvent = new SubscriptionEvent<VersionDataEvent>();
-
 	VersionData(this.version);
 
 	reload()
 	{
 		_ruleNames = null;
 		_rules = null;
+	}
 
-		refreshedEvent.raise(new VersionDataEvent(this));
+	save()
+	{
 	}
 
 	Future<List<String>> getRuleNames() async

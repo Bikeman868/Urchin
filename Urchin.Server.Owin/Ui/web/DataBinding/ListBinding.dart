@@ -1,4 +1,5 @@
 ﻿import '../Events/SubscriptionEvent.dart';
+import '../Events/AppEvents.dart';
 import '../DataBinding/Types.dart';
 import '../DataBinding/ViewModel.dart';
 
@@ -60,6 +61,7 @@ class ListBinding<TM, TVM extends ViewModel>
 		viewModels.add(viewModel);
       
 		onAdd.raise(new ListEvent(index));
+		AppEvents.dataModifiedEvent.raise(null);
 	}
   
 	void remove(int index)
@@ -73,6 +75,8 @@ class ListBinding<TM, TVM extends ViewModel>
 		models.removeAt(index);
       
 		viewModel.dispose();
+
+		AppEvents.dataModifiedEvent.raise(null);
 	}
 }
 
