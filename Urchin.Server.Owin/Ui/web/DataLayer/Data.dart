@@ -36,18 +36,30 @@ class Data
 		AppEvents.dataLoadedEvent.raise(new DataEvent(this));
 	}
 
-	save()
+	save() async
 	{
 		for(var version in _versionedData.values)
 			version.save();
 
-		_saveEnvironments();
+		await _saveEnvironments();
 
 		AppEvents.dataSavedEvent.raise(new DataEvent(this));
 	}
 
-	_saveEnvironments()
+	_saveEnvironments() async
 	{
+		List<EnvironmentModel> models = new List<EnvironmentModel>();
+		bool modified = false;
+		for (var name in _environments.keys)
+		{
+			EnvironmentViewModel viewModel = _environments[name];
+			if (viewModel.model.isModified) modified = true;
+			models.add(viewModel.model);
+		}
+		if (modified)
+		{
+			await Server.replaceEnvironments(models);
+		}
 	}
 
 	_loadEnvironments() async

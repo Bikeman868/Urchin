@@ -13,13 +13,15 @@ class UpdateComponent
 	Data _data;
 	HtmlBuilder _builder;
 
-	Element _refreshButton;
-	Element _saveButton;
-	Element _changesDiv;
+	ImageElement _refreshButton;
+	ImageElement _saveButton;
+	DivElement _changesDiv;
 
 	StreamSubscription<DataEvent> _dataLoadedSubscription;
 	StreamSubscription<DataEvent> _dataSavedSubscription;
 	StreamSubscription<DataEvent> _dataModifiedSubscription;
+
+	StreamSubscription<MouseEvent> _saveClickSubscription;
 
 	bool _isModifiedValue;
 	bool get _isModified => _isModifiedValue;
@@ -30,9 +32,21 @@ class UpdateComponent
 		{
 			_isModifiedValue = value;
 			if (value)
+			{
 				_changesDiv.innerHtml = '<span class="modified">Unsaved changes</span>';
+				_saveButton.src = _builder.versioned('ui/images/upload{_v_}.gif');
+				_saveClickSubscription = _saveButton.onClick.listen(_saveClick);
+			}
 			else
+			{
 				_changesDiv.innerHtml = '<span class="saved">No changes';
+				_saveButton.src = _builder.versioned('ui/images/upload_disabled{_v_}.gif');
+				if (_saveClickSubscription != null)
+				{
+					_saveClickSubscription.cancel();
+					_saveClickSubscription = null;
+				}
+			}
 		}
 	} 
   
@@ -47,7 +61,7 @@ class UpdateComponent
 		_builder = new HtmlBuilder();
 		
 		_refreshButton = _builder.addImage('ui/images/download{_v_}.gif', onClick: _refreshClick, className: 'imageButton');
-		_saveButton = _builder.addImage('ui/images/upload{_v_}.gif', onClick: _saveClick, className: 'imageButton');
+		_saveButton = _builder.addImage('', className: 'imageButton');
 		_changesDiv = _builder.addBlockText('');
 
 		_isModifiedValue = true;

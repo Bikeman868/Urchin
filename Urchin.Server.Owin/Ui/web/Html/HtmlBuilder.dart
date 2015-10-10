@@ -65,6 +65,11 @@ class HtmlBuilder
 		return _addElement(div, classNames, className, parent);
 	}
   
+	String versioned(String url)
+	{
+		return url.replaceAll(r'{_v_}', _version);
+	}
+
 	Element addImage(
 		String url, 
 		{
