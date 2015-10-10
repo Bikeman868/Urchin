@@ -25,9 +25,9 @@ class Data
 		AppEvents.userChanged.listen(_userChanged);
 	}
 
-	reload()
+	reload() async
 	{
-		_environments = null;
+		await _loadEnvironments();
 		_versions = null;
 
 		for(var version in _versionedData.values)
@@ -50,17 +50,56 @@ class Data
 	{
 	}
 
+	_loadEnvironments() async
+	{
+		var environmentModels = await Server.getEnvironments();
+		List<String> deletedEnvironments = new List<String>();
+
+		if (_environments == null)
+		{
+			_environments = new Map<String, EnvironmentViewModel>();
+		}
+		else
+		{
+			for (var name in _environments.keys)
+			{
+				if (environmentModels[name] == null)
+					deletedEnvironments.add(name);
+			}
+		}
+
+		for (var name in environmentModels.keys)
+		{
+			EnvironmentViewModel viewModel = _environments[name];
+			if (viewModel == null)
+			{
+				if (deletedEnvironments.length > 0)
+				{
+					var oldName = deletedEnvironments[0];
+					deletedEnvironments.removeAt(0);
+					viewModel = _environments[oldName];
+					_environments.remove(oldName);
+				}
+				else
+				{
+					viewModel = new EnvironmentViewModel();
+				}
+				_environments[name] = viewModel;
+			}
+			viewModel.model = environmentModels[name];
+		}
+
+		for (var oldName in deletedEnvironments)
+		{
+			_environments.remove(oldName);
+		}
+	}
+
 	Future<Map<String, EnvironmentViewModel>> getEnvironments() async
 	{
 		if (_environments == null)
-		{
-			var environmentModels = await Server.getEnvironments();
-			_environments = new Map<String, EnvironmentViewModel>();
-			for (var name in environmentModels.keys)
-			{
-				_environments[name] = new EnvironmentViewModel(environmentModels[name]);
-			}
-		}
+			await _loadEnvironments();
+
 		return _environments;
 	}
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'SubscriptionEvent.dart';
+import '../DataLayer/Data.dart';
+import '../Events/SubscriptionEvent.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
 
 class RuleSelectedEvent

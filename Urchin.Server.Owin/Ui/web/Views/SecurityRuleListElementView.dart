@@ -19,7 +19,7 @@ class SecurityRuleListElementView extends View
 	BoundTextInput _startIpBinding;
 	BoundTextInput _endIpBinding;
 
-	SecurityRuleListElementView([MachineViewModel viewModel])
+	SecurityRuleListElementView([SecurityRuleViewModel viewModel])
 	{
 		startIp = new InputElement()
 			..classes.add('ipAddress')
