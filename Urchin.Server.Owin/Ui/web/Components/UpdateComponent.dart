@@ -20,6 +20,21 @@ class UpdateComponent
 	StreamSubscription<DataEvent> _dataLoadedSubscription;
 	StreamSubscription<DataEvent> _dataSavedSubscription;
 	StreamSubscription<DataEvent> _dataModifiedSubscription;
+
+	bool _isModifiedValue;
+	bool get _isModified => _isModifiedValue;
+
+	set _isModified(bool value)
+	{
+		if (value != _isModifiedValue)
+		{
+			_isModifiedValue = value;
+			if (value)
+				_changesDiv.innerHtml = '<span class="modified">Unsaved changes</span>';
+			else
+				_changesDiv.innerHtml = '<span class="saved">No changes';
+		}
+	} 
   
 	UpdateComponent(Data data)
 	{
@@ -35,7 +50,8 @@ class UpdateComponent
 		_saveButton = _builder.addImage('ui/images/upload{_v_}.gif', onClick: _saveClick, className: 'imageButton');
 		_changesDiv = _builder.addBlockText('');
 
-		_setState(false);
+		_isModifiedValue = true;
+		_isModified = false;
 
 		_dataLoadedSubscription = AppEvents.dataLoadedEvent.listen(_dataLoaded);
 		_dataSavedSubscription = AppEvents.dataSavedEvent.listen(_dataSaved);
@@ -53,6 +69,11 @@ class UpdateComponent
 
 	void _refreshClick(MouseEvent e)
 	{
+		if (_isModified)
+		{
+			if (!window.confirm('Are you sure you want to overwrite your changes with data from the server?'))
+				return;
+		}
 		_data.reload();
 	}
 
@@ -63,24 +84,16 @@ class UpdateComponent
 
 	void _dataLoaded(DataEvent e)
 	{
-		_setState(false);
+		_isModified = false;
 	}
 
 	void _dataSaved(DataEvent e)
 	{
-		_setState(false);
+		_isModified = false;
 	}
 
 	void _dataModified(DataEvent e)
 	{
-		_setState(true);
-	}
-
-	_setState(bool modified)
-	{
-		if (modified)
-			_changesDiv.innerHtml = '<span class="modified">Unsaved changes</span>';
-		else
-			_changesDiv.innerHtml = '<span class="saved">No changes';
+		_isModified = true;
 	}
 }
