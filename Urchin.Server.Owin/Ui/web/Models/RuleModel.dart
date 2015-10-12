@@ -1,53 +1,29 @@
-﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
-
-import '../Models/ModelBase.dart';
+﻿import '../DataBinding/Model.dart';
 import '../Models/VariableModel.dart';
 
-class RuleModel extends ModelBase
+class RuleModel extends Model
 {
-	List<VariableModel> variables;
+	RuleModel(Map json) : super(json);
 
-	RuleModel(Map json)
-	{
-		Reload(json);
-	}
-
-	void Reload(Map json)
-	{
-		startLoading(json);
-
-		variables = new List<VariableModel>();
-    
-		List jsonVariables = json['variables'];
-		if (jsonVariables != null)
-		{
-			for (var v in jsonVariables)
-			{
-				variables.add(new VariableModel(v));
-			}
-		}
-
-		finishedLoading();
-	}
-  
-	String get name => json['name'];
+	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }
   
-	String get machine => json['machine'];
+	String get machine => getProperty('machine');
 	set machine(String value) { setProperty('machine', value); }
   
-	String get application => json['application'];
+	String get application => getProperty('application');
 	set application(String value) { setProperty('application', value); }
   
-	String get environment => json['environment'];
+	String get environment => getProperty('environment');
 	set environment(String value) { setProperty('environment', value); }
   
-	String get instance => json['instance'];
+	String get instance => getProperty('instance');
 	set instance(String value) { setProperty('instance', value); }
 
-	String get config => json['config'];
+	String get config => getProperty('config');
 	set config(String value) { setProperty('config', value); }
+
+	List<VariableModel> get variables => getList('variables', (json) => new VariableModel(json));
+	set variables(List<VariableModel> value) { setList('variables', value); }
 }
 

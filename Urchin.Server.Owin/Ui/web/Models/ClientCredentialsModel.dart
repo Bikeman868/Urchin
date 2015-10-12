@@ -2,23 +2,14 @@
 import 'dart:convert';
 import 'dart:async';
 
-import '../Models/ModelBase.dart';
+import '../DataBinding/Model.dart';
 
-class ClientCredentialsModel extends ModelBase
+class ClientCredentialsModel extends Model
 {
-	ClientCredentialsModel(Map json)
-	{
-		Reload(json);
-	}
+	ClientCredentialsModel(Map json) : super(json);
 
-	void Reload(Map json)
-	{
-		startLoading(json);
-		finishedLoading();
-	}
-
-	String get ipAddress => json['ip'];
-	bool get isAdmin => json['admin'];
-	bool get isLoggedOn => json['loggedOn'];
-	String get userName => json['userName'];
+	String get ipAddress => getProperty('ip');
+	bool get isAdmin => getProperty('admin');
+	bool get isLoggedOn => getProperty('loggedOn');
+	String get userName => getProperty('userName');
 }

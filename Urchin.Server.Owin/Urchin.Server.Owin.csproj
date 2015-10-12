@@ -171,7 +171,7 @@
     <Content Include="readme.md" />
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
-    <Content Include="Ui\web\Models\ModelBase.dart" />
+    <Content Include="Ui\web\DataBinding\Model.dart" />
     <Content Include="Ui\web\Components\RuleListComponent.dart" />
     <Content Include="Ui\web\Components\ToolBarComponent.dart" />
     <Content Include="Ui\web\DataLayer\Data.dart" />

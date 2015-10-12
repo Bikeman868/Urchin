@@ -1,52 +1,22 @@
-﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
+﻿import '../DataBinding/Model.dart';
 
-import '../Models/ModelBase.dart';
 import '../Models/SecurityRuleModel.dart';
 import '../Models/MachineModel.dart';
 
-class EnvironmentModel extends ModelBase
+class EnvironmentModel extends Model
 {
-	List<SecurityRuleModel> securityRules;
-	List<MachineModel> machines;
+	EnvironmentModel(Map json) : super(json);
 
-	EnvironmentModel(Map json)
-	{
-		Reload(json);
-	}
-
-	void Reload(Map json)
-	{
-		startLoading(json);
-
-		securityRules = new List<SecurityRuleModel>();
-		List jsonRules = json['securityRules'];
-		if (jsonRules != null)
-		{
-			for (Map r in jsonRules)
-			{
-				securityRules.add(new SecurityRuleModel(r));
-			}
-		}
-
-		machines = new List<MachineModel>();
-		List jsonMachines = json['machines'];
-		if (jsonMachines != null)
-		{
-			for (String m in jsonMachines)
-			{
-				machines.add(new MachineModel(m));
-			}
-		}
-
-		finishedLoading();
-	}
-
-	String get name => json['name'];
+	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }
   
-	int get version => json['version'];
+	int get version => getProperty('version');
 	set version(int value) { setProperty('version', value); }
+
+	List<MachineModel> get machines => getList('machines', (json) => new MachineModel(json));
+	set machines(List<MachineModel> value) { setList('machines', value); }
+
+	List<SecurityRuleModel> get securityRules => getList('securityRules', (json) => new SecurityRuleModel(json));
+	set securityRules(List<SecurityRuleModel> value) { setList('securityRules', value); }
 }
 

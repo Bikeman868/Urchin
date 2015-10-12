@@ -81,7 +81,7 @@ class RuleDetailComponent
 		{
 			VersionData versionData = await _data.getVersion(e.version);
 			RuleVersionModel ruleVersion = await versionData.getRules();
-			RuleModel rule = ruleVersion.rules[e.ruleName];
+			RuleModel rule = ruleVersion.rules.firstWhere((RuleModel r) => r.name == e.ruleName);
 
 			_ruleName.text = rule.name;
 			_machine.text = rule.machine;

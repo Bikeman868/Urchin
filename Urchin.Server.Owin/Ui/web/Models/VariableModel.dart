@@ -1,25 +1,12 @@
-﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
+﻿import '../DataBinding/Model.dart';
 
-import '../Models/ModelBase.dart';
-
-class VariableModel extends ModelBase
+class VariableModel extends Model
 {
-	VariableModel(Map json)
-	{
-		Reload(json);
-	}
+	VariableModel(Map json) : super(json);
 
-	void Reload(Map json)
-	{
-		startLoading(json);
-		finishedLoading();
-	}
-
-	String get name => json['name'];
+	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }
   
-	String get value => json['value'];
+	String get value => getProperty('value');
 	set value(String value) { setProperty('value', value); }
 }

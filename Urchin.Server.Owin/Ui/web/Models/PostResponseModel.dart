@@ -1,23 +1,10 @@
-﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
+﻿import '../DataBinding/Model.dart';
 
-import '../Models/ModelBase.dart';
-
-class PostResponseModel extends ModelBase
+class PostResponseModel extends Model
 {
-	PostResponseModel(Map json)
-	{
-		Reload(json);
-	}
+	PostResponseModel(Map json) : super(json);
 
-	void Reload(Map json)
-	{
-		startLoading(json);
-		finishedLoading();
-	}
-
-	bool get success => json['success'];
-	bool get error => json['error'];
-	bool get id => json['id'];
+	bool get success => getProperty('success');
+	String get error => getProperty('error');
+	int get id => getProperty('id');
 }

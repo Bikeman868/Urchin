@@ -1,30 +1,12 @@
-﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
+﻿import '../DataBinding/Model.dart';
 
-import '../Models/ModelBase.dart';
-
-class MachineModel extends ModelBase
+class MachineModel extends Model
 {
-	String _name;
+	String name;
 
-	MachineModel(String name)
+	MachineModel(String name) : super(null)
 	{
-		Reload(name);
-	}
-
-	void Reload(String name)
-	{
-		startLoading(null);
-		_name = name;
-		finishedLoading();
-	}
-
-	String get name => _name;
-	set name(String value) 
-	{ 
-		_name = value;
-		propertyModified();
+		this.name = name;
 	}
 }
 

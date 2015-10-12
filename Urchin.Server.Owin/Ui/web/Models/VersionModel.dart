@@ -1,25 +1,12 @@
-﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
+﻿import '../DataBinding/Model.dart';
 
-import '../Models/ModelBase.dart';
-
-class VersionModel extends ModelBase
+class VersionModel extends Model
 {
-	VersionModel(Map json)
-	{
-		Reload(json);
-	}
+	VersionModel(Map json) : super(json);
 
-	void Reload(Map json)
-	{
-		startLoading(json);
-		finishedLoading();
-	}
-
-	String get name => json['name'];
+	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }
   
-	int get version => json['version'];
+	int get version => getProperty('version');
 	set version(int value) { setProperty('version', value); }
 }

@@ -1,25 +1,12 @@
-﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
+﻿import '../DataBinding/Model.dart';
 
-import '../Models/ModelBase.dart';
-
-class SecurityRuleModel extends ModelBase
+class SecurityRuleModel extends Model
 {
-	SecurityRuleModel(Map json)
-	{
-		Reload(json);
-	}
+	SecurityRuleModel(Map json) : super(json);
 
-	void Reload(Map json)
-	{
-		startLoading(json);
-		finishedLoading();
-	}
-
-	String get startIp => json['startIp'];
+	String get startIp => getProperty('startIp');
 	set startIp(String value) { setProperty('startIp', value); }
   
-	String get endIp => json['endIp'];
+	String get endIp => getProperty('endIp');
 	set endIp(String value) { setProperty('endIp', value); }
 }

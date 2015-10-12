@@ -48,23 +48,16 @@ class Data
 
 	_saveEnvironments() async
 	{
-		List<EnvironmentModel> models = new List<EnvironmentModel>();
-		bool modified = false;
-		for (var name in _environments.keys)
-		{
-			EnvironmentViewModel viewModel = _environments[name];
-			if (viewModel.model.isModified) modified = true;
-			models.add(viewModel.model);
-		}
-		if (modified)
-		{
-			await Server.replaceEnvironments(models);
-		}
 	}
 
 	_loadEnvironments() async
 	{
-		var environmentModels = await Server.getEnvironments();
+		List<EnvironmentModel> environmentModels = await Server.getEnvironments();
+		_environments = new Map<String, EnvironmentViewModel>();
+		for(var model in environmentModels)
+			_environments[model.name] = model;
+
+/*
 		List<String> deletedEnvironments = new List<String>();
 
 		if (_environments == null)
@@ -105,6 +98,7 @@ class Data
 		{
 			_environments.remove(oldName);
 		}
+*/
 	}
 
 	Future<Map<String, EnvironmentViewModel>> getEnvironments() async

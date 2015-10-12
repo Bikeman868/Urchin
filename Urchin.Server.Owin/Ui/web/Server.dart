@@ -111,15 +111,15 @@ class Server
 //
 //-- Environment ------------------------------------------------------------------------------
 //
-	static Future<Map<String, EnvironmentModel>> getEnvironments() async
+	static Future<List<EnvironmentModel>> getEnvironments() async
 	{
 		String response = await HttpRequest.getString('/environments');
 		List<Map> environmentsJson = JSON.decode(response);
 
-		var environments = new Map<String, EnvironmentModel>();
+		var environments = new List<EnvironmentModel>();
 		for (Map environmentJson in environmentsJson)
 		{
-			environments[environmentJson['name']] = new EnvironmentModel(environmentJson);
+			environments.add(new EnvironmentModel(environmentJson));
 		}
 		return environments;
 	}
