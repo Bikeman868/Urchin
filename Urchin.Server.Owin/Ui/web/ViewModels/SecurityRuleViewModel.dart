@@ -20,10 +20,21 @@ class SecurityRuleViewModel extends ViewModel
 	{
 		_model = value;
 
-        startIp.setter = (String text) { value.startIp = text; };
-        startIp.getter = () => value.startIp;
+		if (value == null)
+		{
+			startIp.setter = null;
+			startIp.getter = null;
 
-        endIp.setter = (String text) { value.endIp = text; };
-        endIp.getter = () => value.endIp;
+			endIp.setter = null;
+			endIp.getter = null;
+		}
+		else
+		{
+			startIp.setter = (String text) { value.startIp = text; };
+			startIp.getter = () => value.startIp;
+
+			endIp.setter = (String text) { value.endIp = text; };
+			endIp.getter = () => value.endIp;
+		}
 	}
 }

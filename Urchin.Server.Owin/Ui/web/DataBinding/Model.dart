@@ -21,11 +21,6 @@ class Model
 			this.json = json;
 	}
 
-	Map save()
-	{
-		return json;
-	}
-
 	setProperty(String name, value)
 	{
 		json[name] = value;

@@ -19,7 +19,15 @@ class MachineViewModel extends ViewModel
 	{
 		_model = value;
 
-        name.setter = (String text) { value.name = text; };
-        name.getter = () => value.name;
+		if (value == null)
+		{
+			name.setter = null;
+			name.getter = null;
+		}
+		else
+		{
+			name.setter = (String text) { value.name = text; };
+			name.getter = () => value.name;
+		}
 	}
 }

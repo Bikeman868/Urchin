@@ -17,9 +17,9 @@ class EnvironmentListComponent
   
 	void displayIn(containerDiv) async
 	{
-		var heading = new SpanElement();
-		heading.classes.add('panelTitle');
-		heading.text = 'Environments';
+		var heading = new SpanElement()
+			..classes.add('panelTitle')
+			..text = 'Environments';
 		containerDiv.children.add(heading);
 
 		Map<String, EnvironmentViewModel> environments = await _data.getEnvironments();
@@ -29,9 +29,9 @@ class EnvironmentListComponent
 			list.classes.add("selectionList");
 			for (EnvironmentViewModel environment in environments.values)
 			{
-				var view = new EnvironmentListElementView(environment);
-				view.environmentSelected.listen(_environmentSelected);
-				view.addTo(list);
+				new EnvironmentListElementView(environment)
+					..environmentSelected.listen(_environmentSelected)
+					..addTo(list);
 			}
 			containerDiv.children.add(list);
 		}

@@ -55,7 +55,7 @@ class Data
 		List<EnvironmentModel> environmentModels = await Server.getEnvironments();
 		_environments = new Map<String, EnvironmentViewModel>();
 		for(var model in environmentModels)
-			_environments[model.name] = model;
+			_environments[model.name] = new EnvironmentViewModel(model);
 
 /*
 		List<String> deletedEnvironments = new List<String>();
