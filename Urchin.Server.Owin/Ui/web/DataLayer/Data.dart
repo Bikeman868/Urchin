@@ -15,22 +15,22 @@ import '../Events/SubscriptionEvent.dart';
 
 class Data
 {
-	Map<int, VersionData> _versionedData;
-	Map<String, EnvironmentViewModel> _environments;
-	List<VersionModel> _versions;
+	Map<int, VersionData> _versionDataMap;
+	Map<String, EnvironmentViewModel> _environmentViewModelMap;
+	List<VersionModel> _versionModelList;
 
 	Data()
 	{
-		_versionedData = new Map<int, VersionData>();
+		_versionDataMap = new Map<int, VersionData>();
 		AppEvents.userChanged.listen(_userChanged);
 	}
 
 	reload() async
 	{
 		await _loadEnvironments();
-		_versions = null;
+		_versionModelList = null;
 
-		for(var version in _versionedData.values)
+		for(var version in _versionDataMap.values)
 			version.reload();
 
 		AppEvents.dataLoadedEvent.raise(new DataEvent(this));
@@ -38,7 +38,7 @@ class Data
 
 	save() async
 	{
-		for(var version in _versionedData.values)
+		for(var version in _versionDataMap.values)
 			version.save();
 
 		await _saveEnvironments();
@@ -52,75 +52,70 @@ class Data
 
 	_loadEnvironments() async
 	{
-		List<EnvironmentModel> environmentModels = await Server.getEnvironments();
-		_environments = new Map<String, EnvironmentViewModel>();
-		for(var model in environmentModels)
-			_environments[model.name] = new EnvironmentViewModel(model);
+		List<String> deletedEnvironmentNames = new List<String>();
 
-/*
-		List<String> deletedEnvironments = new List<String>();
-
-		if (_environments == null)
+		List<EnvironmentModel> environmentModelList = await Server.getEnvironments();
+		if (_environmentViewModelMap == null)
 		{
-			_environments = new Map<String, EnvironmentViewModel>();
+			_environmentViewModelMap = new Map<String, EnvironmentViewModel>();
 		}
 		else
 		{
-			for (var name in _environments.keys)
+			for (var name in _environmentViewModelMap.keys)
 			{
-				if (environmentModels[name] == null)
-					deletedEnvironments.add(name);
+				if (!environmentModelList.any((EnvironmentModel m) => m.name == name))
+					deletedEnvironmentNames.add(name);
 			}
 		}
 
-		for (var name in environmentModels.keys)
+		for (EnvironmentModel model in environmentModelList)
 		{
-			EnvironmentViewModel viewModel = _environments[name];
+			String name = model.name;
+			EnvironmentViewModel viewModel = _environmentViewModelMap[name];
 			if (viewModel == null)
 			{
-				if (deletedEnvironments.length > 0)
+				if (deletedEnvironmentNames.length > 0)
 				{
-					var oldName = deletedEnvironments[0];
-					deletedEnvironments.removeAt(0);
-					viewModel = _environments[oldName];
-					_environments.remove(oldName);
+					var oldName = deletedEnvironmentNames[0];
+					deletedEnvironmentNames.removeAt(0);
+					viewModel = _environmentViewModelMap[oldName];
+					_environmentViewModelMap.remove(oldName);
 				}
 				else
 				{
 					viewModel = new EnvironmentViewModel();
 				}
-				_environments[name] = viewModel;
+				_environmentViewModelMap[name] = viewModel;
 			}
-			viewModel.model = environmentModels[name];
+			viewModel.model = model;
 		}
 
-		for (var oldName in deletedEnvironments)
+		for (var oldName in deletedEnvironmentNames)
 		{
-			_environments.remove(oldName);
+			_environmentViewModelMap.remove(oldName);
 		}
-*/
 	}
 
 	Future<Map<String, EnvironmentViewModel>> getEnvironments() async
 	{
-		if (_environments == null)
+		if (_environmentViewModelMap == null)
 			await _loadEnvironments();
 
-		return _environments;
+		return _environmentViewModelMap;
 	}
 
 	Future<List<VersionModel>> getVersions() async
 	{
-		if (_versions == null)
+		if (_versionModelList == null)
 		{
-			_versions = await Server.getVersions();
+			_versionModelList = await Server.getVersions();
 		}
-		return _versions;
+		return _versionModelList;
 	}
 
 	Future<VersionData> getVersion(int version) async
 	{
-		VersionData result = _versionedData[version];
+		VersionData result = _versionDataMap[version];
 		if (result == null)
 		{
 			var versions = await getVersions();
@@ -129,7 +124,7 @@ class Data
 				if (versionModel.version == version)
 				{
 					result = new VersionData(versionModel);
-					_versionedData[version] = result;
+					_versionDataMap[version] = result;
 				}
 			}
 		}
