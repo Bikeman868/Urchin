@@ -22,7 +22,7 @@ class EnvironmentViewModel extends ViewModel
 		name = new StringBinding();
 		version = new IntBinding();
 		machines = new ListBinding<MachineModel, MachineViewModel>(
-			() => new MachineModel('New Machine'), 
+			() => new MachineModel(new Map()..['name']='MACHINE'), 
 			(m) => new MachineViewModel(m));
 		rules = new ListBinding<SecurityRuleModel, SecurityRuleViewModel>(
 			() => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
@@ -32,7 +32,15 @@ class EnvironmentViewModel extends ViewModel
 	}
 
 	EnvironmentModel _model;
-	EnvironmentModel get model => _model;
+	EnvironmentModel get model
+	{
+		if (_model != null)
+		{
+			_model.machines = machines.models;
+			_model.securityRules = rules.models;
+		}
+		return _model;
+	}
 
 	void set model(EnvironmentModel value)
 	{

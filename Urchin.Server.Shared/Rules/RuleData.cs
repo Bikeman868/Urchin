@@ -694,7 +694,7 @@ namespace Urchin.Server.Shared.Rules
             {
                 if (environment.Machines == null) continue;
                 if (environment.Machines.Any(
-                    machine => string.Equals(machine, machineName, StringComparison.InvariantCultureIgnoreCase)))
+                    machine => string.Equals(machine.Name, machineName, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     return environment;
                 }
@@ -737,7 +737,7 @@ namespace Urchin.Server.Shared.Rules
                 (l, e) =>
                 {
                     if (e.Machines != null)
-                        l.AddRange(e.Machines.Select(m => m.ToLower()));
+                        l.AddRange(e.Machines.Select(m => m.Name.ToLower()));
                     return l;
                 });
         }

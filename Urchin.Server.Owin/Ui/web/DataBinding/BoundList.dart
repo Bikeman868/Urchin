@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import '../DataBinding/View.dart';
+import '../DataBinding/Model.dart';
 import '../DataBinding/ViewModel.dart';
 import '../DataBinding/Types.dart';
 import '../DataBinding/ListBinding.dart';
@@ -9,7 +10,7 @@ import '../DataBinding/ListBinding.dart';
 import '../Events/SubscriptionEvent.dart';
 
 
-class BoundList<TM, TVM extends ViewModel, TV extends View>
+class BoundList<TM extends Model, TVM extends ViewModel, TV extends View>
 {
     ListBinding<TM, TVM> _binding;
     ListBinding<TM, TVM> get binding => _binding;

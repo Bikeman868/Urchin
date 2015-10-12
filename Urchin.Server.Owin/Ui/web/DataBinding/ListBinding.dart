@@ -2,13 +2,14 @@
 import '../Events/AppEvents.dart';
 import '../DataBinding/Types.dart';
 import '../DataBinding/ViewModel.dart';
+import '../DataBinding/Model.dart';
 
 // Provides two-way data binding to a list of models
 // The binding is associated with a single list of models
 // and many UI list elements. A view model is basically a collection
 // of these PropertyBinding<T> and ListBinding<T> objects that connect the 
 // views to the models.
-class ListBinding<TM, TVM extends ViewModel>
+class ListBinding<TM extends Model, TVM extends ViewModel>
 {
 	ModelFactory<TM> modelFactory;
 	ViewModelFactory<TM, TVM> viewModelFactory;

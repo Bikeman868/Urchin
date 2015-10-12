@@ -55,6 +55,7 @@
     <Compile Include="DataContracts\ConfigPropertyDto.cs" />
     <Compile Include="DataContracts\ConfigNodeDto.cs" />
     <Compile Include="DataContracts\RuleVersionDto.cs" />
+    <Compile Include="DataContracts\MachineDto.cs" />
     <Compile Include="DataContracts\SecurityRuleDto.cs" />
     <Compile Include="DataContracts\PostResponseDto.cs" />
     <Compile Include="DataContracts\RuleSetDto.cs" />

@@ -2,11 +2,8 @@
 
 class MachineModel extends Model
 {
-	String name;
+	MachineModel(Map json) : super(json);
 
-	MachineModel(String name) : super(null)
-	{
-		this.name = name;
-	}
+	String get name => getProperty('name');
+	set name(String value) { setProperty('name', value); }
 }
-
