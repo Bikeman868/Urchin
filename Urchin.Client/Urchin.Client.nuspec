@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Fixed a bug getting TimeSpan values from config</releaseNotes>
+    <releaseNotes>Catch errors in config change handler at registration</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
     <summary>Simple application configurtion management. Strong typing and default values. Change notifications

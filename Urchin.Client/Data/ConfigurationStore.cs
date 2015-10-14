@@ -62,7 +62,15 @@ namespace Urchin.Client.Data
 
             var key = Guid.NewGuid().ToString("N");
             var registration = new Registration<T>(this).Initialize(key, path, onChangeAction, defaultValue);
-            registration.Changed();
+
+            try
+            {
+                registration.Changed();
+            }
+            catch (Exception ex)
+            {
+                LogError("Exception thrown when notifying application of configuration change in '" + registration.Path + "'. " + ex.Message);
+            }
 
             lock(_registrations)
                 _registrations.Add(key, registration);
