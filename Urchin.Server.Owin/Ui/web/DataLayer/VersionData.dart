@@ -17,14 +17,15 @@ class VersionData
 
 	VersionData(this.version);
 
-	reload()
+	reload() async
 	{
 		_ruleNames = null;
 		_rules = null;
 	}
 
-	save()
+	Future<bool> save() async
 	{
+		return true;
 	}
 
 	Future<List<String>> getRuleNames() async

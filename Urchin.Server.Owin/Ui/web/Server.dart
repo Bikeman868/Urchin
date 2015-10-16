@@ -124,12 +124,19 @@ class Server
 		return environments;
 	}
 
-	static Future<HttpRequest> replaceEnvironments(List<EnvironmentModel> environments)
-		=> HttpRequest.request(
+	static Future<String> replaceEnvironments(List<EnvironmentModel> environments) async
+	{
+		var requestBody = environments.map((EnvironmentModel m) => m.json).toList();
+		var httpResponse = await HttpRequest.request(
 			'/environments',
 			method: 'PUT',
-			sendData: JSON.encode(environments),
-			mimeType: 'application/json');
+			sendData: JSON.encode(requestBody),
+			mimeType: 'application/json',
+			responseType: 'application/json');
+		Map responseJson = JSON.decode(httpResponse.responseText);
+		if (responseJson['success']) return null;
+		return responseJson['error'];
+	}
 
 	static Future<String> getDefaultEnvironment()
 		=> HttpRequest.getString('/environment/default');

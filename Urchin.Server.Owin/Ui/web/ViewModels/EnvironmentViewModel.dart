@@ -21,12 +21,14 @@ class EnvironmentViewModel extends ViewModel
 	{
 		name = new StringBinding();
 		version = new IntBinding();
+
 		machines = new ListBinding<MachineModel, MachineViewModel>(
-			() => new MachineModel(new Map()..['name']='MACHINE'), 
-			(m) => new MachineViewModel(m));
+			(Map json) => new MachineModel(new Map()..['name']='MACHINE'), 
+			(MachineModel m) => new MachineViewModel(m));
+
 		rules = new ListBinding<SecurityRuleModel, SecurityRuleViewModel>(
-			() => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
-			(m) => new SecurityRuleViewModel(m));
+			(Map json) => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
+			(SecurityRuleModel m) => new SecurityRuleViewModel(m));
 
 		this.model = model;
 	}

@@ -39,15 +39,22 @@ class Data
 	save() async
 	{
 		for(var version in _versionDataMap.values)
-			version.save();
+			if (!await version.save())
+				return;
 
-		await _saveEnvironments();
+		if (!await _saveEnvironments())
+			return;
 
 		AppEvents.dataSavedEvent.raise(new DataEvent(this));
 	}
 
-	_saveEnvironments() async
+	Future<bool> _saveEnvironments() async
 	{
+		var models = _environmentViewModelMap.values.map((EnvironmentViewModel vm) => vm.model).toList();
+		String error = await Server.replaceEnvironments(models);
+		if (error == null) return true;
+		window.alert('Changes were not saved. ' + error);
+		return false;
 	}
 
 	_loadEnvironments() async

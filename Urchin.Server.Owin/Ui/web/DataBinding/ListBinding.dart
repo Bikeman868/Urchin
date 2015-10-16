@@ -55,7 +55,7 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
 	{
 		int index = models.length;
       
-		TM model = modelFactory();
+		TM model = modelFactory(null);
 		models.add(model);
       
 		TVM viewModel = viewModelFactory(model);
