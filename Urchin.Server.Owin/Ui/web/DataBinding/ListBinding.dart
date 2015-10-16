@@ -3,6 +3,7 @@ import '../Events/AppEvents.dart';
 import '../DataBinding/Types.dart';
 import '../DataBinding/ViewModel.dart';
 import '../DataBinding/Model.dart';
+import '../DataBinding/ChangeState.dart';
 
 // Provides two-way data binding to a list of models
 // The binding is associated with a single list of models
@@ -18,6 +19,7 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
 	SubscriptionEvent<ListEvent> onRemove = new SubscriptionEvent<ListEvent>();
   
 	List<TVM> viewModels;
+	bool _isModified;
 
 	List<TM> _models;
 	List<TM> get models => _models;
@@ -43,6 +45,7 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
 				onAdd.raise(new ListEvent(index));
 			}
 		}
+		_isModified = false;
 	}
   
 	ListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
@@ -62,6 +65,7 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
 		viewModels.add(viewModel);
       
 		onAdd.raise(new ListEvent(index));
+		_isModified = true;
 		AppEvents.dataModifiedEvent.raise(null);
 	}
   
@@ -77,8 +81,22 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
       
 		viewModel.dispose();
 
+		_isModified = true;
 		AppEvents.dataModifiedEvent.raise(null);
 	}
+
+	ChangeState getState()
+	{
+		if (_isModified) return ChangeState.modified;
+		for (TVM viewModel in viewModels)
+		{
+			var state = viewModel.getState();
+			if (state != ChangeState.unmodified)
+				return ChangeState.modified;
+		}
+		ChangeState.unmodified;
+	}
+
 }
 
 class ListEvent

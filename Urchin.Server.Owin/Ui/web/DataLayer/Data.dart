@@ -4,6 +4,7 @@ import 'dart:async';
 
 import '../DataLayer/VersionData.dart';
 import '../Server.dart';
+import '../DataBinding/ChangeState.dart';
 
 import '../Models/VersionModel.dart';
 import '../Models/EnvironmentModel.dart';
@@ -50,7 +51,18 @@ class Data
 
 	Future<bool> _saveEnvironments() async
 	{
-		var models = _environmentViewModelMap.values.map((EnvironmentViewModel vm) => vm.model).toList();
+		bool isModified = false;
+		var models = new List<EnvironmentModel>();
+		for (EnvironmentViewModel vm in _environmentViewModelMap.values)
+		{
+			var state = vm.getState();
+			if (state != ChangeState.deleted)
+				models.add(vm.model);
+			if (state != ChangeState.unmodified)
+				isModified = true;
+		}
+		if (!isModified) return true;
+
 		String error = await Server.replaceEnvironments(models);
 		if (error == null) return true;
 		window.alert('Changes were not saved. ' + error);

@@ -155,6 +155,7 @@
     <Content Include="Ui\web\DataBinding\Types.dart" />
     <Content Include="Ui\web\DataBinding\View.dart" />
     <Content Include="Ui\web\DataBinding\ViewModel.dart" />
+    <Content Include="Ui\web\DataBinding\ChangeState.dart" />
     <None Include="Ui\web\Models\EnvironmentModel.dart" />
     <Content Include="Ui\web\DataBinding\BoundLabel.dart" />
     <Content Include="Ui\web\DataBinding\BoundElement.dart" />

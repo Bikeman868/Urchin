@@ -2,6 +2,7 @@
 import '../DataBinding/IntBinding.dart';
 import '../DataBinding/ListBinding.dart';
 import '../DataBinding/ViewModel.dart';
+import '../DataBinding/ChangeState.dart';
 
 import '../Models/EnvironmentModel.dart';
 import '../Models/MachineModel.dart';
@@ -61,14 +62,38 @@ class EnvironmentViewModel extends ViewModel
 		}
 		else
 		{
-			name.setter = (String text) { value.name = text; };
+			name.setter = (String text) 
+			{ 
+				value.name = text;
+				modified();
+			};
 			name.getter = () => value.name;
         
-			version.setter = (int i) { value.version = i; };
+			version.setter = (int i) 
+			{ 
+				value.version = i; 
+				modified();
+			};
 			version.getter = () => value.version;
 
 			machines.models = value.machines;
 			rules.models = value.securityRules;
 		}
 	}
+
+	ChangeState getState()
+	{
+		var state = super.getState();
+		if (state != ChangeState.unmodified)
+			return state;
+
+		if (machines.getState() != ChangeState.unmodified)
+			return ChangeState.modified;
+
+		if (rules.getState() != ChangeState.unmodified)
+			return ChangeState.modified;
+
+		return ChangeState.unmodified;
+	}
+
 }
