@@ -9,22 +9,21 @@ import 'Models/RuleModel.dart';
 import 'Models/RuleVersionModel.dart';
 import 'Models/SecurityRuleModel.dart';
 import 'Models/VariableModel.dart';
-import 'Models/VersionModel.dart';
 
 class Server
 {
 //
 //-- Version related server methods -----------------------------------------------------------------
 //
-	static Future<List<VersionModel>> getVersions() async
+	static Future<List<RuleVersionModel>> getVersions() async
 	{
 		String response = await HttpRequest.getString('/versions');
 		List<Map> versionsJson = JSON.decode(response);
 
-		var versions = new List<VersionModel>();
+		var versions = new List<RuleVersionModel>();
 		for (Map versionJson in versionsJson)
 		{
-			versions.add(new VersionModel(versionJson));
+			versions.add(new RuleVersionModel(versionJson, false));
 		}
 		return versions;
 	}
@@ -34,7 +33,7 @@ class Server
 			'/versions', 
 			method: 'DELETE');
 
-	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)  async
+	static Future<HttpRequest> updateVersion(int version, RuleVersionModel versionDto)  async
 		=> HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'PUT',
@@ -63,13 +62,13 @@ class Server
 	static Future<RuleVersionModel> getRules(int version)  async
 	{
 		String response = await HttpRequest.getString('/rules/' + version.toString());
-		return new RuleVersionModel(JSON.decode(response));
+		return new RuleVersionModel(JSON.decode(response), true);
 	}
 
 	static Future<RuleVersionModel> getDraftRules() async
 	{
 		String response = await HttpRequest.getString('/rules');
-		return new RuleVersionModel(JSON.decode(response));
+		return new RuleVersionModel(JSON.decode(response), true);
 	}
 
 	static Future<HttpRequest> addRules(int version, List<RuleModel> rules) 

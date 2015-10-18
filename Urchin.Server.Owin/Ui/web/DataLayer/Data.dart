@@ -7,7 +7,7 @@ import '../Server.dart';
 import '../DataBinding/ChangeState.dart';
 
 import '../Models/DataModel.dart';
-import '../Models/VersionModel.dart';
+import '../Models/RuleVersionModel.dart';
 import '../Models/EnvironmentModel.dart';
 
 import '../ViewModels/DataViewModel.dart';
@@ -23,7 +23,7 @@ class Data
 
 	Map<int, VersionData> _versionDataMap;
 	Map<String, EnvironmentViewModel> _environmentViewModelMap;
-	List<VersionModel> _versionModelList;
+	List<RuleVersionModel> _versionModelList;
 
 	Data()
 	{
@@ -131,7 +131,7 @@ class Data
 		return _environmentViewModelMap;
 	}
 
-	Future<List<VersionModel>> getVersions() async
+	Future<List<RuleVersionModel>> getVersions() async
 	{
 		if (_versionModelList == null)
 		{

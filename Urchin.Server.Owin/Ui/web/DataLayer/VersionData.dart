@@ -3,14 +3,13 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Models/RuleVersionModel.dart';
-import '../Models/VersionModel.dart';
 import '../Server.dart';
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';
 
 class VersionData
 {
-	VersionModel version;
+	RuleVersionModel version;
 
 	List<String> _ruleNames;
 	RuleVersionModel _rules;

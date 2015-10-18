@@ -4,7 +4,7 @@ import '../DataBinding/ChangeState.dart';
 
 import '../Models/DataModel.dart';
 import '../Models/EnvironmentModel.dart';
-import '../Models/VersionModel.dart';
+import '../Models/RuleVersionModel.dart';
 
 import '../ViewModels/EnvironmentViewModel.dart';
 

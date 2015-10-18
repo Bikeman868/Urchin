@@ -3,7 +3,7 @@ import '../Models/RuleModel.dart';
 
 class RuleVersionModel extends Model
 {
-	RuleVersionModel(Map json) : super(json);
+	RuleVersionModel(Map json, this.hasRules) : super(json);
 
 	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }

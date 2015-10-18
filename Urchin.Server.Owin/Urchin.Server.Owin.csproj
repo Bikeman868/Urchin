@@ -159,7 +159,6 @@
     <None Include="Ui\web\Models\EnvironmentModel.dart" />
     <Content Include="Ui\web\DataBinding\BoundLabel.dart" />
     <Content Include="Ui\web\DataBinding\BoundElement.dart" />
-    <Content Include="Ui\web\Models\VersionModel.dart" />
     <Content Include="Ui\web\Models\RuleVersionModel.dart" />
     <Content Include="Ui\web\Models\VariableModel.dart" />
     <Content Include="Ui\web\Models\SecurityRuleModel.dart" />
