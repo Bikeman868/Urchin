@@ -6,9 +6,11 @@ import '../DataLayer/VersionData.dart';
 import '../Server.dart';
 import '../DataBinding/ChangeState.dart';
 
+import '../Models/DataModel.dart';
 import '../Models/VersionModel.dart';
 import '../Models/EnvironmentModel.dart';
 
+import '../ViewModels/DataViewModel.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
 
 import '../Events/AppEvents.dart';
@@ -16,12 +18,18 @@ import '../Events/SubscriptionEvent.dart';
 
 class Data
 {
+	DataModel _model;
+	DataViewModel _viewModel;
+
 	Map<int, VersionData> _versionDataMap;
 	Map<String, EnvironmentViewModel> _environmentViewModelMap;
 	List<VersionModel> _versionModelList;
 
 	Data()
 	{
+		_model = new DataModel();
+		_viewModel = new DataViewModel(_model);
+
 		_versionDataMap = new Map<int, VersionData>();
 		AppEvents.userChanged.listen(_userChanged);
 	}

@@ -166,6 +166,8 @@
     <Content Include="Ui\web\Models\PostResponseModel.dart" />
     <Content Include="Ui\web\Models\ClientCredentialsModel.dart" />
     <Content Include="Ui\web\ViewModels\MachineViewModel.dart" />
+    <Content Include="Ui\web\ViewModels\DataViewModel.dart" />
+    <Content Include="Ui\web\Models\DataModel.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>
