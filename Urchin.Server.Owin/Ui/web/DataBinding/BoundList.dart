@@ -1,6 +1,8 @@
 ﻿import 'dart:html';
 import 'dart:async';
 
+import '../Html/HtmlBuilder.dart';
+
 import '../DataBinding/View.dart';
 import '../DataBinding/Model.dart';
 import '../DataBinding/ViewModel.dart';
@@ -49,51 +51,40 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View>
 
     void set listContainer(Element value)
     {
+		if (value != null)
+			value.classes.add('boundList');
         _listContainer = value;
+
         if (_binding != null)
             _constructViews();
     }
   
     void _constructViews()
     {
-        if (_listContainer != null)
+        if (_listContainer == null) return;
+		var builder = new HtmlBuilder();
+        if (_binding != null && _binding.viewModels != null)
         {
-			_listContainer.classes.add('boundList');
-            _listContainer.children.clear();
-            if (_binding != null && _binding.viewModels != null)
+            for (var index = 0; index < _binding.viewModels.length; index++)
             {
-                for (var index = 0; index < _binding.viewModels.length; index++)
-                {
-                    var listItem = new DivElement()
-						..classes.add('boundListElement');
-                    _listContainer.children.add(listItem);
+                var listItem = builder.addContainer(className:'boundListElement');
 
-                    var viewContainer = new DivElement();
-					viewContainer.classes.add('boundListView');
-                    listItem.children.add(viewContainer);
-                    var view = viewFactory(_binding.viewModels[index]);
-                    view.addTo(viewContainer);
+                var viewContainer = builder.addContainer(className:'boundListView', parent: listItem);
+                var view = viewFactory(_binding.viewModels[index]);
+                view.addTo(viewContainer);
 
-					if (allowRemove)
-					{
-						var deleteButton = new ButtonElement()
-							..text = 'Delete'
-							..classes.add('boundListDelete')
-							..attributes['listIndex'] = index.toString()
-							..onClick.listen(_deleteClicked);
-						listItem.children.add(deleteButton);
-					}
-                }
-				if (allowAdd)
+				if (allowRemove)
 				{
-					var addButton = new ButtonElement()
-						..text = 'New'
-						..classes.add('boundListAdd')
-						..onClick.listen(_addClicked);
-					_listContainer.children.add(addButton);
+					var deleteButton = builder.addImage('ui/images/delete{_v_}.gif', altText: 'Delete', classNames: ['boundListDelete','imageButton'], parent: listItem, onClick: _deleteClicked)
+						..attributes['listIndex'] = index.toString();
 				}
             }
+			if (allowAdd)
+			{
+				var addButton = builder.addImage('ui/images/add{_v_}.gif', altText: 'New', classNames: ['boundListAdd','imageButton'], onClick: _addClicked);
+			}
         }
+		builder.displayIn(_listContainer);
     }
   
     BoundList(this.viewFactory, Element listContainer, [this.allowAdd = true, this.allowRemove = true])
