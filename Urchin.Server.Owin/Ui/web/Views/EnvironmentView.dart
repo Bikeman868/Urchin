@@ -49,10 +49,12 @@ class EnvironmentView extends View
 		_versionBinding = new BoundTextInput(version);
 		_machinesBinding = new BoundList<MachineModel, MachineViewModel, MachineListElementView>(
 			(vm) => new MachineListElementView(vm), 
-			machines);
+			machines, 
+			allowSelection : false);
 		_rulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView>(
 			(vm) => new SecurityRuleListElementView(vm), 
-			rules);
+			rules, 
+			allowSelection : false);
 
 		this.viewModel = viewModel;
 	}

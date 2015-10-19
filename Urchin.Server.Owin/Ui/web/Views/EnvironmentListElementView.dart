@@ -15,9 +15,8 @@ class EnvironmentListElementView extends View
 
 	EnvironmentListElementView([EnvironmentViewModel viewModel])
 	{
-		name = new LIElement()
+		name = new DivElement()
 			..classes.add('environmentName')
-			..classes.add('selectionItem')
 			..onClick.listen(_environmentClicked);
 
 		_nameBinding = new BoundLabel(name);

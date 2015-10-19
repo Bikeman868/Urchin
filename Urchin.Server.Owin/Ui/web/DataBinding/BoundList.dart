@@ -45,6 +45,7 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View>
     ViewFactory<TVM, TV> viewFactory;
 	bool allowAdd;
 	bool allowRemove;
+	bool allowSelection;
 
     Element _listContainer;
     Element get listContainer => _listContainer;
@@ -67,7 +68,8 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View>
         {
             for (var index = 0; index < _binding.viewModels.length; index++)
             {
-                var listItem = builder.addContainer(className:'boundListElement');
+                var listItem = builder.addListElement(className:'boundListElement');
+				if (allowSelection) listItem.classes.add('selectionItem');
 
                 var viewContainer = builder.addContainer(className:'boundListView', parent: listItem);
                 var view = viewFactory(_binding.viewModels[index]);
@@ -81,13 +83,23 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View>
             }
 			if (allowAdd)
 			{
-				var addButton = builder.addImage('ui/images/add{_v_}.gif', altText: 'New', classNames: ['boundListAdd','imageButton'], onClick: _addClicked);
+                var listItem = builder.addListElement(className:'boundListElement');
+				if (allowSelection) listItem.classes.add('selectionItem');
+                var viewContainer = builder.addContainer(className:'boundListView', parent: listItem);
+				var addButton = builder.addImage('ui/images/add{_v_}.gif', altText: 'New', classNames: ['boundListAdd','imageButton'], parent: listItem, onClick: _addClicked);
 			}
         }
 		builder.displayIn(_listContainer);
     }
   
-    BoundList(this.viewFactory, Element listContainer, [this.allowAdd = true, this.allowRemove = true])
+    BoundList(
+		this.viewFactory,
+		Element listContainer, 
+		{
+			this.allowAdd : true, 
+			this.allowRemove : true, 
+			this.allowSelection : true
+		})
     {
         this.listContainer = listContainer;
     }

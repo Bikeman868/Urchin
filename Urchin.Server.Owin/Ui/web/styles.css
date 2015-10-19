@@ -123,6 +123,11 @@ td
    clear: both;
 }
 
+.boundListElement
+{
+    list-style: none;
+}
+
 .boundListElement:after
 {
    content: " ";
@@ -147,7 +152,7 @@ td
 .boundListAdd
 {
     display: block;
-    width: 25px;
+    width: 20px;
     float: right;
 }
 
@@ -233,7 +238,6 @@ span.button
 
 .selectionList
 {
-    list-style: none;
     margin: 10px;
     position: relative;
     padding: 4px 4px 4px 4px;
