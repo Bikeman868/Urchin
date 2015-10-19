@@ -10,7 +10,7 @@ import '../ViewModels/EnvironmentViewModel.dart';
 
 class EnvironmentListElementView extends View
 {
-	LIElement name;
+	Element name;
 	BoundLabel _nameBinding;
 
 	EnvironmentListElementView([EnvironmentViewModel viewModel])
