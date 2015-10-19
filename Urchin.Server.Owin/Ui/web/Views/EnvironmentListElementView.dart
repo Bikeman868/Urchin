@@ -12,7 +12,6 @@ class EnvironmentListElementView extends View
 {
 	LIElement name;
 	BoundLabel _nameBinding;
-	SubscriptionEvent<EnvironmentSelectedEvent> environmentSelected = new SubscriptionEvent<EnvironmentSelectedEvent>();
 
 	EnvironmentListElementView([EnvironmentViewModel viewModel])
 	{
@@ -44,7 +43,7 @@ class EnvironmentListElementView extends View
 
 	void _environmentClicked(MouseEvent e)
 	{
-		environmentSelected.raise(new EnvironmentSelectedEvent(_viewModel));
+		AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(_viewModel));
 	}
 
 	void addTo(Element container)

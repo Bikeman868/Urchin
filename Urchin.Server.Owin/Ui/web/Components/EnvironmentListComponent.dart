@@ -3,42 +3,27 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../DataLayer/Data.dart';
-import '../ViewModels/EnvironmentViewModel.dart';
-import '../Views/EnvironmentListElementView.dart';
+import '../ViewModels/DataViewModel.dart';
+import '../Views/EnvironmentListView.dart';
 import '../Events/AppEvents.dart';
 
 class EnvironmentListComponent
 {
-	Data _data;
+	EnvironmentListView _view;
+	Element heading;
 
-	EnvironmentListComponent(this._data)
+	EnvironmentListComponent(DataViewModel viewModel)
 	{
+		heading = new SpanElement()
+			..classes.add('panelTitle')
+			..text = 'Environments';
+		_view = new EnvironmentListView(viewModel);
 	}
   
 	void displayIn(containerDiv) async
 	{
-		var heading = new SpanElement()
-			..classes.add('panelTitle')
-			..text = 'Environments';
+		containerDiv.children.clear();
 		containerDiv.children.add(heading);
-
-		Map<String, EnvironmentViewModel> environments = await _data.getEnvironments();
-		if (environments != null)
-		{
-			var list = new UListElement();
-			list.classes.add("selectionList");
-			for (EnvironmentViewModel environment in environments.values)
-			{
-				new EnvironmentListElementView(environment)
-					..environmentSelected.listen(_environmentSelected)
-					..addTo(list);
-			}
-			containerDiv.children.add(list);
-		}
-	}
-
-	void _environmentSelected(EnvironmentSelectedEvent e)
-	{
-		AppEvents.environmentSelected.raise(e);
+		_view.addTo(containerDiv);
 	}
 }

@@ -18,17 +18,14 @@ import '../Events/SubscriptionEvent.dart';
 
 class Data
 {
-	DataModel _model;
-	DataViewModel _viewModel;
+	DataViewModel viewModel;
 
 	Map<int, VersionData> _versionDataMap;
-	Map<String, EnvironmentViewModel> _environmentViewModelMap;
 	List<RuleVersionModel> _versionModelList;
 
 	Data()
 	{
-		_model = new DataModel();
-		_viewModel = new DataViewModel(_model);
+		viewModel = new DataViewModel();
 
 		_versionDataMap = new Map<int, VersionData>();
 		AppEvents.userChanged.listen(_userChanged);
@@ -36,7 +33,7 @@ class Data
 
 	reload() async
 	{
-		await _loadEnvironments();
+		await _load();
 		_versionModelList = null;
 
 		for(var version in _versionDataMap.values)
@@ -51,84 +48,42 @@ class Data
 			if (!await version.save())
 				return;
 
-		if (!await _saveEnvironments())
+		if (!await _save())
 			return;
 
 		AppEvents.dataSavedEvent.raise(new DataEvent(this));
 	}
 
-	Future<bool> _saveEnvironments() async
+	Future<bool> _save() async
 	{
+		var environmentList = viewModel.environments;
+
+		var environmentModels = new List<EnvironmentModel>();
 		bool isModified = false;
-		var models = new List<EnvironmentModel>();
-		for (EnvironmentViewModel vm in _environmentViewModelMap.values)
+		for (EnvironmentViewModel environmentViewModel in environmentList.viewModels)
 		{
-			var state = vm.getState();
+			var state = environmentViewModel.getState();
 			if (state != ChangeState.deleted)
-				models.add(vm.model);
+				environmentModels.add(environmentViewModel.model);
 			if (state != ChangeState.unmodified)
 				isModified = true;
 		}
 		if (!isModified) return true;
 
-		String error = await Server.replaceEnvironments(models);
+		String error = await Server.replaceEnvironments(environmentModels);
 		if (error == null) return true;
 		window.alert('Changes were not saved. ' + error);
 		return false;
 	}
 
-	_loadEnvironments() async
+	_load() async
 	{
-		List<String> deletedEnvironmentNames = new List<String>();
+		var model = new DataModel();
 
-		List<EnvironmentModel> environmentModelList = await Server.getEnvironments();
-		if (_environmentViewModelMap == null)
-		{
-			_environmentViewModelMap = new Map<String, EnvironmentViewModel>();
-		}
-		else
-		{
-			for (var name in _environmentViewModelMap.keys)
-			{
-				if (!environmentModelList.any((EnvironmentModel m) => m.name == name))
-					deletedEnvironmentNames.add(name);
-			}
-		}
+		model.environments = await Server.getEnvironments();
+		model.versions = null;
 
-		for (EnvironmentModel model in environmentModelList)
-		{
-			String name = model.name;
-			EnvironmentViewModel viewModel = _environmentViewModelMap[name];
-			if (viewModel == null)
-			{
-				if (deletedEnvironmentNames.length > 0)
-				{
-					var oldName = deletedEnvironmentNames[0];
-					deletedEnvironmentNames.removeAt(0);
-					viewModel = _environmentViewModelMap[oldName];
-					_environmentViewModelMap.remove(oldName);
-				}
-				else
-				{
-					viewModel = new EnvironmentViewModel();
-				}
-				_environmentViewModelMap[name] = viewModel;
-			}
-			viewModel.model = model;
-		}
-
-		for (var oldName in deletedEnvironmentNames)
-		{
-			_environmentViewModelMap.remove(oldName);
-		}
-	}
-
-	Future<Map<String, EnvironmentViewModel>> getEnvironments() async
-	{
-		if (_environmentViewModelMap == null)
-			await _loadEnvironments();
-
-		return _environmentViewModelMap;
+		viewModel.model = model;
 	}
 
 	Future<List<RuleVersionModel>> getVersions() async
