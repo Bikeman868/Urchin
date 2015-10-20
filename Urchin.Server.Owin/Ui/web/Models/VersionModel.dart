@@ -1,9 +1,9 @@
 ﻿import '../DataBinding/Model.dart';
 import '../Models/RuleModel.dart';
 
-class RuleVersionModel extends Model
+class VersionModel extends Model
 {
-	RuleVersionModel(Map json, this.hasRules) : super(json);
+	VersionModel(Map json, this.hasRules) : super(json);
 
 	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }

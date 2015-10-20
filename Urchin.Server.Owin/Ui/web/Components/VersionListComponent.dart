@@ -4,7 +4,7 @@ import 'dart:async';
 
 import '../DataLayer/Data.dart';
 import '../DataLayer/VersionData.dart';
-import '../Models/RuleVersionModel.dart';
+import '../Models/VersionModel.dart';
 import '../Events/AppEvents.dart';
 
 class VersionListComponent
@@ -22,12 +22,12 @@ class VersionListComponent
 		heading.text = 'Versions';
 		containerDiv.children.add(heading);
 
-		List<RuleVersionModel> versions = await _data.getVersions();
+		List<VersionModel> versions = await _data.getVersions();
 		if (versions != null)
 		{
 			var list = new UListElement();
 			list.classes.add("selectionList");
-			for (RuleVersionModel version in versions)
+			for (VersionModel version in versions)
 			{
 				var element = new LIElement();
 				element.text = version.version.toString() + ' - ' + version.name;

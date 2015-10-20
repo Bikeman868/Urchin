@@ -26,7 +26,11 @@ class MachineViewModel extends ViewModel
 		}
 		else
 		{
-			name.setter = (String text) { value.name = text; };
+			name.setter = (String text) 
+			{ 
+				value.name = text; 
+				modified();
+			};
 			name.getter = () => value.name;
 		}
 	}

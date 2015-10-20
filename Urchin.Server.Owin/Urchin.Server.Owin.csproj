@@ -159,7 +159,7 @@
     <None Include="Ui\web\Models\EnvironmentModel.dart" />
     <Content Include="Ui\web\DataBinding\BoundLabel.dart" />
     <Content Include="Ui\web\DataBinding\BoundElement.dart" />
-    <Content Include="Ui\web\Models\RuleVersionModel.dart" />
+    <Content Include="Ui\web\Models\VersionModel.dart" />
     <Content Include="Ui\web\Models\VariableModel.dart" />
     <Content Include="Ui\web\Models\SecurityRuleModel.dart" />
     <Content Include="Ui\web\Models\PostResponseModel.dart" />
@@ -167,6 +167,7 @@
     <Content Include="Ui\web\ViewModels\MachineViewModel.dart" />
     <Content Include="Ui\web\ViewModels\DataViewModel.dart" />
     <Content Include="Ui\web\Models\DataModel.dart" />
+    <Content Include="Ui\web\ViewModels\VersionViewModel.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +204,8 @@
     <Content Include="Ui\web\ViewModels\SecurityRuleViewModel.dart" />
     <Content Include="Ui\web\Views\SecurityRuleListElementView.dart" />
     <Content Include="Ui\web\Views\EnvironmentListView.dart" />
+    <Content Include="Ui\web\ViewModels\RuleViewModel.dart" />
+    <Content Include="Ui\web\ViewModels\VariableViewModel.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

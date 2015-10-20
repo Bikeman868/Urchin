@@ -6,7 +6,7 @@ import 'Models/ClientCredentialsModel.dart';
 import 'Models/EnvironmentModel.dart';
 import 'Models/PostResponseModel.dart';
 import 'Models/RuleModel.dart';
-import 'Models/RuleVersionModel.dart';
+import 'Models/VersionModel.dart';
 import 'Models/SecurityRuleModel.dart';
 import 'Models/VariableModel.dart';
 
@@ -15,15 +15,15 @@ class Server
 //
 //-- Version related server methods -----------------------------------------------------------------
 //
-	static Future<List<RuleVersionModel>> getVersions() async
+	static Future<List<VersionModel>> getVersions() async
 	{
 		String response = await HttpRequest.getString('/versions');
 		List<Map> versionsJson = JSON.decode(response);
 
-		var versions = new List<RuleVersionModel>();
+		var versions = new List<VersionModel>();
 		for (Map versionJson in versionsJson)
 		{
-			versions.add(new RuleVersionModel(versionJson, false));
+			versions.add(new VersionModel(versionJson, false));
 		}
 		return versions;
 	}
@@ -33,7 +33,7 @@ class Server
 			'/versions', 
 			method: 'DELETE');
 
-	static Future<HttpRequest> updateVersion(int version, RuleVersionModel versionDto)  async
+	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)  async
 		=> HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'PUT',
@@ -59,16 +59,16 @@ class Server
 		return JSON.decode(response);
 	}
   
-	static Future<RuleVersionModel> getRules(int version)  async
+	static Future<VersionModel> getRules(int version)  async
 	{
 		String response = await HttpRequest.getString('/rules/' + version.toString());
-		return new RuleVersionModel(JSON.decode(response), true);
+		return new VersionModel(JSON.decode(response), true);
 	}
 
-	static Future<RuleVersionModel> getDraftRules() async
+	static Future<VersionModel> getDraftRules() async
 	{
 		String response = await HttpRequest.getString('/rules');
-		return new RuleVersionModel(JSON.decode(response), true);
+		return new VersionModel(JSON.decode(response), true);
 	}
 
 	static Future<HttpRequest> addRules(int version, List<RuleModel> rules) 

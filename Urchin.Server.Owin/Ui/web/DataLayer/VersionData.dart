@@ -2,24 +2,23 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Models/RuleVersionModel.dart';
+import '../Models/VersionModel.dart';
 import '../Server.dart';
 import '../Events/AppEvents.dart';
 import '../Events/SubscriptionEvent.dart';
 
 class VersionData
 {
-	RuleVersionModel version;
+	VersionModel version;
 
 	List<String> _ruleNames;
-	RuleVersionModel _rules;
 
 	VersionData(this.version);
 
 	reload() async
 	{
 		_ruleNames = null;
-		_rules = null;
+		version = null;
 	}
 
 	Future<bool> save() async
@@ -39,15 +38,15 @@ class VersionData
 		return _ruleNames;
 	}
 
-	Future<RuleVersionModel> getRules() async
+	Future<VersionModel> getRules() async
 	{
-		if (_rules == null)
+		if (version == null || !version.hasRules)
 		{
 			if (version == null || version.version < 1)
-				_rules = await Server.getDraftRules();
+				version = await Server.getDraftRules();
 			else
-				_rules = await Server.getRules(version.version);
+				version = await Server.getRules(version.version);
 		}
-		return _rules;
+		return version;
 	}
 }

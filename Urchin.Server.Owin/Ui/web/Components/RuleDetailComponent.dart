@@ -7,7 +7,7 @@ import '../Html/HtmlBuilder.dart';
 import '../Html/JsonHighlighter.dart';
 import '../DataLayer/Data.dart';
 import '../DataLayer/VersionData.dart';
-import '../Models/RuleVersionModel.dart';
+import '../Models/VersionModel.dart';
 import '../Models/RuleModel.dart';
 import '../Events/AppEvents.dart';
 
@@ -80,8 +80,8 @@ class RuleDetailComponent
 		try
 		{
 			VersionData versionData = await _data.getVersion(e.version);
-			RuleVersionModel ruleVersion = await versionData.getRules();
-			RuleModel rule = ruleVersion.rules.firstWhere((RuleModel r) => r.name == e.ruleName);
+			VersionModel version = await versionData.getRules();
+			RuleModel rule = version.rules.firstWhere((RuleModel r) => r.name == e.ruleName);
 
 			_ruleName.text = rule.name;
 			_machine.text = rule.machine;

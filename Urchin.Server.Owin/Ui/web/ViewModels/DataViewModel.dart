@@ -4,15 +4,17 @@ import '../DataBinding/ChangeState.dart';
 
 import '../Models/DataModel.dart';
 import '../Models/EnvironmentModel.dart';
-import '../Models/RuleVersionModel.dart';
+import '../Models/VersionModel.dart';
 
 import '../ViewModels/EnvironmentViewModel.dart';
+import '../ViewModels/VersionViewModel.dart';
 
 import '../Events/AppEvents.dart';
 
 class DataViewModel extends ViewModel
 {
     ListBinding<EnvironmentModel, EnvironmentViewModel> environments;
+    ListBinding<VersionModel, VersionViewModel> versions;
 
 	DataViewModel([DataModel model])
 	{
@@ -21,15 +23,22 @@ class DataViewModel extends ViewModel
 			(EnvironmentModel m) => new EnvironmentViewModel(m));
 		environments.onAdd.listen(_environmentAdded);
 
+		versions = new ListBinding<VersionModel, VersionViewModel>(
+			(Map json) => new VersionModel(new Map()..['name']='New Version', true), 
+			(VersionModel m) => new VersionViewModel(m));
+		versions.onAdd.listen(_versionAdded);
+
 		this.model = model;
 	}
 
 	DataModel _model;
+
 	DataModel get model
 	{
 		if (_model != null)
 		{
 			_model.environments = environments.models;
+			_model.versions = versions.models;
 		}
 		return _model;
 	}
@@ -57,6 +66,9 @@ class DataViewModel extends ViewModel
 		if (environments.getState() != ChangeState.unmodified)
 			return ChangeState.modified;
 
+		if (versions.getState() != ChangeState.unmodified)
+			return ChangeState.modified;
+
 		return ChangeState.unmodified;
 	}
 
@@ -64,6 +76,12 @@ class DataViewModel extends ViewModel
 	{
 		var viewModel = environments.viewModels[e.index];
 		AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(viewModel));
+	}
+
+	void _versionAdded(ListEvent e)
+	{
+		var viewModel = versions.viewModels[e.index];
+		AppEvents.versionSelected.raise(new VersionSelectedEvent(viewModel));
 	}
 
 }
