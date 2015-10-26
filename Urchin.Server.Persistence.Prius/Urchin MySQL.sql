@@ -154,6 +154,9 @@ BEGIN
 	DELETE FROM m USING Machines AS m
 	WHERE m.EnvironmentId = environmentId;
 	
+	DELETE FROM r USING SecurityRules AS r
+	WHERE r.EnvironmentId = environmentId;
+	
 	DELETE FROM e USING Environments AS e
 	WHERE e.Id = environmentId;
 END//

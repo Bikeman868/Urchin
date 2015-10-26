@@ -353,7 +353,7 @@ namespace Urchin.Server.Persistence.Prius
                         var machineName = command.AddParameter("machineName", SqlDbType.NVarChar, ParameterDirection.Input);
                         foreach (var machine in environment.Machines)
                         {
-                            machineName.Value = machine;
+                            machineName.Value = machine.Name;
                             context.ExecuteNonQuery(command);
                         }
                     }
