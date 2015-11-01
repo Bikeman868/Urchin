@@ -18,7 +18,7 @@ class VersionData
 	reload() async
 	{
 		_ruleNames = null;
-		version = null;
+		version.hasRules = false;
 	}
 
 	Future<bool> save() async
