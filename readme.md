@@ -29,7 +29,13 @@ A rules based centralized enterprise configuration management solution for .Net
   your application.
   
 ## Known issues
-* None at this time. Please contact the owner if you are experiencing any problems.
+There have been reports of issues with the database persistence module. It looks
+like some issues might have been introduces with the switch to versioning of rules.
+My advice for now is to use the default persistence mechanism that saves all the
+rules to a single file. This is the mechanism that was used during development,
+has received extensive testing and seems to be completely solid.
+
+Please contact the owner if you are experiencing any other issues.
 
 ## Contents
 | Component | Description |
