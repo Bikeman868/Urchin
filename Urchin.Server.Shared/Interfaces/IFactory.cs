@@ -1,6 +1,6 @@
 ﻿namespace Urchin.Server.Shared.Interfaces
 {
-    public interface IIocFactory
+    public interface IFactory
     {
         T Create<T>();
     }

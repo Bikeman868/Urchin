@@ -34,6 +34,9 @@
     <Reference Include="AutoMapper">
       <HintPath>..\packages\AutoMapper.4.0.4\lib\net40\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="Ioc.Modules">
+      <HintPath>..\packages\Ioc.Modules.1.0.2\lib\Ioc.Modules.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -64,8 +67,6 @@
     <Compile Include="DataContracts\VersionNameDto.cs" />
     <Compile Include="Interfaces\IClientCredentials.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
-    <Compile Include="Interfaces\IIocConfig.cs" />
-    <Compile Include="Interfaces\IIocRegistrar.cs" />
     <Compile Include="Interfaces\IMapper.cs" />
     <Compile Include="Interfaces\IPersister.cs" />
     <Compile Include="Rules\ClientCredentialsDto.cs" />

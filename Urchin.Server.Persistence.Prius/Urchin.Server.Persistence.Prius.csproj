@@ -43,6 +43,9 @@
     <Reference Include="Common.Logging.Core">
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Ioc.Modules">
+      <HintPath>..\packages\Ioc.Modules.1.0.2\lib\Ioc.Modules.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Npgsql.2.2.5\lib\net40\Mono.Security.dll</HintPath>
@@ -96,6 +99,7 @@
     <Compile Include="DatabaseRecords\VariableRecord.cs" />
     <Compile Include="IocConfiguration.cs" />
     <Compile Include="DatabasePersister.cs" />
+    <Compile Include="Package.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

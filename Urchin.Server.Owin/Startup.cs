@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Common.Logging;
+using Ioc.Modules;
 using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
 using Microsoft.Practices.Unity;
 using Owin;
+using Urchin.Client.Interfaces;
+using Urchin.Client.Sources;
 using Urchin.Server.Owin;
-using Urchin.Server.Shared.Interfaces;
-using Urchin.Server.Shared.Rules;
-
-using Mapper = Urchin.Server.Shared.TypeMappings.Mapper;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -45,77 +42,32 @@ namespace Urchin.Server.Owin
         private UnityContainer ConfigureUnity()
         {
             var unityContainer = new UnityContainer();
-            unityContainer.RegisterType<IRuleData, RuleData>(new ContainerControlledLifetimeManager());
-            unityContainer.RegisterType<IMapper, Mapper>(new ContainerControlledLifetimeManager());
-            unityContainer.RegisterType<ILogManager, LogManager>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterInstance<Shared.Interfaces.IFactory>(new UnityFactory(unityContainer));
 
-            // Register the default persister. If you include the DLLs from any
-            // other persister, it will override this registration and become the 
-            // persister for your installation.
-            unityContainer.RegisterType<IPersister, FilePersister>(new ContainerControlledLifetimeManager());
-
-            var iocConfigs = GetIocConfigs(unityContainer);
-
-            // The code below will dynamically load any IOC registrations from
-            // additional libraries that are deployed to the bin folder. This
-            // makes it possible to replace the persistence mechanism.
-            var registrar = new UnityRegistrar(unityContainer);
-            unityContainer.RegisterInstance<IIocRegistrar>(registrar);
-            unityContainer.RegisterInstance<IIocFactory>(registrar);
-            foreach (var config in iocConfigs)
-                config.RegisterDependencies(registrar);
+            // Register IoC dependencies for all dependent packages
+            // Explicitly load is assemblies packages first so that
+            var packageLocator = new PackageLocator()
+                .Add(typeof(IConfigurationStore).Assembly)
+                .Add(Assembly.GetExecutingAssembly())
+                .ProbeBinFolderAssemblies();
+            Ioc.Modules.Unity.Registrar.Register(packageLocator, unityContainer);
 
             return unityContainer;
         }
 
-        /// <summary>
-        /// Implements IIocRegistrar and IIocFactory using Unity. These interfaces allow
-        /// add on modules to register themselves with the IoC container without knowing
-        /// which IoC is being used.
-        /// </summary>
-        private class UnityRegistrar: IIocRegistrar, IIocFactory
+        private class UnityFactory : Shared.Interfaces.IFactory
         {
-            private readonly UnityContainer _container;
+            private readonly UnityContainer _unity;
 
-            public UnityRegistrar(UnityContainer container)
+            public UnityFactory(UnityContainer unity)
             {
-                _container = container;
-            }
-
-            public void RegisterSingleton<TInterface, TClass>()
-                where TInterface : class
-                where TClass : class, TInterface
-            {
-                _container.RegisterType<TInterface, TClass>(new ContainerControlledLifetimeManager());
-            }
-
-            public void RegisterType<TInterface, TClass>()
-                where TInterface : class
-                where TClass : class, TInterface
-            {
-                _container.RegisterType<TInterface, TClass>(new ExternallyControlledLifetimeManager());
+                _unity = unity;
             }
 
             public T Create<T>()
             {
-                return _container.Resolve<T>();
+                return _unity.Resolve<T>();
             }
-        }
-
-        /// <summary>
-        /// Scans all DLLs in the bin folder, and finds classes that register interface
-        /// mappings in IOC. This provides a mechanism for changing the behaviour of the
-        /// urchin server by simply dropping a DLL into the bin folder. An example
-        /// of this is the Prius persister. By adding this to the bin folder, the
-        /// standard file persister is replaced by the database persister.
-        /// </summary>
-        private IEnumerable<IIocConfig> GetIocConfigs(UnityContainer unityContainer)
-        {
-            var dependencyDefinitionInterface = typeof(IIocConfig);
-            return Shared.TypeMappings.ReflectionHelper.GetTypes(t => t.IsClass && dependencyDefinitionInterface.IsAssignableFrom(t))
-                .Select(t => unityContainer.Resolve(t))
-                .Cast<IIocConfig>()
-                .OrderBy(c => c.OrderIndex);
         }
 
         /// <summary>
@@ -193,11 +145,7 @@ namespace Urchin.Server.Owin
             }
             var fileInfo = new FileInfo(fileName);
 
-            var configurationStore = new Client.Data.ConfigurationStore().Initialize();
-            var configurationSource = new Client.Sources.FileSource(configurationStore).Initialize(fileInfo, TimeSpan.FromSeconds(10));
-
-            unityContainer.RegisterInstance(configurationStore);
-            unityContainer.RegisterInstance(configurationSource);
+            var configurationSource = unityContainer.Resolve<FileSource>().Initialize(fileInfo, TimeSpan.FromSeconds(10));
 
             return configurationSource;
         }

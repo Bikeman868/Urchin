@@ -39,6 +39,12 @@ namespace Urchin.Client.Data
         private IConfigurationValidator _validator;
         private IErrorLogger _errorLogger;
 
+        public ConfigurationStore()
+        {
+            _validator = new DefaultValidator();
+            _errorLogger = new DefaultErrorLogger();
+        }
+
         public IConfigurationStore Initialize(
             IConfigurationValidator validator = null,
             IErrorLogger errorLogger = null)

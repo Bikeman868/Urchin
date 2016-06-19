@@ -79,7 +79,8 @@ Q: How do I get started?
 A: To get started with the client only using IoC and a local configuration file:
    1. Install the NuGet package for `Urchin.Client`.
    2. In your IoC register a mapping to the `ConfigurationStore` class from the
-      `IConfigurationStore` interface as a singleton.
+      `IConfigurationStore` interface as a singleton. Note that if you integrate
+	  the Ioc.Modules package into application you can skip this step.
    3. Create a configuration file in JSON format. Structure the JSON however you
       want including different data types, arrays and objects within objects.
    4. Construct an instance of `Urchin.Client.Sources.FileSource` and initialize
