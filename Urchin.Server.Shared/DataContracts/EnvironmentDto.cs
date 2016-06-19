@@ -12,7 +12,7 @@ namespace Urchin.Server.Shared.DataContracts
         public int Version { get; set; }
 
         [JsonProperty("machines")]
-        public List<string> Machines { get; set; }
+        public List<MachineDto> Machines { get; set; }
 
         [JsonProperty("securityRules")]
         public List<SecurityRuleDto> SecurityRules { get; set; }

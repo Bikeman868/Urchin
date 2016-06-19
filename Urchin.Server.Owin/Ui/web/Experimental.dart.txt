@@ -1,0 +1,662 @@
+import 'dart:async';
+import 'dart:html';
+import 'dart:mirrors';
+
+void main() 
+{
+  var users = new List<UserModel>();
+  
+  users.add(new UserModel()
+    ..userName = 'Martin'
+    ..ipAddress = 123);
+  
+  users.add(new UserModel()
+  ..userName = 'Daisy'
+  ..ipAddress = 321);
+  
+  var viewModels = users.map((m) => new UserViewModel(m)).toList();
+  var userViews = viewModels.map((vm) => new UserView(vm)).toList();
+  
+  var buttons = new List<ButtonElement>();
+  
+  buttons.add(new ButtonElement()
+  ..text = 'VM1->M1'
+  ..onClick.listen((Event e) { viewModels[0].model = users[0]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'VM1->M2'
+  ..onClick.listen((Event e) { viewModels[0].model = users[1]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'VM2->M1'
+  ..onClick.listen((Event e) { viewModels[1].model = users[0]; }));
+    
+  buttons.add(new ButtonElement()
+  ..text = 'VM2->M2'
+  ..onClick.listen((Event e) { viewModels[1].model = users[1]; }));
+    
+  buttons.add(null);
+  
+  buttons.add(new ButtonElement()
+  ..text = 'V1->VM1'
+  ..onClick.listen((Event e) { userViews[0].viewModel = viewModels[0]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'V1->VM2'
+  ..onClick.listen((Event e) { userViews[0].viewModel = viewModels[1]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'V2->VM1'
+  ..onClick.listen((Event e) { userViews[1].viewModel = viewModels[0]; }));
+  
+  buttons.add(new ButtonElement()
+  ..text = 'V2->VM2'
+  ..onClick.listen((Event e) { userViews[1].viewModel = viewModels[1]; }));
+  
+  var middleDiv = querySelector('#middleDiv');
+  middleDiv.children.clear();
+  
+  for (var button in buttons)
+  {
+    if (button == null)
+	  	middleDiv.children.add(new DivElement());
+  	else
+      middleDiv.children.add(button);
+  }
+  middleDiv.children.add(new DivElement());
+
+  for (var view in userViews)
+  {
+  	view.addTo(middleDiv);
+	  middleDiv.children.add(new DivElement());
+  }
+  
+  var machineList = new MachineListModel()
+    ..machines.add(new MachineModel()..machine = 'Machine 1')
+    ..machines.add(new MachineModel()..machine = 'Machine 2')
+    ..machines.add(new MachineModel()..machine = 'Machine 3');
+  
+  //var machineListViewModel = new MachineListViewModel(machineList);
+  //new MachineListView(machineListViewModel).addTo(middleDiv);
+  //new MachineListView(machineListViewModel).addTo(middleDiv);
+}
+
+//======================================================================
+
+class UserView extends View
+{
+	InputElement userName;
+	BoundTextInput _userNameBinding;
+
+	InputElement ipAddress;
+	BoundTextInput _ipAddressBinding;
+
+	UserView([UserViewModel viewModel])
+	{
+    userName = new InputElement();
+    ipAddress = new InputElement();
+
+    _userNameBinding = new BoundTextInput(userName);
+		_ipAddressBinding = new BoundTextInput(ipAddress);
+    
+    this.viewModel = viewModel;
+	}
+  
+  UserViewModel _viewModel;
+  UserViewModel get viewModel => _viewModel;
+  void set viewModel(UserViewModel value)
+  {
+    _viewModel = value;
+    if (value == null)
+    {
+      _userNameBinding.binding = null;
+      _ipAddressBinding.binding = null;
+    }
+    else
+    {
+      _userNameBinding.binding = value.userName;
+      _ipAddressBinding.binding = value.ipAddress;
+    }
+  }
+  
+  void addTo(Element container)
+  {
+    container.children.add(userName);
+    container.children.add(ipAddress);
+  }
+}
+
+class MachineListView extends View
+{
+  DivElement machines;
+  BoundList _machinesBinding;
+
+	MachineListView([MachineListViewModel viewModel])
+	{
+    machines = new DivElement();
+    _machinesBinding = new BoundList(machines);
+    this.viewModel = viewModel;
+	}
+
+  MachineListViewModel _viewModel;
+  MachineListViewModel get viewModel => _viewModel;
+  void set viewModel(MachineListViewModel value)
+  {
+    _viewModel = value;
+    if (value == null)
+    {
+      _machinesBinding.binding = null;
+    }
+    else
+    {
+      _machinesBinding.binding = value.machines;
+    }
+  }
+  
+  void addTo(Element container)
+  {
+    container.children.add(machines);
+  }
+}
+
+class MachineView extends View
+{
+	InputElement machine;
+	BoundTextInput _machineBinding;
+
+	MachineView([MachineViewModel viewModel])
+	{
+    machine = new InputElement();
+    _machineBinding = new BoundTextInput(machine);
+    this.viewModel = viewModel;
+	}
+  
+  MachineViewModel _viewModel;
+  MachineViewModel get viewModel => _viewModel;
+  void set viewModel(MachineViewModel value)
+  {
+    _viewModel = value;
+    if (value == null)
+    {
+      _machineBinding.binding = null;
+    }
+    else
+    {
+      _machineBinding.binding = value.machine;
+    }
+  }
+  
+  void addTo(Element container)
+  {
+    container.children.add(machine);
+  }
+}
+
+//======================================================================
+
+class UserViewModel
+{
+    StringBinding userName = new StringBinding();
+    IntBinding ipAddress = new IntBinding();
+
+  UserViewModel([UserModel model])
+  {
+    this.model = model;
+  }
+  
+	UserModel _model;
+	UserModel get model => _model;
+	void set model(UserModel value)
+	{
+			_model = model;
+
+      userName.setter = (String text) { value.userName = text; };
+      userName.getter = () => value.userName;
+
+      ipAddress.setter = (int i) { value.ipAddress = i; };
+      ipAddress.getter = () => value.ipAddress;
+	}
+}
+
+class MachineListViewModel
+{
+    ListBinding<MachineModel, MachineViewModel> machines;
+  
+  MachineListViewModel([MachineListModel model])
+  {
+    machines = new ListBinding<MachineModel, MachineViewModel>(
+      () => new MachineModel(), 
+      (m) => new MachineViewModel(m));
+
+    this.model = model;
+  }
+  
+	MachineListModel _model;
+	MachineListModel get model => _model;
+	void set model(MachineListModel value)
+	{
+			_model = model;
+    	machines.models = value.machines;
+	}
+}
+
+class MachineViewModel
+{
+    StringBinding machine = new StringBinding();
+
+  MachineViewModel([MachineModel model])
+  {
+    this.model = model;
+  }
+  
+	MachineModel _model;
+	MachineModel get model => _model;
+	void set model(MachineModel value)
+	{
+			_model = model;
+
+      machine.setter = (String text) { value.machine = text; };
+      machine.getter = () => value.machine;
+	}
+}
+
+//======================================================================
+
+class UserModel
+{
+	int ipAddress;
+	bool isAdmin;
+	bool isLoggedOn;
+	String userName;
+}
+
+class MachineListModel
+{
+  List<MachineModel> machines = new List<MachineModel>();
+}
+
+class MachineModel 
+{
+  String machine;
+}
+
+//======================================================================
+
+abstract class View
+{
+  void addTo(Element container);
+}
+
+//======================================================================
+
+void disposeOf(Object o)
+{
+  try
+  {
+	  reflect(o).type.invoke(#dispose, null);
+  }
+  catch(exception){}
+}
+
+//======================================================================
+
+typedef T ModelFactory<T>();
+typedef TVM ViewModelFactory<TM, TVM>(TM model);
+typedef TV ViewFactory<TVM, TV extends View>(TVM viewModel);
+
+class ListEvent
+{
+  int index;
+  ListEvent(this.index);
+}
+
+class ListBinding<TM, TVM>
+{
+  	ModelFactory<TM> modelFactory;
+  	ViewModelFactory<TM, TVM> viewModelFactory;
+  
+  	SubscriptionEvent<ListEvent> onAdd = new SubscriptionEvent<ListEvent>();
+  	SubscriptionEvent<ListEvent> onRemove = new SubscriptionEvent<ListEvent>();
+  
+  	List<TVM> viewModels;
+
+  	List<TM> _models;
+  	List<TM> get models => _models;
+  	void set models(List<TM> value)
+    {
+      for (int index = 0; index < viewModels.length; index++)
+      {
+        TVM viewModel = viewModels[index];
+        onRemove.raise(new ListEvent(index));
+        disposeOf(viewModel);
+      }
+      viewModels.clear();
+      
+      _models = value;
+
+      if (value != null)
+      {
+      	for (int index = 0; index < value.length; index++)
+        {
+          TVM viewModel = viewModelFactory(value[index]);
+          viewModels.add(viewModel);
+          onAdd.raise(new ListEvent(index));
+        }
+      }
+    }
+  
+  
+  ListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
+  {
+    viewModels = new List<TVM>();
+    this.models = models;
+	}
+  
+  	void add()
+    {
+      int index = models.length;
+      
+      TM model = modelFactory();
+      models.add(model);
+      
+      TVM viewModel = viewModelFactory(model);
+      viewModels.add(viewModel);
+      
+      onAdd.raise(new ListEvent(index));
+    }
+  
+  	void remove(int index)
+    {
+      TVM viewModel = viewModels[index];
+      TM model = models[index];
+      
+    	onRemove.raise(new ListEvent(index));
+      
+      viewModels.removeAt(index);
+      models.removeAt(index);
+      
+      disposeOf(viewModel);
+      disposeOf(model);
+    }
+}
+
+//======================================================================
+
+typedef String FormatFunction<T>(T value);
+typedef T ParseFunction<T>(String value);
+typedef T PropertyGetFunction<T>();
+typedef void PropertySetFunction<T>(T value);
+
+// Provides two-way data binding with parsing and formatting
+// The binding is associated with a single data value in a model
+// and many UI elements. A view model is basically a collection
+// of these Binding<T> objects that connect the views to the models.
+class Binding<T>
+{
+	PropertyGetFunction<T> getter;
+	PropertySetFunction<T> setter;
+	FormatFunction<T> formatter;
+	ParseFunction<T> parser;
+	SubscriptionEvent<String> onChange;
+  
+	Binding()
+	{
+		onChange = new SubscriptionEvent<String>();
+	}
+  
+	String getProperty()
+	{
+		if (getter == null || formatter == null)
+			return null;
+    
+		T value = getter();
+		return formatter(value);
+	}
+  
+	bool setProperty(String text)
+	{
+		if (parser == null)
+			return false;
+    
+		T value = parser(text);
+    
+		if (value == null)
+			return false;
+    
+		if (setter != null)
+			setter(value);
+    
+		if (onChange != null)
+		{
+			String formattedValue = getProperty();
+			onChange.raise(formattedValue);
+		}
+    
+		return true;
+	}
+}
+
+class IntBinding extends Binding<int>
+{
+	IntBinding()
+	{
+		formatter = (int i) => i.toString();
+		parser = (String text)
+		{
+			try
+			{
+				return int.parse(text);
+			}
+			on Exception
+			{
+				return null;
+			}
+		};
+	}
+}
+
+class StringBinding extends Binding<String>
+{
+	StringBinding()
+	{
+		formatter = (String s) => s;
+		parser = (String text) => text;
+	}
+}
+
+//======================================================================
+
+class SubscriptionEvent<E>
+{
+	StreamController<E> _controller = new StreamController.broadcast();
+  
+	raise(E e)
+	{
+		_controller.add(e);
+	}
+
+	StreamSubscription<E> listen(void handler(E e)) 
+	{
+		return _controller.stream.listen(handler);
+	}
+}
+
+//======================================================================
+
+class BoundList<TM, TVM, TV extends View>
+{
+  ListBinding<TM, TVM> _binding;
+  ListBinding<TM, TVM> get binding => _binding;
+  void set binding(ListBinding<TM, TVM> value)
+  {
+		if (_addSubscription != null)
+		{
+			_addSubscription.cancel();
+			_addSubscription = null;
+		}
+		if (_removeSubscription != null)
+		{
+			_removeSubscription.cancel();
+			_removeSubscription = null;
+		}
+    _binding = value;
+    if (value != null)
+    {
+			_constructViews();
+			_addSubscription = value.onAdd.listen(_onAdd);      
+			_removeSubscription = value.onAdd.listen(_onRemove);      
+    }
+	}
+  
+  	StreamSubscription<ListEvent> _addSubscription;
+  	StreamSubscription<ListEvent> _removeSubscription;
+  	ViewFactory<TVM, TV> viewFactory;
+
+ 	Element _listContainer;
+	Element get listContainer => _listContainer;
+	void set listContainer(Element value)
+	{
+		_listContainer = value;
+		if (_binding != null)
+			_constructViews();
+	}
+  
+  void _constructViews()
+  {
+    if (_listContainer != null)
+    {
+      _listContainer.children.clear();
+      if (_binding != null && _binding.viewModels != null)
+      {
+        for (var index = 0; index < _binding.viewModels.length; index++)
+        {
+          var listItem = new DivElement();
+          _listContainer.children.add(listItem);
+
+          var viewContainer = new DivElement();
+          var view = viewFactory(_binding.viewModels[index]);
+          view.addTo(viewContainer);
+          listItem.children.add(viewContainer);
+
+          var deleteButton = new ButtonElement()
+            ..text = 'Delete'
+            ..onClick.listen(_deleteClicked);
+          listItem.children.add(deleteButton);
+        }
+      }
+    }
+  }
+  
+  BoundList(Element listContainer)
+  {
+    this.listContainer = listContainer;
+	}
+  
+  void _deleteClicked(MouseEvent e)
+  {
+  }
+  
+	void _onAdd(ListEvent e)
+  {
+  }
+  
+	void _onRemove(ListEvent e)
+  {
+	}
+}
+
+//======================================================================
+
+abstract class BoundElement<TB, TE>
+{
+	Binding<TB> _binding;
+	Binding<TB> get binding => _binding;
+	void set binding(Binding<TB> value)
+	{
+		if (_bindingSubscription != null)
+		{
+			_bindingSubscription.cancel();
+			_bindingSubscription = null;
+		}
+		_binding = value;
+		if (value != null)
+		{
+			_onBindingChange(value.getProperty());
+			_bindingSubscription = value.onChange.listen(_onBindingChange);
+		}
+	}
+
+	TE _element;
+	TE get element => _element;
+	void set element(TE value)
+	{
+		if (_elementSubscription != null)
+		{
+			_elementSubscription.cancel();
+			_elementSubscription = null;
+		}
+		_element = value;
+		if (value != null)
+		{
+			_elementSubscription = _subscribeToElement(value);
+		}
+		if (_binding != null)
+			_onBindingChange(_binding.getProperty());
+	}
+
+	StreamSubscription<String> _bindingSubscription;
+	StreamSubscription<Event> _elementSubscription;
+  
+	void dispose()
+	{
+		binding = null;
+		element = null;
+	}
+  
+	void _onBindingChange(String text);
+	StreamSubscription<Event> _subscribeToElement(TE element);
+}
+
+class BoundLabel<T> extends BoundElement<T, Element>
+{
+	BoundLabel (Element element)
+	{
+		this.element = element;
+	}
+	
+	void _onBindingChange(String text)
+	{
+		if (_element != null)
+			_element.innerHtml = text;
+	}
+
+	StreamSubscription<Event> _subscribeToElement(Element element)
+	{
+		return null;
+	}
+}
+
+class BoundTextInput<T> extends BoundElement<T, InputElement>
+{
+	BoundTextInput (InputElement element)
+	{
+		this.element = element;
+	}
+	
+	void _onBindingChange(String text)
+	{
+		if (_element != null)
+			_element.value = text;
+	}
+
+	StreamSubscription<Event> _subscribeToElement(InputElement element)
+	{
+		return element.onBlur.listen(_onBlur);
+	}
+  
+	void _onBlur(Event e)
+	{
+		if (!binding.setProperty(element.value))
+			e.preventDefault();
+	}
+}

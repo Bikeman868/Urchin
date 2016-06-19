@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'dart:async';
 
 import '../Html/FormBuilder.dart';
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
-import '../Model/VersionData.dart';
+import '../DataLayer/Data.dart';
+import '../DataLayer/VersionData.dart';
 import '../Events/AppEvents.dart';
 
 class VersionDetailComponent
@@ -64,11 +63,11 @@ class VersionDetailComponent
 		{
 			for (String ruleName in ruleNames)
 			{
-				var element = new LIElement();
-				element.text = ruleName;
-				element.classes.add('ruleName');
-				element.classes.add('selectionItem');
-				element.onClick.listen(_ruleClicked);
+				var element = new LIElement()
+					..text = ruleName
+					..classes.add('ruleName')
+					..classes.add('selectionItem')
+					..onClick.listen(_ruleClicked);
 				_rules.children.add(element);
 			}
 		}

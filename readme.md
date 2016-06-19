@@ -38,6 +38,7 @@ A rules based centralized enterprise configuration management solution for .Net
 | `Urchin.Client.Tests` | Unit tests for Urchin.Client |
 | `Urchin.Server.Owin` | Install this on IIS to provide rules based centralized configuration repository |
 | `Urchin.Server.Shared` | Core server-side technology. Shared by hosting options |
+| `Urchin.Server.Persistence.Prius` | Install this to persist your rules to a database |
 
 ## Project Status
 The client is complete and fully stable. It has a comprehensive set of unit tests.

@@ -44,13 +44,21 @@ namespace Urchin.Server.Tests
                 new EnvironmentDto
                 {
                     EnvironmentName = "Prod",
-                    Machines = new List<string>{"WEB1", "WEB2"},
+                    Machines = new List<MachineDto>
+                        {
+                            new MachineDto{Name="WEB1"},
+                            new MachineDto{Name="WEB2"}
+                        },
                     Version = 1
                 },
                 new EnvironmentDto
                 {
                     EnvironmentName = "Test",
-                    Machines = new List<string>{"TEST1", "TEST2"},
+                    Machines = new List<MachineDto>
+                        {
+                            new MachineDto{Name="TEST1"},
+                            new MachineDto{Name="TEST2"}
+                        },
                     Version = 1
                 },
                 new EnvironmentDto
@@ -127,13 +135,21 @@ namespace Urchin.Server.Tests
                 new EnvironmentDto
                 {
                     EnvironmentName = "Prod",
-                    Machines = new List<string>{"WEB1", "WEB2"},
+                    Machines = new List<MachineDto>
+                        {
+                            new MachineDto{Name="WEB1"},
+                            new MachineDto{Name="WEB2"}
+                        },
                     Version = version
                 },
                 new EnvironmentDto
                 {
                     EnvironmentName = "Test",
-                    Machines = new List<string>{"TEST1", "TEST2"},
+                    Machines = new List<MachineDto>
+                        {
+                            new MachineDto{Name="TEST1"},
+                            new MachineDto{Name="TEST2"}
+                        },
                     Version = version
                 },
                 new EnvironmentDto
@@ -210,23 +226,38 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("Staging", config1.Environments[1].EnvironmentName);
             Assert.AreEqual("Development", config1.Environments[2].EnvironmentName);
 
-            Assert.AreEqual("web1", config1.Environments[0].Machines[0]);
-            Assert.AreEqual("web2", config1.Environments[0].Machines[1]);
-            Assert.AreEqual("web3", config1.Environments[0].Machines[2]);
+            Assert.AreEqual("web1", config1.Environments[0].Machines[0].Name);
+            Assert.AreEqual("web2", config1.Environments[0].Machines[1].Name);
+            Assert.AreEqual("web3", config1.Environments[0].Machines[2].Name);
 
-            _ruleData.SetEnvironments(devClient, new List<EnvironmentDto> 
+            try
             {
-                new EnvironmentDto
+                _ruleData.SetEnvironments(devClient, new List<EnvironmentDto>
                 {
-                    EnvironmentName = "Production",
-                    Machines = new List<string>{"dev1"}
-                },
-                new EnvironmentDto
-                {
-                    EnvironmentName = "Development",
-                    Machines = new List<string>{"dev1", "dev2", "dev3"},
-                }
-            });
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Production",
+                        Machines = new List<MachineDto>
+                        {
+                            new MachineDto {Name = "dev1"}
+                        },
+                    },
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Development",
+                        Machines = new List<MachineDto>
+                        {
+                            new MachineDto {Name = "dev1"},
+                            new MachineDto {Name = "dev2"},
+                            new MachineDto {Name = "dev3"}
+                        },
+                    }
+                });
+                Assert.Fail("Should throw exception when updating restricted environments");
+            }
+            catch
+            {
+            }
 
             var config2 = _ruleData.UnitTest_GetRuleSet(devClient, null);
 
@@ -236,33 +267,48 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("Staging", config2.Environments[1].EnvironmentName);
             Assert.AreEqual("Development", config2.Environments[2].EnvironmentName);
 
-            Assert.AreEqual("web1", config2.Environments[0].Machines[0]);
-            Assert.AreEqual("web2", config2.Environments[0].Machines[1]);
-            Assert.AreEqual("web3", config2.Environments[0].Machines[2]);
+            Assert.AreEqual("web1", config2.Environments[0].Machines[0].Name);
+            Assert.AreEqual("web2", config2.Environments[0].Machines[1].Name);
+            Assert.AreEqual("web3", config2.Environments[0].Machines[2].Name);
 
-            Assert.AreEqual("stage1", config2.Environments[1].Machines[0]);
-            Assert.AreEqual("stage2", config2.Environments[1].Machines[1]);
-            Assert.AreEqual("stage3", config2.Environments[1].Machines[2]);
+            Assert.AreEqual("stage1", config2.Environments[1].Machines[0].Name);
+            Assert.AreEqual("stage2", config2.Environments[1].Machines[1].Name);
+            Assert.AreEqual("stage3", config2.Environments[1].Machines[2].Name);
 
-            Assert.AreEqual("dev1", config2.Environments[2].Machines[0]);
-            Assert.AreEqual("dev2", config2.Environments[2].Machines[1]);
-            Assert.AreEqual("dev3", config2.Environments[2].Machines[2]);
+            Assert.AreEqual("dev1", config2.Environments[2].Machines[0].Name);
+            Assert.AreEqual("dev2", config2.Environments[2].Machines[1].Name);
+            Assert.AreEqual("dev3", config2.Environments[2].Machines[2].Name);
 
             var stagingClient = new ClientCredentials { IpAddress = "192.168.1.2" };
 
-            _ruleData.SetEnvironments(stagingClient, new List<EnvironmentDto> 
+            try
             {
-                new EnvironmentDto
+                _ruleData.SetEnvironments(stagingClient, new List<EnvironmentDto> 
                 {
-                    EnvironmentName = "Production",
-                    Machines = new List<string>{"dev1"}
-                },
-                new EnvironmentDto
-                {
-                    EnvironmentName = "Development",
-                    Machines = new List<string>{"dev1", "dev2", "dev3"},
-                }
-            });
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Production",
+                        Machines = new List<MachineDto>
+                            {
+                                new MachineDto{Name="dev1"}
+                            },
+                    },
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Development",
+                        Machines = new List<MachineDto>
+                            {
+                                new MachineDto{Name="dev1"},
+                                new MachineDto{Name="dev2"},
+                                new MachineDto{Name="dev3"}
+                            },
+                    }
+                });
+                Assert.Fail("Should throw exception when updating restricted environments");
+            }
+            catch
+            {
+            }
 
             var config3 = _ruleData.UnitTest_GetRuleSet(stagingClient, null);
 
@@ -271,13 +317,13 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("Production", config3.Environments[0].EnvironmentName);
             Assert.AreEqual("Development", config3.Environments[1].EnvironmentName);
 
-            Assert.AreEqual("web1", config3.Environments[0].Machines[0]);
-            Assert.AreEqual("web2", config3.Environments[0].Machines[1]);
-            Assert.AreEqual("web3", config3.Environments[0].Machines[2]);
+            Assert.AreEqual("web1", config3.Environments[0].Machines[0].Name);
+            Assert.AreEqual("web2", config3.Environments[0].Machines[1].Name);
+            Assert.AreEqual("web3", config3.Environments[0].Machines[2].Name);
 
-            Assert.AreEqual("dev1", config3.Environments[1].Machines[0]);
-            Assert.AreEqual("dev2", config3.Environments[1].Machines[1]);
-            Assert.AreEqual("dev3", config3.Environments[1].Machines[2]);
+            Assert.AreEqual("dev1", config3.Environments[1].Machines[0].Name);
+            Assert.AreEqual("dev2", config3.Environments[1].Machines[1].Name);
+            Assert.AreEqual("dev3", config3.Environments[1].Machines[2].Name);
 
             var prodClient = new ClientCredentials { IpAddress = "192.168.0.2" };
 
@@ -286,12 +332,20 @@ namespace Urchin.Server.Tests
                 new EnvironmentDto
                 {
                     EnvironmentName = "Production",
-                    Machines = new List<string>{"dev1"}
+                    Machines = new List<MachineDto>
+                        {
+                            new MachineDto{Name="dev1"}
+                        },
                 },
                 new EnvironmentDto
                 {
                     EnvironmentName = "Development",
-                    Machines = new List<string>{"dev1", "dev2", "dev3"},
+                    Machines = new List<MachineDto>
+                        {
+                            new MachineDto{Name="dev1"},
+                            new MachineDto{Name="dev2"},
+                            new MachineDto{Name="dev3"}
+                        },
                 }
             });
 
@@ -302,11 +356,11 @@ namespace Urchin.Server.Tests
             Assert.AreEqual("Production", config4.Environments[0].EnvironmentName);
             Assert.AreEqual("Development", config4.Environments[1].EnvironmentName);
 
-            Assert.AreEqual("dev1", config4.Environments[0].Machines[0]);
+            Assert.AreEqual("dev1", config4.Environments[0].Machines[0].Name);
 
-            Assert.AreEqual("dev1", config4.Environments[1].Machines[0]);
-            Assert.AreEqual("dev2", config4.Environments[1].Machines[1]);
-            Assert.AreEqual("dev3", config4.Environments[1].Machines[2]);
+            Assert.AreEqual("dev1", config4.Environments[1].Machines[0].Name);
+            Assert.AreEqual("dev2", config4.Environments[1].Machines[1].Name);
+            Assert.AreEqual("dev3", config4.Environments[1].Machines[2].Name);
         }
 
         [Test]
@@ -364,12 +418,12 @@ namespace Urchin.Server.Tests
             Assert.AreEqual(2, stagingRules.Rules.Count);
             Assert.AreEqual(1, developmentRules.Rules.Count);
 
-            Assert.AreEqual("Production Environment", productionRules.Rules[0].RuleName);
+            Assert.AreEqual("Production Environment", productionRules.Rules[2].RuleName);
             Assert.AreEqual("Staging Environment", productionRules.Rules[1].RuleName);
-            Assert.AreEqual("Development Environment", productionRules.Rules[2].RuleName);
+            Assert.AreEqual("Development Environment", productionRules.Rules[0].RuleName);
 
-            Assert.AreEqual("Staging Environment", stagingRules.Rules[0].RuleName);
-            Assert.AreEqual("Development Environment", stagingRules.Rules[1].RuleName);
+            Assert.AreEqual("Staging Environment", stagingRules.Rules[1].RuleName);
+            Assert.AreEqual("Development Environment", stagingRules.Rules[0].RuleName);
 
             Assert.AreEqual("Development Environment", developmentRules.Rules[0].RuleName);
         }
@@ -531,8 +585,6 @@ namespace Urchin.Server.Tests
 
             Assert.IsTrue(exception);
             Assert.AreEqual(3, newRules.Count);
-            Assert.AreEqual("Production Environment", newRules[0].RuleName);
-            Assert.AreEqual("Production", newRules[0].Environment);
         }
 
         [Test]
@@ -573,7 +625,12 @@ namespace Urchin.Server.Tests
                     {
                         EnvironmentName = "Production",
                         Version = version,
-                        Machines = new List<string>{"web1", "web2", "web3"},
+                        Machines = new List<MachineDto>
+                            {
+                                new MachineDto{Name="web1"},
+                                new MachineDto{Name="web2"},
+                                new MachineDto{Name="web3"}
+                            },
                         SecurityRules = new List<SecurityRuleDto>
                         {
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.0.255"}
@@ -583,7 +640,12 @@ namespace Urchin.Server.Tests
                     {
                         EnvironmentName = "Staging",
                         Version = version,
-                        Machines = new List<string>{"stage1", "stage2", "stage3"},
+                        Machines = new List<MachineDto>
+                            {
+                                new MachineDto{Name="stage1"},
+                                new MachineDto{Name="stage2"},
+                                new MachineDto{Name="stage3"}
+                            },
                         SecurityRules = new List<SecurityRuleDto>
                         {
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.1.255"}
@@ -633,7 +695,12 @@ namespace Urchin.Server.Tests
                     {
                         EnvironmentName = "Production",
                         Version = 1,
-                        Machines = new List<string>{"web1", "web2", "web3"},
+                        Machines = new List<MachineDto>
+                            {
+                                new MachineDto{Name="web1"},
+                                new MachineDto{Name="web2"},
+                                new MachineDto{Name="web3"}
+                            },
                         SecurityRules = new List<SecurityRuleDto>
                         {
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.0.255"}
@@ -643,7 +710,12 @@ namespace Urchin.Server.Tests
                     {
                         EnvironmentName = "Staging",
                         Version = 2,
-                        Machines = new List<string>{"stage1", "stage2", "stage3"},
+                        Machines = new List<MachineDto>
+                            {
+                                new MachineDto{Name="stage1"},
+                                new MachineDto{Name="stage2"},
+                                new MachineDto{Name="stage3"}
+                            },
                         SecurityRules = new List<SecurityRuleDto>
                         {
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.1.255"}

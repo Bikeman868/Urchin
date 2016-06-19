@@ -5,9 +5,10 @@ import 'dart:async';
 import '../Html/FormBuilder.dart';
 import '../Html/HtmlBuilder.dart';
 import '../Html/JsonHighlighter.dart';
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
-import '../Model/VersionData.dart';
+import '../DataLayer/Data.dart';
+import '../DataLayer/VersionData.dart';
+import '../Models/VersionModel.dart';
+import '../Models/RuleModel.dart';
 import '../Events/AppEvents.dart';
 
 class RuleDetailComponent
@@ -79,8 +80,8 @@ class RuleDetailComponent
 		try
 		{
 			VersionData versionData = await _data.getVersion(e.version);
-			RuleVersionDto ruleVersion = await versionData.getRules();
-			RuleDto rule = ruleVersion.rules[e.ruleName];
+			VersionModel version = await versionData.getRules();
+			RuleModel rule = version.rules.firstWhere((RuleModel r) => r.name == e.ruleName);
 
 			_ruleName.text = rule.name;
 			_machine.text = rule.machine;

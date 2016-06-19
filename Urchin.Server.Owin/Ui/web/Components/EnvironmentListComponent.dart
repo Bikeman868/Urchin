@@ -2,46 +2,28 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
+import '../DataLayer/Data.dart';
+import '../ViewModels/DataViewModel.dart';
+import '../Views/EnvironmentListView.dart';
 import '../Events/AppEvents.dart';
 
 class EnvironmentListComponent
 {
-	Data _data;
+	EnvironmentListView _view;
+	Element heading;
 
-	EnvironmentListComponent(this._data)
+	EnvironmentListComponent(DataViewModel viewModel)
 	{
+		heading = new SpanElement()
+			..classes.add('panelTitle')
+			..text = 'Environments';
+		_view = new EnvironmentListView(viewModel);
 	}
   
 	void displayIn(containerDiv) async
 	{
-		var heading = new SpanElement();
-		heading.classes.add('panelTitle');
-		heading.text = 'Environments';
+		containerDiv.children.clear();
 		containerDiv.children.add(heading);
-
-		Map<String, EnvironmentDto> environments = await _data.getEnvironments();
-		if (environments != null)
-		{
-			var list = new UListElement();
-			list.classes.add("selectionList");
-			for (EnvironmentDto environment in environments.values)
-			{
-				var element = new LIElement();
-				element.text = environment.name;
-				element.classes.add('environmentName');
-				element.classes.add('selectionItem');
-				element.onClick.listen(environmentClicked);
-				list.children.add(element);
-			}
-			containerDiv.children.add(list);
-		}
-	}
-
-	void environmentClicked(MouseEvent e)
-	{
-		LIElement target = e.target;
-		AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(target.text));
+		_view.addTo(containerDiv);
 	}
 }

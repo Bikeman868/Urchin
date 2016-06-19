@@ -65,6 +65,11 @@ class HtmlBuilder
 		return _addElement(div, classNames, className, parent);
 	}
   
+	String versioned(String url)
+	{
+		return url.replaceAll(r'{_v_}', _version);
+	}
+
 	Element addImage(
 		String url, 
 		{
@@ -196,14 +201,17 @@ class HtmlBuilder
 		return _addElement(list, classNames, className, parent);
 	}
 
-	Element addListElement(String html, Element parent,
+	Element addListElement(
 		{
+			String html, 
+			Element parent,
 			List<String> classNames, 
 			String className
 		})
 	{
 		var listElement = new LIElement();
-		listElement.innerHtml = html;
+		if (html != null)
+			listElement.innerHtml = html;
 		return _addElement(listElement, classNames, className, parent);
 	}
 

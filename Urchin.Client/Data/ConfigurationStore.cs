@@ -68,7 +68,15 @@ namespace Urchin.Client.Data
 
             var key = Guid.NewGuid().ToString("N");
             var registration = new Registration<T>(this).Initialize(key, path, onChangeAction, defaultValue);
-            registration.Changed();
+
+            try
+            {
+                registration.Changed();
+            }
+            catch (Exception ex)
+            {
+                LogError("Exception thrown when notifying application of configuration change in '" + registration.Path + "'. " + ex.Message);
+            }
 
             lock(_registrations)
                 _registrations.Add(key, registration);
@@ -119,7 +127,14 @@ namespace Urchin.Client.Data
                 {
                     var jValue = json as JValue;
                     if (jValue == null) return default(T);
-                    return (T) Convert.ChangeType(jValue.Value, resultType);
+
+                    if (typeof(T) == typeof(DateTime))
+                        return (T)(object)DateTime.Parse(jValue.Value.ToString());
+
+                    if (typeof(T) == typeof(TimeSpan))
+                        return (T)(object)TimeSpan.Parse(jValue.Value.ToString());
+
+                    return (T)Convert.ChangeType(jValue.Value, resultType);
                 }
 
                 return JsonConvert.DeserializeObject<T>(jsonText);

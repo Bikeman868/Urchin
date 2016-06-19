@@ -71,7 +71,7 @@ namespace Urchin.Server.Shared.Rules
                 {
                     EnvironmentName = "Production", 
                     Version = 1,
-                    Machines = new List<string>(),
+                    Machines = new List<MachineDto>(),
                     SecurityRules = new List<SecurityRuleDto>
                     {
                         new SecurityRuleDto
@@ -85,28 +85,28 @@ namespace Urchin.Server.Shared.Rules
                 {
                     EnvironmentName = "Staging",
                     Version = 1,
-                    Machines = new List<string>(),
+                    Machines = new List<MachineDto>(),
                     SecurityRules = new List<SecurityRuleDto>{}
                 },
                 new EnvironmentDto 
                 {
                     EnvironmentName = "Integration", 
                     Version = 2,
-                    Machines = new List<string>(),
+                    Machines = new List<MachineDto>(),
                     SecurityRules = new List<SecurityRuleDto>{}
                 },
                 new EnvironmentDto 
                 {
                     EnvironmentName = "Test", 
                     Version = 2,
-                    Machines = new List<string>(),
+                    Machines = new List<MachineDto>(),
                     SecurityRules = new List<SecurityRuleDto>{}
                 },
                 new EnvironmentDto 
                 {
                     EnvironmentName = "Development", 
                     Version = 2,
-                    Machines = new List<string>(),
+                    Machines = new List<MachineDto>(),
                     SecurityRules = new List<SecurityRuleDto>{}
                 }
             };

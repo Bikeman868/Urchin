@@ -2,9 +2,9 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
-import '../Model/VersionData.dart';
+import '../DataLayer/Data.dart';
+import '../DataLayer/VersionData.dart';
+import '../Models/VersionModel.dart';
 import '../Events/AppEvents.dart';
 
 class VersionListComponent
@@ -17,24 +17,24 @@ class VersionListComponent
   
 	void displayIn(containerDiv) async
 	{
-		var heading = new SpanElement();
-		heading.classes.add('panelTitle');
-		heading.text = 'Versions';
+		var heading = new SpanElement()
+			..classes.add('panelTitle')
+			..text = 'Versions';
 		containerDiv.children.add(heading);
 
-		List<VersionDto> versions = await _data.getVersions();
+		List<VersionModel> versions = await _data.getVersions();
 		if (versions != null)
 		{
-			var list = new UListElement();
-			list.classes.add("selectionList");
-			for (VersionDto version in versions)
+			var list = new UListElement()
+				..classes.add("selectionList");
+			for (VersionModel version in versions)
 			{
-				var element = new LIElement();
-				element.text = version.version.toString() + ' - ' + version.name;
-				element.classes.add('versionName');
-				element.classes.add('selectionItem');
-				element.attributes['version'] = version.version.toString();
-				element.onClick.listen(versionClicked);
+				var element = new LIElement()
+					..text = version.version.toString() + ' - ' + version.name
+					..classes.add('versionName')
+					..classes.add('selectionItem')
+					..attributes['version'] = version.version.toString()
+					..onClick.listen(versionClicked);
 				list.children.add(element);
 			}
 			containerDiv.children.add(list);

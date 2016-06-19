@@ -17,6 +17,11 @@ class FormBuilder
 		_builder.addTo(container);
 	}
 
+	displayIn(Element container)
+	{
+		_builder.displayIn(container);
+	}
+
 	Element addLabeledField(String label)
 	{
 		var row = _builder.addContainer(parent: form, className: 'dataRow');

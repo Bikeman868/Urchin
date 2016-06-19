@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import 'Model/Data.dart';
+import 'DataLayer/Data.dart';
 import 'Events/AppEvents.dart';
 
 import 'Components/RuleListComponent.dart';
@@ -55,7 +55,7 @@ void _setupUI()
 
 	_ruleListComponent = new RuleListComponent(data);
 	_ruleDetailComponent = new RuleDetailComponent(data);
-	_environmentListComponent = new EnvironmentListComponent(data);
+	_environmentListComponent = new EnvironmentListComponent(data.viewModel);
 	_environmentDetailComponent = new EnvironmentDetailComponent(data);
 	_testQueryComponent = new TestQueryComponent();
 	_logonComponent = new LogonComponent(data);

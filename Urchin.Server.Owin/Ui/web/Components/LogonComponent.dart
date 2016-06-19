@@ -2,9 +2,10 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
+import '../DataLayer/Data.dart';
 import '../Server.dart';
+import '../Models/ClientCredentialsModel.dart';
+import '../Models/PostResponseModel.dart';
 import '../Events/AppEvents.dart';
 import '../Html/HtmlBuilder.dart';
 
@@ -89,7 +90,7 @@ class LogonComponent
 	{
 		_container = container;
 
-		ClientCredentials user = await Server.getLoggedOnUser();
+		ClientCredentialsModel user = await Server.getLoggedOnUser();
 		var e = new UserChangedEvent(user.isLoggedOn, user.userName, user.ipAddress);
 		AppEvents.userChanged.raise(e);
 	}
@@ -124,7 +125,7 @@ class LogonComponent
 				if (request.status == 200)
 				{
 					Map json = JSON.decode(request.responseText);
-					var postResponse = new PostResponseDto(json);
+					var postResponse = new PostResponseModel(json);
 					if (postResponse.success)
 					{
 						_passwordInputElement.value = '';

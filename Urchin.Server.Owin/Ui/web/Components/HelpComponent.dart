@@ -141,10 +141,18 @@ class HelpComponent
 			className: 'instruction');
 
 		var list = builder.addList();
-		builder.addListElement('Testing rule changes as a new version before applying the rules to live instances.', list, className: 'instruction');
-		builder.addListElement('Keeping the config in line with the code version as code moves through the deployment pipeline from development to integration etc and finally into production.', list, className: 'instruction');
-		builder.addListElement('Deploying a new configuration with the ability to roll back if necessary.', list, className: 'instruction');
-		builder.addListElement('Having different config for different situations, for example when the site is in maintenance mode, or part of the system is down for maintenance.', list, className: 'instruction');
+		builder.addListElement(
+			html :'Testing rule changes as a new version before applying the rules to live instances.', 
+			parent: list, className: 'instruction');
+		builder.addListElement(
+			html: 'Keeping the config in line with the code version as code moves through the deployment pipeline from development to integration etc and finally into production.', 
+			parent: list, className: 'instruction');
+		builder.addListElement(
+			html: 'Deploying a new configuration with the ability to roll back if necessary.', 
+			parent: list, className: 'instruction');
+		builder.addListElement(
+			html: 'Having different config for different situations, for example when the site is in maintenance mode, or part of the system is down for maintenance.', 
+			parent: list, className: 'instruction');
 
 		builder.addBlockText(
 			'You do not have to use versions; you can leave all environments at version 1.',

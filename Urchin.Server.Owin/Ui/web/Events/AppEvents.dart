@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
-import 'SubscriptionEvent.dart';
+import '../DataLayer/Data.dart';
+import '../Events/SubscriptionEvent.dart';
+import '../ViewModels/EnvironmentViewModel.dart';
 
 class RuleSelectedEvent
 {
@@ -13,8 +13,8 @@ class RuleSelectedEvent
 
 class EnvironmentSelectedEvent
 {
-	String environmentName;
-	EnvironmentSelectedEvent(this.environmentName);
+	EnvironmentViewModel environment;
+	EnvironmentSelectedEvent(this.environment);
 }
 
 class VersionSelectedEvent
@@ -37,6 +37,12 @@ class UserChangedEvent
 	UserChangedEvent(this.isLoggedOn, this.userName, this.ipAddress);
 }
 
+class DataEvent
+{
+	Data data;
+	DataEvent(this.data);
+}
+
 class AppEvents
 {
 	static SubscriptionEvent<RuleSelectedEvent> ruleSelected = new SubscriptionEvent<RuleSelectedEvent>();
@@ -44,4 +50,7 @@ class AppEvents
 	static SubscriptionEvent<VersionSelectedEvent> versionSelected = new SubscriptionEvent<VersionSelectedEvent>();
 	static SubscriptionEvent<TabChangedEvent> tabChanged = new SubscriptionEvent<TabChangedEvent>();
 	static SubscriptionEvent<UserChangedEvent> userChanged = new SubscriptionEvent<UserChangedEvent>();
+	static SubscriptionEvent<DataEvent> dataLoadedEvent = new SubscriptionEvent<DataEvent>();
+	static SubscriptionEvent<DataEvent> dataSavedEvent = new SubscriptionEvent<DataEvent>();
+	static SubscriptionEvent<DataEvent> dataModifiedEvent = new SubscriptionEvent<DataEvent>();
 }

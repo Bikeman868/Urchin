@@ -278,10 +278,10 @@ namespace Urchin.Server.Persistence.Prius
                     command.AddParameter("environmentName", name);
                     using (var reader = context.ExecuteReader(command))
                     {
-                        environmentDto.Machines = new List<string>();
+                        environmentDto.Machines = new List<MachineDto>();
                         while (reader.Read())
                         {
-                            environmentDto.Machines.Add(reader.Get<string>(0));
+                            environmentDto.Machines.Add(new MachineDto { Name = reader.Get<string>(0) });
                         }
                     }
                 }
@@ -353,7 +353,7 @@ namespace Urchin.Server.Persistence.Prius
                         var machineName = command.AddParameter("machineName", SqlDbType.NVarChar, ParameterDirection.Input);
                         foreach (var machine in environment.Machines)
                         {
-                            machineName.Value = machine;
+                            machineName.Value = machine.Name;
                             context.ExecuteNonQuery(command);
                         }
                     }

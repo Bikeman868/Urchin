@@ -2,9 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../Model/Dto.dart';
-import '../Model/Data.dart';
-import '../Model/VersionData.dart';
+import '../DataLayer/Data.dart';
+import '../DataLayer/VersionData.dart';
 import '../Events/AppEvents.dart';
 import '../Html/HtmlBuilder.dart';
 
@@ -22,7 +21,7 @@ class RuleListComponent
 		_builder.addBlockText('Rules', className: 'panelTitle');
 		_ruleList = _builder.addList(className: 'selectionList');
 
-		_dataRefreshedSubscription = _data.refreshedEvent.listen(_dataRefreshed);
+		_dataRefreshedSubscription = AppEvents.dataLoadedEvent.listen(_dataRefreshed);
 		_dataChanged(_data);
 	}
 
