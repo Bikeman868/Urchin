@@ -53,8 +53,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Ioc.Modules">
-      <HintPath>..\packages\Ioc.Modules.1.0.2\lib\Ioc.Modules.dll</HintPath>
+    <Reference Include="Ioc.Modules, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Ioc.Modules.1.0.4\lib\Ioc.Modules.dll</HintPath>
     </Reference>
     <Reference Include="Ioc.Modules.Unity">
       <HintPath>..\packages\Ioc.Modules.Unity.1.0.0\lib\Ioc.Modules.Unity.dll</HintPath>
