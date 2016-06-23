@@ -33,7 +33,8 @@ There have been reports of issues with the database persistence module. It looks
 like some issues might have been introduces with the switch to versioning of rules.
 My advice for now is to use the default persistence mechanism that saves all the
 rules to a single file. This is the mechanism that was used during development,
-has received extensive testing and seems to be completely solid.
+has received extensive testing and seems to be completely solid. I have used this
+in a number of very high traffic enterprise systems with no issues whatsoever.
 
 Please contact the owner if you are experiencing any other issues.
 
@@ -87,7 +88,7 @@ A: To get started with the client only using IoC and a local configuration file:
    1. Install the NuGet package for `Urchin.Client`.
    2. In your IoC register a mapping to the `ConfigurationStore` class from the
       `IConfigurationStore` interface as a singleton. Note that if you integrate
-	  the Ioc.Modules package into application you can skip this step.
+	  the `Ioc.Modules` NuGet package into application you can skip this step.
    3. Create a configuration file in JSON format. Structure the JSON however you
       want including different data types, arrays and objects within objects.
    4. Construct an instance of `Urchin.Client.Sources.FileSource` and initialize
@@ -99,7 +100,7 @@ A: To get started with the client only using IoC and a local configuration file:
    5. Inject `IConfigurationStore` into classes in your application that need 
       access to configuration data.
    6. Call the `Register<T>()` method of `IConfigurationStore` to get notified 
-      of the initial config values, and when config changes.
+      of the initial config values, and whenever config changes later.
 
 ---
 

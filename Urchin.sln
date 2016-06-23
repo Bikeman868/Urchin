@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Owin", "Urchin.Server.Owin\Urchin.Server.Owin.csproj", "{AE0124A0-75F7-495C-8F5D-FC1DDD10AF6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client", "Urchin.Client\Urchin.Client.csproj", "{169CA82F-7924-47EE-9705-F333932110F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client.Net40", "Urchin.Client\Urchin.Client.Net40.csproj", "{169CA82F-7924-47EE-9705-F333932110F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client.Tests", "Urchin.Client.Tests\Urchin.Client.Tests.csproj", "{D4BB1C34-0F20-4B21-BA09-2DAC449DC434}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Tests", "Urchin.Server.Tests\Urchin.Server.Tests.csproj", "{011E7B9D-2ACD-4B57-A1E3-B9F7E7870F6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Server.Persistence.Prius", "Urchin.Server.Persistence.Prius\Urchin.Server.Persistence.Prius.csproj", "{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urchin.Client.Net45", "Urchin.Client\Urchin.Client.Net45.csproj", "{46DB0352-D265-4A38-A015-15E1A085F23F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AC3AA7A-561F-4D5E-80C7-669299D2AD62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46DB0352-D265-4A38-A015-15E1A085F23F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46DB0352-D265-4A38-A015-15E1A085F23F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46DB0352-D265-4A38-A015-15E1A085F23F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46DB0352-D265-4A38-A015-15E1A085F23F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

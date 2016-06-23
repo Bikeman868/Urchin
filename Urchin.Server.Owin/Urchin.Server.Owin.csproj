@@ -53,12 +53,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Ioc.Modules, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Ioc.Modules, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Ioc.Modules.1.0.4\lib\Ioc.Modules.dll</HintPath>
+      <HintPath>..\packages\Ioc.Modules.1.0.9\lib\net40\Ioc.Modules.dll</HintPath>
     </Reference>
-    <Reference Include="Ioc.Modules.Unity">
-      <HintPath>..\packages\Ioc.Modules.Unity.1.0.0\lib\Ioc.Modules.Unity.dll</HintPath>
+    <Reference Include="Ioc.Modules.Unity, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Ioc.Modules.Unity.1.0.9\lib\net40\Ioc.Modules.Unity.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -218,9 +219,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Urchin.Client\Urchin.Client.csproj">
+    <ProjectReference Include="..\Urchin.Client\Urchin.Client.Net40.csproj">
       <Project>{169CA82F-7924-47EE-9705-F333932110F4}</Project>
-      <Name>Urchin.Client</Name>
+      <Name>Urchin.Client.Net40</Name>
     </ProjectReference>
     <ProjectReference Include="..\Urchin.Server.Shared\Urchin.Server.Shared.csproj">
       <Project>{372237ce-4202-4882-ad34-02d6493678da}</Project>

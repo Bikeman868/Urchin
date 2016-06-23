@@ -15,7 +15,7 @@ namespace Urchin.Client
         {
             IocRegistrations = new List<IocRegistration>
             {
-                new IocRegistration().Init<IConfigurationStore, ConfigurationStore>(IocLifetime.SingleInstance),
+                new IocRegistration().Init<IConfigurationStore, ConfigurationStore>(),
             };
         }
     }

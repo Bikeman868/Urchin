@@ -1,24 +1,30 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>1.1.0</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>Urchin.Client</id>
+    <version>1.2.0</version>
+    <title>Urchin.Client</title>
+    <authors>Martin Halliday</authors>
+    <owners>Martin Halliday</owners>
     <licenseUrl>http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</licenseUrl>
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/Bikeman868/Urchin/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Integrated with Ioc.Modules</releaseNotes>
+    <description>Strongly typed configuration management system with change notification</description>
+    <releaseNotes>Added support for .Net 4.0 and 4.5</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
     <summary>Simple application configurtion management. Strong typing and default values. Change notifications
     for any node in the configuration heirachy. Optional server component provides rules-based centralized
     repository for the whole enterprise.</summary>
+    <dependencies>
+      <dependency id="Ioc.Modules" version="1.0.9" />
+      <dependency id="Newtonsoft.Json" version="7.0.1" />
+    </dependencies>
   </metadata>
   <files>
+    <file src="bin\Net40\Release\Urchin.Client.dll" target="lib\net40"/>
+    <file src="bin\Net45\Release\Urchin.Client.dll" target="lib\net45"/>
     <file src="..\*.txt" target="" />
     <file src="*.md" target="" />
   </files>
