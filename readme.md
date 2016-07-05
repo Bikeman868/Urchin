@@ -12,6 +12,71 @@ A rules based centralized enterprise configuration management solution for .Net
 * Configuration can be stored in a file, or at a URI.
 * Migration path from exiting .Net ConfigurationManager implementation.
 
+## Quick start
+This is the quickest way to get up and running.
+* Install these NuGet Packages: `Ioc.Modules`, `Ioc.Modules.Ninject`, `Urchin.Client`
+* Create a file in the root folder of your project called `config.json` and add some configuration data to it in JSON format. For example
+````
+   {
+      "myApp":{
+        "logging":{
+          "path":"C:\\temp"
+        }
+      }
+   }
+````
+
+* Add the following code where it will run at startup:
+````
+    var packageLocator = new PackageLocator().ProbeBinFolderAssemblies();
+    var ninject = new StandardKernel(new Ioc.Modules.Ninject.Module(packageLocator));
+    var configFile = new FileInfo(AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.json");
+    var urchinSource = ninject.Get<FileSource>().Initialize(configFile, TimeSpan.FromSeconds(5));
+````
+> This will use the package locator from `IoC.Modules` to configure a Ninject IoC container, then it uses
+> Ninject to construct an Urchin `FileSource` class to get the Urchin configuration from the `config.json` file.
+> Note that you should maintain a reference to the `FileSource` if you want it to notice changes to the config
+> file.
+
+> Note that this example uses the Urchin `FileSource`. Urchin has other sources available, most notably the 
+> `UriSource` which will get config Json from a URI instead of a file path. This is how you would integrate 
+> the Urchin server. The Urchin server provides centralized rules-based configuration management system.
+
+> Note that IoC.Modules supports the most popular IoC containers and is very easy to integrate with any other
+> IoC. This example uses Ninject, switching this to any other IoC is a trivial change. See the readme for `Ioc.Modules` 
+> for details on how to do this.
+
+* Anywhere in your application where you need configuration data, add a dependency on the Urchin `IConfigurationStore` 
+interface and call its methods to get configuration data. For example:
+````
+    public class LoggingConfig
+    {
+        public string Path { get; set; }
+
+        public LoggingConfig()
+        {
+            Path = "C:\\Temp\\Logs";
+        }
+    }
+
+    public class MyApplicationClass
+    {
+        private LoggingConfig _loggingConfig;
+        private IDisposable _loggingConfigChangeNotification;
+
+        public MyApplicationClass(IConfigurationStore configurationStore)
+        {
+            _loggingConfigChangeNotification = configurationStore.Register(
+                "/myApp/logging", 
+                cfg => _loggingConfig = cfg,
+                new LoggingConfig());
+        }
+    }
+````
+> In this example the `LoggingConfig` class should match the structure of the data
+> in your `config.json` file under the path `/myApp/logging`. Urchin will use the
+> Newtonsoft Json package to hydrate this class from this section of the config file.
+
 ## Server Features
 * Rules based configuration based on environment, machine, application and instance.
 * Centralized configuration management with REST API and configuration mananagement UI.
