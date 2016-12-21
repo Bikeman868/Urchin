@@ -10,6 +10,11 @@ import 'ListBinding.dart';
 
 import 'SubscriptionEvent.dart';
 
+// Abstract base class for components that bind to a list of view models.
+// * Subscribes to events from add/remove actions when bound to a list
+// * Refreshes the list UI when items are added or removed from the list
+// * Unsubscribes from add/remove events when unbound 
+// * When items in the list are selected, identifies the element and calls the selection method
 
 abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extends View>
 {

@@ -3,12 +3,17 @@ import 'dart:html';
 import 'PropertyBinding.dart';
 import 'SubscriptionEvent.dart';
 
-// Base class for UI elements that bind to view models
+// Base class for UI elements that bind to a view model property
+// * Provides two way binding between a view model property and the UI element
+// * Derrived classes must provide methods to subscribe to changes from the
+//   UI element, and to update the UI element with changes from the view model
+
 abstract class BoundElement<TB, TE>
 {
 	StreamSubscription<String> _bindingSubscription;
 	PropertyBinding<TB> _binding;
 	PropertyBinding<TB> get binding => _binding;
+
 	void set binding(PropertyBinding<TB> value)
 	{
 		if (_bindingSubscription != null)
@@ -27,6 +32,7 @@ abstract class BoundElement<TB, TE>
 	StreamSubscription<Event> _elementSubscription;
 	TE _element;
 	TE get element => _element;
+
 	void set element(TE value)
 	{
 		if (_elementSubscription != null)

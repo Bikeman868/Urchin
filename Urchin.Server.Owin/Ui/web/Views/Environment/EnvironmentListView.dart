@@ -47,15 +47,4 @@ class EnvironmentListView extends View
 			_environmentsBinding.binding = value.environments;
 		}
 	}
-
-	void addTo(Element container)
-	{
-		container.children.add(environments);
-	}
-
-	void displayIn(Element container)
-	{
-		container.children.clear();
-		addTo(container);
-	}
 }

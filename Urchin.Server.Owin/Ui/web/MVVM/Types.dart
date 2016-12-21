@@ -4,6 +4,7 @@ import 'ViewModel.dart';
 
 typedef String FormatFunction<T>(T value);
 typedef T ParseFunction<T>(String value);
+
 typedef T PropertyGetFunction<T>();
 typedef void PropertySetFunction<T>(T value);
 

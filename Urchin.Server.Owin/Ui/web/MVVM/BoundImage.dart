@@ -3,6 +3,9 @@ import 'dart:async';
 import 'BoundElement.dart';
 import 'SubscriptionEvent.dart';
 
+// Provides one-way binding of a view model property containing a URL
+// to the src url of an image.
+
 class BoundImage<T> extends BoundElement<T, ImageElement>
 {
 	BoundImage (ImageElement element)

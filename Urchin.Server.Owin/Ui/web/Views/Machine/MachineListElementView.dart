@@ -16,9 +16,7 @@ class MachineListElementView extends View
 
 	MachineListElementView([MachineViewModel viewModel])
 	{
-		name = new InputElement()
-			..classes.add('machine-name')
-			..classes.add('input-field');
+		name = addInput(classNames: ['machine-name', 'input-field']);
 
 		_nameBinding = new BoundTextInput(name);
 
@@ -39,16 +37,5 @@ class MachineListElementView extends View
 		{
 			_nameBinding.binding = value.name;
 		}
-	}
-
-	void addTo(Element container)
-	{
-		container.children.add(name);
-	}
-
-	void displayIn(Element container)
-	{
-		container.children.clear();
-		addTo(container);
 	}
 }

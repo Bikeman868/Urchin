@@ -21,12 +21,10 @@ class SecurityRuleListElementView extends View
 
 	SecurityRuleListElementView([SecurityRuleViewModel viewModel])
 	{
-		startIp = new InputElement()
-			..classes.add('ip-address')
-			..classes.add('input-field');
-		endIp = new InputElement()
-			..classes.add('ip-address')
-			..classes.add('input-field');
+		addInlineText('Allowed IP from');
+		startIp = addInput(classNames: ['ip-address', 'input-field']);
+		addInlineText('to');
+		endIp = addInput(classNames: ['ip-address', 'input-field']);
 
 		_startIpBinding = new BoundTextInput(startIp);
 		_endIpBinding = new BoundTextInput(endIp);
@@ -50,19 +48,5 @@ class SecurityRuleListElementView extends View
 			_startIpBinding.binding = value.startIp;
 			_endIpBinding.binding = value.endIp;
 		}
-	}
-
-	void addTo(Element container)
-	{
-		container.children.add(new SpanElement()..text = 'Allowed IP from');
-		container.children.add(startIp);
-		container.children.add(new SpanElement()..text = 'to');
-		container.children.add(endIp);
-	}
-
-	void displayIn(Element container)
-	{
-		container.children.clear();
-		addTo(container);
 	}
 }

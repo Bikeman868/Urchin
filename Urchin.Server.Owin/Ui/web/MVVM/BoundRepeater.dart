@@ -28,7 +28,7 @@ class BoundRepeater<TM extends Model, TVM extends ViewModel, TV extends View> ex
     {
         if (container == null) return;
 
-		    container.children.clear();
+		container.children.clear();
 
         if (binding != null && binding.viewModels != null)
         {

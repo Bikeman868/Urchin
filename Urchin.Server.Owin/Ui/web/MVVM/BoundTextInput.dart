@@ -5,6 +5,9 @@ import 'PropertyBinding.dart';
 import 'BoundElement.dart';
 import 'SubscriptionEvent.dart';
 
+// Provides two-way binding of UI elements that have a 'value' property
+// and an 'onBlur' event.
+
 class BoundTextInput<T> extends BoundElement<T, InputElement>
 {
 	BoundTextInput (InputElement element)

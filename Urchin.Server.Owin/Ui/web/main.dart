@@ -3,8 +3,12 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'ViewModels/DataViewModel.dart';
+import 'ViewModels/EnvironmentViewModel.dart';
+
 import 'Events/AppEvents.dart';
+
 import 'Views/Environment/EnvironmentListView.dart';
+import 'Views/Environment/EnvironmentView.dart';
 
 Element _leftDiv;
 Element _centreDiv;
@@ -46,6 +50,7 @@ void _initialView()
 void _attachEvents()
 {
 	AppEvents.tabChanged.listen(_tabChanged);
+	AppEvents.environmentSelected.listen(_environmentSelected);
 }
 
 void _tabChanged(TabChangedEvent e)
@@ -53,6 +58,11 @@ void _tabChanged(TabChangedEvent e)
 	if (e.tabName == 'Rules') _displayRuleList(_leftDiv);
 	else if (e.tabName == 'Environments') _displayEnvironmentList(_leftDiv);
 	else if (e.tabName == 'Versions') _displayVersionList(_leftDiv);
+}
+
+void _environmentSelected(EnvironmentSelectedEvent e)
+{
+	_displayEnvironment(e.environment, _centreDiv);
 }
 
 /*************************************************************************/
@@ -65,6 +75,18 @@ void _displayEnvironmentList(Element panel)
 		_environmentListView = new EnvironmentListView(_dataViewModel.environmentList);
 
 	_environmentListView.displayIn(panel);
+}
+
+EnvironmentView _environmentView;
+
+void _displayEnvironment(EnvironmentViewModel environment, Element panel)
+{
+	if (_environmentView == null)
+		_environmentView = new EnvironmentView(environment);
+	else
+		_environmentView.viewModel = environment;
+
+	_environmentView.displayIn(panel);
 }
 
 /*************************************************************************/

@@ -3,9 +3,6 @@ import 'dart:html';
 class HtmlBuilder
 {
 	List<Element> _elements;
-	String _version;
-
-	/******************************************************************************/
 
 	HtmlBuilder()
 	{
@@ -30,6 +27,15 @@ class HtmlBuilder
 	{
 		for (var e in _elements)
 			container.children.add(e);
+	}
+
+	/******************************************************************************/
+
+	String _version;
+
+	String versioned(String url)
+	{
+		return url.replaceAll(r'{_v_}', _version);
 	}
 
 	/******************************************************************************/
@@ -100,11 +106,6 @@ class HtmlBuilder
 		return _addElement(link, classNames, className, parent);
 	}
 	  
-	String versioned(String url)
-	{
-		return url.replaceAll(r'{_v_}', _version);
-	}
-
 	Element addContainer(
 		{
 			List<String> classNames, 
@@ -319,6 +320,46 @@ class HtmlBuilder
 	{
 		var input = new PasswordInputElement();
 		return _addElement(input, classNames, className, parent);
+	}
+
+	/******************************************************************************/
+
+	Element addForm(
+		{
+		  List<String> classNames, 
+		  String className, 
+		  Element parent
+		})
+	{
+		if (classNames == null)
+			classNames = new List<String>();
+
+		if (className != null)
+			classNames.add(className);
+
+		classNames.add('data-form');
+
+		return addContainer(parent: parent, classNames: classNames);
+	}
+
+	Element addLabeledField(Element form, String label)
+	{
+		var row = addContainer(parent: form, className: 'data-row');
+
+		var labelField = addInlineText(label, parent: row, className: 'data-label');
+		var dataField = addInlineText('', parent: row, className: 'data-field');
+
+		return dataField;
+	}
+
+	Element addLabeledEdit(Element form, String label)
+	{
+		var row = addContainer(parent: form, className: 'data-row');
+
+		var labelField = addInlineText(label, parent: row, className: 'data-label');
+		var dataField = addInput(parent: row, className: 'input-field');
+
+		return dataField;
 	}
 
 	/******************************************************************************/

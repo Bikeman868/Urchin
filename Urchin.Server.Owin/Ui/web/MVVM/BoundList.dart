@@ -6,7 +6,10 @@ import 'ViewModel.dart';
 import 'Types.dart';
 import 'BoundContainer.dart';
 
-// Creates a list with optional add/remove buttons to manage the list
+// Provides tw-way binding of a list of view models to a list of views
+// * Generates <li> elements and adds them to the list container
+// * Wraps each view in a container that provides a list selection mechanism
+// * Can optionally display add/remove buttons to manage the list
 
 class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extends BoundContainer
 {
@@ -83,19 +86,19 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
   
     void _deleteClicked(MouseEvent e)
     {
-			if (binding != null)
-			{
-				ButtonElement button = e.target;
-				int index = int.parse(button.attributes['index']);
-				binding.remove(index);
-			}
+		if (binding != null)
+		{
+			ButtonElement button = e.target;
+			int index = int.parse(button.attributes['index']);
+			binding.remove(index);
+		}
     }
   
     void _addClicked(MouseEvent e)
     {
-			if (binding != null)
-			{
-				binding.add();
-			}
+		if (binding != null)
+		{
+			binding.add();
+		}
     }
 }

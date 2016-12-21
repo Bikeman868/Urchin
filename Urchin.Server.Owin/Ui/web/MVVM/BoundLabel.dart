@@ -2,10 +2,19 @@
 import 'dart:async';
 import 'BoundElement.dart';
 import 'SubscriptionEvent.dart';
+import 'Types.dart';
+
+// Provides one-way binding of a view model property to the inner html of a UI element
 
 class BoundLabel<T> extends BoundElement<T, Element>
 {
-	BoundLabel (Element element)
+	FormatFunction<String> formatMethod;
+
+	BoundLabel (
+		Element element,
+		{
+			this.formatMethod : null
+		})
 	{
 		this.element = element;
 	}
@@ -15,9 +24,12 @@ class BoundLabel<T> extends BoundElement<T, Element>
 		if (element != null)
 		{
 			if (text == null)
-				element.innerHtml = '';
-			else
+				text = '';
+
+			if (formatMethod == null)
 				element.innerHtml = text;
+			else
+				element.innerHtml = formatMethod(text);
 		}
 	}
 

@@ -15,9 +15,29 @@ div
 
 h1
 {
-    font-size:35px;
-    padding-left:12px;
-    margin:5px;
+    font-size:25px;
+    padding-left:10px;
+    padding-right:0;
+    padding-top:0;
+    padding-bottom:20px;
+}
+
+h2
+{
+    font-size:18px;
+    padding-left:8px;
+    padding-right:0;
+    padding-top:0;
+    padding-bottom:10px;
+}
+
+h3
+{
+    font-size:14px;
+    padding-left:6px;
+    padding-right:0;
+    padding-top:0;
+    padding-bottom:6px;
 }
 
 td
@@ -68,6 +88,8 @@ td
     float: left;
     width: 200px;
     border: 1px solid navy;
+    padding: 4px;
+    margin: 1px;
 }
 
 #centreDiv
