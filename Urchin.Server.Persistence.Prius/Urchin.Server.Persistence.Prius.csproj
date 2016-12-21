@@ -43,9 +43,9 @@
     <Reference Include="Common.Logging.Core">
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Ioc.Modules, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Ioc.Modules.1.0.9\lib\net40\Ioc.Modules.dll</HintPath>
+    <Reference Include="Ioc.Modules, Version=1.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.1.1.4\lib\net40\Ioc.Modules.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -63,13 +63,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Npgsql.2.2.5\lib\net40\Npgsql.dll</HintPath>
     </Reference>
-    <Reference Include="Prius.Contracts, Version=1.0.5.5, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Prius.1.0.5\lib\Prius.Contracts.dll</HintPath>
+    <Reference Include="Prius.Contracts, Version=1.1.9.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prius.1.1.9\lib\net40\Prius.Contracts.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Prius.Orm, Version=1.0.5.5, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Prius.1.0.5\lib\Prius.Orm.dll</HintPath>
+    <Reference Include="Prius.Orm, Version=1.1.9.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prius.1.1.9\lib\net40\Prius.Orm.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

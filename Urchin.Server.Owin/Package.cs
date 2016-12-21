@@ -17,14 +17,14 @@ namespace Urchin.Server.Owin
         {
             IocRegistrations = new List<IocRegistration>
             {
-                new IocRegistration().Init<IRuleData, RuleData>(IocLifetime.SingleInstance),
-                new IocRegistration().Init<IMapper, Mapper>(IocLifetime.SingleInstance),
-                new IocRegistration().Init<ILogManager, LogManager>(IocLifetime.SingleInstance),
+                new IocRegistration().Init<IRuleData, RuleData>(),
+                new IocRegistration().Init<IMapper, Mapper>(),
+                new IocRegistration().Init<ILogManager, LogManager>(),
 
                 // Register the default persister. If you include the DLLs from any
                 // other persister, it will override this registration and become the 
                 // persister for your installation.
-                new IocRegistration().Init<IPersister, FilePersister>(IocLifetime.SingleInstance),
+                new IocRegistration().Init<IPersister, FilePersister>(),
             };
         }
     }

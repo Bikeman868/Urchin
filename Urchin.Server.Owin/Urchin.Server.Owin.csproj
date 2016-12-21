@@ -53,13 +53,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Ioc.Modules, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Ioc.Modules.1.0.9\lib\net40\Ioc.Modules.dll</HintPath>
+    <Reference Include="Ioc.Modules, Version=1.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.1.1.4\lib\net40\Ioc.Modules.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Ioc.Modules.Unity, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Ioc.Modules.Unity.1.0.9\lib\net40\Ioc.Modules.Unity.dll</HintPath>
+    <Reference Include="Ioc.Modules.Unity, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.Unity.1.1.3\lib\net40\Ioc.Modules.Unity.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

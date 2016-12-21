@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <BaseIntermediateOutputPath>obj\Net40\</BaseIntermediateOutputPath>
+    <BuildInParallel>false</BuildInParallel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,8 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ioc.Modules">
-      <HintPath>..\packages\Ioc.Modules.1.0.9\lib\net40\Ioc.Modules.dll</HintPath>
+    <Reference Include="Ioc.Modules, Version=1.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.1.1.4\lib\net40\Ioc.Modules.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -56,7 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Package.cmd" />
-    <None Include="packages.Urchin.Client.Net40.config" />
+    <None Include="packages.Urchin.Client.Net40.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Urchin.Client.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

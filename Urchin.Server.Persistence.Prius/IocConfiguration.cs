@@ -4,7 +4,7 @@ using Common.Logging;
 
 namespace Urchin.Server.Persistence.Prius
 {
-    public class PriusFactory : global::Prius.Contracts.Interfaces.IFactory
+    public class PriusFactory : global::Prius.Contracts.Interfaces.External.IFactory
     {
         private readonly Shared.Interfaces.IFactory _urchinFactory;
 
@@ -19,7 +19,7 @@ namespace Urchin.Server.Persistence.Prius
         }
     }
 
-    public class PriusErrorReporter : global::Prius.Contracts.Interfaces.IErrorReporter
+    public class PriusErrorReporter : global::Prius.Contracts.Interfaces.External.IErrorReporter
     {
         private readonly ILog _log;
 

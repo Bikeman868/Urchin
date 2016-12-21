@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Ioc.Modules;
-using Prius.Contracts.Interfaces;
 using Urchin.Server.Persistence.Prius;
 using Urchin.Server.Shared.Interfaces;
 
@@ -16,9 +15,9 @@ namespace Urchin.Client
         {
             IocRegistrations = new List<IocRegistration>
             {
-                new IocRegistration().Init<Prius.Contracts.Interfaces.IFactory, PriusFactory>(IocLifetime.SingleInstance),
-                new IocRegistration().Init<IErrorReporter, PriusErrorReporter>(IocLifetime.SingleInstance),
-                new IocRegistration().Init<IPersister, DatabasePersister>(IocLifetime.SingleInstance),
+                new IocRegistration().Init<Prius.Contracts.Interfaces.External.IFactory, PriusFactory>(),
+                new IocRegistration().Init<Prius.Contracts.Interfaces.External.IErrorReporter, PriusErrorReporter>(),
+                new IocRegistration().Init<IPersister, DatabasePersister>(),
             };
         }
     }
