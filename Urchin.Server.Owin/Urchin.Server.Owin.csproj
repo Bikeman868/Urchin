@@ -195,13 +195,10 @@
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
     <Content Include="Ui\web\Components\RuleListComponent.dart" />
-    <Content Include="Ui\web\Components\ToolBarComponent.dart" />
     <Content Include="Ui\web\DataLayer\Data.dart" />
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\Events\AppEvents.dart" />
     <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
-    <Content Include="Ui\web\Components\EnvironmentListComponent.dart" />
-    <Content Include="Ui\web\Components\EnvironmentDetailComponent.dart" />
     <Content Include="Ui\web\Components\TestQueryComponent.dart" />
     <Content Include="Ui\web\Components\LogonComponent.dart" />
     <Content Include="Ui\web\Components\HelpComponent.dart" />
@@ -211,14 +208,18 @@
     <Content Include="Ui\web\DataLayer\VersionData.dart" />
     <None Include="Ui\build.cmd" />
     <None Include="Ui\pubspec.lock" />
-    <Content Include="Ui\web\Views\Environment\EnvironmentView.dart" />
+    <Content Include="Ui\web\Views\Environment\EnvironmentEditView.dart" />
     <Content Include="Ui\web\Views\Environment\EnvironmentListElementView.dart" />
     <Content Include="Ui\web\Views\Machine\MachineListElementView.dart" />
     <Content Include="Ui\web\ViewModels\SecurityRuleViewModel.dart" />
-    <Content Include="Ui\web\Views\SecurityRule\SecurityRuleListElementView.dart" />
+    <Content Include="Ui\web\Views\SecurityRule\SecurityRuleEditView.dart" />
     <Content Include="Ui\web\Views\Environment\EnvironmentListView.dart" />
     <Content Include="Ui\web\ViewModels\RuleViewModel.dart" />
     <Content Include="Ui\web\ViewModels\VariableViewModel.dart" />
+    <Content Include="Ui\web\Views\Navigation\ToolBarView.dart" />
+    <Content Include="Ui\web\Views\Environment\EnvironmentDisplayView.dart" />
+    <Content Include="Ui\web\Views\Machine\MachineEditView.dart" />
+    <Content Include="Ui\web\Views\SecurityRule\SecurityRuleListElementView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

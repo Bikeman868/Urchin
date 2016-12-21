@@ -2,25 +2,23 @@
 
 import '../../MVVM/SubscriptionEvent.dart';
 import '../../MVVM/View.dart';
-import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/BoundTextInput.dart';
 
 import '../../Events/AppEvents.dart';
-
 import '../../Models/SecurityRuleModel.dart';
-
 import '../../ViewModels/SecurityRuleViewModel.dart';
 
-class SecurityRuleListElementView extends View
+class SecurityRuleEditView extends View
 {
-	BoundLabel<String> _startIpBinding;
-	BoundLabel<String> _endIpBinding;
+	BoundTextInput<String> _startIpBinding;
+	BoundTextInput<String> _endIpBinding;
 
-	SecurityRuleListElementView([SecurityRuleViewModel viewModel])
+	SecurityRuleEditView([SecurityRuleViewModel viewModel])
 	{
-		addInlineText('Allowed IP from ');
-		_startIpBinding = new BoundLabel<String>(addSpan(classNames: ['ip-address']));
-		addInlineText(' to ');
-		_endIpBinding = new BoundLabel<String>(addSpan(classNames: ['ip-address']));
+		addInlineText('Allowed IP from');
+		_startIpBinding = new BoundTextInput<String>(addInput(classNames: ['ip-address', 'input-field']));
+		addInlineText('to');
+		_endIpBinding = new BoundTextInput<String>(addInput(classNames: ['ip-address', 'input-field']));
 
 		this.viewModel = viewModel;
 	}

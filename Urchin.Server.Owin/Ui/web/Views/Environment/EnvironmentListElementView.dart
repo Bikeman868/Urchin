@@ -9,16 +9,11 @@ import '../../ViewModels/EnvironmentViewModel.dart';
 
 class EnvironmentListElementView extends View
 {
-	Element name;
-	BoundLabel _nameBinding;
+	BoundLabel<String> _nameBinding;
 
 	EnvironmentListElementView([EnvironmentViewModel viewModel])
 	{
-		name = new DivElement()
-			..classes.add('environment-name')
-			..onClick.listen(_environmentClicked);
-
-		_nameBinding = new BoundLabel(name);
+		_nameBinding = new BoundLabel<String>(addDiv(className: 'environment-name'));
 
 		this.viewModel = viewModel;
 	}
@@ -37,21 +32,5 @@ class EnvironmentListElementView extends View
 		{
 			_nameBinding.binding = value.name;
 		}
-	}
-
-	void _environmentClicked(MouseEvent e)
-	{
-		AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(_viewModel));
-	}
-
-	void addTo(Element container)
-	{
-		container.children.add(name);
-	}
-
-	void displayIn(Element container)
-	{
-		container.children.clear();
-		addTo(container);
 	}
 }

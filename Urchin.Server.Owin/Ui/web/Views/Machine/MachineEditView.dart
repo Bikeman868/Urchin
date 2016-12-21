@@ -2,18 +2,18 @@
 
 import '../../MVVM/SubscriptionEvent.dart';
 import '../../MVVM/View.dart';
-import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/BoundTextInput.dart';
 
 import '../../Events/AppEvents.dart';
 import '../../ViewModels/MachineViewModel.dart';
 
-class MachineListElementView extends View
+class MachineEditView extends View
 {
-	BoundLabel<String> _nameBinding;
+	BoundTextInput<String> _nameBinding;
 
-	MachineListElementView([MachineViewModel viewModel])
+	MachineEditView([MachineViewModel viewModel])
 	{
-		_nameBinding = new BoundLabel<String>(addDiv(className: 'machine-name'));
+		_nameBinding = new BoundTextInput<String>(addInput(classNames: ['machine-name', 'input-field']));
 		this.viewModel = viewModel;
 	}
 

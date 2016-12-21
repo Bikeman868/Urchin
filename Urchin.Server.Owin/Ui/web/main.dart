@@ -8,7 +8,9 @@ import 'ViewModels/EnvironmentViewModel.dart';
 import 'Events/AppEvents.dart';
 
 import 'Views/Environment/EnvironmentListView.dart';
-import 'Views/Environment/EnvironmentView.dart';
+import 'Views/Environment/EnvironmentEditView.dart';
+import 'Views/Environment/EnvironmentDisplayView.dart';
+import 'Views/Navigation/ToolBarView.dart';
 
 Element _leftDiv;
 Element _centreDiv;
@@ -17,6 +19,7 @@ Element _userDiv;
 Element _toolBarDiv;
 
 DataViewModel _dataViewModel;
+ToolBarView _toolBarView;
 
 main() async
 { 
@@ -40,9 +43,11 @@ void _bindHtml()
 
 void _initialView()
 {
+	_toolBarView = new ToolBarView();
+	_toolBarView.displayIn(_toolBarDiv);
+
 	_dataViewModel = new DataViewModel();
 	_displayEnvironmentList(_leftDiv);
-	_displayVersionList(_centreDiv);
 }
 
 /*************************************************************************/
@@ -55,14 +60,21 @@ void _attachEvents()
 
 void _tabChanged(TabChangedEvent e)
 {
+	_centreDiv.children.clear();
+
 	if (e.tabName == 'Rules') _displayRuleList(_leftDiv);
 	else if (e.tabName == 'Environments') _displayEnvironmentList(_leftDiv);
 	else if (e.tabName == 'Versions') _displayVersionList(_leftDiv);
 }
 
+String _currentView;
+
 void _environmentSelected(EnvironmentSelectedEvent e)
 {
-	_displayEnvironment(e.environment, _centreDiv);
+	if (_currentView == 'Environments')
+		_displayEnvironmentEdit(e.environment, _centreDiv);
+	else 
+		_displayEnvironmentDisplay(e.environment, _rightDiv);
 }
 
 /*************************************************************************/
@@ -71,28 +83,44 @@ EnvironmentListView _environmentListView;
 
 void _displayEnvironmentList(Element panel)
 {
+	_currentView = 'Environments';
+
 	if (_environmentListView == null)
 		_environmentListView = new EnvironmentListView(_dataViewModel.environmentList);
 
 	_environmentListView.displayIn(panel);
 }
 
-EnvironmentView _environmentView;
+EnvironmentEditView _environmentEditView;
 
-void _displayEnvironment(EnvironmentViewModel environment, Element panel)
+void _displayEnvironmentEdit(EnvironmentViewModel environment, Element panel)
 {
-	if (_environmentView == null)
-		_environmentView = new EnvironmentView(environment);
+	if (_environmentEditView == null)
+		_environmentEditView = new EnvironmentEditView(environment);
 	else
-		_environmentView.viewModel = environment;
+		_environmentEditView.viewModel = environment;
 
-	_environmentView.displayIn(panel);
+	_environmentEditView.displayIn(panel);
+}
+
+EnvironmentDisplayView _environmentDisplayView;
+
+void _displayEnvironmentDisplay(EnvironmentViewModel environment, Element panel)
+{
+	if (_environmentDisplayView == null)
+		_environmentDisplayView = new EnvironmentDisplayView(environment);
+	else
+		_environmentDisplayView.viewModel = environment;
+
+	_environmentDisplayView.displayIn(panel);
 }
 
 /*************************************************************************/
 
 void _displayRuleList(Element panel)
 {
+	_currentView = 'Rules';
+
 	panel.children.clear();
 }
 
@@ -100,5 +128,7 @@ void _displayRuleList(Element panel)
 
 void _displayVersionList(Element panel)
 {
-	panel.children.clear();
+	_currentView = 'Versions';
+
+	// panel.children.clear();
 }

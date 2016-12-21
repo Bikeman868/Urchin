@@ -15,18 +15,15 @@ import '../../Views/Environment/EnvironmentListElementView.dart';
 
 class EnvironmentListView extends View
 {
-	Element environments;
-
 	BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView> _environmentsBinding;
 
 	EnvironmentListView([EnvironmentListViewModel viewModel])
 	{
 		addHeading(3, 'Environments');
-		environments = addList();
 
 		_environmentsBinding = new BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView>(
 			(vm) => new EnvironmentListElementView(vm), 
-			environments,
+			addList(),
 			selectionMethod: (vm) => AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(vm)));
 
 		this.viewModel = viewModel;

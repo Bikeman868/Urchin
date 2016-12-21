@@ -57,6 +57,16 @@ td
     height:90px;
 }
 
+#topDiv h1
+{
+    font-size:35px;
+    padding-left:12px;
+    padding-right:0;
+    padding-bottom:10px;
+    padding-top:0;
+    margin:5px;
+}
+
 #middleDiv
 {
     background: whitesmoke;
