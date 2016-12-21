@@ -26,7 +26,21 @@ class EnvironmentListView extends View
 			addList(),
 			selectionMethod: (vm) => AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(vm)));
 
+		var buttonBar = addContainer(className: 'button-bar');
+		addButton("Save", _saveClicked, parent: buttonBar);
+		addButton("Discard", _discardClicked, parent: buttonBar);
+
 		this.viewModel = viewModel;
+	}
+
+	void _saveClicked(MouseEvent e)
+	{
+		viewModel.save();
+	}
+
+	void _discardClicked(MouseEvent e)
+	{
+		viewModel.reload();
 	}
 
 	EnvironmentListViewModel _viewModel;

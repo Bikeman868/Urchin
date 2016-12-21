@@ -143,6 +143,24 @@ td
     width: 120px;
 }
 
+.button-bar
+{
+    height: 50px;
+}
+
+.button-bar .button
+{
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid navy;
+    border-radius: 6px;
+    background: cornflowerblue;
+    color: white;
+    margin-right: 5px;
+    position: relative;
+    top: 20px;
+}
+
 .bound-list
 {
 }

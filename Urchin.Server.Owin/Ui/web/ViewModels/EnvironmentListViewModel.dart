@@ -1,4 +1,6 @@
-﻿import '../MVVM/ListBinding.dart';
+﻿import 'dart:html';
+
+import '../MVVM/ListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
@@ -17,7 +19,7 @@ class EnvironmentListViewModel extends ViewModel
 			(EnvironmentModel m) => new EnvironmentViewModel(m));
 
 		if (environmentModels == null)
-			Server.getEnvironments().then((List<EnvironmentModel> m) => models = m);
+			reload();
 		else
 			models = environmentModels;
 	}
@@ -47,5 +49,55 @@ class EnvironmentListViewModel extends ViewModel
 			return ChangeState.modified;
 
 		return ChangeState.unmodified;
+	}
+
+	void reload()
+	{
+		Server.getEnvironments()
+			.then((List<EnvironmentModel> m) => models = m)
+			.catchError((Error error)
+			{
+				window.alert(error.toString());
+			});
+	}
+
+	bool _saving;
+
+	void save()
+	{
+		if (_saving) return;
+		_saving = true;
+
+		var environmentModels = new List<EnvironmentModel>();
+		bool isModified = false;
+		for (EnvironmentViewModel environmentViewModel in environments.viewModels)
+		{
+			var state = environmentViewModel.getState();
+			if (state != ChangeState.deleted)
+				environmentModels.add(environmentViewModel.model);
+			if (state != ChangeState.unmodified)
+				isModified = true;
+		}
+		if (isModified)
+		{
+			Server.replaceEnvironments(environmentModels)
+				.then((error)
+				{
+					_saving = false;
+					if (error == null)
+						window.alert('Environments saved');
+					else
+						window.alert('Environments were not saved. ' + error);
+				})
+				.catchError((Error error)
+				{
+					_saving = false;
+					window.alert(error.toString());
+				});
+		}
+		else
+		{
+			window.alert('No changes to save');
+		}
 	}
 }
