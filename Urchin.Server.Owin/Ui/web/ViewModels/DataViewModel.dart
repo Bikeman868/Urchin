@@ -1,60 +1,39 @@
-﻿import '../DataBinding/ListBinding.dart';
-import '../DataBinding/ViewModel.dart';
-import '../DataBinding/ChangeState.dart';
+﻿import '../MVVM/ListBinding.dart';
+import '../MVVM/ViewModel.dart';
+import '../MVVM/ChangeState.dart';
 
-import '../Models/DataModel.dart';
-import '../Models/EnvironmentModel.dart';
-import '../Models/VersionModel.dart';
-
-import '../ViewModels/EnvironmentViewModel.dart';
-import '../ViewModels/VersionViewModel.dart';
+import '../ViewModels/EnvironmentListViewModel.dart';
+import '../ViewModels/VersionListViewModel.dart';
 
 import '../Events/AppEvents.dart';
 
 class DataViewModel extends ViewModel
 {
-    ListBinding<EnvironmentModel, EnvironmentViewModel> environments;
-    ListBinding<VersionModel, VersionViewModel> versions;
-
-	DataViewModel([DataModel model])
+	dispose()
 	{
-		environments = new ListBinding<EnvironmentModel, EnvironmentViewModel>(
-			(Map json) => new EnvironmentModel(new Map()..['name']='Environment'..['version']=1), 
-			(EnvironmentModel m) => new EnvironmentViewModel(m));
-		environments.onAdd.listen(_environmentAdded);
+		if (_environmentList != null)
+			_environmentList.dispose();
 
-		versions = new ListBinding<VersionModel, VersionViewModel>(
-			(Map json) => new VersionModel(new Map()..['name']='New Version', true), 
-			(VersionModel m) => new VersionViewModel(m));
-		versions.onAdd.listen(_versionAdded);
-
-		this.model = model;
+		if (_versionList != null)
+			_versionList.dispose();
 	}
 
-	DataModel _model;
-
-	DataModel get model
+	EnvironmentListViewModel _environmentList;
+	EnvironmentListViewModel get environmentList
 	{
-		if (_model != null)
-		{
-			_model.environments = environments.models;
-			_model.versions = versions.models;
-		}
-		return _model;
+		if (_environmentList == null)
+			_environmentList = new EnvironmentListViewModel();
+
+		return _environmentList;
 	}
 
-	void set model(DataModel value)
+	VersionListViewModel _versionList;
+	VersionListViewModel get versionList
 	{
-		_model = value;
+		if (_versionList == null)
+			_versionList = new VersionListViewModel();
 
-		if (value == null)
-		{
-			environments.models = null;
-		}
-		else
-		{
-			environments.models = value.environments;
-		}
+		return _versionList;
 	}
 
 	ChangeState getState()
@@ -63,25 +42,12 @@ class DataViewModel extends ViewModel
 		if (state != ChangeState.unmodified)
 			return state;
 
-		if (environments.getState() != ChangeState.unmodified)
+		if (_environmentList != null && _environmentList.getState() != ChangeState.unmodified)
 			return ChangeState.modified;
 
-		if (versions.getState() != ChangeState.unmodified)
+		if (_versionList != null && _versionList.getState() != ChangeState.unmodified)
 			return ChangeState.modified;
 
 		return ChangeState.unmodified;
 	}
-
-	void _environmentAdded(ListEvent e)
-	{
-		var viewModel = environments.viewModels[e.index];
-		AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(viewModel));
-	}
-
-	void _versionAdded(ListEvent e)
-	{
-		var viewModel = versions.viewModels[e.index];
-		AppEvents.versionSelected.raise(new VersionSelectedEvent(viewModel));
-	}
-
 }

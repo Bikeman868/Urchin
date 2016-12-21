@@ -1,15 +1,15 @@
 ﻿import 'dart:html';
 
-import '../Events/SubscriptionEvent.dart';
-import '../Events/AppEvents.dart';
+import '../../MVVM/SubscriptionEvent.dart';
+import '../../MVVM/View.dart';
+import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/BoundTextInput.dart';
 
-import '../DataBinding/View.dart';
-import '../DataBinding/BoundLabel.dart';
-import '../DataBinding/BoundTextInput.dart';
+import '../../Events/AppEvents.dart';
 
-import '../Models/SecurityRuleModel.dart';
+import '../../Models/SecurityRuleModel.dart';
 
-import '../ViewModels/SecurityRuleViewModel.dart';
+import '../../ViewModels/SecurityRuleViewModel.dart';
 
 class SecurityRuleListElementView extends View
 {
@@ -22,11 +22,11 @@ class SecurityRuleListElementView extends View
 	SecurityRuleListElementView([SecurityRuleViewModel viewModel])
 	{
 		startIp = new InputElement()
-			..classes.add('ipAddress')
-			..classes.add('inputField');
+			..classes.add('ip-address')
+			..classes.add('input-field');
 		endIp = new InputElement()
-			..classes.add('ipAddress')
-			..classes.add('inputField');
+			..classes.add('ip-address')
+			..classes.add('input-field');
 
 		_startIpBinding = new BoundTextInput(startIp);
 		_endIpBinding = new BoundTextInput(endIp);

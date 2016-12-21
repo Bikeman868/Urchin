@@ -1,15 +1,13 @@
 ﻿import 'dart:html';
 
-import '../Events/SubscriptionEvent.dart';
-import '../Events/AppEvents.dart';
+import '../../MVVM/SubscriptionEvent.dart';
+import '../../MVVM/View.dart';
+import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/BoundTextInput.dart';
 
-import '../DataBinding/View.dart';
-import '../DataBinding/BoundLabel.dart';
-import '../DataBinding/BoundTextInput.dart';
-
-import '../Models/MachineModel.dart';
-
-import '../ViewModels/MachineViewModel.dart';
+import '../../Events/AppEvents.dart';
+import '../../Models/MachineModel.dart';
+import '../../ViewModels/MachineViewModel.dart';
 
 class MachineListElementView extends View
 {
@@ -19,8 +17,8 @@ class MachineListElementView extends View
 	MachineListElementView([MachineViewModel viewModel])
 	{
 		name = new InputElement()
-			..classes.add('machineName')
-			..classes.add('inputField');
+			..classes.add('machine-name')
+			..classes.add('input-field');
 
 		_nameBinding = new BoundTextInput(name);
 

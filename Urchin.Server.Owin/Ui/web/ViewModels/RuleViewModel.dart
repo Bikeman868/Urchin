@@ -1,7 +1,7 @@
-﻿import '../DataBinding/StringBinding.dart';
-import '../DataBinding/ListBinding.dart';
-import '../DataBinding/ViewModel.dart';
-import '../DataBinding/ChangeState.dart';
+﻿import '../MVVM/StringBinding.dart';
+import '../MVVM/ListBinding.dart';
+import '../MVVM/ViewModel.dart';
+import '../MVVM/ChangeState.dart';
 
 import '../Models/RuleModel.dart';
 import '../Models/VariableModel.dart';

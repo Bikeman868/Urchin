@@ -1,16 +1,17 @@
 ﻿import 'dart:html';
 
-import '../Html/FormBuilder.dart';
+import '../../MVVM/View.dart';
+import '../../MVVM/BoundList.dart';
 
-import '../DataBinding/View.dart';
-import '../DataBinding/BoundList.dart';
+import '../../Models/EnvironmentModel.dart';
 
-import '../Models/EnvironmentModel.dart';
+import '../../Events/AppEvents.dart';
 
-import '../ViewModels/EnvironmentViewModel.dart';
-import '../ViewModels/DataViewModel.dart';
+import '../../ViewModels/EnvironmentViewModel.dart';
+import '../../ViewModels/EnvironmentListViewModel.dart';
+import '../../ViewModels/DataViewModel.dart';
 
-import '../Views/EnvironmentListElementView.dart';
+import '../../Views/Environment/EnvironmentListElementView.dart';
 
 class EnvironmentListView extends View
 {
@@ -18,22 +19,23 @@ class EnvironmentListView extends View
 
 	BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView> _environmentsBinding;
 
-	EnvironmentListView([DataViewModel viewModel])
+	EnvironmentListView([EnvironmentListViewModel viewModel])
 	{
-		environments = new UListElement()
-			..classes.add('selectionList');
+		addHeading(3, 'Environments');
+		environments = addList();
 
 		_environmentsBinding = new BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView>(
 			(vm) => new EnvironmentListElementView(vm), 
-			environments);
+			environments,
+			selectionMethod: (vm) => AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(vm)));
 
 		this.viewModel = viewModel;
 	}
 
-	DataViewModel _viewModel;
-	DataViewModel get viewModel => _viewModel;
+	EnvironmentListViewModel _viewModel;
+	EnvironmentListViewModel get viewModel => _viewModel;
 
-	void set viewModel(DataViewModel value)
+	void set viewModel(EnvironmentListViewModel value)
 	{
 		_viewModel = value;
 		if (value == null)

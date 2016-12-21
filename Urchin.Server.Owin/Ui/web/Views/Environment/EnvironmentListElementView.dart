@@ -1,12 +1,11 @@
 ﻿import 'dart:html';
 
-import '../Events/SubscriptionEvent.dart';
-import '../Events/AppEvents.dart';
+import '../../MVVM/View.dart';
+import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/SubscriptionEvent.dart';
 
-import '../DataBinding/View.dart';
-import '../DataBinding/BoundLabel.dart';
-
-import '../ViewModels/EnvironmentViewModel.dart';
+import '../../Events/AppEvents.dart';
+import '../../ViewModels/EnvironmentViewModel.dart';
 
 class EnvironmentListElementView extends View
 {
@@ -16,7 +15,7 @@ class EnvironmentListElementView extends View
 	EnvironmentListElementView([EnvironmentViewModel viewModel])
 	{
 		name = new DivElement()
-			..classes.add('environmentName')
+			..classes.add('environment-name')
 			..onClick.listen(_environmentClicked);
 
 		_nameBinding = new BoundLabel(name);

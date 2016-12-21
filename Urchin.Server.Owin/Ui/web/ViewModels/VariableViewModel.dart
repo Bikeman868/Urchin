@@ -1,5 +1,5 @@
-﻿import '../DataBinding/StringBinding.dart';
-import '../DataBinding/ViewModel.dart';
+﻿import '../MVVM/StringBinding.dart';
+import '../MVVM/ViewModel.dart';
 
 import '../Models/VariableModel.dart';
 

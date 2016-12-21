@@ -1,4 +1,4 @@
-﻿import '../DataBinding/Model.dart';
+﻿import '../MVVM/Model.dart';
 
 import '../Models/SecurityRuleModel.dart';
 import '../Models/MachineModel.dart';

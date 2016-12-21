@@ -1,0 +1,99 @@
+﻿import 'dart:html';
+import 'dart:async';
+
+import 'HtmlBuilder.dart';
+import 'View.dart';
+import 'Model.dart';
+import 'ViewModel.dart';
+import 'Types.dart';
+import 'ListBinding.dart';
+
+import 'SubscriptionEvent.dart';
+
+
+abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extends View>
+{
+    BoundContainer(
+		this.viewFactory,
+		Element container, 
+		{
+			this.selectionMethod : null
+		})
+    {
+        this.container = container;
+    }
+  
+    ListBinding<TM, TVM> _binding;
+    ListBinding<TM, TVM> get binding => _binding;
+
+    void set binding(ListBinding<TM, TVM> value)
+    {
+        if (_addSubscription != null)
+        {
+            _addSubscription.cancel();
+            _addSubscription = null;
+        }
+        if (_removeSubscription != null)
+        {
+            _removeSubscription.cancel();
+            _removeSubscription = null;
+        }
+
+        _binding = value;
+
+        if (value != null)
+        {
+            refresh();
+            _addSubscription = value.onAdd.listen(_onAdd);      
+            _removeSubscription = value.onRemove.listen(_onRemove);      
+        }
+    }
+  
+    StreamSubscription<ListEvent> _addSubscription;
+    StreamSubscription<ListEvent> _removeSubscription;
+    ViewFactory<TVM, TV> viewFactory;
+	ViewModelMethod<TVM> selectionMethod;
+
+    Element _container;
+    Element get container => _container;
+	void set container(Element value) 
+	{
+		_container = value;
+		initializeContainer(value);
+		refresh();
+	}
+
+    void initializeContainer(Element value);
+    void refresh();
+  
+	void itemClicked(MouseEvent e)
+	{
+		if (selectionMethod == null) return;
+		if (_binding == null) return;
+
+		Element element = e.target;
+		while (element != null)
+		{
+			var indexAttribute = element.attributes['index'];
+			if (indexAttribute != null)
+			{
+				int index = int.parse(indexAttribute);
+				var viewModel = _binding.viewModels[index];
+				if (viewModel != null)
+					selectionMethod(viewModel);
+				return;
+			}
+			element = element.parent;
+		}
+	}
+
+    void _onAdd(ListEvent e)
+    {
+		refresh();
+    }
+  
+    void _onRemove(ListEvent e)
+    {
+		refresh();
+    }
+}

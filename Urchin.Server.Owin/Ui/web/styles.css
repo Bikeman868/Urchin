@@ -111,11 +111,19 @@ td
     width: 120px;
 }
 
-.boundList
+.bound-list
 {
 }
 
-.boundList:after
+.selection-list
+{
+    margin: 10px;
+    position: relative;
+    padding: 4px 4px 4px 4px;
+    font-size: 14px;
+}
+
+.bound-list:after
 { 
    content: " ";
    display: block; 
@@ -123,12 +131,17 @@ td
    clear: both;
 }
 
-.boundListElement
+.bound-list-item
 {
     list-style: none;
 }
 
-.boundListElement:after
+.list-item
+{
+    list-style: none;
+}
+
+.bound-list-item:after
 {
    content: " ";
    display: block; 
@@ -136,20 +149,37 @@ td
    clear: both;
 }
 
-.boundListView 
+.bound-list-view 
 {
     display: block;
     float: left;
 }
 
-.boundListDelete
+.list-view 
+{
+    display: block;
+    float: left;
+}
+
+.selection-list .bound-list-item
+{
+    border: 1px solid transparent;
+}
+
+.selection-list .bound-list-item:hover
+{
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.bound-list-delete
 {
     display: block;
     width: 20px;
     float: right;
 }
 
-.boundListAdd
+.bound-list-add
 {
     display: block;
     width: 20px;
@@ -161,7 +191,7 @@ span.button
     cursor: pointer;
 }
 
-.toolBarButton
+.tool-bar-button
 {
     margin: 10px;
     position: relative;
@@ -170,13 +200,13 @@ span.button
     border: 1px solid transparent;
 }
 
-.toolBarButton:hover
+.tool-bar-button:hover
 {
     cursor: pointer;
     border: 1px solid white;
 }
 
-.imageButton
+.image-button
 {
     margin: 1px;
     position: relative;
@@ -184,13 +214,13 @@ span.button
     border: 1px solid transparent;
 }
 
-.imageButton:hover
+.image-button:hover
 {
     cursor: pointer;
     border: 1px solid white;
 }
 
-.imageButton:active
+.image-button:active
 {
     cursor: pointer;
     border: 1px solid white;
@@ -200,13 +230,13 @@ span.button
     padding-bottom:0px;
 }
 
-#updateDiv .imageButton
+#updateDiv .image-button
 {
     width: 40px;
     height: 40px;
 }
 
-.panelTitle
+.panel-title
 {
     display: block;
     font-size: 18px;
@@ -216,7 +246,7 @@ span.button
     margin: 10px;
 }
 
-.panelHeading
+.panel-heading
 {
     border-top: 1px solid navy;
     display: block;
@@ -227,7 +257,7 @@ span.button
     margin: 6px;
 }
 
-.panelSubHeading 
+.panel-sub-heading 
 {
     display: block;
     font-size: 14px;
@@ -236,60 +266,52 @@ span.button
     margin: 6px;
 }
 
-.selectionList
-{
-    margin: 10px;
-    position: relative;
-    padding: 4px 4px 4px 4px;
-    font-size: 14px;
-}
-
-.machineList
+.machine-list
 {
     list-style: none;
 }
 
-.machineName
+.machine-name
 {
     text-transform: uppercase;
 }
 
-.securityRuleList
+.security-rule-list
 {
     list-style: none;
 }
 
-.securityRule
+.security-rule
 {
 }
 
-.selectionItem
+.selection-item
 {
     margin: 4px;
     padding: 2px;
     border: 1px solid transparent;
 }
 
-.selectionItem:hover
+.selection-item:hover
 {
     cursor: pointer;
     border: 1px solid navy;
 }
 
-.dataForm
+.data-form
 {
     display: table;
     width: auto;
     border-spacing: 3px;
 }
 
-.dataRow 
+.data-row 
 {
     display: table-row;
     width: auto;
 }
 
-.dataLabel
+.data-label
 {
     display: table-cell;
     width: 140px;
@@ -297,7 +319,7 @@ span.button
     margin-right: 10px;
 }
 
-.dataField
+.data-field
 {
     display: table-cell;
     font-weight: bold;
@@ -306,7 +328,7 @@ span.button
     margin-right: 10px;
 }
 
-.inputField 
+.input-field 
 {
     display: inline;
     font-weight: bold;
@@ -315,24 +337,24 @@ span.button
     margin-right: 10px;
 }
 
-.inputField.ipAddress
+.input-field.ip-address
 {
     width: 75px;
 }
 
-.inputLogon
+.input-logon
 {
     font-weight: bold;
     width: 90px;
     margin: 2px;
 }
 
-span.jsonName
+span.json-name
 {
   color: blue;
 }
 
-span.jsonString
+span.json-string
 {
   color: forestgreen;
 }
@@ -348,7 +370,7 @@ span.modified
     background: darkred;
 }
 
-.formButton
+.form-button
 {
     display: table-cell;
     padding: 10px;
@@ -360,7 +382,7 @@ span.modified
     color:white;
 }
 
-.formButton:hover
+.form-button:hover
 {
     cursor: pointer;
     border: 1px solid red;
@@ -374,7 +396,7 @@ span.modified
     margin-left: 5px;
     margin-right: 5px;
 }
-td.variableName
+td.variable-name
 {
     width:150px;
 }

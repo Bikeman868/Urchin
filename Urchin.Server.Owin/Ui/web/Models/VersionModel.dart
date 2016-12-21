@@ -1,4 +1,4 @@
-﻿import '../DataBinding/Model.dart';
+﻿import '../MVVM/Model.dart';
 import '../Models/RuleModel.dart';
 
 class VersionModel extends Model

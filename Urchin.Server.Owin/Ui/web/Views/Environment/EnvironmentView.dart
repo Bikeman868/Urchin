@@ -1,21 +1,19 @@
 ﻿import 'dart:html';
 
-import '../Html/FormBuilder.dart';
+import '../../MVVM/View.dart';
+import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/BoundTextInput.dart';
+import '../../MVVM/BoundList.dart';
 
-import '../DataBinding/View.dart';
-import '../DataBinding/BoundLabel.dart';
-import '../DataBinding/BoundTextInput.dart';
-import '../DataBinding/BoundList.dart';
+import '../../Models/MachineModel.dart';
+import '../../Models/SecurityRuleModel.dart';
 
-import '../Models/MachineModel.dart';
-import '../Models/SecurityRuleModel.dart';
+import '../../ViewModels/EnvironmentViewModel.dart';
+import '../../ViewModels/MachineViewModel.dart';
+import '../../ViewModels/SecurityRuleViewModel.dart';
 
-import '../ViewModels/EnvironmentViewModel.dart';
-import '../ViewModels/MachineViewModel.dart';
-import '../ViewModels/SecurityRuleViewModel.dart';
-
-import '../Views/MachineListElementView.dart';
-import '../Views/SecurityRuleListElementView.dart';
+import '../../Views/Machine/MachineListElementView.dart';
+import '../../Views/Machine/SecurityRuleListElementView.dart';
 
 class EnvironmentView extends View
 {
