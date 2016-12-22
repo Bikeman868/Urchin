@@ -4,6 +4,7 @@ import '../MVVM/ChangeState.dart';
 
 import '../ViewModels/EnvironmentListViewModel.dart';
 import '../ViewModels/VersionListViewModel.dart';
+import '../ViewModels/UserViewModel.dart';
 
 import '../Events/AppEvents.dart';
 
@@ -11,11 +12,23 @@ class DataViewModel extends ViewModel
 {
 	dispose()
 	{
+		if (_user != null)
+			_user.dispose();
+
 		if (_environmentList != null)
 			_environmentList.dispose();
 
 		if (_versionList != null)
 			_versionList.dispose();
+	}
+
+	UserViewModel _user;
+	UserViewModel get user
+	{
+		if (_user == null)
+			_user = new UserViewModel();
+
+		return _user;
 	}
 
 	EnvironmentListViewModel _environmentList;

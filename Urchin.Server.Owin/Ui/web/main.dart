@@ -11,6 +11,7 @@ import 'Views/Environment/EnvironmentListView.dart';
 import 'Views/Environment/EnvironmentEditView.dart';
 import 'Views/Environment/EnvironmentDisplayView.dart';
 import 'Views/Navigation/ToolBarView.dart';
+import 'Views/Navigation/LogonView.dart';
 
 Element _leftDiv;
 Element _centreDiv;
@@ -20,6 +21,7 @@ Element _toolBarDiv;
 
 DataViewModel _dataViewModel;
 ToolBarView _toolBarView;
+LogonView _logonView;
 
 main() async
 { 
@@ -43,10 +45,14 @@ void _bindHtml()
 
 void _initialView()
 {
+	_dataViewModel = new DataViewModel();
+
 	_toolBarView = new ToolBarView();
 	_toolBarView.displayIn(_toolBarDiv);
 
-	_dataViewModel = new DataViewModel();
+	_logonView = new LogonView(_dataViewModel.user);
+	_logonView.displayIn(_userDiv);
+
 	_displayEnvironmentList(_leftDiv);
 }
 

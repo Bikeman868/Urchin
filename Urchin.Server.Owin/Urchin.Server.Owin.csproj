@@ -200,7 +200,7 @@
     <Content Include="Ui\web\Events\AppEvents.dart" />
     <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
     <Content Include="Ui\web\Components\TestQueryComponent.dart" />
-    <Content Include="Ui\web\Components\LogonComponent.dart" />
+    <Content Include="Ui\web\Views\Navigation\LogonView.dart" />
     <Content Include="Ui\web\Components\HelpComponent.dart" />
     <Content Include="Ui\web\Components\VersionListComponent.dart" />
     <Content Include="Ui\web\Components\VersionDetailComponent.dart" />
@@ -220,6 +220,8 @@
     <Content Include="Ui\web\Views\Environment\EnvironmentDisplayView.dart" />
     <Content Include="Ui\web\Views\Machine\MachineEditView.dart" />
     <Content Include="Ui\web\Views\SecurityRule\SecurityRuleListElementView.dart" />
+    <Content Include="Ui\web\ViewModels\UserViewModel.dart" />
+    <Content Include="Ui\web\Views\Navigation\UserView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />
