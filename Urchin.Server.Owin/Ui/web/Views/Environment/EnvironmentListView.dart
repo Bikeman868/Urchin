@@ -9,7 +9,6 @@ import '../../Events/AppEvents.dart';
 
 import '../../ViewModels/EnvironmentViewModel.dart';
 import '../../ViewModels/EnvironmentListViewModel.dart';
-import '../../ViewModels/DataViewModel.dart';
 
 import '../../Views/Environment/EnvironmentListElementView.dart';
 

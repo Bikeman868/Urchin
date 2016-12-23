@@ -2,8 +2,8 @@
 
 import '../../MVVM/View.dart';
 import '../../MVVM/BoundLabel.dart';
-import '../../MVVM/BoundTextInput.dart';
 import '../../MVVM/BoundList.dart';
+import '../../MVVM/BoundRepeater.dart';
 
 import '../../Models/MachineModel.dart';
 import '../../Models/SecurityRuleModel.dart';
@@ -12,6 +12,7 @@ import '../../ViewModels/EnvironmentViewModel.dart';
 import '../../ViewModels/MachineViewModel.dart';
 import '../../ViewModels/SecurityRuleViewModel.dart';
 
+import '../../Views/Machine/MachineNameView.dart';
 import '../../Views/Machine/MachineListElementView.dart';
 import '../../Views/SecurityRule/SecurityRuleListElementView.dart';
 
@@ -20,13 +21,13 @@ class EnvironmentDisplayView extends View
 	BoundLabel<String> _nameBinding1;
 	BoundLabel<String> _nameBinding2;
 	BoundLabel<int> _versionBinding;
-	BoundList<MachineModel, MachineViewModel, MachineListElementView> _machinesBinding;
+	BoundRepeater<MachineModel, MachineViewModel, MachineNameView> _machinesBinding;
 	BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView> _rulesBinding;
 
 	EnvironmentDisplayView([EnvironmentViewModel viewModel])
 	{
 		_nameBinding1 = new BoundLabel<String>(
-			addHeading(1, 'Environment Details'), 
+			addHeading(2, 'Environment Details'), 
 			formatMethod: (s) => s + ' Environment');
 
 		var versionContainer = addContainer();
@@ -34,14 +35,14 @@ class EnvironmentDisplayView extends View
 		_versionBinding = new BoundLabel<int>(addSpan(parent: versionContainer));
 
 		_nameBinding2 = new BoundLabel<String>(
-			addHeading(2, 'Environment Computers'), 
+			addHeading(3, 'Environment Computers'), 
 			formatMethod: (s) => s + ' Computers');
 
-		_machinesBinding = new BoundList<MachineModel, MachineViewModel, MachineListElementView>(
-			(vm) => new MachineListElementView(vm), 
-			addContainer(), allowAdd: false, allowRemove: false);
+		_machinesBinding = new BoundRepeater<MachineModel, MachineViewModel, MachineNameView>(
+			(vm) => new MachineNameView(vm), 
+			addContainer());
 			
-		addHeading(2, 'Allowed IP Address Ranges');
+		addHeading(3, 'Allowed IP Address Ranges');
 
 		_rulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView>(
 			(vm) => new SecurityRuleListElementView(vm), 

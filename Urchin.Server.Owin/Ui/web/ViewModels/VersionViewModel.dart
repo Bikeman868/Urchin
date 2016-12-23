@@ -1,4 +1,6 @@
-﻿import '../MVVM/StringBinding.dart';
+﻿import 'dart:html';
+
+import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
 import '../MVVM/ListBinding.dart';
 import '../MVVM/ViewModel.dart';
@@ -6,15 +8,17 @@ import '../MVVM/ChangeState.dart';
 
 import '../Models/VersionModel.dart';
 import '../Models/RuleModel.dart';
-import '../Models/SecurityRuleModel.dart';
+import '../Models/EnvironmentModel.dart';
 
 import '../ViewModels/RuleViewModel.dart';
+import '../ViewModels/EnvironmentViewModel.dart';
 
 class VersionViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
-    ListBinding<RuleModel, RuleViewModel> rules;
+    ListBinding<EnvironmentModel, EnvironmentViewModel> environments;
+	ListBinding<RuleModel, RuleViewModel> rules;
 
 	VersionViewModel([VersionModel model])
 	{
@@ -29,15 +33,7 @@ class VersionViewModel extends ViewModel
 	}
 
 	VersionModel _model;
-
-	VersionModel get model
-	{
-		if (_model != null)
-		{
-			_model.rules = rules.models;
-		}
-		return _model;
-	}
+	VersionModel get model { return _model; }
 
 	void set model(VersionModel value)
 	{
@@ -69,7 +65,7 @@ class VersionViewModel extends ViewModel
 			};
 			version.getter = () => value.version;
 
-			rules.models = value.rules;
+			rules.models = model.rules;
 		}
 	}
 

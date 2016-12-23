@@ -19,8 +19,8 @@ class LogonView extends View
 	Element _loggedInUi;
 	Element _loggedOutUi;
 
-	Element _userNameInputElement;
-	Element _passwordInputElement;
+	InputElement _userNameInputElement;
+	InputElement _passwordInputElement;
 
 	StreamSubscription<UserChangedEvent> _onUserChangedSubscription;
 
@@ -134,10 +134,13 @@ class LogonView extends View
 	void _logInClick(MouseEvent e)
 	{
 		_viewModel.logIn(_userNameInputElement.value, _passwordInputElement.value)
+			.then((bool success) 
+				{
+				})
 			.catchError((Error error)
-			{
-				window.alert(error.toString());
-			});
+				{
+					window.alert(error.toString());
+				});
 	}
 
 	void _logOutClick(MouseEvent e)

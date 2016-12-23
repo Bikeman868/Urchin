@@ -55,10 +55,7 @@ class EnvironmentListViewModel extends ViewModel
 	{
 		Server.getEnvironments()
 			.then((List<EnvironmentModel> m) => models = m)
-			.catchError((Error error)
-			{
-				window.alert(error.toString());
-			});
+			.catchError((Error error) => window.alert(error.toString()));
 	}
 
 	bool _saving;

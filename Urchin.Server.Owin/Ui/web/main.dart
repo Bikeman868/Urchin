@@ -4,12 +4,18 @@ import 'dart:async';
 
 import 'ViewModels/DataViewModel.dart';
 import 'ViewModels/EnvironmentViewModel.dart';
+import 'ViewModels/VersionViewModel.dart';
 
 import 'Events/AppEvents.dart';
 
 import 'Views/Environment/EnvironmentListView.dart';
 import 'Views/Environment/EnvironmentEditView.dart';
 import 'Views/Environment/EnvironmentDisplayView.dart';
+
+import 'Views/Versions/VersionListView.dart';
+import 'Views/Versions/VersionEditView.dart';
+import 'Views/Versions/VersionDisplayView.dart';
+
 import 'Views/Navigation/ToolBarView.dart';
 import 'Views/Navigation/LogonView.dart';
 
@@ -62,6 +68,7 @@ void _attachEvents()
 {
 	AppEvents.tabChanged.listen(_tabChanged);
 	AppEvents.environmentSelected.listen(_environmentSelected);
+	AppEvents.versionSelected.listen(_versionSelected);
 }
 
 void _tabChanged(TabChangedEvent e)
@@ -81,6 +88,14 @@ void _environmentSelected(EnvironmentSelectedEvent e)
 		_displayEnvironmentEdit(e.environment, _centreDiv);
 	else 
 		_displayEnvironmentDisplay(e.environment, _rightDiv);
+}
+
+void _versionSelected(VersionSelectedEvent e)
+{
+	if (_currentView == 'Versions')
+		_displayVersionEdit(e.version, _centreDiv);
+	else 
+		_displayVersionDisplay(e.version, _rightDiv);
 }
 
 /*************************************************************************/
@@ -132,9 +147,46 @@ void _displayRuleList(Element panel)
 
 /*************************************************************************/
 
+VersionListView _versionListView;
+
 void _displayVersionList(Element panel)
 {
 	_currentView = 'Versions';
 
-	// panel.children.clear();
+	if (_versionListView == null)
+		_versionListView = new VersionListView(_dataViewModel.versionList);
+
+	_versionListView.displayIn(panel);
+}
+
+VersionEditView _versionEditView;
+
+void _displayVersionEdit(VersionViewModel version, Element panel)
+{
+	_dataViewModel.versionList.ensureRules(version)
+		.then((Null n)
+			{
+				if (_versionEditView == null)
+					_versionEditView = new VersionEditView(version);
+				else
+					_versionEditView.viewModel = version;
+
+				_versionEditView.displayIn(panel);
+			});
+}
+
+VersionDisplayView _versionDisplayView;
+
+void _displayVersionDisplay(VersionViewModel version, Element panel)
+{
+	_dataViewModel.versionList.ensureRules(version)
+		.then((Null n)
+			{
+				if (_versionDisplayView == null)
+					_versionDisplayView = new VersionDisplayView(version);
+				else
+					_versionDisplayView.viewModel = version;
+
+				_versionDisplayView.displayIn(panel);
+			});
 }

@@ -1,4 +1,6 @@
-﻿import '../MVVM/StringBinding.dart';
+﻿import 'dart:html';
+
+import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
 import '../MVVM/ListBinding.dart';
 import '../MVVM/ViewModel.dart';

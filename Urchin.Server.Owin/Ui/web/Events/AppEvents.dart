@@ -2,12 +2,13 @@ import 'dart:async';
 
 import '../MVVM/SubscriptionEvent.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
+import '../ViewModels/VersionViewModel.dart';
+import '../ViewModels/RuleViewModel.dart';
 
 class RuleSelectedEvent
 {
-	int version;
-	String ruleName;
-	RuleSelectedEvent(this.version, this.ruleName);
+	RuleViewModel rule;
+	RuleSelectedEvent(this.rule);
 }
 
 class EnvironmentSelectedEvent
@@ -18,7 +19,7 @@ class EnvironmentSelectedEvent
 
 class VersionSelectedEvent
 {
-	int version;
+	VersionViewModel version;
 	VersionSelectedEvent(this.version);
 }
 

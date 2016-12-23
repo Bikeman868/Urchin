@@ -20,19 +20,22 @@ class RuleViewModel extends ViewModel
 
 	RuleViewModel([RuleModel model])
 	{
+		name = new StringBinding();
+		machine = new StringBinding();
+		application = new StringBinding();
+		environment = new StringBinding();
+		instance = new StringBinding();
+		config = new StringBinding();
+
+		variables = new ListBinding<VariableModel, VariableViewModel>(
+			(Map json) => new VariableModel(new Map()..['name']='MACHINE'), 
+			(VariableModel m) => new VariableViewModel(m));
+
 		this.model = model;
 	}
 
 	RuleModel _model;
-
-	RuleModel get model
-	{
-		if (_model != null)
-		{
-			_model.variables = variables.models;
-		}
-		return _model;
-	}
+	RuleModel get model	{ return _model; }
 
 	void set model(RuleModel value)
 	{

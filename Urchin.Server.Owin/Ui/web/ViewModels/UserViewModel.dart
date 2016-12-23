@@ -38,7 +38,7 @@ class UserViewModel extends ViewModel
 	{
 	}
 
-	bool logIn(String userName, String password) async
+	Future<bool> logIn(String userName, String password) async
 	{
 		var request = await Server.logon(userName, password);
 		if (request.status == 200)
@@ -58,13 +58,13 @@ class UserViewModel extends ViewModel
 		return false;
 	}
 
-	void logOut() async
+	Future logOut() async
 	{
 		var request = await Server.logoff();
 		AppEvents.userChanged.raise(new UserChangedEvent(false, null, null));
 	}
 
-	void getLoggedInUser() async
+	Future getLoggedInUser() async
 	{
 		var user = await Server.getLoggedOnUser();
 
