@@ -80,35 +80,35 @@ class RuleViewModel extends ViewModel
 				value.machine = text;
 				modified();
 			};
-			machine.getter = null;
+			machine.getter = () => value.machine;
 
 			application.setter = (String text) 
 			{ 
 				value.application = text;
 				modified();
 			};
-			application.getter = null;
+			application.getter = () => value.application;
 
 			environment.setter = (String text) 
 			{ 
 				value.environment = text;
 				modified();
 			};
-			environment.getter = null;
+			environment.getter = () => value.environment;
 
 			instance.setter = (String text) 
 			{ 
 				value.instance = text;
 				modified();
 			};
-			instance.getter = null;
+			instance.getter = () => value.instance;
 
 			config.setter = (String text) 
 			{ 
 				value.config = text;
 				modified();
 			};
-			config.getter = null;
+			config.getter = () => value.config;
 
 			variables.models = value.variables;
 		}

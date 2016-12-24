@@ -157,6 +157,7 @@
     <Content Include="Ui\web\Models\RuleModel.dart" />
     <Content Include="Ui\web\Experimental.dart.txt" />
     <Content Include="Ui\web\Models\MachineModel.dart" />
+    <None Include="Ui\web\Html\JsonHighlighter.dart" />
     <None Include="Ui\web\Models\EnvironmentModel.dart" />
     <Content Include="Ui\web\Models\VersionModel.dart" />
     <Content Include="Ui\web\Models\VariableModel.dart" />
@@ -198,7 +199,7 @@
     <Content Include="Ui\web\DataLayer\Data.dart" />
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\Events\AppEvents.dart" />
-    <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleDisplayView.dart" />
     <Content Include="Ui\web\Components\TestQueryComponent.dart" />
     <Content Include="Ui\web\Views\Navigation\LogonView.dart" />
     <Content Include="Ui\web\Components\HelpComponent.dart" />

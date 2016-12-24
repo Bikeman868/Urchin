@@ -5,6 +5,7 @@ import 'dart:async';
 import 'ViewModels/DataViewModel.dart';
 import 'ViewModels/EnvironmentViewModel.dart';
 import 'ViewModels/VersionViewModel.dart';
+import 'ViewModels/RuleViewModel.dart';
 
 import 'Events/AppEvents.dart';
 
@@ -18,6 +19,8 @@ import 'Views/Versions/VersionDisplayView.dart';
 
 import 'Views/Navigation/ToolBarView.dart';
 import 'Views/Navigation/LogonView.dart';
+
+import 'Views/Rules/RuleDisplayView.dart';
 
 Element _leftDiv;
 Element _centreDiv;
@@ -69,6 +72,7 @@ void _attachEvents()
 	AppEvents.tabChanged.listen(_tabChanged);
 	AppEvents.environmentSelected.listen(_environmentSelected);
 	AppEvents.versionSelected.listen(_versionSelected);
+	AppEvents.ruleSelected.listen(_ruleSelected);
 }
 
 void _tabChanged(TabChangedEvent e)
@@ -96,6 +100,14 @@ void _versionSelected(VersionSelectedEvent e)
 		_displayVersionEdit(e.version, _centreDiv);
 	else 
 		_displayVersionDisplay(e.version, _rightDiv);
+}
+
+void _ruleSelected(RuleSelectedEvent e)
+{
+	if (_currentView == 'Rules')
+		_displayRuleEdit(e.rule, _centreDiv);
+	else 
+		_displayRuleDisplay(e.rule, _rightDiv);
 }
 
 /*************************************************************************/
@@ -141,8 +153,23 @@ void _displayEnvironmentDisplay(EnvironmentViewModel environment, Element panel)
 void _displayRuleList(Element panel)
 {
 	_currentView = 'Rules';
+}
 
-	panel.children.clear();
+void _displayRuleEdit(RuleViewModel rule, Element panel)
+{
+	_displayRuleDisplay(rule, panel);
+}
+
+RuleDisplayView _ruleDisplayView;
+
+void _displayRuleDisplay(RuleViewModel rule, Element panel)
+{
+	if (_ruleDisplayView == null)
+		_ruleDisplayView = new RuleDisplayView(rule);
+	else
+		_ruleDisplayView.viewModel = rule;
+
+	_ruleDisplayView.displayIn(panel);
 }
 
 /*************************************************************************/
