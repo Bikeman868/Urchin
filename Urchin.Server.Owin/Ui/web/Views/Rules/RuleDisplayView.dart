@@ -2,7 +2,7 @@ import 'dart:html';
 
 import '../../MVVM/View.dart';
 import '../../MVVM/BoundLabel.dart';
-import '../../MVVM/BoundList.dart';
+import '../../MVVM/BoundFormatter.dart';
 import '../../MVVM/BoundRepeater.dart';
 
 import '../../Html/JsonHighlighter.dart';
@@ -11,8 +11,9 @@ import '../../Models/RuleModel.dart';
 import '../../Models/VariableModel.dart';
 
 import '../../ViewModels/RuleViewModel.dart';
+import '../../ViewModels/VariableViewModel.dart';
 
-// import '../../Views/Rules/VariableNameVieww.dart';
+import '../../Views/Rules/VariableNameView.dart';
 
 
 class RuleDisplayView extends View
@@ -22,7 +23,8 @@ class RuleDisplayView extends View
 	BoundLabel<String> _environment;
 	BoundLabel<String> _instance;
 	BoundLabel<String> _application;
-	// BoundRepeater<VariableeModel, VariableViewModel, VariableNameView> _variablesBinding;
+	BoundFormatter _config;
+	BoundRepeater<VariableModel, VariableViewModel, VariableNameView> _variablesBinding;
 
 	RuleDisplayView([RuleViewModel viewModel])
 	{
@@ -30,7 +32,7 @@ class RuleDisplayView extends View
 			addHeading(2, 'Rule Details'), 
 			formatMethod: (s) => s + ' Rule');
 
-		addInlineText('Applies to');
+		addInlineText('This rule applies to');
 
 		_instance = new BoundLabel<String>(addSpan(), 
 			formatMethod: (s)
@@ -66,9 +68,13 @@ class RuleDisplayView extends View
 
 		addHeading(3, 'Variables');
 
-		// _variablesBinding = new BoundRepeater<VariableeModel, VariableViewModel, VariableNameVieww>(
-		// 	(vm) => new VariableListElementView(vm), 
-		// 	addContainer(), allowAdd: false, allowRemove: false);
+		_variablesBinding = new BoundRepeater<VariableModel, VariableViewModel, VariableNameView>(
+			(vm) => new VariableNameView(vm), 
+			addContainer());
+
+		addHeading(3, 'JSON Data');
+
+		_config = new BoundFormatter(addDiv(), (s, e) => JsonHighlighter.displayIn(e, s));
 
 		this.viewModel = viewModel;
 	}
@@ -86,6 +92,8 @@ class RuleDisplayView extends View
 			_environment.binding = null;
 			_instance.binding = null;
 			_application.binding = null;
+			_config.binding = null;
+			_variablesBinding.binding = null;
 		}
 		else
 		{
@@ -94,7 +102,8 @@ class RuleDisplayView extends View
 			_environment.binding = value.environment;
 			_instance.binding = value.instance;
 			_application.binding = value.application;
-			// _rulesBinding.binding = value.variables;
+			_config.binding = value.config;
+			_variablesBinding.binding = value.variables;
 		}
 	}
 }

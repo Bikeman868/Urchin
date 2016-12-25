@@ -189,6 +189,7 @@
     <Content Include="Ui\web\MVVM\ViewModel.dart" />
     <Content Include="Ui\web\ViewModels\EnvironmentListViewModel.dart" />
     <Content Include="Ui\web\ViewModels\VersionListViewModel.dart" />
+    <Content Include="Ui\web\MVVM\BoundFormatter.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +228,7 @@
     <Content Include="Ui\web\Views\Versions\VersionDisplayView.dart" />
     <Content Include="Ui\web\Views\Versions\VersionListElementView.dart" />
     <Content Include="Ui\web\Views\Rules\RuleListElementView.dart" />
+    <Content Include="Ui\web\Views\Rules\VariableNameView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

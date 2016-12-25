@@ -76,12 +76,12 @@ class JsonHighlighter
 				if (propertyName)
 				{
 					if (endOfLine) lineBreak();
-					newSpan(className: 'jsonName');
+					newSpan(className: 'json-name');
 				}
 				else
 				{
 					append(c);
-					newSpan(className: 'jsonString');
+					newSpan(className: 'json-string');
 				}
 				quote = c;
 			}

@@ -1,4 +1,6 @@
-﻿import 'Model.dart';
+﻿import 'dart:html';
+
+import 'Model.dart';
 import 'View.dart';
 import 'ViewModel.dart';
 
@@ -13,3 +15,5 @@ typedef TVM ViewModelFactory<TM extends Model, TVM extends ViewModel>(TM model);
 typedef TV ViewFactory<TVM extends ViewModel, TV extends View>(TVM viewModel);
 
 typedef void ViewModelMethod<TVM extends ViewModel>(TVM viewModel);
+
+typedef Formatter(String text, Element container);
