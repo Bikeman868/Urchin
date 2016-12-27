@@ -1,5 +1,5 @@
 ﻿import '../MVVM/StringBinding.dart';
-import '../MVVM/ListBinding.dart';
+import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
@@ -16,7 +16,7 @@ class RuleViewModel extends ViewModel
     StringBinding environment = new StringBinding();
     StringBinding instance = new StringBinding();
     StringBinding config = new StringBinding();
-    ListBinding<VariableModel, VariableViewModel> variables;
+    ModelListBinding<VariableModel, VariableViewModel> variables;
 
 	RuleViewModel([RuleModel model])
 	{
@@ -27,7 +27,7 @@ class RuleViewModel extends ViewModel
 		instance = new StringBinding();
 		config = new StringBinding();
 
-		variables = new ListBinding<VariableModel, VariableViewModel>(
+		variables = new ModelListBinding<VariableModel, VariableViewModel>(
 			(Map json) => new VariableModel(new Map()..['name']='MACHINE'), 
 			(VariableModel m) => new VariableViewModel(m));
 

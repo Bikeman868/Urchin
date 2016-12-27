@@ -1,4 +1,4 @@
-﻿import '../MVVM/ListBinding.dart';
+﻿import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 

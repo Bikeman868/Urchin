@@ -10,18 +10,18 @@ import '../../Events/AppEvents.dart';
 import '../../ViewModels/EnvironmentViewModel.dart';
 import '../../ViewModels/EnvironmentListViewModel.dart';
 
-import '../../Views/Environment/EnvironmentListElementView.dart';
+import '../../Views/Environment/EnvironmentNameView.dart';
 
 class EnvironmentListView extends View
 {
-	BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView> _environmentsBinding;
+	BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView> _environmentsBinding;
 
 	EnvironmentListView([EnvironmentListViewModel viewModel])
 	{
 		addHeading(3, 'Environments');
 
-		_environmentsBinding = new BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView>(
-			(vm) => new EnvironmentListElementView(vm), 
+		_environmentsBinding = new BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
+			(vm) => new EnvironmentNameView(vm), 
 			addList(),
 			selectionMethod: (vm) => AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(vm)));
 

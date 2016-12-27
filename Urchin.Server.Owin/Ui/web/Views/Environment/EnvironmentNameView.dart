@@ -7,13 +7,15 @@ import '../../MVVM/SubscriptionEvent.dart';
 import '../../Events/AppEvents.dart';
 import '../../ViewModels/EnvironmentViewModel.dart';
 
-class EnvironmentListElementView extends View
+class EnvironmentNameView extends View
 {
 	BoundLabel<String> _nameBinding;
 
-	EnvironmentListElementView([EnvironmentViewModel viewModel])
+	EnvironmentNameView([EnvironmentViewModel viewModel])
 	{
-		_nameBinding = new BoundLabel<String>(addDiv(className: 'environment-name'));
+		_nameBinding = new BoundLabel<String>(
+			addSpan(className: 'environment-name'), 
+			formatMethod: (s) => s + ' ');
 
 		this.viewModel = viewModel;
 	}

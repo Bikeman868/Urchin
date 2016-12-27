@@ -16,6 +16,7 @@ class MachineNameView extends View
 		_nameBinding = new BoundLabel<String>(
 			addSpan(className: 'machine-name'),
 			formatMethod: (s) => s + ' ');
+
 		this.viewModel = viewModel;
 	}
 

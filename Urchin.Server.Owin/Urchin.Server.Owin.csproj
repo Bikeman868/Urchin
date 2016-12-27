@@ -179,7 +179,7 @@
     <Content Include="Ui\web\MVVM\ChangeState.dart" />
     <Content Include="Ui\web\MVVM\HtmlBuilder.dart" />
     <Content Include="Ui\web\MVVM\IntBinding.dart" />
-    <Content Include="Ui\web\MVVM\ListBinding.dart" />
+    <Content Include="Ui\web\MVVM\ModelListBinding.dart" />
     <Content Include="Ui\web\MVVM\Model.dart" />
     <Content Include="Ui\web\MVVM\PropertyBinding.dart" />
     <Content Include="Ui\web\MVVM\StringBinding.dart" />
@@ -190,6 +190,7 @@
     <Content Include="Ui\web\ViewModels\EnvironmentListViewModel.dart" />
     <Content Include="Ui\web\ViewModels\VersionListViewModel.dart" />
     <Content Include="Ui\web\MVVM\BoundFormatter.dart" />
+    <Content Include="Ui\web\MVVM\ListEvent.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>
@@ -211,8 +212,7 @@
     <None Include="Ui\build.cmd" />
     <None Include="Ui\pubspec.lock" />
     <Content Include="Ui\web\Views\Environment\EnvironmentEditView.dart" />
-    <Content Include="Ui\web\Views\Environment\EnvironmentListElementView.dart" />
-    <Content Include="Ui\web\Views\Machine\MachineListElementView.dart" />
+    <Content Include="Ui\web\Views\Environment\EnvironmentNameView.dart" />
     <Content Include="Ui\web\ViewModels\SecurityRuleViewModel.dart" />
     <Content Include="Ui\web\Views\SecurityRule\SecurityRuleEditView.dart" />
     <Content Include="Ui\web\Views\Environment\EnvironmentListView.dart" />
@@ -227,7 +227,7 @@
     <Content Include="Ui\web\Views\Machine\MachineNameView.dart" />
     <Content Include="Ui\web\Views\Versions\VersionDisplayView.dart" />
     <Content Include="Ui\web\Views\Versions\VersionListElementView.dart" />
-    <Content Include="Ui\web\Views\Rules\RuleListElementView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleNameView.dart" />
     <Content Include="Ui\web\Views\Rules\VariableNameView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>

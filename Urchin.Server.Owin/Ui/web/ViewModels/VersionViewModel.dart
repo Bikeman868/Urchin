@@ -2,30 +2,27 @@
 
 import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
-import '../MVVM/ListBinding.dart';
+import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
 import '../Models/VersionModel.dart';
 import '../Models/RuleModel.dart';
-import '../Models/EnvironmentModel.dart';
 
 import '../ViewModels/RuleViewModel.dart';
-import '../ViewModels/EnvironmentViewModel.dart';
 
 class VersionViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
-    ListBinding<EnvironmentModel, EnvironmentViewModel> environments;
-	ListBinding<RuleModel, RuleViewModel> rules;
+	ModelListBinding<RuleModel, RuleViewModel> rules;
 
 	VersionViewModel([VersionModel model])
 	{
 		name = new StringBinding();
 		version = new IntBinding();
 
-		rules = new ListBinding<RuleModel, RuleViewModel>(
+		rules = new ModelListBinding<RuleModel, RuleViewModel>(
 			(Map json) => new RuleModel(new Map()..['name']='Rule'), 
 			(RuleModel m) => new RuleViewModel(m));
 

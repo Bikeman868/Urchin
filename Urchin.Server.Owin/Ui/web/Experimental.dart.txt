@@ -220,11 +220,11 @@ class UserViewModel
 
 class MachineListViewModel
 {
-    ListBinding<MachineModel, MachineViewModel> machines;
+    ModelListBinding<MachineModel, MachineViewModel> machines;
   
   MachineListViewModel([MachineListModel model])
   {
-    machines = new ListBinding<MachineModel, MachineViewModel>(
+    machines = new ModelListBinding<MachineModel, MachineViewModel>(
       () => new MachineModel(), 
       (m) => new MachineViewModel(m));
 
@@ -310,7 +310,7 @@ class ListEvent
   ListEvent(this.index);
 }
 
-class ListBinding<TM, TVM>
+class ModelListBinding<TM, TVM>
 {
   	ModelFactory<TM> modelFactory;
   	ViewModelFactory<TM, TVM> viewModelFactory;
@@ -346,7 +346,7 @@ class ListBinding<TM, TVM>
     }
   
   
-  ListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
+  ModelListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
   {
     viewModels = new List<TVM>();
     this.models = models;
@@ -485,9 +485,9 @@ class SubscriptionEvent<E>
 
 class BoundList<TM, TVM, TV extends View>
 {
-  ListBinding<TM, TVM> _binding;
-  ListBinding<TM, TVM> get binding => _binding;
-  void set binding(ListBinding<TM, TVM> value)
+  ModelListBinding<TM, TVM> _binding;
+  ModelListBinding<TM, TVM> get binding => _binding;
+  void set binding(ModelListBinding<TM, TVM> value)
   {
 		if (_addSubscription != null)
 		{

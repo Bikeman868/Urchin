@@ -2,7 +2,7 @@
 
 import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
-import '../MVVM/ListBinding.dart';
+import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
@@ -17,19 +17,19 @@ class EnvironmentViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
-    ListBinding<MachineModel, MachineViewModel> machines;
-    ListBinding<SecurityRuleModel, SecurityRuleViewModel> rules;
+    ModelListBinding<MachineModel, MachineViewModel> machines;
+    ModelListBinding<SecurityRuleModel, SecurityRuleViewModel> rules;
 
 	EnvironmentViewModel([EnvironmentModel model])
 	{
 		name = new StringBinding();
 		version = new IntBinding();
 
-		machines = new ListBinding<MachineModel, MachineViewModel>(
+		machines = new ModelListBinding<MachineModel, MachineViewModel>(
 			(Map json) => new MachineModel(new Map()..['name']='MACHINE'), 
 			(MachineModel m) => new MachineViewModel(m));
 
-		rules = new ListBinding<SecurityRuleModel, SecurityRuleViewModel>(
+		rules = new ModelListBinding<SecurityRuleModel, SecurityRuleViewModel>(
 			(Map json) => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
 			(SecurityRuleModel m) => new SecurityRuleViewModel(m));
 

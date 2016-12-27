@@ -6,9 +6,10 @@ import 'View.dart';
 import 'Model.dart';
 import 'ViewModel.dart';
 import 'Types.dart';
-import 'ListBinding.dart';
+import 'ModelListBinding.dart';
 
 import 'SubscriptionEvent.dart';
+import 'ListEvent.dart';
 
 // Abstract base class for components that bind to a list of view models.
 // * Subscribes to events from add/remove actions when bound to a list
@@ -28,10 +29,10 @@ abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extend
         this.container = container;
     }
   
-    ListBinding<TM, TVM> _binding;
-    ListBinding<TM, TVM> get binding => _binding;
+    ModelListBinding<TM, TVM> _binding;
+    ModelListBinding<TM, TVM> get binding => _binding;
 
-    void set binding(ListBinding<TM, TVM> value)
+    void set binding(ModelListBinding<TM, TVM> value)
     {
         if (_addSubscription != null)
         {

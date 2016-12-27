@@ -13,7 +13,9 @@ class VariableNameView extends View
 
 	VariableNameView([VariableViewModel viewModel])
 	{
-		_name = new BoundLabel<String>(addSpan(), formatMethod: (s) => r'($' + s + r'$)');
+		_name = new BoundLabel<String>(
+			addSpan(className: 'variable-name'),
+			formatMethod: (s) => r'($' + s + r'$)');
 		this.viewModel = viewModel;
 	}
   

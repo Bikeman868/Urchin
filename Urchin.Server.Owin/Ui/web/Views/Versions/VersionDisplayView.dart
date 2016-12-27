@@ -4,6 +4,7 @@ import '../../MVVM/View.dart';
 import '../../MVVM/BoundLabel.dart';
 import '../../MVVM/BoundList.dart';
 import '../../MVVM/BoundRepeater.dart';
+import '../../MVVM/ModelListBinding.dart';
 
 import '../../Events/AppEvents.dart';
 
@@ -14,8 +15,8 @@ import '../../ViewModels/EnvironmentViewModel.dart';
 import '../../ViewModels/VersionViewModel.dart';
 import '../../ViewModels/RuleViewModel.dart';
 
-import '../../Views/Environment/EnvironmentListElementView.dart';
-import '../../Views/Rules/RuleListElementView.dart';
+import '../../Views/Environment/EnvironmentNameView.dart';
+import '../../Views/Rules/RuleNameView.dart';
 
 class VersionDisplayView extends View
 {
@@ -23,8 +24,8 @@ class VersionDisplayView extends View
 	BoundLabel<int> _versionBinding2;
 	BoundLabel<int> _versionBinding3;
 	BoundLabel<String> _nameBinding;
-	BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView> _environmentsBinding;
-	BoundList<RuleModel, RuleViewModel, RuleListElementView> _rulesBinding;
+	BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView> _environmentsBinding;
+	BoundList<RuleModel, RuleViewModel, RuleNameView> _rulesBinding;
 
 	VersionDisplayView([VersionViewModel viewModel])
 	{
@@ -38,18 +39,17 @@ class VersionDisplayView extends View
 			addHeading(3, 'Environments'), 
 			formatMethod: (s) => 'Environments Using Version ' + s + ' Rules');
 
-		_environmentsBinding = new BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentListElementView>(
-			(vm) => new EnvironmentListElementView(vm), 
-			addContainer(), 
-			allowAdd: false, allowRemove: false,
-			selectionMethod: (vm) => AppEvents.environmentSelected.raise(new EnvironmentSelectedEvent(vm)));
+		_environmentsBinding = new BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
+			(vm) => new EnvironmentNameView(vm), 
+			addContainer(),
+			viewModelFilter: (vm) => _viewModel != null && vm.version.getProperty() == _viewModel.version.getProperty());
 
 		_versionBinding3 = new BoundLabel<int>(
 			addHeading(3, 'Rules'), 
 			formatMethod: (s) => 'Version ' + s + ' Rules');
 
-		_rulesBinding = new BoundList<RuleModel, RuleViewModel, RuleListElementView>(
-			(vm) => new RuleListElementView(vm), 
+		_rulesBinding = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
+			(vm) => new RuleNameView(vm), 
 			addContainer(), 
 			allowAdd: false, allowRemove: false,
 			selectionMethod: (vm) => AppEvents.ruleSelected.raise(new RuleSelectedEvent(vm)));
@@ -70,7 +70,6 @@ class VersionDisplayView extends View
 			_versionBinding3.binding = null;
 			_nameBinding.binding = null;
 			_rulesBinding.binding = null;
-			_environmentsBinding.binding = null;
 		}
 		else
 		{
@@ -79,7 +78,11 @@ class VersionDisplayView extends View
 			_versionBinding3.binding = value.version;
 			_nameBinding.binding = value.name;
 			_rulesBinding.binding = value.rules;
-			_environmentsBinding.binding = value.environments;
 		}
+	}
+
+	void set environmentListBinding(ModelListBinding<EnvironmentModel, EnvironmentViewModel> value)
+	{
+		_environmentsBinding.binding = value;
 	}
 }

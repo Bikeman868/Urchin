@@ -1,6 +1,6 @@
 ﻿import 'dart:html';
 
-import '../MVVM/ListBinding.dart';
+import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
@@ -10,11 +10,11 @@ import '../Server.dart';
 
 class EnvironmentListViewModel extends ViewModel
 {
-    ListBinding<EnvironmentModel, EnvironmentViewModel> environments;
+    ModelListBinding<EnvironmentModel, EnvironmentViewModel> environments;
 
 	EnvironmentListViewModel([List<EnvironmentModel> environmentModels])
 	{
-		environments = new ListBinding<EnvironmentModel, EnvironmentViewModel>(
+		environments = new ModelListBinding<EnvironmentModel, EnvironmentViewModel>(
 			(Map json) => new EnvironmentModel(new Map()..['name']='ENVIRONMENT'), 
 			(EnvironmentModel m) => new EnvironmentViewModel(m));
 
@@ -82,7 +82,12 @@ class EnvironmentListViewModel extends ViewModel
 				{
 					_saving = false;
 					if (error == null)
+					{
+						saved();
+						for (EnvironmentViewModel environmentViewModel in environments.viewModels)
+							environmentViewModel.saved();
 						window.alert('Environments saved');
+					}
 					else
 						window.alert('Environments were not saved. ' + error);
 				})

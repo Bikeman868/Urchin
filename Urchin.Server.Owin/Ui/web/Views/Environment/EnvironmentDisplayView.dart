@@ -13,7 +13,7 @@ import '../../ViewModels/MachineViewModel.dart';
 import '../../ViewModels/SecurityRuleViewModel.dart';
 
 import '../../Views/Machine/MachineNameView.dart';
-import '../../Views/Machine/MachineListElementView.dart';
+import '../../Views/Machine/MachineNameView.dart';
 import '../../Views/SecurityRule/SecurityRuleListElementView.dart';
 
 class EnvironmentDisplayView extends View

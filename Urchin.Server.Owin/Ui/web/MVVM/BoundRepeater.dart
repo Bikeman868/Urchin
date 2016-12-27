@@ -15,14 +15,20 @@ class BoundRepeater<TM extends Model, TVM extends ViewModel, TV extends View> ex
 
     BoundRepeater(
 		ViewFactory<TVM, TV> viewFactory,
-		Element container) 
+		Element container,
+		{
+			Filter<TVM> viewModelFilter
+		}) 
 		: super(viewFactory, container)
     {
+		_viewModelFilter = viewModelFilter;
     }
  
     void initializeContainer(Element container)
     {
     }
+
+	Filter<TVM> _viewModelFilter;
   
     void refresh()
     {
@@ -34,6 +40,7 @@ class BoundRepeater<TM extends Model, TVM extends ViewModel, TV extends View> ex
         {
             for (var viewModel in binding.viewModels)
             {
+				if (_viewModelFilter == null || _viewModelFilter(viewModel))
                 viewFactory(viewModel).addTo(container);
             }
         }

@@ -12,7 +12,10 @@ class VersionListElementView extends View
 
 	VersionListElementView([VersionViewModel viewModel])
 	{
-		_versionBinding = new BoundLabel<int>(addSpan(), formatMethod: (s) => s + ' - ');
+		_versionBinding = new BoundLabel<int>(
+			addSpan(), 
+			formatMethod: (s) => s + ' - ');
+
 		_nameBinding = new BoundLabel<String>(addSpan());
 
 		this.viewModel = viewModel;

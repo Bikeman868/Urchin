@@ -198,6 +198,7 @@ void _displayVersionEdit(VersionViewModel version, Element panel)
 				else
 					_versionEditView.viewModel = version;
 
+				_versionEditView.environmentListBinding = _dataViewModel.environmentList.environments;
 				_versionEditView.displayIn(panel);
 			});
 }
@@ -214,6 +215,7 @@ void _displayVersionDisplay(VersionViewModel version, Element panel)
 				else
 					_versionDisplayView.viewModel = version;
 
+				_versionDisplayView.environmentListBinding = _dataViewModel.environmentList.environments;
 				_versionDisplayView.displayIn(panel);
 			});
 }

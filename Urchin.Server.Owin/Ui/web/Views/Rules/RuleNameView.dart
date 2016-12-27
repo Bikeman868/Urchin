@@ -5,13 +5,15 @@ import '../../MVVM/BoundLabel.dart';
 
 import '../../ViewModels/RuleViewModel.dart';
 
-class RuleListElementView extends View
+class RuleNameView extends View
 {
 	BoundLabel<String> _nameBinding;
 
-	RuleListElementView([RuleViewModel viewModel])
+	RuleNameView([RuleViewModel viewModel])
 	{
-		_nameBinding = new BoundLabel<String>(addSpan());
+		_nameBinding = new BoundLabel<String>(
+			addSpan(),
+			formatMethod: (s) => s + ' ');
 
 		this.viewModel = viewModel;
 	}

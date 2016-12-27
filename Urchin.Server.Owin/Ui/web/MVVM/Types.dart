@@ -17,3 +17,5 @@ typedef TV ViewFactory<TVM extends ViewModel, TV extends View>(TVM viewModel);
 typedef void ViewModelMethod<TVM extends ViewModel>(TVM viewModel);
 
 typedef Formatter(String text, Element container);
+
+typedef bool Filter<T>(T element);

@@ -1,21 +1,22 @@
 ﻿import 'dart:html';
 import 'dart:async';
 
-import '../MVVM/ListBinding.dart';
+import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
 import '../Models/VersionModel.dart';
 import '../ViewModels/VersionViewModel.dart';
+import '../ViewModels/EnvironmentListViewModel.dart';
 import '../Server.dart';
 
 class VersionListViewModel extends ViewModel
 {
-    ListBinding<VersionModel, VersionViewModel> versions;
+    ModelListBinding<VersionModel, VersionViewModel> versions;
 
 	VersionListViewModel([List<VersionModel> versionModels])
 	{
-		versions = new ListBinding<VersionModel, VersionViewModel>(
+		versions = new ModelListBinding<VersionModel, VersionViewModel>(
 			(Map json) => new VersionModel(new Map()..['name']='VERSION', false), 
 			(VersionModel m) => new VersionViewModel(m));
 
@@ -38,6 +39,13 @@ class VersionListViewModel extends ViewModel
 	void set models(List<VersionModel> value)
 	{
 		versions.models = value;
+	}
+
+	EnvironmentListViewModel _environmentListViewModel;
+	void set environmentViewModels(EnvironmentListViewModel value)
+	{
+		_environmentListViewModel = value;
+		environments.models  = value.models;
 	}
 
 	ChangeState getState()
@@ -84,25 +92,36 @@ class VersionListViewModel extends ViewModel
 			var state = versionViewModel.getState();
 			if (state == ChangeState.deleted)
 			{
-				Server.deleteVersion(versionModel.version)
-			/*
+				Server.deleteVersion(versionModel.version) /*
 					.then((HttpRequest) request
 						{
-						})
-			*/
+							if (request.status != 200)
+							{
+								window.alert('Failed to delete version ' + versionModel.version + ' ' + request.statusText);
+								_saving = false;
+								return;
+							}
+							versionViewModel.saved();
+						}) */
 					.catchError((Error error) => window.alert(error.toString()));
 			}
 			else if (state == ChangeState.modified || state == ChangeState.added)
 			{
-				Server.updateVersion(versionModel.version, versionModel)
-			/*
+				Server.updateVersion(versionModel.version, versionModel) /*
 					.then((HttpRequest) request
 						{
-						})
-			*/
+							if (request.status != 200)
+							{
+								window.alert('Failed to update version ' + versionModel.version + ' ' + request.statusText);
+								_saving = false;
+								return;
+							}
+							versionViewModel.saved();
+						}) */
 					.catchError((Error error) => window.alert(error.toString()));
 			}
 		}
+		saved();
 		_saving = false;
 	}
 }

@@ -3,13 +3,14 @@ import 'Types.dart';
 import 'ViewModel.dart';
 import 'Model.dart';
 import 'ChangeState.dart';
+import 'ListEvent.dart';
 
 // Provides two-way data binding to a list of models
 // The binding is associated with a single list of models
 // and many UI list elements. A view model is basically a collection
-// of these PropertyBinding<T> and ListBinding<T> objects that connect the 
+// of these PropertyBinding<T> and ModelListBinding<T> objects that connect the 
 // views to the models.
-class ListBinding<TM extends Model, TVM extends ViewModel>
+class ModelListBinding<TM extends Model, TVM extends ViewModel>
 {
 	ModelFactory<TM> modelFactory;
 	ViewModelFactory<TM, TVM> viewModelFactory;
@@ -47,7 +48,7 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
 		_isModified = false;
 	}
   
-	ListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
+	ModelListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
 	{
 		viewModels = new List<TVM>();
 		this.models = models;
@@ -55,6 +56,9 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
   
 	void add()
 	{
+		if (modelFactory == null)
+			return;
+
 		int index = models.length;
       
 		TM model = modelFactory(null);
@@ -96,8 +100,3 @@ class ListBinding<TM extends Model, TVM extends ViewModel>
 
 }
 
-class ListEvent
-{
-  int index;
-  ListEvent(this.index);
-}
