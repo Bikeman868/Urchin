@@ -37,6 +37,7 @@ class EnvironmentListViewModel extends ViewModel
 	void set models(List<EnvironmentModel> value)
 	{
 		environments.models = value;
+		loaded();
 	}
 
 	ChangeState getState()

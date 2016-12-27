@@ -4,6 +4,11 @@ abstract class ViewModel
 {
 	ChangeState state;
 
+	ViewModel()
+	{
+		state = ChangeState.unmodified;
+	}
+
 	void dispose()
 	{
 	}
@@ -23,6 +28,11 @@ abstract class ViewModel
 	}
 
 	void saved()
+	{
+		state = ChangeState.unmodified;
+	}
+
+	void loaded()
 	{
 		state = ChangeState.unmodified;
 	}

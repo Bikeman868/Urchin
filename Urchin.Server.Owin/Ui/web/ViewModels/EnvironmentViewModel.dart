@@ -81,6 +81,7 @@ class EnvironmentViewModel extends ViewModel
 			machines.models = value.machines;
 			rules.models = value.securityRules;
 		}
+		loaded();
 	}
 
 	ChangeState getState()

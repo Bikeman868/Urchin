@@ -191,6 +191,7 @@
     <Content Include="Ui\web\ViewModels\VersionListViewModel.dart" />
     <Content Include="Ui\web\MVVM\BoundFormatter.dart" />
     <Content Include="Ui\web\MVVM\ListEvent.dart" />
+    <Content Include="Ui\web\Models\VersionNameModel.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>

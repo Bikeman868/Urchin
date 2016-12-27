@@ -64,18 +64,12 @@ class VersionViewModel extends ViewModel
 
 			rules.models = model.rules;
 		}
+		loaded();
 	}
 
 	ChangeState getState()
 	{
-		var state = super.getState();
-		if (state != ChangeState.unmodified)
-			return state;
-
-		if (rules.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
-
-		return ChangeState.unmodified;
+		return super.getState();
 	}
 
 }

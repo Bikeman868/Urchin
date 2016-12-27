@@ -5,6 +5,7 @@ import '../../MVVM/BoundLabel.dart';
 import '../../MVVM/BoundList.dart';
 import '../../MVVM/BoundRepeater.dart';
 import '../../MVVM/ModelListBinding.dart';
+import '../../MVVM/BoundTextInput.dart';
 
 import '../../Events/AppEvents.dart';
 
@@ -23,7 +24,7 @@ class VersionEditView extends View
 	BoundLabel<int> _versionBinding1;
 	BoundLabel<int> _versionBinding2;
 	BoundLabel<int> _versionBinding3;
-	BoundLabel<String> _nameBinding;
+	BoundTextInput<String> _nameBinding;
 	BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView> _environmentsBinding;
 	BoundList<RuleModel, RuleViewModel, RuleNameView> _rulesBinding;
 
@@ -33,7 +34,8 @@ class VersionEditView extends View
 			addHeading(2, 'Version Details'), 
 			formatMethod: (s) => 'Version ' + s);
 
-		_nameBinding = new BoundLabel<String>(addDiv());
+		var form = addForm();
+		_nameBinding = new BoundTextInput<String>(addLabeledEdit(form, 'Version name'));
 
 		_versionBinding2 = new BoundLabel<int>(
 			addHeading(3, 'Environments'), 
@@ -50,8 +52,7 @@ class VersionEditView extends View
 
 		_rulesBinding = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
 			(vm) => new RuleNameView(vm), 
-			addContainer(), 
-			allowAdd: false, allowRemove: false,
+			addContainer(),
 			selectionMethod: (vm) => AppEvents.ruleSelected.raise(new RuleSelectedEvent(vm)));
 
 		this.viewModel = viewModel;

@@ -33,5 +33,6 @@ class MachineViewModel extends ViewModel
 			};
 			name.getter = () => value.name;
 		}
+		loaded();
 	}
 }

@@ -36,5 +36,6 @@ class SecurityRuleViewModel extends ViewModel
 			endIp.setter = (String text) { value.endIp = text; };
 			endIp.getter = () => value.endIp;
 		}
+		loaded();
 	}
 }

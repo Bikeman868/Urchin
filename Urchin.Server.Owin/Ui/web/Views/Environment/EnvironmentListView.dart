@@ -34,12 +34,14 @@ class EnvironmentListView extends View
 
 	void _saveClicked(MouseEvent e)
 	{
-		viewModel.save();
+		if (viewModel != null)
+			viewModel.save();
 	}
 
 	void _discardClicked(MouseEvent e)
 	{
-		viewModel.reload();
+		if (viewModel != null)
+			viewModel.reload();
 	}
 
 	EnvironmentListViewModel _viewModel;

@@ -27,21 +27,23 @@ class VersionListView extends View
 			addList(),
 			selectionMethod: (vm) => AppEvents.versionSelected.raise(new VersionSelectedEvent(vm)));
 
-		// var buttonBar = addContainer(className: 'button-bar');
-		// addButton("Save", _saveClicked, parent: buttonBar);
-		// addButton("Discard", _discardClicked, parent: buttonBar);
+		var buttonBar = addContainer(className: 'button-bar');
+		addButton("Save", _saveClicked, parent: buttonBar);
+		addButton("Discard", _discardClicked, parent: buttonBar);
 
 		this.viewModel = viewModel;
 	}
 
 	void _saveClicked(MouseEvent e)
 	{
-		//viewModel.save();
+		if (viewModel != null)
+			viewModel.save();
 	}
 
 	void _discardClicked(MouseEvent e)
 	{
-		//viewModel.reload();
+		if (viewModel != null)
+			viewModel.reload();
 	}
 
 	VersionListViewModel _viewModel;

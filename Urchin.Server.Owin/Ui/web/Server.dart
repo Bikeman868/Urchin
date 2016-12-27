@@ -7,6 +7,7 @@ import 'Models/EnvironmentModel.dart';
 import 'Models/PostResponseModel.dart';
 import 'Models/RuleModel.dart';
 import 'Models/VersionModel.dart';
+import 'Models/VersionNameModel.dart';
 import 'Models/SecurityRuleModel.dart';
 import 'Models/VariableModel.dart';
 
@@ -34,11 +35,17 @@ class Server
 			method: 'DELETE');
 
 	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)  async
-		=> HttpRequest.request(
+	{
+		var versionName = new VersionNameModel(null);
+		versionName.name = versionDto.name;
+		versionName.version = versionDto.version;
+
+		return HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'PUT',
-			sendData: JSON.encode(versionDto),
+			sendData: JSON.encode(versionName.json),
 			mimeType: 'application/json');
+	}
   
 	static Future<HttpRequest> deleteVersion(int version)
 		=> HttpRequest.request(
@@ -72,18 +79,24 @@ class Server
 	}
 
 	static Future<HttpRequest> addRules(int version, List<RuleModel> rules) 
-		=> HttpRequest.request(
+	{
+		var requestBody = rules.map((RuleModel m) => m.json).toList();
+		return HttpRequest.request(
 			'/rules/' + version.toString(), 
 			method: 'POST',
-			sendData: JSON.encode(rules),
+			sendData: JSON.encode(requestBody),
 			mimeType: 'application/json');
+	}
 
 	static Future<HttpRequest> updateRules(int version, List<RuleModel> rules) 
-		=> HttpRequest.request(
+	{
+		var requestBody = rules.map((RuleModel m) => m.json).toList();
+		return HttpRequest.request(
 			'/rules/' + version.toString(), 
 			method: 'PUT',
-			sendData: JSON.encode(rules),
+			sendData: JSON.encode(requestBody),
 			mimeType: 'application/json');
+	}
 
 	static Future<String> getRule(int version, String ruleName) 
 		=> HttpRequest.getString(
@@ -93,14 +106,14 @@ class Server
 		=> HttpRequest.request(
 			'/rule/' + version.toString() + '/' + oldName, 
 			method: 'PUT',
-			sendData: JSON.encode(rule),
+			sendData: JSON.encode(rule.json),
 			mimeType: 'application/json');
 
 	static Future<HttpRequest> addRule(int version, RuleModel rule) 
 		=> HttpRequest.request(
 			'/rule/' + version.toString(), 
 			method: 'POST',
-			sendData: JSON.encode(rule),
+			sendData: JSON.encode(rule.json),
 			mimeType: 'application/json');
 
 	static Future<HttpRequest> deleteRule(int version, String ruleName) 

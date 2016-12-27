@@ -39,6 +39,7 @@ class VersionListViewModel extends ViewModel
 	void set models(List<VersionModel> value)
 	{
 		versions.models = value;
+		loaded();
 	}
 
 	EnvironmentListViewModel _environmentListViewModel;

@@ -45,5 +45,6 @@ class VariableViewModel extends ViewModel
 			};
 			this.value.getter = () => value.name;
 		}
+		loaded();
 	}
 }

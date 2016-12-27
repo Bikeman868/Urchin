@@ -112,6 +112,7 @@ class RuleViewModel extends ViewModel
 
 			variables.models = value.variables;
 		}
+		loaded();
 	}
 
 	ChangeState getState()
