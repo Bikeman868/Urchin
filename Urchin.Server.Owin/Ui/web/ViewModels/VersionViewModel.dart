@@ -90,8 +90,8 @@ class VersionViewModel extends ViewModel
 
 		if (state == ChangeState.modified || state == ChangeState.added)
 		{
-			HttpRequest request = await Server.updateVersion(versionNumber, _model);
-			if (request.status == 200)
+			PostResponseModel response = await Server.updateVersion(versionNumber, _model);
+			if (response.success)
 			{
 				alertMessage = 'Updated version ' + versionNumber.toString();
 				result = SaveResult.saved;
@@ -111,7 +111,7 @@ class VersionViewModel extends ViewModel
 			}
 			else
 			{
-				alertMessage = 'Failed to update version ' + version.getProperty() + '. ' + request.statusText;
+				alertMessage = 'Failed to update version ' + version.getProperty() + '. ' + response.error;
 				alert = true;
 				result = SaveResult.failed;
 			}

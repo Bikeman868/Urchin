@@ -34,17 +34,23 @@ class Server
 			'/versions', 
 			method: 'DELETE');
 
-	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)
+	static Future<PostResponseModel> updateVersion(int version, VersionModel versionDto) async
 	{
 		var versionName = new VersionNameModel(null);
 		versionName.name = versionDto.name;
 		versionName.version = versionDto.version;
 
-		return HttpRequest.request(
+		var request = await HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'PUT',
 			sendData: JSON.encode(versionName.json),
 			mimeType: 'application/json');
+
+		if (request.status != 200)
+			throw "Update version failed. " + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
 	}
   
 	static Future<HttpRequest> deleteVersion(int version)

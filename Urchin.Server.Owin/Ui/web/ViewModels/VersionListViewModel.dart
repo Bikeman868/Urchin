@@ -71,4 +71,15 @@ class VersionListViewModel extends ViewModel
 			.then((List<VersionModel> m) => models = m)
 			.catchError((Error error) => window.alert(error.toString()));
 	}
+
+	Future<VersionViewModel> getDraftVersion() async
+	{
+		VersionModel draftVersionModel = await Server.getDraftRules();
+		for (var versionViewModel in versions.viewModels)
+		{
+			if (draftVersionModel.version == versionViewModel.model.version)
+				return versionViewModel;
+		}
+		return versions.addModel(draftVersionModel);
+	}
 }

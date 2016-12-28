@@ -30,11 +30,6 @@ class VersionEditView extends View
 
 	VersionEditView([VersionViewModel viewModel])
 	{
-		var buttonBar = addContainer(className: 'button-bar');
-		addButton("Save", _saveClicked, parent: buttonBar);
-		addButton("Discard", _discardClicked, parent: buttonBar);
-		addButton("Copy", _copyClicked, parent: buttonBar);
-
 		_versionBinding1 = new BoundLabel<int>(
 			addHeading(2, 'Version Details'), 
 			formatMethod: (s) => 'Version ' + s);
@@ -51,6 +46,13 @@ class VersionEditView extends View
 			addContainer(),
 			viewModelFilter: (vm) => _viewModel != null && vm.version.getProperty() == _viewModel.version.getProperty());
 
+		var buttonBar = addContainer(className: 'button-bar');
+		addButton("Save", _saveClicked, parent: buttonBar);
+		addButton("Discard", _discardClicked, parent: buttonBar);
+		addButton("Copy", _copyClicked, parent: buttonBar);
+
+		addHR();
+
 		_versionBinding3 = new BoundLabel<int>(
 			addHeading(3, 'Rules'), 
 			formatMethod: (s) => 'Version ' + s + ' Rules');
@@ -58,6 +60,7 @@ class VersionEditView extends View
 		_rulesBinding = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
 			(vm) => new RuleNameView(vm), 
 			addContainer(),
+			allowAdd: false,
 			selectionMethod: (vm) => AppEvents.ruleSelected.raise(new RuleSelectedEvent(vm)));
 
 		this.viewModel = viewModel;

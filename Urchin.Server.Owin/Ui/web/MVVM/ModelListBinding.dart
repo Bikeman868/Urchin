@@ -60,17 +60,22 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 	}
   
     // Call this to add a new model to the end of the list
-	void add()
+	TVM add()
 	{
 		if (modelFactory == null)
-			return;
+			return null;
 
+		return addModel(modelFactory(null));
+	}
+
+    // Call this to add a new model to the end of the list
+	TVM addModel(TM model)
+	{
 		if (_models == null)
 			_models = new List<TM>();
 
 		int index = models.length;
-      
-		TM model = modelFactory(null);
+
 		models.add(model);
       
 		TVM viewModel = viewModelFactory(model);
@@ -78,6 +83,8 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 		viewModels.add(viewModel);
       
 		onAdd.raise(new ListEvent(index));
+
+		return viewModel;
 	}
   
 	// Call this to mark a model for deletion upon save

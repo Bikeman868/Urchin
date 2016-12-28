@@ -34,6 +34,12 @@ class EnvironmentEditView extends View
 		_nameBinding = new BoundTextInput<String>(addLabeledEdit(form, 'Environment name'));
 		_versionBinding = new BoundTextInput<int>(addLabeledEdit(form, 'Version of rules'));
 
+		// var buttonBar = addContainer(className: 'button-bar');
+		// addButton("Save", _saveClicked, parent: buttonBar);
+		// addButton("Discard", _discardClicked, parent: buttonBar);
+
+		addHR();
+
 		_titleBinding2 = new BoundLabel<String>(
 			addHeading(2, 'Environment Computers'), 
 			formatMethod: (s) => s + ' Computers');
@@ -41,6 +47,8 @@ class EnvironmentEditView extends View
 		_machinesBinding = new BoundList<MachineModel, MachineViewModel, MachineEditView>(
 			(vm) => new MachineEditView(vm), 
 			addContainer());
+
+		addHR();
 
 		addHeading(2, 'Allowed IP Address Ranges');
 			
@@ -76,4 +84,5 @@ class EnvironmentEditView extends View
 			_securityRulesBinding.binding = value.securityRules;
 		}
 	}
+
 }

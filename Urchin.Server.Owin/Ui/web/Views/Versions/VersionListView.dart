@@ -31,7 +31,7 @@ class VersionListView extends View
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
 		addButton("Discard", _discardClicked, parent: buttonBar);
-		addButton("New", _newClicked, parent: buttonBar);
+		addButton("Get Draft", _draftClicked, parent: buttonBar);
 
 		this.viewModel = viewModel;
 	}
@@ -48,9 +48,10 @@ class VersionListView extends View
 			viewModel.reload();
 	}
 
-	void _newClicked(MouseEvent e)
+	void _draftClicked(MouseEvent e) async
 	{
-		// Create new draft version from latest version
+		VersionViewModel versionViewModel = await viewModel.getDraftVersion();
+		AppEvents.versionSelected.raise(new VersionSelectedEvent(versionViewModel));
 	}
 
 	VersionListViewModel _viewModel;

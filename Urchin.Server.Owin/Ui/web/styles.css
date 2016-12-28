@@ -96,7 +96,7 @@ td
 {
     background: aliceblue;
     float: left;
-    width: 200px;
+    width: 220px;
     border: 1px solid navy;
     padding: 4px;
     margin: 1px;
@@ -150,15 +150,15 @@ td
 
 .button-bar .button
 {
-    padding: 10px;
-    font-size: 15px;
+    padding: 6px;
+    font-size: 12px;
     border: 1px solid navy;
-    border-radius: 6px;
+    border-radius: 4px;
     background: cornflowerblue;
     color: white;
     margin-right: 5px;
     position: relative;
-    top: 20px;
+    top: 16px;
 }
 
 .bound-list
