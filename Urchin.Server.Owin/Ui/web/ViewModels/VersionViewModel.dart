@@ -76,6 +76,7 @@ class VersionViewModel extends ViewModel
 
 	int get versionNumber { return int.parse(version.getProperty()); }
 
+	// Creates a copy of this version as the current draft version
 	VersionViewModel createDraft()
 	{
 		return null;

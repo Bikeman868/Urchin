@@ -32,7 +32,7 @@ DataViewModel _dataViewModel;
 ToolBarView _toolBarView;
 LogonView _logonView;
 
-main() async
+main()
 { 
 	_bindHtml();
 	_initialView();

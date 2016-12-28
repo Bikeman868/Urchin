@@ -15,13 +15,13 @@ class VersionData
 
 	VersionData(this.version);
 
-	reload() async
+	reload()
 	{
 		_ruleNames = null;
 		version.hasRules = false;
 	}
 
-	Future<bool> save() async
+	Future<bool> save()
 	{
 		return true;
 	}

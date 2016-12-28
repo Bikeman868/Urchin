@@ -25,11 +25,13 @@ class VersionListView extends View
 		_versionsBinding = new BoundList<VersionModel, VersionViewModel, VersionListElementView>(
 			(vm) => new VersionListElementView(vm), 
 			addList(),
+			allowAdd: false,
 			selectionMethod: (vm) => AppEvents.versionSelected.raise(new VersionSelectedEvent(vm)));
 
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
 		addButton("Discard", _discardClicked, parent: buttonBar);
+		addButton("New", _newClicked, parent: buttonBar);
 
 		this.viewModel = viewModel;
 	}
@@ -44,6 +46,11 @@ class VersionListView extends View
 	{
 		if (viewModel != null)
 			viewModel.reload();
+	}
+
+	void _newClicked(MouseEvent e)
+	{
+		// Create new draft version from latest version
 	}
 
 	VersionListViewModel _viewModel;

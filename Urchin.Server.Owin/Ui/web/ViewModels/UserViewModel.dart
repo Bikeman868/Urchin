@@ -58,13 +58,14 @@ class UserViewModel extends ViewModel
 		return false;
 	}
 
-	Future logOut() async
+	Future<Null> logOut() async
 	{
 		var request = await Server.logoff();
 		AppEvents.userChanged.raise(new UserChangedEvent(false, null, null));
+		return null;
 	}
 
-	Future getLoggedInUser() async
+	Future<Null> getLoggedInUser() async
 	{
 		var user = await Server.getLoggedOnUser();
 
@@ -77,5 +78,7 @@ class UserViewModel extends ViewModel
 
 		AppEvents.userChanged.raise(
 			new UserChangedEvent(user.isLoggedOn, user.userName, user.ipAddress));
+
+		return null;
 	}
 }

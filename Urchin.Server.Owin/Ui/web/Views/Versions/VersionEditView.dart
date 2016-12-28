@@ -33,7 +33,7 @@ class VersionEditView extends View
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
 		addButton("Discard", _discardClicked, parent: buttonBar);
-		addButton("New", _newClicked, parent: buttonBar);
+		addButton("Copy", _copyClicked, parent: buttonBar);
 
 		_versionBinding1 = new BoundLabel<int>(
 			addHeading(2, 'Version Details'), 
@@ -104,7 +104,7 @@ class VersionEditView extends View
 			viewModel.reload();
 	}
 
-	void _newClicked(MouseEvent e)
+	void _copyClicked(MouseEvent e)
 	{
 		if (viewModel != null)
 			viewModel = viewModel.createDraft();

@@ -74,61 +74,73 @@ class VersionListViewModel extends ViewModel
 
 	bool _saving;
 
-	bool save([bool alert = true])
+	Future<bool> save([bool alert = true]) async
 	{
 		if (_saving) return true;
 		_saving = true;
 
+		bool hasChanges = false;
 		for (VersionViewModel versionViewModel in versions.viewModels)
 		{
 			var versionModel = versionViewModel.model;
 			var state = versionViewModel.getState();
 			if (state == ChangeState.deleted)
 			{
-				Server.deleteVersion(versionModel.version)
-					.then((HttpRequest) request
-						{
-							if (request.status == 200)
-							{
-								versionViewModel.saved();
-							}
-							else
-							{
-								window.alert('Failed to delete version ' + versionModel.version + 
-								' ' + request.statusText);
-							}
-							_saving = false;
-						})
-					.catchError((Error error) 
+				hasChanges = true;
+				try
+				{
+					var request = await Server.deleteVersion(versionModel.version);
+					if (request.status == 200)
 					{
-						 window.alert(error.toString());
-						 _saving = false;
-					});
+						versionViewModel.saved();
+					}
+					else
+					{
+						window.alert('Failed to delete version ' + versionModel.version + 
+						' ' + request.statusText);
+					}
+				}
+				catch (error)
+				{
+					window.alert(error.toString());
+				}
 			}
 			else if (state == ChangeState.modified || state == ChangeState.added)
 			{
-				Server.updateVersion(versionModel.version, versionModel)
-					.then((HttpRequest) request
-						{
-							if (request.status == 200)
-							{
-								versionViewModel.saved();
-							}
-							else
-							{
-								window.alert('Failed to save version ' + versionModel.version + 
-								' ' + request.statusText);
-							}
-							_saving = false;
-						})
-					.catchError((Error error) 
+				hasChanges = true;
+				try
+				{
+					var request = await Server.updateVersion(versionModel.version, versionModel);
+					if (request.status == 200)
 					{
-						 window.alert(error.toString());
-						 _saving = false;
-					});
+						versionViewModel.saved();
+					}
+					else
+					{
+						window.alert('Failed to save version ' + versionModel.version + 
+						' ' + request.statusText);
+					}
+				}
+				catch (error)
+				{
+					window.alert(error.toString());
+				}
 			}
 		}
-		saved();
+		
+		if (hasChanges)
+		{
+			saved();
+			if (alert)
+				window.alert('Changes to versions saved');
+		}
+		else
+		{
+			if (alert)
+				window.alert('No changes to save');
+		}
+			
 		_saving = false;
+		return hasChanges;
 	}
 }

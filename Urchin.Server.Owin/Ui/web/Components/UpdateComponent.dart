@@ -76,7 +76,7 @@ class UpdateComponent
 	{
 	}
   
-	void displayIn(Element container) async
+	void displayIn(Element container)
 	{
 		_builder.addTo(container);
 	}

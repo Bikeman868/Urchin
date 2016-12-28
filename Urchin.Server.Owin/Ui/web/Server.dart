@@ -29,12 +29,12 @@ class Server
 		return versions;
 	}
 
-	static Future<HttpRequest> deleteOldVersions() async
+	static Future<HttpRequest> deleteOldVersions()
 		=> HttpRequest.request(
 			'/versions', 
 			method: 'DELETE');
 
-	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)  async
+	static Future<HttpRequest> updateVersion(int version, VersionModel versionDto)
 	{
 		var versionName = new VersionNameModel(null);
 		versionName.name = versionDto.name;
@@ -47,10 +47,12 @@ class Server
 			mimeType: 'application/json');
 	}
   
-	static Future<HttpRequest> deleteVersion(int version) async
-		=> HttpRequest.request(
+	static Future<HttpRequest> deleteVersion(int version)
+	{
+		return HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'DELETE');
+	}
 //
 //-- Rule related server methods -------------------------------------------------------------------
 //
@@ -163,7 +165,7 @@ class Server
 //
 //-- Application config related server methods --------------------------------------------------
 //
-	static Future<String> getConfig(String machine, String application, String environment, String instance) async
+	static Future<String> getConfig(String machine, String application, String environment, String instance)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -182,7 +184,7 @@ class Server
 		return HttpRequest.getString(url);
 	}
 
-	static Future<String> traceConfig(String machine, String application, String environment, String instance) async
+	static Future<String> traceConfig(String machine, String application, String environment, String instance)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -201,7 +203,7 @@ class Server
 		return HttpRequest.getString(url);
 	}
 
-	static Future<String> testConfig(int version, String machine, String application, String environment, String instance) async
+	static Future<String> testConfig(int version, String machine, String application, String environment, String instance)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
