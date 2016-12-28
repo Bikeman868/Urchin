@@ -36,6 +36,11 @@ class EnvironmentViewModel extends ViewModel
 		this.model = model;
 	}
 
+	dispose()
+	{
+		model = null;
+	}
+
 	EnvironmentModel _model;
 	EnvironmentModel get model
 	{

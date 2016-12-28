@@ -42,14 +42,7 @@ class EnvironmentListViewModel extends ViewModel
 
 	ChangeState getState()
 	{
-		var state = super.getState();
-		if (state != ChangeState.unmodified)
-			return state;
-
-		if (environments.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
-
-		return ChangeState.unmodified;
+		return environments.getState();
 	}
 
 	void reload()
@@ -61,13 +54,14 @@ class EnvironmentListViewModel extends ViewModel
 
 	bool _saving;
 
-	void save()
+	bool save([bool alert = true])
 	{
-		if (_saving) return;
+		if (_saving) return true;
 		_saving = true;
 
-		var environmentModels = new List<EnvironmentModel>();
 		bool isModified = false;
+
+		var environmentModels = new List<EnvironmentModel>();
 		for (EnvironmentViewModel environmentViewModel in environments.viewModels)
 		{
 			var state = environmentViewModel.getState();
@@ -76,6 +70,7 @@ class EnvironmentListViewModel extends ViewModel
 			if (state != ChangeState.unmodified)
 				isModified = true;
 		}
+
 		if (isModified)
 		{
 			Server.replaceEnvironments(environmentModels)
@@ -84,6 +79,7 @@ class EnvironmentListViewModel extends ViewModel
 					_saving = false;
 					if (error == null)
 					{
+						environments.saved();
 						saved();
 						for (EnvironmentViewModel environmentViewModel in environments.viewModels)
 							environmentViewModel.saved();
@@ -100,7 +96,7 @@ class EnvironmentListViewModel extends ViewModel
 		}
 		else
 		{
-			window.alert('No changes to save');
+			if (alert) window.alert('No changes to save');
 		}
 	}
 }

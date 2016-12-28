@@ -1,7 +1,11 @@
-﻿import '../MVVM/StringBinding.dart';
+﻿import 'dart:html';
+
+import '../MVVM/StringBinding.dart';
 import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
+
+import '../Server.dart';
 
 import '../Models/RuleModel.dart';
 import '../Models/VariableModel.dart';
@@ -18,7 +22,7 @@ class RuleViewModel extends ViewModel
     StringBinding config = new StringBinding();
     ModelListBinding<VariableModel, VariableViewModel> variables;
 
-	RuleViewModel([RuleModel model])
+	RuleViewModel([int version, RuleModel model])
 	{
 		name = new StringBinding();
 		machine = new StringBinding();
@@ -31,8 +35,11 @@ class RuleViewModel extends ViewModel
 			(Map json) => new VariableModel(new Map()..['name']='MACHINE'), 
 			(VariableModel m) => new VariableViewModel(m));
 
+		this.version = version;
 		this.model = model;
 	}
+
+	int version;
 
 	RuleModel _model;
 	RuleModel get model	{ return _model; }
@@ -115,16 +122,104 @@ class RuleViewModel extends ViewModel
 		loaded();
 	}
 
-	ChangeState getState()
+	List<ViewModel> getChildViewModels()
 	{
-		var state = super.getState();
-		if (state != ChangeState.unmodified)
-			return state;
+		return variables.viewModels;
+	}
 
-		if (variables.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
+	bool _saving;
 
-		return ChangeState.unmodified;
+	bool save([bool alert = true])
+	{
+		if (_saving) return true;
+		_saving = true;
+
+		var state = getState();
+
+		if (state == ChangeState.modified)
+		{
+			var modelsToUpdate = new List<RuleModel>();
+			modelsToUpdate.add(_model);
+			Server.updateRules(version, modelsToUpdate)
+				.then((request)
+				{
+					if (request.status == 200)
+					{
+						saved();
+						if (alert) 
+							window.alert('Version ' + version.toString() + ' of ' + _model.name + ' updated');
+					}
+					else
+					{
+						window.alert(
+							'Failed to update version ' + version.toString() +
+							 ' of ' + _model.name + '. ' + request.statusText);
+					}
+					_saving = false;
+				})
+				.catchError((Error error) 
+				{
+					 window.alert(error.toString());
+					 _saving = false;
+				});
+		}
+		else if (state == ChangeState.deleted)
+		{
+			Server.deleteRule(version, _model.name)
+				.then((request)
+				{
+					if (request.status == 200)
+					{
+						saved();
+						if (alert) 
+							window.alert('Version ' + version.toString() + ' of ' + _model.name + ' deleted');
+					}
+					else
+					{
+						window.alert(
+							'Failed to delete version ' + version.toString() +
+							 ' of ' + _model.name + '. ' + request.statusText);
+					}
+					_saving = false;
+				})
+				.catchError((Error error) 
+				{
+					 window.alert(error.toString());
+					 _saving = false;
+				});
+		}
+		else if (state == ChangeState.added)
+		{
+			Server.addRule(version, _model)
+				.then((request)
+				{
+					if (request.status == 200)
+					{
+						saved();
+						if (alert) 
+							window.alert('Version ' + version.toString() + ' of ' + _model.name + ' added');
+					}
+					else
+					{
+						window.alert(
+							'Failed to add version ' + version.toString() +
+							 ' of ' + _model.name + '. ' + request.statusText);
+					}
+					_saving = false;
+				})
+				.catchError((Error error) 
+				{
+					 window.alert(error.toString());
+					 _saving = false;
+				});
+		}
+		else
+		{
+			_saving = false;
+			return false;
+		}
+
+		return true;
 	}
 
 }

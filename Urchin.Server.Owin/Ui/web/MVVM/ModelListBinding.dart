@@ -12,24 +12,36 @@ import 'ListEvent.dart';
 // views to the models.
 class ModelListBinding<TM extends Model, TVM extends ViewModel>
 {
+	// Defines how to create new models
 	ModelFactory<TM> modelFactory;
+	
+	// Defines how to create new view models
 	ViewModelFactory<TM, TVM> viewModelFactory;
   
+	// Raised after a new model is added to the list
 	SubscriptionEvent<ListEvent> onAdd = new SubscriptionEvent<ListEvent>();
-	SubscriptionEvent<ListEvent> onRemove = new SubscriptionEvent<ListEvent>();
+	
+	// Raised after a model is flagged for deletion. Most views should hide deleted records
+	SubscriptionEvent<ListEvent> onDelete = new SubscriptionEvent<ListEvent>();
+
+	// Raised when the whole list of models is replaced with a new one
+	SubscriptionEvent<ListEvent> onListChanged = new SubscriptionEvent<ListEvent>();
   
 	List<TVM> viewModels;
-	bool _isModified;
 
+	ModelListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
+	{
+		viewModels = new List<TVM>();
+		this.models = models;
+	}
+  
 	List<TM> _models;
 	List<TM> get models => _models;
 
 	void set models(List<TM> value)
 	{
-		for (int index = 0; index < viewModels.length; index++)
+		for (TVM viewModel in viewModels)
 		{
-			TVM viewModel = viewModels[index];
-			onRemove.raise(new ListEvent(index));
 			viewModel.dispose();
 		}
 		viewModels.clear();
@@ -42,22 +54,19 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 			{
 				TVM viewModel = viewModelFactory(value[index]);
 				viewModels.add(viewModel);
-				onAdd.raise(new ListEvent(index));
 			}
 		}
-		_isModified = false;
+		onListChanged.raise(new ListEvent(-1));
 	}
   
-	ModelListBinding(this.modelFactory, this.viewModelFactory, [List<TM> models])
-	{
-		viewModels = new List<TVM>();
-		this.models = models;
-	}
-  
+    // Call this to add a new model to the end of the list
 	void add()
 	{
 		if (modelFactory == null)
 			return;
+
+		if (_models == null)
+			_models = new List<TM>();
 
 		int index = models.length;
       
@@ -65,38 +74,56 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 		models.add(model);
       
 		TVM viewModel = viewModelFactory(model);
+		viewModel.added();
 		viewModels.add(viewModel);
       
 		onAdd.raise(new ListEvent(index));
-		_isModified = true;
 	}
   
-	void remove(int index)
+	// Call this to mark a model for deletion upon save
+	void delete(int index)
 	{
 		TVM viewModel = viewModels[index];
-		TM model = models[index];
-      
-		onRemove.raise(new ListEvent(index));
-      
-		viewModels.removeAt(index);
-		models.removeAt(index);
-      
-		viewModel.dispose();
 
-		_isModified = true;
+		if (viewModel.getState() == ChangeState.added)
+		{
+			viewModels.removeAt(index);
+			models.removeAt(index);
+			viewModel.dispose();
+			onListChanged.raise(new ListEvent(-1));
+		}
+		else
+		{
+			viewModel.deleted();
+			onDelete.raise(new ListEvent(index));
+		}
 	}
 
+	// Call this after saving changes to remove deleted models from the list
+	void saved()
+	{
+		List<TM> models = new List<TM>();
+		if (_models != null)
+		{
+			for (var index = 0; index < viewModels.length; index++)
+			{
+				if (viewModels[index].getState() != ChangeState.deleted)
+					models.add(_models[index]);
+			}
+		}
+		this.models = models;
+	}
+
+	// Calculates the modification status of this list of models
 	ChangeState getState()
 	{
-		if (_isModified) return ChangeState.modified;
 		for (TVM viewModel in viewModels)
 		{
 			var state = viewModel.getState();
 			if (state != ChangeState.unmodified)
 				return ChangeState.modified;
 		}
-		ChangeState.unmodified;
+		return ChangeState.unmodified;
 	}
 
 }
-

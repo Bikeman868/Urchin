@@ -29,7 +29,7 @@ class Server
 		return versions;
 	}
 
-	static Future<HttpRequest> deleteOldVersions()
+	static Future<HttpRequest> deleteOldVersions() async
 		=> HttpRequest.request(
 			'/versions', 
 			method: 'DELETE');
@@ -47,7 +47,7 @@ class Server
 			mimeType: 'application/json');
 	}
   
-	static Future<HttpRequest> deleteVersion(int version)
+	static Future<HttpRequest> deleteVersion(int version) async
 		=> HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'DELETE');

@@ -5,6 +5,7 @@ import 'Model.dart';
 import 'ViewModel.dart';
 import 'Types.dart';
 import 'BoundContainer.dart';
+import 'ChangeState.dart';
 
 // Provides tw-way binding of a list of view models to a list of views
 // * Generates <li> elements and adds them to the list container
@@ -19,7 +20,8 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
 		{
 			ViewModelMethod<TVM> selectionMethod : null,
 			this.allowAdd : true,
-			this.allowRemove : true
+			this.allowRemove : true,
+			this.showDeleted : false
 		}) 
 		: super(viewFactory, listContainer, selectionMethod: selectionMethod)
     {
@@ -27,6 +29,7 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
   
 	bool allowAdd;
 	bool allowRemove;
+	bool showDeleted;
 
     void initializeContainer(Element container)
     {
@@ -45,26 +48,30 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
         {
             for (var index = 0; index < binding.viewModels.length; index++)
             {
-                var listItem = builder.addListElement(className:'bound-list-item');
-				if (selectionMethod != null)
+				var viewModel = binding.viewModels[index];
+				if (showDeleted || viewModel.getState() != ChangeState.deleted)
 				{
-					listItem.attributes['index'] = index.toString();
-					listItem.onClick.listen(itemClicked);
-				};
+					var listItem = builder.addListElement(className:'bound-list-item');
+					if (selectionMethod != null)
+					{
+						listItem.attributes['index'] = index.toString();
+						listItem.onClick.listen(itemClicked);
+					};
 
-				var viewContainer = builder.addContainer(className:'bound-list-view', parent: listItem);
-				var view = viewFactory(binding.viewModels[index]);
-				view.addTo(viewContainer);
+					var viewContainer = builder.addContainer(className:'bound-list-view', parent: listItem);
+					var view = viewFactory(binding.viewModels[index]);
+					view.addTo(viewContainer);
 
-				if (allowRemove)
-				{
-					var deleteButton = builder.addImage(
-						'ui/images/delete{_v_}.gif',
-						altText: 'Delete',
-						classNames: ['bound-list-delete','image-button'],
-						parent: listItem,
-						onClick: _deleteClicked)
-					..attributes['index'] = index.toString();
+					if (allowRemove)
+					{
+						var deleteButton = builder.addImage(
+							'ui/images/delete{_v_}.gif',
+							altText: 'Delete',
+							classNames: ['bound-list-delete','image-button'],
+							parent: listItem,
+							onClick: _deleteClicked)
+						..attributes['index'] = index.toString();
+					}
 				}
             }
 
@@ -90,7 +97,7 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
 		{
 			ButtonElement button = e.target;
 			int index = int.parse(button.attributes['index']);
-			binding.remove(index);
+			binding.delete(index);
 		}
     }
   

@@ -39,11 +39,16 @@ abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extend
             _addSubscription.cancel();
             _addSubscription = null;
         }
-        if (_removeSubscription != null)
+        if (_deleteSubscription != null)
         {
-            _removeSubscription.cancel();
-            _removeSubscription = null;
+            _deleteSubscription.cancel();
+            _deleteSubscription = null;
         }
+		if (_listChangedSubscription != null)
+		{
+			_listChangedSubscription.cancel();
+			_listChangedSubscription = null;
+		}
 
         _binding = value;
 
@@ -51,12 +56,15 @@ abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extend
         {
             refresh();
             _addSubscription = value.onAdd.listen(_onAdd);      
-            _removeSubscription = value.onRemove.listen(_onRemove);      
+            _deleteSubscription = value.onDelete.listen(_onDelete);
+			_listChangedSubscription = value.onListChanged.listen(_onListChanged);
         }
     }
   
     StreamSubscription<ListEvent> _addSubscription;
-    StreamSubscription<ListEvent> _removeSubscription;
+    StreamSubscription<ListEvent> _deleteSubscription;
+    StreamSubscription<ListEvent> _listChangedSubscription;
+
     ViewFactory<TVM, TV> viewFactory;
 	ViewModelMethod<TVM> selectionMethod;
 
@@ -98,7 +106,12 @@ abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extend
 		refresh();
     }
   
-    void _onRemove(ListEvent e)
+    void _onDelete(ListEvent e)
+    {
+		refresh();
+    }
+
+	void _onListChanged(ListEvent e)
     {
 		refresh();
     }

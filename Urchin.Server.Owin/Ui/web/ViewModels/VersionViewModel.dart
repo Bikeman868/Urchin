@@ -6,6 +6,8 @@ import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
+import '../Server.dart';
+
 import '../Models/VersionModel.dart';
 import '../Models/RuleModel.dart';
 
@@ -24,7 +26,7 @@ class VersionViewModel extends ViewModel
 
 		rules = new ModelListBinding<RuleModel, RuleViewModel>(
 			(Map json) => new RuleModel(new Map()..['name']='Rule'), 
-			(RuleModel m) => new RuleViewModel(m));
+			(RuleModel m) => new RuleViewModel(versionNumber, m));
 
 		this.model = model;
 	}
@@ -67,9 +69,73 @@ class VersionViewModel extends ViewModel
 		loaded();
 	}
 
-	ChangeState getState()
+	List<ViewModel> getChildViewModels()
 	{
-		return super.getState();
+		return rules.viewModels;
 	}
 
+	int get versionNumber { return int.parse(version.getProperty()); }
+
+	VersionViewModel createDraft()
+	{
+		return null;
+	}
+
+	bool _saving;
+
+	bool save([bool alert = true])
+	{
+		if (_saving) return true;
+		_saving = true;
+
+		var state = getState();
+
+		if (state == ChangeState.modified)
+		{
+			Server.updateVersion(versionNumber, _model)
+				.then((request) 
+				{
+					if (request.status == 200)
+					{
+						_saveRules();
+						saved();
+						if (alert)
+							window.alert('Updated version ' + versionNumber.toString());
+					}
+					else
+					{
+						window.alert(
+							'Failed to update version ' + versionNumber.toString() + '. ' + request.statusText);
+					}
+					_saving = false;
+				})
+				.catchError((Error error) 
+				{
+					 window.alert(error.toString());
+					 _saving = false;
+				});
+		}
+		else
+		{
+			if (alert)
+				window.alert('No changes to version ' + versionNumber.toString() + ' to save');
+			_saving = false;
+		}
+	}
+
+	bool _saveRules()
+	{
+		var hasChanges = false;
+		for (var ruleViewModel in rules.viewModels)
+		{
+			if (ruleViewModel.save(false))
+				hasChanges = true;
+		}
+		rules.saved();
+		return hasChanges;
+	}
+
+	void reload()
+	{
+	}
 }

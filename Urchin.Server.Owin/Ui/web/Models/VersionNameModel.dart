@@ -1,5 +1,4 @@
 ﻿import '../MVVM/Model.dart';
-import '../Models/RuleModel.dart';
 
 class VersionNameModel extends Model
 {

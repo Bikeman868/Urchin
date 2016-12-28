@@ -17,7 +17,8 @@ class BoundGrid<TM extends Model, TVM extends ViewModel, TV extends View> extend
 		ViewFactory<TVM, TV> viewFactory,
 		Element gridContainer, 
 		{
-			ViewModelMethod<TVM> selectionMethod : null
+			ViewModelMethod<TVM> selectionMethod : null,
+			this.showDeleted : false
 		}) 
 		: super(viewFactory, gridContainer, selectionMethod: selectionMethod)
     {
@@ -27,6 +28,8 @@ class BoundGrid<TM extends Model, TVM extends ViewModel, TV extends View> extend
     {
 		container.classes.add('bound-grid');
     }
+
+	bool showDeleted;
   
     void refresh()
     {
@@ -38,15 +41,18 @@ class BoundGrid<TM extends Model, TVM extends ViewModel, TV extends View> extend
             for (var index = 0; index < binding.viewModels.length; index++)
             {
 				var viewModel = binding.viewModels[index];
-                var tile = builder.addContainer(classNames:['tile', 'bound-tile']);
-				if (selectionMethod != null) 
+				if (showDeleted || viewModel.getState() != ChangeState.deleted)
 				{
-					tile.attributes['index'] = index.toString();
-					tile.classes.add('selection-item');
-					tile.onClick.listen(itemClicked);
-				};
+					var tile = builder.addContainer(classNames:['tile', 'bound-tile']);
+					if (selectionMethod != null) 
+					{
+						tile.attributes['index'] = index.toString();
+						tile.classes.add('selection-item');
+						tile.onClick.listen(itemClicked);
+					};
 
-                viewFactory(viewModel).addTo(tile);
+					viewFactory(viewModel).addTo(tile);
+				}
             }
         }
 		builder.displayIn(container);

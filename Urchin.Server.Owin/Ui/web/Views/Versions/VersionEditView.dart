@@ -30,6 +30,11 @@ class VersionEditView extends View
 
 	VersionEditView([VersionViewModel viewModel])
 	{
+		var buttonBar = addContainer(className: 'button-bar');
+		addButton("Save", _saveClicked, parent: buttonBar);
+		addButton("Discard", _discardClicked, parent: buttonBar);
+		addButton("New", _newClicked, parent: buttonBar);
+
 		_versionBinding1 = new BoundLabel<int>(
 			addHeading(2, 'Version Details'), 
 			formatMethod: (s) => 'Version ' + s);
@@ -85,5 +90,23 @@ class VersionEditView extends View
 	void set environmentListBinding(ModelListBinding<EnvironmentModel, EnvironmentViewModel> value)
 	{
 		_environmentsBinding.binding = value;
+	}
+
+	void _saveClicked(MouseEvent e)
+	{
+		if (viewModel != null)
+			viewModel.save();
+	}
+
+	void _discardClicked(MouseEvent e)
+	{
+		if (viewModel != null)
+			viewModel.reload();
+	}
+
+	void _newClicked(MouseEvent e)
+	{
+		if (viewModel != null)
+			viewModel = viewModel.createDraft();
 	}
 }

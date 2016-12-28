@@ -40,10 +40,10 @@ class VariableViewModel extends ViewModel
 
 			this.value.setter = (String text) 
 			{ 
-				value.name = text; 
+				value.value = text; 
 				modified();
 			};
-			this.value.getter = () => value.name;
+			this.value.getter = () => value.value;
 		}
 		loaded();
 	}

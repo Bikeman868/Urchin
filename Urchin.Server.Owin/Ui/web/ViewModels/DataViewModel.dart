@@ -1,5 +1,4 @@
-﻿import '../MVVM/ModelListBinding.dart';
-import '../MVVM/ViewModel.dart';
+﻿import '../MVVM/ViewModel.dart';
 import '../MVVM/ChangeState.dart';
 
 import '../ViewModels/EnvironmentListViewModel.dart';
@@ -49,18 +48,16 @@ class DataViewModel extends ViewModel
 		return _versionList;
 	}
 
-	ChangeState getState()
+	List<ViewModel> getChildViewModels()
 	{
-		var state = super.getState();
-		if (state != ChangeState.unmodified)
-			return state;
+		var children = new List<ViewModel>();
 
-		if (_environmentList != null && _environmentList.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
+		if (_environmentList != null)
+			children.add(_environmentList);
 
-		if (_versionList != null && _versionList.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
+		if (_versionList != null)
+			children.add(_versionList);
 
-		return ChangeState.unmodified;
+		return children;
 	}
 }

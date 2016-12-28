@@ -51,14 +51,7 @@ class VersionListViewModel extends ViewModel
 
 	ChangeState getState()
 	{
-		var state = super.getState();
-		if (state != ChangeState.unmodified)
-			return state;
-
-		if (versions.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
-
-		return ChangeState.unmodified;
+		return versions.getState();
 	}
 
 	Future<Null> ensureRules(VersionViewModel versionViewModel) async
@@ -79,12 +72,11 @@ class VersionListViewModel extends ViewModel
 			.catchError((Error error) => window.alert(error.toString()));
 	}
 
-
 	bool _saving;
 
-	void save()
+	bool save([bool alert = true])
 	{
-		if (_saving) return;
+		if (_saving) return true;
 		_saving = true;
 
 		for (VersionViewModel versionViewModel in versions.viewModels)
@@ -93,33 +85,47 @@ class VersionListViewModel extends ViewModel
 			var state = versionViewModel.getState();
 			if (state == ChangeState.deleted)
 			{
-				Server.deleteVersion(versionModel.version) /*
+				Server.deleteVersion(versionModel.version)
 					.then((HttpRequest) request
 						{
-							if (request.status != 200)
+							if (request.status == 200)
 							{
-								window.alert('Failed to delete version ' + versionModel.version + ' ' + request.statusText);
-								_saving = false;
-								return;
+								versionViewModel.saved();
 							}
-							versionViewModel.saved();
-						}) */
-					.catchError((Error error) => window.alert(error.toString()));
+							else
+							{
+								window.alert('Failed to delete version ' + versionModel.version + 
+								' ' + request.statusText);
+							}
+							_saving = false;
+						})
+					.catchError((Error error) 
+					{
+						 window.alert(error.toString());
+						 _saving = false;
+					});
 			}
 			else if (state == ChangeState.modified || state == ChangeState.added)
 			{
-				Server.updateVersion(versionModel.version, versionModel) /*
+				Server.updateVersion(versionModel.version, versionModel)
 					.then((HttpRequest) request
 						{
-							if (request.status != 200)
+							if (request.status == 200)
 							{
-								window.alert('Failed to update version ' + versionModel.version + ' ' + request.statusText);
-								_saving = false;
-								return;
+								versionViewModel.saved();
 							}
-							versionViewModel.saved();
-						}) */
-					.catchError((Error error) => window.alert(error.toString()));
+							else
+							{
+								window.alert('Failed to save version ' + versionModel.version + 
+								' ' + request.statusText);
+							}
+							_saving = false;
+						})
+					.catchError((Error error) 
+					{
+						 window.alert(error.toString());
+						 _saving = false;
+					});
 			}
 		}
 		saved();
