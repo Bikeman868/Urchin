@@ -11,6 +11,7 @@ import '../Server.dart';
 
 import '../Models/VersionModel.dart';
 import '../Models/RuleModel.dart';
+import '../Models/PostResponseModel.dart';
 
 import '../ViewModels/RuleViewModel.dart';
 
@@ -118,14 +119,14 @@ class VersionViewModel extends ViewModel
 		}
 		else if (state == ChangeState.deleted)
 		{
-			var request = await Server.deleteVersion(versionNumber);
-			if (request.status == 200)
+			var response = await Server.deleteVersion(versionNumber);
+			if (response.success)
 			{
 				result = SaveResult.saved;
 			}
 			else
 			{
-				alertMessage = 'Failed to delete version ' + version.getProperty() + ' ' + request.statusText;
+				alertMessage = 'Failed to delete version ' + version.getProperty() + ' ' + response.error;
 				alert = true;
 				result = SaveResult.failed;
 			}

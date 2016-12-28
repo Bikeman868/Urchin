@@ -6,7 +6,10 @@ import '../MVVM/ViewModel.dart';
 import '../MVVM/Enums.dart';
 
 import '../Models/EnvironmentModel.dart';
+import '../Models/PostResponseModel.dart';
+
 import '../ViewModels/EnvironmentViewModel.dart';
+
 import '../Server.dart';
 
 class EnvironmentListViewModel extends ViewModel
@@ -70,15 +73,15 @@ class EnvironmentListViewModel extends ViewModel
 		String alertMessage = 'There are no changes to the list of environments';
 		if (result != SaveResult.unmodified)
 		{
-			String error = await Server.replaceEnvironments(environmentModels);
-			if (error == null)
+			PostResponseModel response = await Server.replaceEnvironments(environmentModels);
+			if (response.success)
 			{
 				alertMessage = 'Environments saved succesfully';
 				result = SaveResult.saved;
 			}
 			else
 			{
-				alertMessage = 'Environments were not saved. ' + error;
+				alertMessage = 'Environments were not saved. ' + response.error;
 				result = SaveResult.failed;
 			}
 		}

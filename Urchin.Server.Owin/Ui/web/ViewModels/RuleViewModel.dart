@@ -10,6 +10,7 @@ import '../Server.dart';
 
 import '../Models/RuleModel.dart';
 import '../Models/VariableModel.dart';
+import '../Models/PostResponseModel.dart';
 
 import '../ViewModels/VariableViewModel.dart';
 
@@ -143,13 +144,13 @@ class RuleViewModel extends ViewModel
 
 		if (state == ChangeState.modified)
 		{
-			HttpRequest request;
+			PostResponseModel response;
 			if (name.getProperty() == _originalName)
-				request = await Server.updateRules(version, [_model]);
+				response = await Server.updateRules(version, [_model]);
 			else
-				request = await Server.updateRenameRule(version, _originalName, _model);
+				response = await Server.updateRenameRule(version, _originalName, _model);
 
-			if (request.status == 200)
+			if (response.success)
 			{
 				alertMessage = 'Version ' + version.toString() + ' of ' + _model.name + ' updated';
 				result = SaveResult.saved;
@@ -157,14 +158,14 @@ class RuleViewModel extends ViewModel
 			else
 			{
 				alertMessage = 'Failed to update version ' + version.toString() +
-								' of ' + _model.name + '. ' + request.statusText;
+								' of ' + _model.name + '. ' + response.error;
 				result = SaveResult.failed;
 			}
 		}
 		else if (state == ChangeState.deleted)
 		{
-			var request = await Server.deleteRule(version, _originalName);
-			if (request.status == 200)
+			var response = await Server.deleteRule(version, _originalName);
+			if (response.success)
 			{
 				alertMessage = 'Version ' + version.toString() + ' of ' + _originalName + ' deleted';
 				result = SaveResult.saved;
@@ -172,14 +173,14 @@ class RuleViewModel extends ViewModel
 			else
 			{
 				alertMessage = 'Failed to delete version ' + version.toString() +
-								' of ' + _originalName + '. ' + request.statusText;
+								' of ' + _originalName + '. ' + response.error;
 				result = SaveResult.failed;
 			}
 		}
 		else if (state == ChangeState.added)
 		{
-			var request = await Server.addRule(version, _model);
-			if (request.status == 200)
+			var response = await Server.addRule(version, _model);
+			if (response.success)
 			{
 				alertMessage = 'Version ' + version.toString() + ' of ' + _model.name + ' added';
 				result = SaveResult.saved;
@@ -187,7 +188,7 @@ class RuleViewModel extends ViewModel
 			else
 			{
 				alertMessage = 'Failed to add version ' + version.toString() +
-								' of ' + _model.name + '. ' + request.statusText;
+								' of ' + _model.name + '. ' + response.error;
 				result = SaveResult.failed;
 			}
 		}

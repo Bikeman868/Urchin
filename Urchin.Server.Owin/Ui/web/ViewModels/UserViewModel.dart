@@ -40,27 +40,22 @@ class UserViewModel extends ViewModel
 
 	Future<bool> logIn(String userName, String password) async
 	{
-		var request = await Server.logon(userName, password);
-		if (request.status == 200)
+		var response = await Server.logon(userName, password);
+		if (response.success)
 		{
-			Map json = JSON.decode(request.responseText);
-			var postResponse = new PostResponseModel(json);
-			if (postResponse.success)
-			{
-				getLoggedInUser();
-				return true;
-			}
-			else
-			{
-				window.alert(postResponse.error);
-			}
+			getLoggedInUser();
+			return true;
+		}
+		else
+		{
+			window.alert(response.error);
 		}
 		return false;
 	}
 
 	Future<Null> logOut() async
 	{
-		var request = await Server.logoff();
+		var response = await Server.logoff();
 		AppEvents.userChanged.raise(new UserChangedEvent(false, null, null));
 		return null;
 	}
