@@ -2,7 +2,7 @@
 
 import '../../MVVM/View.dart';
 import '../../MVVM/BoundLabel.dart';
-import '../../MVVM/SubscriptionEvent.dart';
+import '../../MVVM/Events.dart';
 
 import '../../Events/AppEvents.dart';
 import '../../ViewModels/EnvironmentViewModel.dart';

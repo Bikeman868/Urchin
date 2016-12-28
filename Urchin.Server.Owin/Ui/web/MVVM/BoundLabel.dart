@@ -1,7 +1,8 @@
 ﻿import 'dart:html';
 import 'dart:async';
+
 import 'BoundElement.dart';
-import 'SubscriptionEvent.dart';
+import 'Events.dart';
 import 'Types.dart';
 
 // Provides one-way binding of a view model property to the inner html of a UI element

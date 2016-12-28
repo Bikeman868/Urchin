@@ -1,9 +1,9 @@
-﻿import 'SubscriptionEvent.dart';
+﻿import 'Events.dart';
 import 'Types.dart';
 import 'ViewModel.dart';
 import 'Model.dart';
-import 'ChangeState.dart';
-import 'ListEvent.dart';
+import 'Enums.dart';
+import 'Events.dart';
 
 // Provides two-way data binding to a list of models
 // The binding is associated with a single list of models
@@ -107,8 +107,10 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 		{
 			for (var index = 0; index < viewModels.length; index++)
 			{
-				if (viewModels[index].getState() != ChangeState.deleted)
+				var viewModel = viewModels[index];
+				if (viewModel.getState() != ChangeState.deleted)
 					models.add(_models[index]);
+				viewModel.saved();
 			}
 		}
 		this.models = models;

@@ -5,3 +5,11 @@
 	deleted,
 	modified
 }
+
+enum SaveResult
+{
+	unmodified,
+	saved,
+	failed,
+	notsaved
+}

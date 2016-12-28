@@ -1,5 +1,14 @@
-import 'dart:async';
+﻿import 'dart:async';
 
+
+// This is used to notify subscribers when items are added and removed from lists
+class ListEvent
+{
+  int index;
+  ListEvent(this.index);
+}
+
+// An event broadcaster. When events are raised they are sent to all listeners
 class SubscriptionEvent<E>
 {
 	StreamController<E> _controller = new StreamController.broadcast();

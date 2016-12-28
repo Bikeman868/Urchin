@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'PropertyBinding.dart';
 import 'BoundElement.dart';
-import 'SubscriptionEvent.dart';
+import 'Events.dart';
 
 // Provides two-way binding of UI elements that have a 'value' property
 // and an 'onBlur' event.

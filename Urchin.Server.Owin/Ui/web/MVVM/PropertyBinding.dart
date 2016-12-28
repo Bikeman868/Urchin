@@ -1,4 +1,4 @@
-﻿import 'SubscriptionEvent.dart';
+﻿import 'Events.dart';
 import 'Types.dart';
 
 // Provides two-way data binding with parsing and formatting

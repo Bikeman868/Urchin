@@ -22,7 +22,7 @@ class EnvironmentEditView extends View
 	BoundLabel<String> _titleBinding2;
 	BoundTextInput<int> _versionBinding;
 	BoundList<MachineModel, MachineViewModel, MachineEditView> _machinesBinding;
-	BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleEditView> _rulesBinding;
+	BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleEditView> _securityRulesBinding;
 
 	EnvironmentEditView([EnvironmentViewModel viewModel])
 	{
@@ -44,7 +44,7 @@ class EnvironmentEditView extends View
 
 		addHeading(2, 'Allowed IP Address Ranges');
 			
-		_rulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleEditView>(
+		_securityRulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleEditView>(
 			(vm) => new SecurityRuleEditView(vm), 
 			addContainer());
 
@@ -64,7 +64,7 @@ class EnvironmentEditView extends View
 			_titleBinding2.binding = null;
 			_versionBinding.binding = null;
 			_machinesBinding.binding = null;
-			_rulesBinding.binding = null;
+			_securityRulesBinding.binding = null;
 		}
 		else
 		{
@@ -73,7 +73,7 @@ class EnvironmentEditView extends View
 			_titleBinding2.binding = value.name;
 			_versionBinding.binding = value.version;
 			_machinesBinding.binding = value.machines;
-			_rulesBinding.binding = value.rules;
+			_securityRulesBinding.binding = value.securityRules;
 		}
 	}
 }

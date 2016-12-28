@@ -1,7 +1,8 @@
 ﻿import 'dart:async';
 import 'dart:html';
+
 import 'PropertyBinding.dart';
-import 'SubscriptionEvent.dart';
+import 'Events.dart';
 
 // Base class for UI elements that bind to a view model property
 // * Provides two way binding between a view model property and the UI element

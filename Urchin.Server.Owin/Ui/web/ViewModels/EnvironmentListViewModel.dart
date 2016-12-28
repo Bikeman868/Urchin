@@ -1,8 +1,9 @@
 ﻿import 'dart:html';
+import 'dart:async';
 
 import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
-import '../MVVM/ChangeState.dart';
+import '../MVVM/Enums.dart';
 
 import '../Models/EnvironmentModel.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
@@ -40,9 +41,9 @@ class EnvironmentListViewModel extends ViewModel
 		loaded();
 	}
 
-	ChangeState getState()
+	List<ModelListBinding> getModelLists()
 	{
-		return environments.getState();
+		return [environments];
 	}
 
 	void reload()
@@ -52,51 +53,37 @@ class EnvironmentListViewModel extends ViewModel
 			.catchError((Error error) => window.alert(error.toString()));
 	}
 
-	bool _saving;
-
-	bool save([bool alert = true])
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
-		if (_saving) return true;
-		_saving = true;
-
-		bool isModified = false;
+		SaveResult result = SaveResult.unmodified;
 
 		var environmentModels = new List<EnvironmentModel>();
 		for (EnvironmentViewModel environmentViewModel in environments.viewModels)
 		{
-			var state = environmentViewModel.getState();
-			if (state != ChangeState.deleted)
+			var environmentState = environmentViewModel.getState();
+			if (environmentState != ChangeState.deleted)
 				environmentModels.add(environmentViewModel.model);
-			if (state != ChangeState.unmodified)
-				isModified = true;
+			if (environmentState != ChangeState.unmodified)
+				result = SaveResult.notsaved;
 		}
 
-		if (isModified)
+		String alertMessage = 'There are no changes to the list of environments';
+		if (result != SaveResult.unmodified)
 		{
-			Server.replaceEnvironments(environmentModels)
-				.then((error)
-				{
-					_saving = false;
-					if (error == null)
-					{
-						environments.saved();
-						saved();
-						for (EnvironmentViewModel environmentViewModel in environments.viewModels)
-							environmentViewModel.saved();
-						window.alert('Environments saved');
-					}
-					else
-						window.alert('Environments were not saved. ' + error);
-				})
-				.catchError((Error error)
-				{
-					_saving = false;
-					window.alert(error.toString());
-				});
+			String error = await Server.replaceEnvironments(environmentModels);
+			if (error == null)
+			{
+				alertMessage = 'Environments saved succesfully';
+				result = SaveResult.saved;
+			}
+			else
+			{
+				alertMessage = 'Environments were not saved. ' + error;
+				result = SaveResult.failed;
+			}
 		}
-		else
-		{
-			if (alert) window.alert('No changes to save');
-		}
+
+		if (alert) window.alert(alertMessage);
+		return result;
 	}
 }

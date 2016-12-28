@@ -4,7 +4,7 @@ import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
 import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
-import '../MVVM/ChangeState.dart';
+import '../MVVM/Enums.dart';
 
 import '../Models/EnvironmentModel.dart';
 import '../Models/MachineModel.dart';
@@ -18,7 +18,7 @@ class EnvironmentViewModel extends ViewModel
     StringBinding name;
     IntBinding version;
     ModelListBinding<MachineModel, MachineViewModel> machines;
-    ModelListBinding<SecurityRuleModel, SecurityRuleViewModel> rules;
+    ModelListBinding<SecurityRuleModel, SecurityRuleViewModel> securityRules;
 
 	EnvironmentViewModel([EnvironmentModel model])
 	{
@@ -29,7 +29,7 @@ class EnvironmentViewModel extends ViewModel
 			(Map json) => new MachineModel(new Map()..['name']='MACHINE'), 
 			(MachineModel m) => new MachineViewModel(m));
 
-		rules = new ModelListBinding<SecurityRuleModel, SecurityRuleViewModel>(
+		securityRules = new ModelListBinding<SecurityRuleModel, SecurityRuleViewModel>(
 			(Map json) => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
 			(SecurityRuleModel m) => new SecurityRuleViewModel(m));
 
@@ -47,7 +47,7 @@ class EnvironmentViewModel extends ViewModel
 		if (_model != null)
 		{
 			_model.machines = machines.models;
-			_model.securityRules = rules.models;
+			_model.securityRules = securityRules.models;
 		}
 		return _model;
 	}
@@ -65,7 +65,7 @@ class EnvironmentViewModel extends ViewModel
 			version.getter = null;
 
 			machines.models = null;
-			rules.models = null;
+			securityRules.models = null;
 		}
 		else
 		{
@@ -84,24 +84,14 @@ class EnvironmentViewModel extends ViewModel
 			version.getter = () => value.version;
 
 			machines.models = value.machines;
-			rules.models = value.securityRules;
+			securityRules.models = value.securityRules;
 		}
 		loaded();
 	}
 
-	ChangeState getState()
+	List<ModelListBinding> getModelLists()
 	{
-		var state = super.getState();
-		if (state != ChangeState.unmodified)
-			return state;
-
-		if (machines.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
-
-		if (rules.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
-
-		return ChangeState.unmodified;
+		return [machines, securityRules];
 	}
 
 }

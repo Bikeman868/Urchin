@@ -1,7 +1,8 @@
 ﻿import 'dart:html';
 import 'dart:async';
+
 import 'BoundElement.dart';
-import 'SubscriptionEvent.dart';
+import 'Events.dart';
 
 // Provides one-way binding of a view model property containing a URL
 // to the src url of an iframe.

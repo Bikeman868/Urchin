@@ -22,7 +22,7 @@ class EnvironmentDisplayView extends View
 	BoundLabel<String> _nameBinding2;
 	BoundLabel<int> _versionBinding;
 	BoundRepeater<MachineModel, MachineViewModel, MachineNameView> _machinesBinding;
-	BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView> _rulesBinding;
+	BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView> _securityRulesBinding;
 
 	EnvironmentDisplayView([EnvironmentViewModel viewModel])
 	{
@@ -44,7 +44,7 @@ class EnvironmentDisplayView extends View
 			
 		addHeading(3, 'Allowed IP Address Ranges');
 
-		_rulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView>(
+		_securityRulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleListElementView>(
 			(vm) => new SecurityRuleListElementView(vm), 
 			addContainer(), allowAdd: false, allowRemove: false);
 
@@ -63,7 +63,7 @@ class EnvironmentDisplayView extends View
 			_nameBinding2.binding = null;
 			_versionBinding.binding = null;
 			_machinesBinding.binding = null;
-			_rulesBinding.binding = null;
+			_securityRulesBinding.binding = null;
 		}
 		else
 		{
@@ -71,7 +71,7 @@ class EnvironmentDisplayView extends View
 			_nameBinding2.binding = value.name;
 			_versionBinding.binding = value.version;
 			_machinesBinding.binding = value.machines;
-			_rulesBinding.binding = value.rules;
+			_securityRulesBinding.binding = value.securityRules;
 		}
 	}
 }

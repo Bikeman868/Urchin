@@ -1,9 +1,10 @@
 ﻿import 'dart:html';
+import 'dart:async';
 
 import '../MVVM/StringBinding.dart';
 import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
-import '../MVVM/ChangeState.dart';
+import '../MVVM/Enums.dart';
 
 import '../Server.dart';
 
@@ -21,6 +22,8 @@ class RuleViewModel extends ViewModel
     StringBinding instance = new StringBinding();
     StringBinding config = new StringBinding();
     ModelListBinding<VariableModel, VariableViewModel> variables;
+
+	String _originalName;
 
 	RuleViewModel([int version, RuleModel model])
 	{
@@ -122,104 +125,76 @@ class RuleViewModel extends ViewModel
 		loaded();
 	}
 
-	List<ViewModel> getChildViewModels()
+	void loaded()
 	{
-		return variables.viewModels;
+		_originalName = name.getProperty();
+		super.loaded();
 	}
 
-	bool _saving;
-
-	bool save([bool alert = true])
+	List<ModelListBinding> getModelLists()
 	{
-		if (_saving) return true;
-		_saving = true;
+		return [variables];
+	}
 
-		var state = getState();
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
+	{
+		SaveResult result = SaveResult.unmodified;
+		String alertMessage = 'There are no changes to version ' + version.toString() + ' of ' + _model.name;
 
 		if (state == ChangeState.modified)
 		{
-			var modelsToUpdate = new List<RuleModel>();
-			modelsToUpdate.add(_model);
-			Server.updateRules(version, modelsToUpdate)
-				.then((request)
-				{
-					if (request.status == 200)
-					{
-						saved();
-						if (alert) 
-							window.alert('Version ' + version.toString() + ' of ' + _model.name + ' updated');
-					}
-					else
-					{
-						window.alert(
-							'Failed to update version ' + version.toString() +
-							 ' of ' + _model.name + '. ' + request.statusText);
-					}
-					_saving = false;
-				})
-				.catchError((Error error) 
-				{
-					 window.alert(error.toString());
-					 _saving = false;
-				});
+			HttpRequest request;
+			if (name.getProperty() == _originalName)
+				request = await Server.updateRules(version, [_model]);
+			else
+				request = await Server.updateRenameRule(version, _originalName, _model);
+
+			if (request.status == 200)
+			{
+				alertMessage = 'Version ' + version.toString() + ' of ' + _model.name + ' updated';
+				result = SaveResult.saved;
+			}
+			else
+			{
+				alertMessage = 'Failed to update version ' + version.toString() +
+								' of ' + _model.name + '. ' + request.statusText;
+				result = SaveResult.failed;
+			}
 		}
 		else if (state == ChangeState.deleted)
 		{
-			Server.deleteRule(version, _model.name)
-				.then((request)
-				{
-					if (request.status == 200)
-					{
-						saved();
-						if (alert) 
-							window.alert('Version ' + version.toString() + ' of ' + _model.name + ' deleted');
-					}
-					else
-					{
-						window.alert(
-							'Failed to delete version ' + version.toString() +
-							 ' of ' + _model.name + '. ' + request.statusText);
-					}
-					_saving = false;
-				})
-				.catchError((Error error) 
-				{
-					 window.alert(error.toString());
-					 _saving = false;
-				});
+			var request = await Server.deleteRule(version, _originalName);
+			if (request.status == 200)
+			{
+				alertMessage = 'Version ' + version.toString() + ' of ' + _originalName + ' deleted';
+				result = SaveResult.saved;
+			}
+			else
+			{
+				alertMessage = 'Failed to delete version ' + version.toString() +
+								' of ' + _originalName + '. ' + request.statusText;
+				result = SaveResult.failed;
+			}
 		}
 		else if (state == ChangeState.added)
 		{
-			Server.addRule(version, _model)
-				.then((request)
-				{
-					if (request.status == 200)
-					{
-						saved();
-						if (alert) 
-							window.alert('Version ' + version.toString() + ' of ' + _model.name + ' added');
-					}
-					else
-					{
-						window.alert(
-							'Failed to add version ' + version.toString() +
-							 ' of ' + _model.name + '. ' + request.statusText);
-					}
-					_saving = false;
-				})
-				.catchError((Error error) 
-				{
-					 window.alert(error.toString());
-					 _saving = false;
-				});
-		}
-		else
-		{
-			_saving = false;
-			return false;
+			var request = await Server.addRule(version, _model);
+			if (request.status == 200)
+			{
+				alertMessage = 'Version ' + version.toString() + ' of ' + _model.name + ' added';
+				result = SaveResult.saved;
+			}
+			else
+			{
+				alertMessage = 'Failed to add version ' + version.toString() +
+								' of ' + _model.name + '. ' + request.statusText;
+				result = SaveResult.failed;
+			}
 		}
 
-		return true;
+		if (alert || result == SaveResult.failed) 
+			window.alert(alertMessage);
+
+		return result;
 	}
-
 }

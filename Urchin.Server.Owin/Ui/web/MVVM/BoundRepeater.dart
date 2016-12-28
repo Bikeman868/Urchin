@@ -7,7 +7,7 @@ import 'Model.dart';
 import 'ViewModel.dart';
 import 'BoundContainer.dart';
 import 'Types.dart';
-import 'ChangeState.dart';
+import 'Enums.dart';
 
 // Repeats a view for each item on the bound list without adding any additional markup
 

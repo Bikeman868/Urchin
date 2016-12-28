@@ -1,6 +1,6 @@
 ﻿import 'dart:html';
 
-import '../../MVVM/SubscriptionEvent.dart';
+import '../../MVVM/Events.dart';
 import '../../MVVM/View.dart';
 import '../../MVVM/BoundLabel.dart';
 

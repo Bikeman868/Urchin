@@ -1,10 +1,11 @@
 ﻿import 'dart:html';
+import 'dart:async';
 
 import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
 import '../MVVM/ModelListBinding.dart';
 import '../MVVM/ViewModel.dart';
-import '../MVVM/ChangeState.dart';
+import '../MVVM/Enums.dart';
 
 import '../Server.dart';
 
@@ -69,9 +70,9 @@ class VersionViewModel extends ViewModel
 		loaded();
 	}
 
-	List<ViewModel> getChildViewModels()
+	List<ModelListBinding> getModelLists()
 	{
-		return rules.viewModels;
+		return [rules];
 	}
 
 	int get versionNumber { return int.parse(version.getProperty()); }
@@ -82,58 +83,57 @@ class VersionViewModel extends ViewModel
 		return null;
 	}
 
-	bool _saving;
-
-	bool save([bool alert = true])
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
-		if (_saving) return true;
-		_saving = true;
+		SaveResult result = SaveResult.unmodified;
+		String alertMessage = 'No changes to version ' + version.getProperty() + ' to save';
 
-		var state = getState();
-
-		if (state == ChangeState.modified)
+		if (state == ChangeState.modified || state == ChangeState.added)
 		{
-			Server.updateVersion(versionNumber, _model)
-				.then((request) 
+			HttpRequest request = await Server.updateVersion(versionNumber, _model);
+			if (request.status == 200)
+			{
+				alertMessage = 'Updated version ' + versionNumber.toString();
+				result = SaveResult.saved;
+				if (_model.hasRules)
 				{
-					if (request.status == 200)
+					for (var ruleViewModel in rules.viewModels)
 					{
-						_saveRules();
-						saved();
-						if (alert)
-							window.alert('Updated version ' + versionNumber.toString());
+						SaveResult ruleResult = await ruleViewModel.save(false);
+						if (ruleResult == SaveResult.failed)
+						{
+							alertMessage = 'One or more rules from version ' + version.getProperty() + ' failed to update';
+							alert = true;
+							result = SaveResult.failed;
+						}
 					}
-					else
-					{
-						window.alert(
-							'Failed to update version ' + versionNumber.toString() + '. ' + request.statusText);
-					}
-					_saving = false;
-				})
-				.catchError((Error error) 
-				{
-					 window.alert(error.toString());
-					 _saving = false;
-				});
+				}
+			}
+			else
+			{
+				alertMessage = 'Failed to update version ' + version.getProperty() + '. ' + request.statusText;
+				alert = true;
+				result = SaveResult.failed;
+			}
 		}
-		else
+		else if (state == ChangeState.deleted)
 		{
-			if (alert)
-				window.alert('No changes to version ' + versionNumber.toString() + ' to save');
-			_saving = false;
+			var request = await Server.deleteVersion(versionNumber);
+			if (request.status == 200)
+			{
+				result = SaveResult.saved;
+			}
+			else
+			{
+				alertMessage = 'Failed to delete version ' + version.getProperty() + ' ' + request.statusText;
+				alert = true;
+				result = SaveResult.failed;
+			}
 		}
-	}
 
-	bool _saveRules()
-	{
-		var hasChanges = false;
-		for (var ruleViewModel in rules.viewModels)
-		{
-			if (ruleViewModel.save(false))
-				hasChanges = true;
-		}
-		rules.saved();
-		return hasChanges;
+		if (alert) window.alert(alertMessage);
+
+		return result;
 	}
 
 	void reload()

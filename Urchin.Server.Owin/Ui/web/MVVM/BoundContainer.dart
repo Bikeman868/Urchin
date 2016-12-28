@@ -1,15 +1,12 @@
 ﻿import 'dart:html';
 import 'dart:async';
 
-import 'HtmlBuilder.dart';
 import 'View.dart';
 import 'Model.dart';
 import 'ViewModel.dart';
 import 'Types.dart';
 import 'ModelListBinding.dart';
-
-import 'SubscriptionEvent.dart';
-import 'ListEvent.dart';
+import 'Events.dart';
 
 // Abstract base class for components that bind to a list of view models.
 // * Subscribes to events from add/remove actions when bound to a list
