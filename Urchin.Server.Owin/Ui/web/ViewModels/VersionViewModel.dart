@@ -78,12 +78,6 @@ class VersionViewModel extends ViewModel
 
 	int get versionNumber { return int.parse(version.getProperty()); }
 
-	// Creates a copy of this version as the current draft version
-	VersionViewModel createDraft()
-	{
-		return null;
-	}
-
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
 		SaveResult result = SaveResult.unmodified;
@@ -139,5 +133,13 @@ class VersionViewModel extends ViewModel
 
 	void reload()
 	{
+		if (_model == null) return;
+
+		Server.getRules(_model.version)
+			.then((VersionModel model)
+			{
+				this.model = model;
+			})
+			.catchError((e) => window.alert(e.toString()));
 	}
 }

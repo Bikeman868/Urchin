@@ -198,7 +198,6 @@
     <Content Include="readme.md" />
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
-    <Content Include="Ui\web\Components\RuleListComponent.dart" />
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\Events\AppEvents.dart" />
     <Content Include="Ui\web\Views\Rules\RuleDisplayView.dart" />
@@ -207,7 +206,6 @@
     <Content Include="Ui\web\Components\HelpComponent.dart" />
     <Content Include="Ui\web\Views\Versions\VersionListView.dart" />
     <Content Include="Ui\web\Views\Versions\VersionEditView.dart" />
-    <Content Include="Ui\web\Components\UpdateComponent.dart" />
     <None Include="Ui\build.cmd" />
     <None Include="Ui\pubspec.lock" />
     <Content Include="Ui\web\Views\Environment\EnvironmentEditView.dart" />
@@ -228,6 +226,7 @@
     <Content Include="Ui\web\Views\Versions\VersionListElementView.dart" />
     <Content Include="Ui\web\Views\Rules\RuleNameView.dart" />
     <Content Include="Ui\web\Views\Rules\VariableNameView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleEditView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

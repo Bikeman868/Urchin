@@ -108,6 +108,11 @@ namespace Urchin.Server.Persistence.Prius
             }
         }
 
+        public string GetVersionName(int version)
+        {
+            return "Version " + version;
+        }
+
         public void DeleteVersion(int version)
         {
             using (var context = _contextFactory.Create(_repositoryName))

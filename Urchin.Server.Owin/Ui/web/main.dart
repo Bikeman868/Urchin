@@ -21,6 +21,7 @@ import 'Views/Navigation/ToolBarView.dart';
 import 'Views/Navigation/LogonView.dart';
 
 import 'Views/Rules/RuleDisplayView.dart';
+import 'Views/Rules/RuleEditView.dart';
 
 Element _leftDiv;
 Element _centreDiv;
@@ -73,6 +74,7 @@ void _attachEvents()
 	AppEvents.environmentSelected.listen(_environmentSelected);
 	AppEvents.versionSelected.listen(_versionSelected);
 	AppEvents.ruleSelected.listen(_ruleSelected);
+	AppEvents.ruleEdit.listen(_ruleEdit);
 }
 
 void _tabChanged(TabChangedEvent e)
@@ -108,6 +110,11 @@ void _ruleSelected(RuleSelectedEvent e)
 		_displayRuleEdit(e.rule, _centreDiv);
 	else 
 		_displayRuleDisplay(e.rule, _rightDiv);
+}
+
+void _ruleEdit(RuleEditEvent e)
+{
+	_displayRuleEdit(e.rule, _centreDiv);
 }
 
 /*************************************************************************/
@@ -155,9 +162,16 @@ void _displayRuleList(Element panel)
 	_currentView = 'Rules';
 }
 
+RuleEditView _ruleEditView;
+
 void _displayRuleEdit(RuleViewModel rule, Element panel)
 {
-	_displayRuleDisplay(rule, panel);
+	if (_ruleEditView == null)
+		_ruleEditView = new RuleEditView(rule);
+	else
+		_ruleEditView.viewModel = rule;
+
+	_ruleEditView.displayIn(panel);
 }
 
 RuleDisplayView _ruleDisplayView;

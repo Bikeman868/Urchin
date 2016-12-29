@@ -11,6 +11,12 @@ class RuleSelectedEvent
 	RuleSelectedEvent(this.rule);
 }
 
+class RuleEditEvent
+{
+	RuleViewModel rule;
+	RuleEditEvent(this.rule);
+}
+
 class EnvironmentSelectedEvent
 {
 	EnvironmentViewModel environment;
@@ -40,6 +46,7 @@ class UserChangedEvent
 class AppEvents
 {
 	static SubscriptionEvent<RuleSelectedEvent> ruleSelected = new SubscriptionEvent<RuleSelectedEvent>();
+	static SubscriptionEvent<RuleEditEvent> ruleEdit = new SubscriptionEvent<RuleEditEvent>();
 	static SubscriptionEvent<EnvironmentSelectedEvent> environmentSelected = new SubscriptionEvent<EnvironmentSelectedEvent>();
 	static SubscriptionEvent<VersionSelectedEvent> versionSelected = new SubscriptionEvent<VersionSelectedEvent>();
 	static SubscriptionEvent<TabChangedEvent> tabChanged = new SubscriptionEvent<TabChangedEvent>();

@@ -310,6 +310,7 @@ namespace Urchin.Server.Shared.Rules
             var filteredVersion = new RuleVersionDto
             {
                 Version = ruleVersion.Version,
+                Name = ruleVersion.Name,
                 Rules = _mapper.Map<IEnumerable<RuleDto>, List<RuleDto>>(ruleVersion.Rules.Where(isAllowed))
             };
 
@@ -806,10 +807,13 @@ namespace Urchin.Server.Shared.Rules
                     }
                     else
                     {
+                        var versionName = _persister.GetVersionName(versionNumber);
                         ruleVersion = new RuleVersionDto
                         {
                             Version = versionNumber,
-                            Rules = ruleList.ToList()
+                            Rules = ruleList.ToList(),
+                            Name = versionName ?? "Version " + versionNumber
+
                         };
                         SetEvaluationOrder(ruleVersion);
                         rules.Add(ruleVersion);

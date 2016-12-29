@@ -18,7 +18,7 @@ import '../../Views/Rules/VariableNameView.dart';
 import '../../Events/AppEvents.dart';
 
 
-class RuleDisplayView extends View
+class RuleEditView extends View
 {
 	BoundLabel<String> _ruleName;
 	BoundLabel<String> _machine;
@@ -28,7 +28,7 @@ class RuleDisplayView extends View
 	BoundFormatter _config;
 	BoundRepeater<VariableModel, VariableViewModel, VariableNameView> _variablesBinding;
 
-	RuleDisplayView([RuleViewModel viewModel])
+	RuleEditView([RuleViewModel viewModel])
 	{
 		_ruleName = new BoundLabel<String>(
 			addHeading(2, 'Rule Details'), 
@@ -68,14 +68,14 @@ class RuleDisplayView extends View
 				return ' in the ' + s + ' environment';
 			});
 
+		var buttonBar = addContainer(className: 'button-bar');
+		addButton("Save", _saveClicked, parent: buttonBar);
+
 		addHeading(3, 'Variables');
 
 		_variablesBinding = new BoundRepeater<VariableModel, VariableViewModel, VariableNameView>(
 			(vm) => new VariableNameView(vm), 
 			addContainer());
-
-		var buttonBar = addContainer(className: 'button-bar');
-		addButton("Edit", _editClicked, parent: buttonBar);
 
 		addHR();
 
@@ -114,10 +114,10 @@ class RuleDisplayView extends View
 		}
 	}
 
-	void _editClicked(MouseEvent e)
+	void _saveClicked(MouseEvent e)
 	{
 		if (viewModel != null)
-			AppEvents.ruleEdit.raise(new RuleEditEvent(viewModel));
+			viewModel.save();
 	}
 
 }

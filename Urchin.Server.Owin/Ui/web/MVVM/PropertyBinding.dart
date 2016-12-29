@@ -7,19 +7,48 @@ import 'Types.dart';
 // of these Binding<T> objects that connect the views to the models.
 class PropertyBinding<T>
 {
-	PropertyGetFunction<T> getter;
-	PropertySetFunction<T> setter;
-	FormatFunction<T> formatter;
-	ParseFunction<T> parser;
 	SubscriptionEvent<String> onChange;
   
 	String _value;
+	PropertyGetFunction<T> _getter;
+	PropertySetFunction<T> _setter;
+	FormatFunction<T> _formatter;
+	ParseFunction<T> _parser;
 
 	PropertyBinding()
 	{
 		onChange = new SubscriptionEvent<String>();
 	}
-  
+
+	PropertyGetFunction<T> get getter => _getter;
+	PropertySetFunction<T> get setter => _setter;
+	FormatFunction<T> get formatter => _formatter;
+	ParseFunction<T> get parser => _parser;
+
+	void set getter (PropertyGetFunction<T> value)
+	{
+		_getter = value;
+		_broadcastChange();
+	}
+
+	void set setter (PropertySetFunction<T> value)
+	{
+		_setter = value;
+		_broadcastChange();
+	}
+
+	void set formatter (FormatFunction<T> value)
+	{
+		_formatter = value;
+		_broadcastChange();
+	}
+
+	void set parser (ParseFunction<T> value)
+	{
+		_parser = value;
+		_broadcastChange();
+	}
+
 	String getProperty()
 	{
 		if (getter == null || formatter == null)
@@ -48,11 +77,17 @@ class PropertyBinding<T>
 		if (setter != null)
 			setter(value);
     
+		_broadcastChange();
+
+		return true;
+	}
+
+	void _broadcastChange()
+	{
 		if (onChange != null)
 		{
 			String formattedValue = getProperty();
 			onChange.raise(formattedValue);
 		}
-		return true;
 	}
 }

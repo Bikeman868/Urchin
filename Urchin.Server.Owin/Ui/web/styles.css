@@ -71,6 +71,8 @@ td
 {
     background: whitesmoke;
     clear: both;
+    overflow: hidden;
+    white-space : nowrap;
 }
 
 #bottomDiv
@@ -95,7 +97,8 @@ td
 #leftDiv
 {
     background: aliceblue;
-    float: left;
+    display:inline-block;
+    vertical-align: top;
     width: 220px;
     border: 1px solid navy;
     padding: 4px;
@@ -104,14 +107,16 @@ td
 
 #centreDiv
 {
+    display:inline-block;
+    vertical-align: top;
     padding: 10px;
-    float: left;
 }
 
 #rightDiv
 {
-    float: right;
-    width: 300px;
+    display:inline-block;
+    vertical-align: top;
+    width: 350px;
 }
 
 #headingDiv
@@ -145,7 +150,7 @@ td
 
 .button-bar
 {
-    height: 50px;
+    height: 40px;
 }
 
 .button-bar .button

@@ -49,7 +49,7 @@ class VersionEditView extends View
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
 		addButton("Discard", _discardClicked, parent: buttonBar);
-		addButton("Copy", _copyClicked, parent: buttonBar);
+		// addButton("Copy", _copyClicked, parent: buttonBar);
 
 		addHR();
 

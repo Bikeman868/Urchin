@@ -30,7 +30,7 @@ class VersionListView extends View
 
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
-		addButton("Discard", _discardClicked, parent: buttonBar);
+		// addButton("Discard", _discardClicked, parent: buttonBar);
 		addButton("Get Draft", _draftClicked, parent: buttonBar);
 
 		this.viewModel = viewModel;

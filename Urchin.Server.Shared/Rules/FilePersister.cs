@@ -154,6 +154,14 @@ namespace Urchin.Server.Shared.Rules
             SaveChanges();
         }
 
+        public string GetVersionName(int version)
+        {
+            CheckForUpdate();
+
+            var ruleVersion = GetVersion(version, false);
+            return ruleVersion == null ? null : ruleVersion.Name;
+        }
+
         public void DeleteVersion(int version)
         {
             CheckForUpdate();
