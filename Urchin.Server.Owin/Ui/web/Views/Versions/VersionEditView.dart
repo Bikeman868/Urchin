@@ -21,27 +21,27 @@ import '../../Views/Rules/RuleNameView.dart';
 
 class VersionEditView extends View
 {
-	BoundLabel<int> _versionBinding1;
-	BoundLabel<int> _versionBinding2;
-	BoundLabel<int> _versionBinding3;
-	BoundTextInput<String> _nameBinding;
-	BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView> _environmentsBinding;
-	BoundList<RuleModel, RuleViewModel, RuleNameView> _rulesBinding;
+	BoundLabel<int> _versionLabel1;
+	BoundLabel<int> _versionLabel2;
+	BoundLabel<int> _versionLabel3;
+	BoundTextInput<String> _nameInput;
+	BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView> _environmentsList;
+	BoundList<RuleModel, RuleViewModel, RuleNameView> _rulesList;
 
 	VersionEditView([VersionViewModel viewModel])
 	{
-		_versionBinding1 = new BoundLabel<int>(
+		_versionLabel1 = new BoundLabel<int>(
 			addHeading(2, 'Version Details'), 
 			formatMethod: (s) => 'Version ' + s);
 
 		var form = addForm();
-		_nameBinding = new BoundTextInput<String>(addLabeledEdit(form, 'Version name'));
+		_nameInput = new BoundTextInput<String>(addLabeledEdit(form, 'Version name'));
 
-		_versionBinding2 = new BoundLabel<int>(
+		_versionLabel2 = new BoundLabel<int>(
 			addHeading(3, 'Environments'), 
 			formatMethod: (s) => 'Environments Using Version ' + s + ' Rules');
 
-		_environmentsBinding = new BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
+		_environmentsList = new BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
 			(vm) => new EnvironmentNameView(vm), 
 			addContainer(),
 			viewModelFilter: (vm) => _viewModel != null && vm.version.getProperty() == _viewModel.version.getProperty());
@@ -53,11 +53,11 @@ class VersionEditView extends View
 
 		addHR();
 
-		_versionBinding3 = new BoundLabel<int>(
+		_versionLabel3 = new BoundLabel<int>(
 			addHeading(3, 'Rules'), 
 			formatMethod: (s) => 'Version ' + s + ' Rules');
 
-		_rulesBinding = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
+		_rulesList = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
 			(vm) => new RuleNameView(vm), 
 			addContainer(),
 			allowAdd: false,
@@ -74,25 +74,25 @@ class VersionEditView extends View
 		_viewModel = value;
 		if (value == null)
 		{
-			_versionBinding1.binding = null;
-			_versionBinding2.binding = null;
-			_versionBinding3.binding = null;
-			_nameBinding.binding = null;
-			_rulesBinding.binding = null;
+			_versionLabel1.binding = null;
+			_versionLabel2.binding = null;
+			_versionLabel3.binding = null;
+			_nameInput.binding = null;
+			_rulesList.binding = null;
 		}
 		else
 		{
-			_versionBinding1.binding = value.version;
-			_versionBinding2.binding = value.version;
-			_versionBinding3.binding = value.version;
-			_nameBinding.binding = value.name;
-			_rulesBinding.binding = value.rules;
+			_versionLabel1.binding = value.version;
+			_versionLabel2.binding = value.version;
+			_versionLabel3.binding = value.version;
+			_nameInput.binding = value.name;
+			_rulesList.binding = value.rules;
 		}
 	}
 
 	void set environmentListBinding(ModelListBinding<EnvironmentModel, EnvironmentViewModel> value)
 	{
-		_environmentsBinding.binding = value;
+		_environmentsList.binding = value;
 	}
 
 	void _saveClicked(MouseEvent e)

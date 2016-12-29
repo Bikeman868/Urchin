@@ -4,10 +4,10 @@ Model - View - ViewModel
 
 ## Model
 
-Model classes provide a mapping between a set of strongly typed properties and a Dart Map object. 
+Model classes provide a mapping between a set of strongly typed properties and a Dart `Map` object. 
 These models are mostly there to allow easy serialization and deserialization of JSON which the Dart libraries are very bad at.
 
-Model classes should extend `Model` and should add properties that map to elements of JSON like this:
+Model classes should extend `Model` and add properties that map to elements of JSON like this:
 
 import 'Model.dart';
 
@@ -25,10 +25,28 @@ import 'Model.dart';
 ```
 
 In Dart when you make an HTTP request you will receive a `Map` as the result. Pass this map to the
-model constructor to deserialize the JSON into a strongly typed object.
+model constructor to deserialize the JSON into a strongly typed object. For example:
+
+```
+    static Future<VersionNameModel> getVersionName(int version)  async
+    {
+    	String response = await HttpRequest.getString('/version/name/' + version.toString());
+    	return new VersionNameModel(JSON.decode(response));
+    }
+```
 
 When you want to serialize a model to pass it back to the server, the `json` property of `Model` is a `Map` that
-you can pass to the `JSON.encode()` method of the Dart libraries to turn it into a `String`.
+you can pass to the `JSON.encode()` method of the Dart libraries to turn it into a `String`. For example:
+
+```
+	static Future<HttpRequest> addRule(RuleModel rule)
+	{
+		return HttpRequest.request('/rule', 
+			method: 'POST',
+			sendData: JSON.encode(rule.json),
+			mimeType: 'application/json');
+	}
+```
 
 Models can contain lists of other models. For example:
 
@@ -74,12 +92,13 @@ In this case the serialization and deserialization to/from the server is slighty
     static Future<String> replaceEnvironments(List<EnvironmentModel> environments) async
     {
     	var requestBody = environments.map((EnvironmentModel m) => m.json).toList();
-    	var httpResponse = await HttpRequest.request(
-    		'/environments',
+
+    	var httpResponse = await HttpRequest.request('/environments',
     		method: 'PUT',
     		sendData: JSON.encode(requestBody),
     		mimeType: 'application/json',
     		responseType: 'application/json');
+
     	Map responseJson = JSON.decode(httpResponse.responseText);
     	if (responseJson['success']) return null;
     	return responseJson['error'];
@@ -159,17 +178,18 @@ of the model. There are also:
 Views produce HTML that is bound to a view model. When the bound properties of the view model
 change the HTML elements are updated with the new value and visa versa. For example:
 
+```
 import 'View.dart';
 import 'BoundLabel.dart';
 import 'MachineViewModel.dart';
 
 class MachineNameView extends View
 {
-	BoundLabel<String> _nameBinding;
+	BoundLabel<String> _nameLabel;
 
 	MachineNameView([MachineViewModel viewModel])
 	{
-		_nameBinding = new BoundLabel<String>(
+		_nameLabel = new BoundLabel<String>(
 			addSpan(className: 'machine-name'),
 			formatMethod: (s) => s + ' ');
 
@@ -184,21 +204,23 @@ class MachineNameView extends View
 		_viewModel = value;
 		if (value == null)
 		{
-			_nameBinding.binding = null;
+			_nameLabel.binding = null;
 		}
 		else
 		{
-			_nameBinding.binding = value.name;
+			_nameLabel.binding = value.name;
 		}
 	}
 }
+```
 
 This example constructs a `span` tag that is bound to the `name` property of a `MachineViewModel`. In this
-example it also appends a space to the end of the machine name so that you can use this view in a repeater.
+example it also appends a space to the end of the machine name so that you can use this view in a repeater,
+and it adds the css class name `machine-name` to the span so that it can be styled.
 
 ### Binding HTML in views
 
-This example uses the `BoundLabel<T>` class to bind the `span` tag to the view model bindable property. There are
+The example above uses the `BoundLabel<T>` class to bind the `span` tag to the view model bindable property. There are
 also:
 
 `BoundLabel<T>` provides one-way binding from a view model property to the `innerHtml` property of an html 
@@ -213,12 +235,11 @@ property needs to be expanded into a complex nested html fragment.
 
 `BoundRepeater` binds to `ModelListBinding` property in the view model, and presents all of the items in the
 list by constructing a view for each view model in the bound list. When items are added or removed from the list
-the 'BoundRepeater' will add and remove views from the UI.
+the `BoundRepeater` will add and remove views from the UI.
 
 `BoundList` is similar to `BoundRepeater` except that it wraps each view in a `li` and attatches `onCllick` handlers
 to allow the user to choose items from the list. It can also render add/remove buttons that allow the user to
-create new models with corresponding view models. These changes will be reflected in other views bound to the
-same view model.
+create new models with corresponding view models.
 
 `BoundGrid` is similar to `BoundRepeater` except that it wraps each view in a `div` decorated with css classes
 that can make the divs tile. It also attatches `onCllick` handlers to allow the user to choose items from the grid. 

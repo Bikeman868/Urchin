@@ -22,6 +22,8 @@ import 'Views/Navigation/LogonView.dart';
 
 import 'Views/Rules/RuleDisplayView.dart';
 import 'Views/Rules/RuleEditView.dart';
+import 'Views/Rules/RuleListView.dart';
+import 'Views/Rules/RuleConfigView.dart';
 
 Element _leftDiv;
 Element _centreDiv;
@@ -81,7 +83,11 @@ void _tabChanged(TabChangedEvent e)
 {
 	_centreDiv.children.clear();
 
-	if (e.tabName == 'Rules') _displayRuleList(_leftDiv);
+	if (e.tabName == 'Rules')
+	{
+		_displayVersionList(_leftDiv);
+		_currentView = 'Rules';
+	}
 	else if (e.tabName == 'Environments') _displayEnvironmentList(_leftDiv);
 	else if (e.tabName == 'Versions') _displayVersionList(_leftDiv);
 }
@@ -100,15 +106,22 @@ void _versionSelected(VersionSelectedEvent e)
 {
 	if (_currentView == 'Versions')
 		_displayVersionEdit(e.version, _centreDiv);
-	else 
+	else
+	{
+		if (_currentView == 'Rules')
+			_displayRuleList(e.version, _leftDiv);
 		_displayVersionDisplay(e.version, _rightDiv);
+	}
 }
 
 void _ruleSelected(RuleSelectedEvent e)
 {
 	if (_currentView == 'Rules')
+	{
 		_displayRuleEdit(e.rule, _centreDiv);
-	else 
+		_displayRuleConfig(e.rule, _rightDiv);
+	}
+	else
 		_displayRuleDisplay(e.rule, _rightDiv);
 }
 
@@ -157,9 +170,20 @@ void _displayEnvironmentDisplay(EnvironmentViewModel environment, Element panel)
 
 /*************************************************************************/
 
-void _displayRuleList(Element panel)
+RuleListView _ruleListView;
+
+void _displayRuleList(VersionViewModel version, Element panel)
 {
-	_currentView = 'Rules';
+	_dataViewModel.versionList.ensureRules(version)
+		.then((Null n)
+		{
+			if (_ruleListView == null)
+				_ruleListView = new RuleListView(version);
+			else
+				_ruleListView.viewModel = version;
+
+			_ruleListView.displayIn(panel);
+		});
 }
 
 RuleEditView _ruleEditView;
@@ -184,6 +208,18 @@ void _displayRuleDisplay(RuleViewModel rule, Element panel)
 		_ruleDisplayView.viewModel = rule;
 
 	_ruleDisplayView.displayIn(panel);
+}
+
+RuleConfigView _ruleConfigView;
+
+void _displayRuleConfig(RuleViewModel rule, Element panel)
+{
+	if (_ruleConfigView == null)
+		_ruleConfigView = new RuleConfigView(rule);
+	else
+		_ruleConfigView.viewModel = rule;
+
+	_ruleConfigView.displayIn(panel);
 }
 
 /*************************************************************************/

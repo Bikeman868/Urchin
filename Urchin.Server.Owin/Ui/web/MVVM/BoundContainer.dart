@@ -101,6 +101,13 @@ abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extend
     void _onAdd(ListEvent e)
     {
 		refresh();
+
+		if (selectionMethod == null) return;
+		if (_binding == null) return;
+
+		var viewModel = _binding.viewModels[e.index];
+		if (viewModel != null)
+			selectionMethod(viewModel);
     }
   
     void _onDelete(ListEvent e)

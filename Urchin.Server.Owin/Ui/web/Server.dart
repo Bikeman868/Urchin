@@ -132,9 +132,11 @@ class Server
 		return new PostResponseModel(json);
 	}
 
-	static Future<String> getRule(int version, String ruleName) 
-		=> HttpRequest.getString(
-			'/rule/' + version.toString() + '/' + ruleName);
+	static Future<RuleModel> getRule(int version, String ruleName) async
+	{
+		String response = await HttpRequest.getString('/rule/' + version.toString() + '/' + ruleName);
+		return new RuleModel(JSON.decode(response));
+	}
 
 	static Future<PostResponseModel> updateRenameRule(int version, String oldName, RuleModel rule) async
 	{

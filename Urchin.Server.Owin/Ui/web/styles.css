@@ -45,6 +45,12 @@ td
     vertical-align: top;
 }
 
+textarea
+{
+    width: 400px;
+    height: 300px;
+}
+
 #topDiv
 {
     background: gray;
@@ -116,6 +122,8 @@ td
 {
     display:inline-block;
     vertical-align: top;
+    overflow: visible;
+    white-space: normal;
     width: 350px;
 }
 

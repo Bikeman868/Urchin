@@ -227,6 +227,8 @@
     <Content Include="Ui\web\Views\Rules\RuleNameView.dart" />
     <Content Include="Ui\web\Views\Rules\VariableNameView.dart" />
     <Content Include="Ui\web\Views\Rules\RuleEditView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleListView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleConfigView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />

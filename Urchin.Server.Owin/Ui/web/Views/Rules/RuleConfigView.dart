@@ -13,12 +13,10 @@ import '../../Models/VariableModel.dart';
 import '../../ViewModels/RuleViewModel.dart';
 import '../../ViewModels/VariableViewModel.dart';
 
-import '../../Views/Rules/VariableNameView.dart';
-
 import '../../Events/AppEvents.dart';
 
 
-class RuleDisplayView extends View
+class RuleConfigView extends View
 {
 	BoundLabel<String> _ruleName;
 	BoundLabel<String> _machine;
@@ -26,9 +24,8 @@ class RuleDisplayView extends View
 	BoundLabel<String> _instance;
 	BoundLabel<String> _application;
 	BoundFormatter _config;
-	BoundRepeater<VariableModel, VariableViewModel, VariableNameView> _variablesBinding;
 
-	RuleDisplayView([RuleViewModel viewModel])
+	RuleConfigView([RuleViewModel viewModel])
 	{
 		_ruleName = new BoundLabel<String>(
 			addHeading(2, 'Rule Details'), 
@@ -68,19 +65,6 @@ class RuleDisplayView extends View
 				return ' in the ' + s + ' environment';
 			});
 
-		addHeading(3, 'Variables');
-
-		_variablesBinding = new BoundRepeater<VariableModel, VariableViewModel, VariableNameView>(
-			(vm) => new VariableNameView(vm), 
-			addContainer());
-
-		var buttonBar = addContainer(className: 'button-bar');
-		addButton("Edit", _editClicked, parent: buttonBar);
-
-		addHR();
-
-		addHeading(3, 'JSON Data');
-
 		_config = new BoundFormatter(addDiv(), (s, e) => JsonHighlighter.displayIn(e, s));
 
 		this.viewModel = viewModel;
@@ -100,7 +84,6 @@ class RuleDisplayView extends View
 			_instance.binding = null;
 			_application.binding = null;
 			_config.binding = null;
-			_variablesBinding.binding = null;
 		}
 		else
 		{
@@ -110,14 +93,6 @@ class RuleDisplayView extends View
 			_instance.binding = value.instance;
 			_application.binding = value.application;
 			_config.binding = value.config;
-			_variablesBinding.binding = value.variables;
 		}
 	}
-
-	void _editClicked(MouseEvent e)
-	{
-		if (viewModel != null)
-			AppEvents.ruleEdit.raise(new RuleEditEvent(viewModel));
-	}
-
 }

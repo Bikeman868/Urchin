@@ -311,6 +311,17 @@ class HtmlBuilder
 		return _addElement(input, classNames, className, parent);
 	}
 
+	Element addTextArea(
+		{
+		  List<String> classNames, 
+		  String className, 
+		  Element parent
+		})
+	{
+		var input = new TextAreaElement();
+		return _addElement(input, classNames, className, parent);
+	}
+
 	Element addPassword(
 		{
 			List<String> classNames, 

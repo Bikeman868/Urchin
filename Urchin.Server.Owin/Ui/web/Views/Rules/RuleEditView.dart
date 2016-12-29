@@ -3,9 +3,8 @@ import 'dart:html';
 import '../../MVVM/View.dart';
 import '../../MVVM/BoundLabel.dart';
 import '../../MVVM/BoundFormatter.dart';
-import '../../MVVM/BoundRepeater.dart';
-
-import '../../Html/JsonHighlighter.dart';
+import '../../MVVM/BoundList.dart';
+import '../../MVVM/BoundTextInput.dart';
 
 import '../../Models/RuleModel.dart';
 import '../../Models/VariableModel.dart';
@@ -20,68 +19,47 @@ import '../../Events/AppEvents.dart';
 
 class RuleEditView extends View
 {
-	BoundLabel<String> _ruleName;
-	BoundLabel<String> _machine;
-	BoundLabel<String> _environment;
-	BoundLabel<String> _instance;
-	BoundLabel<String> _application;
-	BoundFormatter _config;
-	BoundRepeater<VariableModel, VariableViewModel, VariableNameView> _variablesBinding;
+	BoundLabel<String> _headingLabel;
+	BoundTextInput<String> _nameInput;
+	BoundTextInput<String> _instanceInput;
+	BoundTextInput<String> _applicationInput;
+	BoundTextInput<String> _machineInput;
+	BoundTextInput<String> _environmentInput;
+	BoundTextInput<String> _configInput;
+	BoundList<VariableModel, VariableViewModel, VariableNameView> _variablesList;
 
 	RuleEditView([RuleViewModel viewModel])
 	{
-		_ruleName = new BoundLabel<String>(
+		_headingLabel = new BoundLabel<String>(
 			addHeading(2, 'Rule Details'), 
-			formatMethod: (s) => s + ' Rule V' + _viewModel.version.toString());
+			formatMethod: (s) => 'Version ' + _viewModel.version.toString() + ' of ' + s);
 
-		addInlineText('This rule applies to');
+		var form1 = addForm();
+		_nameInput = new BoundTextInput<String>(addLabeledEdit(form1, 'Unique rule name'));
 
-		_instance = new BoundLabel<String>(addSpan(), 
-			formatMethod: (s)
-			{
-				if (s == null || s.length == 0)
-					return ' all instances';
-				return ' the ' + s + ' instance';
-			});
+		addHR();
+		addBlockText('Choose where to apply this rule. Leave blank to apply to all.');
 
-		_application = new BoundLabel<String>(addSpan(), 
-			formatMethod: (s)
-			{
-				if (s == null || s.length == 0)
-					return ' of all applications';
-				return ' of the ' + s + ' application';
-			});
-
-		_machine = new BoundLabel<String>(addSpan(), 
-			formatMethod: (s)
-			{
-				if (s == null || s.length == 0)
-					return ' running on any computer';
-				return ' running on ' + s;
-			});
-
-		_environment = new BoundLabel<String>(addSpan(), 
-			formatMethod: (s)
-			{
-				if (s == null || s.length == 0)
-					return ' in any environment';
-				return ' in the ' + s + ' environment';
-			});
+		var form2 = addForm();
+		_instanceInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to instance'));
+		_applicationInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to application'));
+		_machineInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to machine'));
+		_environmentInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to environment'));
 
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
 
+		addHR();
 		addHeading(3, 'Variables');
 
-		_variablesBinding = new BoundRepeater<VariableModel, VariableViewModel, VariableNameView>(
+		_variablesList = new BoundList<VariableModel, VariableViewModel, VariableNameView>(
 			(vm) => new VariableNameView(vm), 
 			addContainer());
 
 		addHR();
-
 		addHeading(3, 'JSON Data');
 
-		_config = new BoundFormatter(addDiv(), (s, e) => JsonHighlighter.displayIn(e, s));
+		_configInput = new BoundTextInput<String>(addTextArea());
 
 		this.viewModel = viewModel;
 	}
@@ -94,23 +72,25 @@ class RuleEditView extends View
 		_viewModel = value;
 		if (value == null)
 		{
-			_ruleName.binding = null;
-			_machine.binding = null;
-			_environment.binding = null;
-			_instance.binding = null;
-			_application.binding = null;
-			_config.binding = null;
-			_variablesBinding.binding = null;
+			_headingLabel.binding = null;
+			_nameInput.binding = null;
+			_instanceInput.binding = null;
+			_applicationInput.binding = null;
+			_machineInput.binding = null;
+			_environmentInput.binding = null;
+			_variablesList.binding = null;
+			_configInput.binding = null;
 		}
 		else
 		{
-			_ruleName.binding = value.name;
-			_machine.binding = value.machine;
-			_environment.binding = value.environment;
-			_instance.binding = value.instance;
-			_application.binding = value.application;
-			_config.binding = value.config;
-			_variablesBinding.binding = value.variables;
+			_headingLabel.binding = value.name;
+			_nameInput.binding = value.name;
+			_instanceInput.binding = value.instance;
+			_applicationInput.binding = value.application;
+			_machineInput.binding = value.machine;
+			_environmentInput.binding = value.environment;
+			_variablesList.binding = value.variables;
+			_configInput.binding = value.config;
 		}
 	}
 
