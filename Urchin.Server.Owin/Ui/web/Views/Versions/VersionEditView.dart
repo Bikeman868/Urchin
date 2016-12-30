@@ -4,7 +4,7 @@ import '../../MVVM/View.dart';
 import '../../MVVM/BoundLabel.dart';
 import '../../MVVM/BoundList.dart';
 import '../../MVVM/BoundRepeater.dart';
-import '../../MVVM/ModelListBinding.dart';
+import '../../MVVM/ModelList.dart';
 import '../../MVVM/BoundTextInput.dart';
 
 import '../../Events/AppEvents.dart';
@@ -90,7 +90,7 @@ class VersionEditView extends View
 		}
 	}
 
-	void set environmentListBinding(ModelListBinding<EnvironmentModel, EnvironmentViewModel> value)
+	void set environmentListBinding(ModelList<EnvironmentModel, EnvironmentViewModel> value)
 	{
 		_environmentsList.binding = value;
 	}

@@ -1,7 +1,7 @@
 ﻿import 'dart:html';
 import 'dart:async';
 
-import '../MVVM/ModelListBinding.dart';
+import '../MVVM/ModelList.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/Enums.dart';
 
@@ -12,11 +12,11 @@ import '../Server.dart';
 
 class VersionListViewModel extends ViewModel
 {
-    ModelListBinding<VersionModel, VersionViewModel> versions;
+    ModelList<VersionModel, VersionViewModel> versions;
 
 	VersionListViewModel([List<VersionModel> versionModels])
 	{
-		versions = new ModelListBinding<VersionModel, VersionViewModel>(
+		versions = new ModelList<VersionModel, VersionViewModel>(
 			(Map json) => new VersionModel(new Map()..['name']='VERSION', false), 
 			(VersionModel m) => new VersionViewModel(m));
 
@@ -49,7 +49,7 @@ class VersionListViewModel extends ViewModel
 		environments.models  = value.models;
 	}
 
-	List<ModelListBinding> getModelLists()
+	List<ModelList> getModelLists()
 	{
 		return [versions];
 	}
@@ -82,4 +82,6 @@ class VersionListViewModel extends ViewModel
 		}
 		return versions.addModel(draftVersionModel);
 	}
+
+	String toString() => 'version list view model';
 }

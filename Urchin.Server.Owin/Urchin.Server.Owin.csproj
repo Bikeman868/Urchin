@@ -179,7 +179,7 @@
     <Content Include="Ui\web\MVVM\Enums.dart" />
     <Content Include="Ui\web\MVVM\HtmlBuilder.dart" />
     <Content Include="Ui\web\MVVM\IntBinding.dart" />
-    <Content Include="Ui\web\MVVM\ModelListBinding.dart" />
+    <Content Include="Ui\web\MVVM\ModelList.dart" />
     <Content Include="Ui\web\MVVM\Model.dart" />
     <Content Include="Ui\web\MVVM\PropertyBinding.dart" />
     <Content Include="Ui\web\MVVM\StringBinding.dart" />

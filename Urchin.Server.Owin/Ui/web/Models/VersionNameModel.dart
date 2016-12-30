@@ -9,4 +9,6 @@ class VersionNameModel extends Model
   
 	int get version => getProperty('version');
 	set version(int value) { setProperty('version', value); }
+
+	String toString() => name + ' version name';
 }

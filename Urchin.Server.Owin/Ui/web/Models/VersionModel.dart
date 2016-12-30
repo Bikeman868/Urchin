@@ -24,4 +24,6 @@ class VersionModel extends Model
 		setList('rules', value);
 		hasRules = true;
 	}
+
+	String toString() => name + ' version';
 }

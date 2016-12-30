@@ -9,4 +9,6 @@ class SecurityRuleModel extends Model
   
 	String get endIp => getProperty('endIp');
 	set endIp(String value) { setProperty('endIp', value); }
+
+	String toString() => startIp + ' to ' + endIp;
 }

@@ -6,6 +6,7 @@ import '../Server.dart';
 
 import '../MVVM/ViewModel.dart';
 import '../MVVM/StringBinding.dart';
+import '../MVVM/Enums.dart';
 
 import '../Models/ClientCredentialsModel.dart';
 import '../Models/PostResponseModel.dart';
@@ -76,4 +77,11 @@ class UserViewModel extends ViewModel
 
 		return null;
 	}
+
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
+	{
+		return SaveResult.notsaved;
+	}
+
+	String toString() => 'user view model';
 }

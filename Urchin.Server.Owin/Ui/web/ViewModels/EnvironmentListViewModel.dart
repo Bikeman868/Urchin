@@ -1,7 +1,7 @@
 ﻿import 'dart:html';
 import 'dart:async';
 
-import '../MVVM/ModelListBinding.dart';
+import '../MVVM/ModelList.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/Enums.dart';
 
@@ -14,11 +14,11 @@ import '../Server.dart';
 
 class EnvironmentListViewModel extends ViewModel
 {
-    ModelListBinding<EnvironmentModel, EnvironmentViewModel> environments;
+    ModelList<EnvironmentModel, EnvironmentViewModel> environments;
 
-	EnvironmentListViewModel([List<EnvironmentModel> environmentModels])
+	EnvironmentListViewModel([List<EnvironmentModel> environmentModels]): super(false)
 	{
-		environments = new ModelListBinding<EnvironmentModel, EnvironmentViewModel>(
+		environments = new ModelList<EnvironmentModel, EnvironmentViewModel>(
 			(Map json) => new EnvironmentModel(new Map()..['name']='ENVIRONMENT'), 
 			(EnvironmentModel m) => new EnvironmentViewModel(m));
 
@@ -44,7 +44,7 @@ class EnvironmentListViewModel extends ViewModel
 		loaded();
 	}
 
-	List<ModelListBinding> getModelLists()
+	List<ModelList> getModelLists()
 	{
 		return [environments];
 	}
@@ -58,8 +58,13 @@ class EnvironmentListViewModel extends ViewModel
 
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
+		List<EnvironmentViewModel> viewModels = environments.viewModels
+			.where((EnvironmentViewModel vm) => vm != null && vm.getState() != ChangeState.deleted)
+			.toList();
+
+		viewModels.forEach((EnvironmentViewModel vm) => vm.removeDeleted());
+
 		List<EnvironmentModel> environmentModels = environments.viewModels
-			.where((EnvironmentViewModel vm) => vm.getState() != ChangeState.deleted)
 			.map((EnvironmentViewModel vm) => vm.model)
 			.toList();
 
@@ -67,11 +72,14 @@ class EnvironmentListViewModel extends ViewModel
 
 		if (response.success)
 		{
+			viewModels.forEach((EnvironmentViewModel vm) => vm.saved());
 			if (alert) window.alert('Environments saved succesfully');
 			return SaveResult.saved;
 		}
 
-		if (alert) window.alert('Environments were not saved. ' + response.error);
+		window.alert('Environments were not saved. ' + response.error);
 		return SaveResult.failed;
 	}
+
+	String toString() => 'environment list view model';
 }

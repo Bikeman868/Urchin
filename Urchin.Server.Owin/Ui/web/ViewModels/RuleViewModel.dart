@@ -2,7 +2,7 @@
 import 'dart:async';
 
 import '../MVVM/StringBinding.dart';
-import '../MVVM/ModelListBinding.dart';
+import '../MVVM/ModelList.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/Enums.dart';
 
@@ -22,11 +22,11 @@ class RuleViewModel extends ViewModel
     StringBinding environment = new StringBinding();
     StringBinding instance = new StringBinding();
     StringBinding config = new StringBinding();
-    ModelListBinding<VariableModel, VariableViewModel> variables;
+    ModelList<VariableModel, VariableViewModel> variables;
 
 	String _originalName;
 
-	RuleViewModel([int version, RuleModel model])
+	RuleViewModel([int version, RuleModel model]) : super(false)
 	{
 		name = new StringBinding();
 		machine = new StringBinding();
@@ -35,7 +35,7 @@ class RuleViewModel extends ViewModel
 		instance = new StringBinding();
 		config = new StringBinding();
 
-		variables = new ModelListBinding<VariableModel, VariableViewModel>(
+		variables = new ModelList<VariableModel, VariableViewModel>(
 			(Map json) => new VariableModel(new Map()..['name']='VARIABLE'), 
 			(VariableModel m) => new VariableViewModel(m));
 
@@ -137,7 +137,7 @@ class RuleViewModel extends ViewModel
 		super.loaded();
 	}
 
-	List<ModelListBinding> getModelLists()
+	List<ModelList> getModelLists()
 	{
 		return [variables];
 	}
@@ -203,4 +203,6 @@ class RuleViewModel extends ViewModel
 
 		return result;
 	}
+
+	String toString() => _model.toString() + ' view model';
 }

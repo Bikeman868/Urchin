@@ -1,8 +1,9 @@
 ﻿import 'dart:html';
+import 'dart:async';
 
 import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
-import '../MVVM/ModelListBinding.dart';
+import '../MVVM/ModelList.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/Enums.dart';
 
@@ -17,19 +18,19 @@ class EnvironmentViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
-    ModelListBinding<MachineModel, MachineViewModel> machines;
-    ModelListBinding<SecurityRuleModel, SecurityRuleViewModel> securityRules;
+    ModelList<MachineModel, MachineViewModel> machines;
+    ModelList<SecurityRuleModel, SecurityRuleViewModel> securityRules;
 
 	EnvironmentViewModel([EnvironmentModel model])
 	{
 		name = new StringBinding();
 		version = new IntBinding();
 
-		machines = new ModelListBinding<MachineModel, MachineViewModel>(
+		machines = new ModelList<MachineModel, MachineViewModel>(
 			(Map json) => new MachineModel(new Map()..['name']='MACHINE'), 
 			(MachineModel m) => new MachineViewModel(m));
 
-		securityRules = new ModelListBinding<SecurityRuleModel, SecurityRuleViewModel>(
+		securityRules = new ModelList<SecurityRuleModel, SecurityRuleViewModel>(
 			(Map json) => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
 			(SecurityRuleModel m) => new SecurityRuleViewModel(m));
 
@@ -81,9 +82,15 @@ class EnvironmentViewModel extends ViewModel
 		loaded();
 	}
 
-	List<ModelListBinding> getModelLists()
+	List<ModelList> getModelLists()
 	{
 		return [machines, securityRules];
 	}
 
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
+	{
+		return SaveResult.notsaved;
+	}
+
+	String toString() => _model.toString() + ' view model';
 }

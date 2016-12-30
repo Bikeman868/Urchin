@@ -25,5 +25,7 @@ class RuleModel extends Model
 
 	List<VariableModel> get variables => getList('variables', (json) => new VariableModel(json));
 	set variables(List<VariableModel> value) { setList('variables', value); }
+
+	String toString() => name + ' rule';
 }
 

@@ -3,7 +3,7 @@ import 'dart:async';
 
 import '../MVVM/StringBinding.dart';
 import '../MVVM/IntBinding.dart';
-import '../MVVM/ModelListBinding.dart';
+import '../MVVM/ModelList.dart';
 import '../MVVM/ViewModel.dart';
 import '../MVVM/Enums.dart';
 
@@ -19,18 +19,23 @@ class VersionViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
-	ModelListBinding<RuleModel, RuleViewModel> rules;
+	ModelList<RuleModel, RuleViewModel> rules;
 
-	VersionViewModel([VersionModel model])
+	VersionViewModel([VersionModel model]) : super(false)
 	{
 		name = new StringBinding();
 		version = new IntBinding();
 
-		rules = new ModelListBinding<RuleModel, RuleViewModel>(
+		rules = new ModelList<RuleModel, RuleViewModel>(
 			(Map json) => new RuleModel(new Map()..['name']='Rule'), 
 			(RuleModel m) => new RuleViewModel(versionNumber, m));
 
 		this.model = model;
+	}
+
+	dispose()
+	{
+		model = null;
 	}
 
 	VersionModel _model;
@@ -71,7 +76,7 @@ class VersionViewModel extends ViewModel
 		loaded();
 	}
 
-	List<ModelListBinding> getModelLists()
+	List<ModelList> getModelLists()
 	{
 		return [rules];
 	}
@@ -90,17 +95,19 @@ class VersionViewModel extends ViewModel
 			{
 				alertMessage = 'Updated version ' + versionNumber.toString();
 				result = SaveResult.saved;
+
 				if (_model.hasRules)
 				{
-					for (var ruleViewModel in rules.viewModels)
+					SaveResult rulesResult = await rules.saveChanges();
+					if (rulesResult == SaveResult.failed)
 					{
-						SaveResult ruleResult = await ruleViewModel.save(false);
-						if (ruleResult == SaveResult.failed)
-						{
-							alertMessage = 'One or more rules from version ' + version.getProperty() + ' failed to update';
-							alert = true;
-							result = SaveResult.failed;
-						}
+						result = SaveResult.failed;
+						alertMessage = 'Failed to update version ' + version.getProperty() + ' rules';
+					}
+					else if (rulesResult == SaveResult.saved)
+					{
+						rules.removeDeleted();
+						rules.saved();
 					}
 				}
 			}
@@ -142,4 +149,6 @@ class VersionViewModel extends ViewModel
 			})
 			.catchError((e) => window.alert(e.toString()));
 	}
+
+	String toString() => _model.toString() + ' view model';
 }

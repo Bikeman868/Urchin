@@ -7,4 +7,6 @@ class PostResponseModel extends Model
 	bool get success => getProperty('success');
 	String get error => getProperty('error');
 	int get id => getProperty('id');
+
+	String toString() => 'post success ' + success.toString();
 }

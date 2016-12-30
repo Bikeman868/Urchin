@@ -5,7 +5,7 @@ import 'View.dart';
 import 'Model.dart';
 import 'ViewModel.dart';
 import 'Types.dart';
-import 'ModelListBinding.dart';
+import 'ModelList.dart';
 import 'Events.dart';
 
 // Abstract base class for components that bind to a list of view models.
@@ -26,10 +26,10 @@ abstract class BoundContainer<TM extends Model, TVM extends ViewModel, TV extend
         this.container = container;
     }
   
-    ModelListBinding<TM, TVM> _binding;
-    ModelListBinding<TM, TVM> get binding => _binding;
+    ModelList<TM, TVM> _binding;
+    ModelList<TM, TVM> get binding => _binding;
 
-    void set binding(ModelListBinding<TM, TVM> value)
+    void set binding(ModelList<TM, TVM> value)
     {
         if (_addSubscription != null)
         {

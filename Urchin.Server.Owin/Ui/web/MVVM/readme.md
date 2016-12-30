@@ -171,7 +171,7 @@ of the model. There are also:
 
 `IntBinding` binds to an `int` property of a model.
 
-`ModelListBinding` binds to a list of model objects.
+`ModelList` binds to a list of model objects.
 
 ## View
 
@@ -233,7 +233,7 @@ element. It also provides an optional lambda expression to format the html.
 `BoundFormatter` is designed for syntax highlighting applications where the text from the view model
 property needs to be expanded into a complex nested html fragment.
 
-`BoundRepeater` binds to `ModelListBinding` property in the view model, and presents all of the items in the
+`BoundRepeater` binds to `ModelList` property in the view model, and presents all of the items in the
 list by constructing a view for each view model in the bound list. When items are added or removed from the list
 the `BoundRepeater` will add and remove views from the UI.
 

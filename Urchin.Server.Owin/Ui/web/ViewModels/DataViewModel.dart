@@ -1,4 +1,6 @@
-﻿import '../MVVM/ViewModel.dart';
+﻿import 'dart:async';
+
+import '../MVVM/ViewModel.dart';
 import '../MVVM/Enums.dart';
 
 import '../ViewModels/EnvironmentListViewModel.dart';
@@ -50,14 +52,8 @@ class DataViewModel extends ViewModel
 
 	List<ViewModel> getChildViewModels()
 	{
-		var children = new List<ViewModel>();
-
-		if (_environmentList != null)
-			children.add(_environmentList);
-
-		if (_versionList != null)
-			children.add(_versionList);
-
-		return children;
+		return [_environmentList, _versionList];
 	}
+
+	String toString() => 'data view model';
 }

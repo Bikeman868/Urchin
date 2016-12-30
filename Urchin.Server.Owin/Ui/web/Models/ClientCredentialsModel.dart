@@ -12,4 +12,6 @@ class ClientCredentialsModel extends Model
 	bool get isAdmin => getProperty('admin');
 	bool get isLoggedOn => getProperty('loggedOn');
 	String get userName => getProperty('userName');
+
+	String toString() => userName + ' client credentials';
 }

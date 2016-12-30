@@ -1,5 +1,8 @@
-﻿import '../MVVM/StringBinding.dart';
+﻿import 'dart:async';
+
+import '../MVVM/StringBinding.dart';
 import '../MVVM/ViewModel.dart';
+import '../MVVM/Enums.dart';
 
 import '../Models/MachineModel.dart';
 
@@ -10,6 +13,11 @@ class MachineViewModel extends ViewModel
 	MachineViewModel([MachineModel model])
 	{
 		this.model = model;
+	}
+
+	dispose()
+	{
+		model = null;
 	}
 
 	MachineModel _model;
@@ -35,4 +43,11 @@ class MachineViewModel extends ViewModel
 		}
 		loaded();
 	}
+
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
+	{
+		return SaveResult.notsaved;
+	}
+
+	String toString() => _model.toString() + ' view model';
 }
