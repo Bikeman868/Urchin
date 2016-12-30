@@ -13,27 +13,30 @@ import '../../Models/VariableModel.dart';
 import '../../ViewModels/RuleViewModel.dart';
 import '../../ViewModels/VariableViewModel.dart';
 
+import '../../Views/Rules/VariableDisplayView.dart';
+
 import '../../Events/AppEvents.dart';
 
 
 class RuleConfigView extends View
 {
-	BoundLabel<String> _ruleName;
-	BoundLabel<String> _machine;
-	BoundLabel<String> _environment;
-	BoundLabel<String> _instance;
-	BoundLabel<String> _application;
-	BoundFormatter _config;
+	BoundLabel<String> _ruleNameLabel;
+	BoundLabel<String> _machineLabel;
+	BoundLabel<String> _environmentLabel;
+	BoundLabel<String> _instanceLabel;
+	BoundLabel<String> _applicationLabel;
+	BoundFormatter _formattedConfig;
+	BoundRepeater<VariableModel, VariableViewModel, VariableDisplayView> _variablesList;
 
 	RuleConfigView([RuleViewModel viewModel])
 	{
-		_ruleName = new BoundLabel<String>(
+		_ruleNameLabel = new BoundLabel<String>(
 			addHeading(2, 'Rule Details'), 
 			formatMethod: (s) => 'Version ' + _viewModel.version.toString() + ' of ' + s);
 
 		addInlineText('This rule applies to');
 
-		_instance = new BoundLabel<String>(addSpan(), 
+		_instanceLabel = new BoundLabel<String>(addSpan(), 
 			formatMethod: (s)
 			{
 				if (s == null || s.length == 0)
@@ -41,7 +44,7 @@ class RuleConfigView extends View
 				return ' the ' + s + ' instance';
 			});
 
-		_application = new BoundLabel<String>(addSpan(), 
+		_applicationLabel = new BoundLabel<String>(addSpan(), 
 			formatMethod: (s)
 			{
 				if (s == null || s.length == 0)
@@ -49,7 +52,7 @@ class RuleConfigView extends View
 				return ' of the ' + s + ' application';
 			});
 
-		_machine = new BoundLabel<String>(addSpan(), 
+		_machineLabel = new BoundLabel<String>(addSpan(), 
 			formatMethod: (s)
 			{
 				if (s == null || s.length == 0)
@@ -57,7 +60,7 @@ class RuleConfigView extends View
 				return ' running on ' + s;
 			});
 
-		_environment = new BoundLabel<String>(addSpan(), 
+		_environmentLabel = new BoundLabel<String>(addSpan(), 
 			formatMethod: (s)
 			{
 				if (s == null || s.length == 0)
@@ -65,7 +68,11 @@ class RuleConfigView extends View
 				return ' in the ' + s + ' environment';
 			});
 
-		_config = new BoundFormatter(addDiv(), (s, e) => JsonHighlighter.displayIn(e, s));
+		_formattedConfig = new BoundFormatter(addDiv(), (s, e) => JsonHighlighter.displayIn(e, s));
+
+		_variablesList = new BoundRepeater<VariableModel, VariableViewModel, VariableDisplayView>(
+			(vm) => new VariableDisplayView(vm), 
+			addContainer(className: 'variable-list'));
 
 		this.viewModel = viewModel;
 	}
@@ -78,21 +85,23 @@ class RuleConfigView extends View
 		_viewModel = value;
 		if (value == null)
 		{
-			_ruleName.binding = null;
-			_machine.binding = null;
-			_environment.binding = null;
-			_instance.binding = null;
-			_application.binding = null;
-			_config.binding = null;
+			_ruleNameLabel.binding = null;
+			_machineLabel.binding = null;
+			_environmentLabel.binding = null;
+			_instanceLabel.binding = null;
+			_applicationLabel.binding = null;
+			_formattedConfig.binding = null;
+			_variablesList.binding = null;
 		}
 		else
 		{
-			_ruleName.binding = value.name;
-			_machine.binding = value.machine;
-			_environment.binding = value.environment;
-			_instance.binding = value.instance;
-			_application.binding = value.application;
-			_config.binding = value.config;
+			_ruleNameLabel.binding = value.name;
+			_machineLabel.binding = value.machine;
+			_environmentLabel.binding = value.environment;
+			_instanceLabel.binding = value.instance;
+			_applicationLabel.binding = value.application;
+			_formattedConfig.binding = value.config;
+			_variablesList.binding = value.variables;
 		}
 	}
 }

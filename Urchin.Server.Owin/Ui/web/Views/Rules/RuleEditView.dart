@@ -12,7 +12,7 @@ import '../../Models/VariableModel.dart';
 import '../../ViewModels/RuleViewModel.dart';
 import '../../ViewModels/VariableViewModel.dart';
 
-import '../../Views/Rules/VariableNameView.dart';
+import '../../Views/Rules/VariableEditView.dart';
 
 import '../../Events/AppEvents.dart';
 
@@ -26,7 +26,7 @@ class RuleEditView extends View
 	BoundTextInput<String> _machineInput;
 	BoundTextInput<String> _environmentInput;
 	BoundTextInput<String> _configInput;
-	BoundList<VariableModel, VariableViewModel, VariableNameView> _variablesList;
+	BoundList<VariableModel, VariableViewModel, VariableEditView> _variablesList;
 
 	RuleEditView([RuleViewModel viewModel])
 	{
@@ -52,8 +52,8 @@ class RuleEditView extends View
 		addHR();
 		addHeading(3, 'Variables');
 
-		_variablesList = new BoundList<VariableModel, VariableViewModel, VariableNameView>(
-			(vm) => new VariableNameView(vm), 
+		_variablesList = new BoundList<VariableModel, VariableViewModel, VariableEditView>(
+			(vm) => new VariableEditView(vm), 
 			addContainer());
 
 		addHR();

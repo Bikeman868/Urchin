@@ -459,7 +459,8 @@ span.modified
     margin-left: 5px;
     margin-right: 5px;
 }
-td.variable-name
+
+span.variable-name
 {
-    width:150px;
+    font-weight: bolder;
 }
