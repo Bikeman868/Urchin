@@ -201,9 +201,7 @@
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\Events\AppEvents.dart" />
     <Content Include="Ui\web\Views\Rules\RuleDisplayView.dart" />
-    <Content Include="Ui\web\Components\TestQueryComponent.dart" />
     <Content Include="Ui\web\Views\Navigation\LogonView.dart" />
-    <Content Include="Ui\web\Components\HelpComponent.dart" />
     <Content Include="Ui\web\Views\Versions\VersionListView.dart" />
     <Content Include="Ui\web\Views\Versions\VersionEditView.dart" />
     <None Include="Ui\build.cmd" />

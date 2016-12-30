@@ -57,7 +57,7 @@ class RuleEditView extends View
 			addContainer());
 
 		addHR();
-		addHeading(3, 'JSON Data');
+		addHeading(3, 'Configuration JSON');
 
 		_configInput = new BoundTextInput<String>(addTextArea());
 

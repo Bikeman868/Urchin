@@ -72,7 +72,7 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 	TVM addModel(TM model)
 	{
 		if (_models == null)
-			_models = new List<TM>();
+			throw 'No list of models to add to';
 
 		int index = models.length;
 
@@ -109,18 +109,23 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 	// Call this after saving changes to remove deleted models from the list
 	void saved()
 	{
-		List<TM> models = new List<TM>();
-		if (_models != null)
+		if (models != null)
 		{
-			for (var index = 0; index < viewModels.length; index++)
+			for (var index = viewModels.length - 1; index >= 0; index--)
 			{
 				var viewModel = viewModels[index];
-				if (viewModel.getState() != ChangeState.deleted)
-					models.add(_models[index]);
-				viewModel.saved();
+				if (viewModel.getState() == ChangeState.deleted)
+				{
+					models.removeAt(index);
+					viewModels.removeAt(index);
+					viewModel.dispose();
+				}
+				else
+				{
+					viewModel.saved();
+				}
 			}
 		}
-		this.models = models;
 	}
 
 	// Calculates the modification status of this list of models

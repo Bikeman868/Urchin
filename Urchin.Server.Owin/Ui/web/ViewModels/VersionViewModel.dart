@@ -34,7 +34,7 @@ class VersionViewModel extends ViewModel
 	}
 
 	VersionModel _model;
-	VersionModel get model { return _model; }
+	VersionModel get model => _model;
 
 	void set model(VersionModel value)
 	{

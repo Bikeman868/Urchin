@@ -79,7 +79,7 @@ class RuleDisplayView extends View
 
 		addHR();
 
-		addHeading(3, 'JSON Data');
+		addHeading(3, 'Configuration JSON');
 
 		_config = new BoundFormatter(addDiv(), (s, e) => JsonHighlighter.displayIn(e, s));
 

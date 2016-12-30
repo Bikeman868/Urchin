@@ -14,7 +14,6 @@ class VariableViewModel extends ViewModel
 	}
 
 	VariableModel _model;
-
 	VariableModel get model => _model;
 
 	void set model(VariableModel value)

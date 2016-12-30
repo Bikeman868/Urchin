@@ -36,17 +36,22 @@ class RuleViewModel extends ViewModel
 		config = new StringBinding();
 
 		variables = new ModelListBinding<VariableModel, VariableViewModel>(
-			(Map json) => new VariableModel(new Map()..['name']='MACHINE'), 
+			(Map json) => new VariableModel(new Map()..['name']='VARIABLE'), 
 			(VariableModel m) => new VariableViewModel(m));
 
 		this.version = version;
 		this.model = model;
 	}
 
+	dispose()
+	{
+		model = null;
+	}
+
 	int version;
 
 	RuleModel _model;
-	RuleModel get model	{ return _model; }
+	RuleModel get model	=> _model; 
 
 	void set model(RuleModel value)
 	{
@@ -140,25 +145,25 @@ class RuleViewModel extends ViewModel
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
 		SaveResult result = SaveResult.unmodified;
-		String alertMessage = 'There are no changes to version ' + version.toString() + ' of ' + _model.name;
+		String alertMessage = 'There are no changes to version ' + version.toString() + ' of ' + model.name;
 
 		if (state == ChangeState.modified)
 		{
 			PostResponseModel response;
 			if (name.getProperty() == _originalName)
-				response = await Server.updateRules(version, [_model]);
+				response = await Server.updateRules(version, [model]);
 			else
-				response = await Server.updateRenameRule(version, _originalName, _model);
+				response = await Server.updateRenameRule(version, _originalName, model);
 
 			if (response.success)
 			{
-				alertMessage = 'Version ' + version.toString() + ' of ' + _model.name + ' updated';
+				alertMessage = 'Version ' + version.toString() + ' of ' + model.name + ' updated';
 				result = SaveResult.saved;
 			}
 			else
 			{
 				alertMessage = 'Failed to update version ' + version.toString() +
-								' of ' + _model.name + '. ' + response.error;
+								' of ' + model.name + '. ' + response.error;
 				result = SaveResult.failed;
 			}
 		}
@@ -179,16 +184,16 @@ class RuleViewModel extends ViewModel
 		}
 		else if (state == ChangeState.added)
 		{
-			var response = await Server.addRule(version, _model);
+			var response = await Server.addRule(version, model);
 			if (response.success)
 			{
-				alertMessage = 'Version ' + version.toString() + ' of ' + _model.name + ' added';
+				alertMessage = 'Version ' + version.toString() + ' of ' + model.name + ' added';
 				result = SaveResult.saved;
 			}
 			else
 			{
 				alertMessage = 'Failed to add version ' + version.toString() +
-								' of ' + _model.name + '. ' + response.error;
+								' of ' + model.name + '. ' + response.error;
 				result = SaveResult.failed;
 			}
 		}
