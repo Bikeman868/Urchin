@@ -106,8 +106,8 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 		}
 	}
 
-	// Call this after saving changes to remove deleted models from the list
-	void saved()
+	// Call this before saving changes to remove deleted models from the list
+	void saving()
 	{
 		if (models != null)
 		{
@@ -122,10 +122,16 @@ class ModelListBinding<TM extends Model, TVM extends ViewModel>
 				}
 				else
 				{
-					viewModel.saved();
+					viewModel.saving();
 				}
 			}
 		}
+	}
+
+	// Call this ater saving changes to mark all the view models as saved
+	void saved()
+	{
+		viewModels.forEach((ViewModel vm) => vm.saved());
 	}
 
 	// Calculates the modification status of this list of models

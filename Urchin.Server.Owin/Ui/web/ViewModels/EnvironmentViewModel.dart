@@ -42,15 +42,7 @@ class EnvironmentViewModel extends ViewModel
 	}
 
 	EnvironmentModel _model;
-	EnvironmentModel get model
-	{
-		if (_model != null)
-		{
-			_model.machines = machines.models;
-			_model.securityRules = securityRules.models;
-		}
-		return _model;
-	}
+	EnvironmentModel get model => _model;
 
 	void set model(EnvironmentModel value)
 	{

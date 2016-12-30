@@ -58,35 +58,20 @@ class EnvironmentListViewModel extends ViewModel
 
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
-		SaveResult result = SaveResult.unmodified;
+		List<EnvironmentModel> environmentModels = environments.viewModels
+			.where((EnvironmentViewModel vm) => vm.getState() != ChangeState.deleted)
+			.map((EnvironmentViewModel vm) => vm.model)
+			.toList();
 
-		var environmentModels = new List<EnvironmentModel>();
-		for (EnvironmentViewModel environmentViewModel in environments.viewModels)
+		PostResponseModel response = await Server.replaceEnvironments(environmentModels);
+
+		if (response.success)
 		{
-			var environmentState = environmentViewModel.getState();
-			if (environmentState != ChangeState.deleted)
-				environmentModels.add(environmentViewModel.model);
-			if (environmentState != ChangeState.unmodified)
-				result = SaveResult.notsaved;
+			if (alert) window.alert('Environments saved succesfully');
+			return SaveResult.saved;
 		}
 
-		String alertMessage = 'There are no changes to the list of environments';
-		if (result != SaveResult.unmodified)
-		{
-			PostResponseModel response = await Server.replaceEnvironments(environmentModels);
-			if (response.success)
-			{
-				alertMessage = 'Environments saved succesfully';
-				result = SaveResult.saved;
-			}
-			else
-			{
-				alertMessage = 'Environments were not saved. ' + response.error;
-				result = SaveResult.failed;
-			}
-		}
-
-		if (alert) window.alert(alertMessage);
-		return result;
+		if (alert) window.alert('Environments were not saved. ' + response.error);
+		return SaveResult.failed;
 	}
 }

@@ -17,7 +17,7 @@ abstract class ViewModel
 	{
 	}
 
-	// Indicates that the view model should be deleted whan changes are saved back to the server
+	// Indicates that the view model should be deleted when changes are saved back to the server
 	void deleted()
 	{
 		if (state == ChangeState.added)
@@ -39,6 +39,28 @@ abstract class ViewModel
 		state = ChangeState.added;
 	}
 
+	// Call this proir to saving to update the models from the view models
+	void saving()
+	{
+		List<ViewModel> children = getChildViewModels();
+		if (children != null)
+		{
+			for (ViewModel child in children)
+			{
+				child.saving();
+			}
+		}
+
+		List<ModelListBinding> modelLists = getModelLists();
+		if (modelLists != null)
+		{
+			for (ModelListBinding modelList in modelLists)
+			{
+				modelList.saving();
+			}
+		}
+	}
+
 	// Saves this view model back to the server.
 	// Changes it's state back to unmodified unless it is deleted
 	bool _saving;
@@ -53,6 +75,8 @@ abstract class ViewModel
 
 			if (state == ChangeState.unmodified)
 				return SaveResult.unmodified;
+
+			saving();
 
 			var result = await saveChanges(state, alert);
 
