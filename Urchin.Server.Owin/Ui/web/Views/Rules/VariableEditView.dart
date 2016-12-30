@@ -17,7 +17,7 @@ class VariableEditView extends View
 		var div = addDiv(className: 'variable-edit');
 
 		_nameInput = new BoundTextInput<String>(addInput(classNames: ['variable-name', 'input-field'], parent: div));
-		_valueInput = new BoundTextInput<String>(addInput(classNames: ['variable-name', 'input-field'], parent: div));
+		_valueInput = new BoundTextInput<String>(addTextArea(classNames: ['variable-value', 'input-field'], parent: div));
 
 		this.viewModel = viewModel;
 	}

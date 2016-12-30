@@ -47,8 +47,8 @@ td
 
 textarea
 {
-    width: 400px;
-    height: 300px;
+    width: 150px;
+    height: 100px;
 }
 
 #topDiv
@@ -463,4 +463,26 @@ span.modified
 span.variable-name
 {
     font-weight: bolder;
+}
+
+textarea.variable-value
+{
+    width: 150px;
+    height: 30px;
+}
+
+textarea.rule-config
+{
+    width: 350px;
+    height: 150px;
+}
+
+.input-field
+{
+    vertical-align: top;
+}
+
+div.variable-list div.variable
+{
+    margin-bottom: 10px;   
 }

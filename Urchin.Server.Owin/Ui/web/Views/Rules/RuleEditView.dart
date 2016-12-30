@@ -35,16 +35,16 @@ class RuleEditView extends View
 			formatMethod: (s) => 'Version ' + _viewModel.version.toString() + ' of ' + s);
 
 		var form1 = addForm();
-		_nameInput = new BoundTextInput<String>(addLabeledEdit(form1, 'Unique rule name'));
+		_nameInput = new BoundTextInput<String>(addLabeledEdit(form1, 'Unique rule name', className: 'rule-name'));
 
 		addHR();
 		addBlockText('Choose where to apply this rule. Leave blank to apply to all.');
 
 		var form2 = addForm();
-		_instanceInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to instance'));
-		_applicationInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to application'));
-		_machineInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to machine'));
-		_environmentInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to environment'));
+		_instanceInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to instance', className: 'rule-instance'));
+		_applicationInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to application', className: 'rule-application'));
+		_machineInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to machine', className: 'rule-machine'));
+		_environmentInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to environment', className: 'rule-environment'));
 
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
@@ -54,12 +54,12 @@ class RuleEditView extends View
 
 		_variablesList = new BoundList<VariableModel, VariableViewModel, VariableEditView>(
 			(vm) => new VariableEditView(vm), 
-			addContainer());
+			addContainer(className: 'rule-variables'));
 
 		addHR();
 		addHeading(3, 'Configuration JSON');
 
-		_configInput = new BoundTextInput<String>(addTextArea());
+		_configInput = new BoundTextInput<String>(addTextArea(className: 'rule-config'));
 
 		this.viewModel = viewModel;
 	}

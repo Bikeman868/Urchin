@@ -353,9 +353,12 @@ class HtmlBuilder
 		return addContainer(parent: parent, classNames: classNames);
 	}
 
-	Element addLabeledField(Element form, String label)
+	Element addLabeledField(Element form, String label,
+		{
+			String className
+		})
 	{
-		var row = addContainer(parent: form, className: 'data-row');
+		var row = addContainer(parent: form, classNames: ['data-row', className]);
 
 		var labelField = addInlineText(label, parent: row, className: 'data-label');
 		var dataField = addInlineText('', parent: row, className: 'data-field');
@@ -363,9 +366,12 @@ class HtmlBuilder
 		return dataField;
 	}
 
-	Element addLabeledEdit(Element form, String label)
+	Element addLabeledEdit(Element form, String label,
+		{
+			String className
+		})
 	{
-		var row = addContainer(parent: form, className: 'data-row');
+		var row = addContainer(parent: form, classNames: ['data-row', className]);
 
 		var labelField = addInlineText(label, parent: row, className: 'data-label');
 		var dataField = addInput(parent: row, className: 'input-field');
@@ -413,7 +419,8 @@ class HtmlBuilder
     
 		if (classNames != null)
 			for (var c in classNames)
-				element.classes.add(c);
+				if (c != null && !c.isEmpty)
+					element.classes.add(c);
 
 		if (parent == null)
 			_elements.add(element);
