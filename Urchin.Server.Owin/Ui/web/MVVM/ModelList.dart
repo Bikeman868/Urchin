@@ -115,23 +115,28 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 	// Call this before saving changes to remove deleted models from the list
 	void saving()
 	{
-		_viewModels.forEach((ViewModel vm) => vm.saved());
+		_viewModels.forEach((ViewModel vm) => vm.saving());
 	}
 
 	// Call this to make all the view models on this list save themselves back to the server
 	Future<SaveResult> saveChanges() async
 	{
-		print('==> SaveChanges(' + toString() + ')');
+		print('==> ModelList.SaveChanges(' + toString() + ')');
 		SaveResult result = SaveResult.saved;
 
+		int index = 1;
 		for (ViewModel vm in _viewModels)
 		{
-			SaveResult vmResult = await vm.saveChanges(vm.getState(), false);
+			print(index.toString() + '. Saving changes in ' + vm.toString());
+			index++;
+
+			ChangeState vmState = vm.getState();
+			SaveResult vmResult = await vm.saveChanges(vmState, false);
 			if (vmResult == SaveResult.failed)
 				result = vmResult;
 		}
 
-		print('<== SaveChanges(' + toString() + ') = ' + result.toString());
+		print('<== ModelList.SaveChanges(' + toString() + ') = ' + result.toString());
 		return result;
 	}
 

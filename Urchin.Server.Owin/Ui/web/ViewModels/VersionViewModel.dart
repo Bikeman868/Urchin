@@ -86,7 +86,7 @@ class VersionViewModel extends ViewModel
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
 		SaveResult result = SaveResult.unmodified;
-		String alertMessage = 'No changes to version ' + version.getProperty() + ' to save';
+		String alertMessage;
 
 		if (state == ChangeState.modified || state == ChangeState.added)
 		{
@@ -131,6 +131,10 @@ class VersionViewModel extends ViewModel
 				alert = true;
 				result = SaveResult.failed;
 			}
+		}
+		else
+		{
+			alertMessage = 'No changes to version ' + version.getProperty() + ' to save';
 		}
 
 		if (alert) window.alert(alertMessage);

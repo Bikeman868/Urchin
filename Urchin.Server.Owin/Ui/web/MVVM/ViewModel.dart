@@ -132,7 +132,7 @@ abstract class ViewModel
 	// remove the deleted view models after saving it complete
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
-		print('==> SaveChanges(' + toString() + ')');
+		print('==> ViewModel.SaveChanges(' + toString() + ')');
 
 		SaveResult result = SaveResult.saved;
 
@@ -146,7 +146,7 @@ abstract class ViewModel
 					SaveResult childResult = await child.saveChanges(child.getState(), false);
 					if (childResult == SaveResult.failed)
 						result = childResult;
-					else
+					else if (childResult == SaveResult.saved)
 						child.saved();
 				}
 			}
@@ -168,7 +168,7 @@ abstract class ViewModel
 					{
 						result = listResult;
 					}
-					else
+					else if (listResult == SaveResult.saved)
 					{
 						if (!_removeBeforeSave)
 							list.removeDeleted();
@@ -177,8 +177,20 @@ abstract class ViewModel
 				}
 			}
 		}
+		
+		if (alert)
+		{
+			if (result == SaveResult.saved)
+				window.alert('Saved changes to ' + toString());
+			else if (result == SaveResult.notsaved)
+				window.alert('Did not save changes to ' + toString());
+			else if (result == SaveResult.failed)
+				window.alert('Failed to save changes to ' + toString());
+			else if (result == SaveResult.unmodified)
+				window.alert('No changes to ' + toString() + ' to save');
+		}
 
-		print('<== SaveChanges(' + toString() + ') = ' + result.toString());
+		print('<== ViewModel.SaveChanges(' + toString() + ') = ' + result.toString());
 		return result;
 	}
 
@@ -190,18 +202,18 @@ abstract class ViewModel
 	// Gets the current state of this view model and all of its children
 	ChangeState getState()
 	{
-		print('Getting state of ' + toString());
+		print('  Getting state of ' + toString());
 
 		if (_state != ChangeState.unmodified)
 		{
-			print(toString() + ' is ' + _state.toString());
+			print('  ' + toString() + ' is ' + _state.toString());
 			return _state;
 		}
 
 		List<ViewModel> children = getChildViewModels();
 		if (children != null && children.length > 0)
 		{
-			print('Testing state of ' + toString() + ' children');
+			print('    Getting state of ' + toString() + ' children');
 			for (ViewModel child in children)
 			{
 				if (child != null)
@@ -209,7 +221,7 @@ abstract class ViewModel
 					ChangeState childState = child.getState();
 					if (childState != ChangeState.unmodified)
 					{
-						print(toString() + ' child was ' + childState.toString());
+						print('    ' + toString() + ' child was ' + childState.toString());
 						return ChangeState.modified;
 					}
 				}
@@ -219,7 +231,7 @@ abstract class ViewModel
 		List<ModelList> modelLists = getModelLists();
 		if (modelLists != null && modelLists.length > 0)
 		{
-			print('Testing state of ' + toString() + ' model lists');
+			print('    Getting state of ' + toString() + ' model lists');
 			for (ModelList modelList in modelLists)
 			{
 				if (modelList != null)
@@ -227,14 +239,14 @@ abstract class ViewModel
 					ChangeState listState = modelList.getState();
 					if (listState != ChangeState.unmodified)
 					{
-						print(toString() + ' model list was ' + listState.toString());
+						print('    ' + toString() + ' model list was ' + listState.toString());
 						return ChangeState.modified;
 					}
 				}
 			}
 		}
 
-		print(toString() + ' was not modified');
+		print('  ' + toString() + ' was not modified');
 		return ChangeState.unmodified;
 	}
 

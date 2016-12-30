@@ -14,7 +14,7 @@ class VersionListViewModel extends ViewModel
 {
     ModelList<VersionModel, VersionViewModel> versions;
 
-	VersionListViewModel([List<VersionModel> versionModels])
+	VersionListViewModel([List<VersionModel> versionModels]): super(false)
 	{
 		versions = new ModelList<VersionModel, VersionViewModel>(
 			(Map json) => new VersionModel(new Map()..['name']='VERSION', false), 
