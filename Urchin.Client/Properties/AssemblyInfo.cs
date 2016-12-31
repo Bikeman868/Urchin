@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Urchin.Client")]
-[assembly: AssemblyDescription("Strongly typed configuration management with change notification")]
+[assembly: AssemblyDescription("Strongly typed configuration management system with change notification")]
 [assembly: AssemblyCompany("Martin Halliday")]
 [assembly: AssemblyProduct("Urchin")]
 [assembly: AssemblyCopyright("Copyright ©Martin Halliday 2015")]
@@ -11,5 +11,5 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.0.5")]
-[assembly: AssemblyFileVersion("1.0.5")]
+[assembly: AssemblyVersion("1.2.0")]
+[assembly: AssemblyFileVersion("1.2.0")]

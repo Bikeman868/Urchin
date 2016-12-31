@@ -53,6 +53,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.Core.3.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Ioc.Modules, Version=1.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.1.1.4\lib\net40\Ioc.Modules.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ioc.Modules.Unity, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.Unity.1.1.3\lib\net40\Ioc.Modules.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -142,74 +150,93 @@
     <Compile Include="Middleware\TraceEndpoint.cs" />
     <Compile Include="Middleware\ConfigEndpoint.cs" />
     <Compile Include="Middleware\HelloEndpoint.cs" />
+    <Compile Include="Package.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\OwinExtensions.cs" />
     <Compile Include="Startup.cs" />
-    <None Include="Ui\web\DataBinding\BoundList.dart" />
     <Content Include="Ui\web\Models\RuleModel.dart" />
     <Content Include="Ui\web\Experimental.dart.txt" />
     <Content Include="Ui\web\Models\MachineModel.dart" />
-    <Content Include="Ui\web\DataBinding\IntBinding.dart" />
-    <Content Include="Ui\web\DataBinding\StringBinding.dart" />
-    <Content Include="Ui\web\DataBinding\ListBinding.dart" />
-    <Content Include="Ui\web\DataBinding\Types.dart" />
-    <Content Include="Ui\web\DataBinding\View.dart" />
-    <Content Include="Ui\web\DataBinding\ViewModel.dart" />
-    <Content Include="Ui\web\DataBinding\ChangeState.dart" />
+    <None Include="Ui\web\Html\JsonHighlighter.dart" />
     <None Include="Ui\web\Models\EnvironmentModel.dart" />
-    <Content Include="Ui\web\DataBinding\BoundLabel.dart" />
-    <Content Include="Ui\web\DataBinding\BoundElement.dart" />
-    <Content Include="Ui\web\Models\RuleVersionModel.dart" />
+    <Content Include="Ui\web\Models\VersionModel.dart" />
     <Content Include="Ui\web\Models\VariableModel.dart" />
     <Content Include="Ui\web\Models\SecurityRuleModel.dart" />
     <Content Include="Ui\web\Models\PostResponseModel.dart" />
     <Content Include="Ui\web\Models\ClientCredentialsModel.dart" />
     <Content Include="Ui\web\ViewModels\MachineViewModel.dart" />
     <Content Include="Ui\web\ViewModels\DataViewModel.dart" />
-    <Content Include="Ui\web\Models\DataModel.dart" />
+    <Content Include="Ui\web\ViewModels\VersionViewModel.dart" />
+    <Content Include="Ui\web\MVVM\BoundContainer.dart" />
+    <Content Include="Ui\web\MVVM\BoundElement.dart" />
+    <Content Include="Ui\web\MVVM\BoundGrid.dart" />
+    <Content Include="Ui\web\MVVM\BoundIframe.dart" />
+    <Content Include="Ui\web\MVVM\BoundImage.dart" />
+    <Content Include="Ui\web\MVVM\BoundLabel.dart" />
+    <Content Include="Ui\web\MVVM\BoundList.dart" />
+    <Content Include="Ui\web\MVVM\BoundRepeater.dart" />
+    <Content Include="Ui\web\MVVM\BoundTextInput.dart" />
+    <Content Include="Ui\web\MVVM\Enums.dart" />
+    <Content Include="Ui\web\MVVM\HtmlBuilder.dart" />
+    <Content Include="Ui\web\MVVM\IntBinding.dart" />
+    <Content Include="Ui\web\MVVM\ModelList.dart" />
+    <Content Include="Ui\web\MVVM\Model.dart" />
+    <Content Include="Ui\web\MVVM\PropertyBinding.dart" />
+    <Content Include="Ui\web\MVVM\StringBinding.dart" />
+    <Content Include="Ui\web\MVVM\Types.dart" />
+    <Content Include="Ui\web\MVVM\View.dart" />
+    <Content Include="Ui\web\MVVM\ViewModel.dart" />
+    <Content Include="Ui\web\ViewModels\EnvironmentListViewModel.dart" />
+    <Content Include="Ui\web\ViewModels\VersionListViewModel.dart" />
+    <Content Include="Ui\web\MVVM\BoundFormatter.dart" />
+    <Content Include="Ui\web\MVVM\Events.dart" />
+    <Content Include="Ui\web\Models\VersionNameModel.dart" />
+    <Content Include="Ui\web\MVVM\readme.md" />
+    <Content Include="Ui\web\MVVM\BoundTextArea.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.md" />
     <Content Include="Ui\pubspec.yaml" />
     <Content Include="Ui\web\main.dart" />
-    <Content Include="Ui\web\DataBinding\Model.dart" />
-    <Content Include="Ui\web\Components\RuleListComponent.dart" />
-    <Content Include="Ui\web\Components\ToolBarComponent.dart" />
-    <Content Include="Ui\web\DataLayer\Data.dart" />
     <Content Include="Ui\web\Server.dart" />
     <Content Include="Ui\web\Events\AppEvents.dart" />
-    <Content Include="Ui\web\Components\RuleDetailComponent.dart" />
-    <Content Include="Ui\web\Components\EnvironmentListComponent.dart" />
-    <Content Include="Ui\web\Components\EnvironmentDetailComponent.dart" />
-    <Content Include="Ui\web\Html\FormBuilder.dart" />
-    <Content Include="Ui\web\Components\TestQueryComponent.dart" />
-    <Content Include="Ui\web\Components\LogonComponent.dart" />
-    <Content Include="Ui\web\Html\HtmlBuilder.dart" />
-    <Content Include="Ui\web\Html\JsonHighlighter.dart" />
-    <Content Include="Ui\web\Components\HelpComponent.dart" />
-    <Content Include="Ui\web\Components\VersionListComponent.dart" />
-    <Content Include="Ui\web\Components\VersionDetailComponent.dart" />
-    <Content Include="Ui\web\Components\UpdateComponent.dart" />
-    <Content Include="Ui\web\Events\SubscriptionEvent.dart" />
-    <Content Include="Ui\web\DataLayer\VersionData.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleDisplayView.dart" />
+    <Content Include="Ui\web\Views\Navigation\LogonView.dart" />
+    <Content Include="Ui\web\Views\Versions\VersionListView.dart" />
+    <Content Include="Ui\web\Views\Versions\VersionEditView.dart" />
     <None Include="Ui\build.cmd" />
     <None Include="Ui\pubspec.lock" />
-    <Content Include="Ui\web\DataBinding\PropertyBinding.dart" />
-    <Content Include="Ui\web\DataBinding\BoundTextInput.dart" />
-    <Content Include="Ui\web\Views\EnvironmentView.dart" />
-    <Content Include="Ui\web\Views\EnvironmentListElementView.dart" />
-    <Content Include="Ui\web\Views\MachineListElementView.dart" />
+    <Content Include="Ui\web\Views\Environment\EnvironmentEditView.dart" />
+    <Content Include="Ui\web\Views\Environment\EnvironmentNameView.dart" />
     <Content Include="Ui\web\ViewModels\SecurityRuleViewModel.dart" />
-    <Content Include="Ui\web\Views\SecurityRuleListElementView.dart" />
-    <Content Include="Ui\web\Views\EnvironmentListView.dart" />
+    <Content Include="Ui\web\Views\SecurityRule\SecurityRuleEditView.dart" />
+    <Content Include="Ui\web\Views\Environment\EnvironmentListView.dart" />
+    <Content Include="Ui\web\ViewModels\RuleViewModel.dart" />
+    <Content Include="Ui\web\ViewModels\VariableViewModel.dart" />
+    <Content Include="Ui\web\Views\Navigation\ToolBarView.dart" />
+    <Content Include="Ui\web\Views\Environment\EnvironmentDisplayView.dart" />
+    <Content Include="Ui\web\Views\Machine\MachineEditView.dart" />
+    <Content Include="Ui\web\Views\SecurityRule\SecurityRuleListElementView.dart" />
+    <Content Include="Ui\web\ViewModels\UserViewModel.dart" />
+    <Content Include="Ui\web\Views\Navigation\UserView.dart" />
+    <Content Include="Ui\web\Views\Machine\MachineNameView.dart" />
+    <Content Include="Ui\web\Views\Versions\VersionDisplayView.dart" />
+    <Content Include="Ui\web\Views\Versions\VersionListElementView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleNameView.dart" />
+    <Content Include="Ui\web\Views\Rules\VariableNameView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleEditView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleListView.dart" />
+    <Content Include="Ui\web\Views\Rules\RuleConfigView.dart" />
+    <Content Include="Ui\web\Views\Rules\VariableDisplayView.dart" />
+    <Content Include="Ui\web\Views\Rules\VariableEditView.dart" />
     <None Include="Urchin.json.postman_collection" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Urchin.Client\Urchin.Client.csproj">
+    <ProjectReference Include="..\Urchin.Client\Urchin.Client.Net40.csproj">
       <Project>{169CA82F-7924-47EE-9705-F333932110F4}</Project>
-      <Name>Urchin.Client</Name>
+      <Name>Urchin.Client.Net40</Name>
     </ProjectReference>
     <ProjectReference Include="..\Urchin.Server.Shared\Urchin.Server.Shared.csproj">
       <Project>{372237ce-4202-4882-ad34-02d6493678da}</Project>

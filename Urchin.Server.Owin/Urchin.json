@@ -20,7 +20,7 @@
 	    {
 	      "administratorPassword":"password",
 		  "sessionExpiry":"00:45:00",
-		  "cookieName":"urchin_session_token"
+		  "cookieName":"session_token"
 	    }
 	  }
   },

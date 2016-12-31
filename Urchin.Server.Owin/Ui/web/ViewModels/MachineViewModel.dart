@@ -1,5 +1,8 @@
-﻿import '../DataBinding/StringBinding.dart';
-import '../DataBinding/ViewModel.dart';
+﻿import 'dart:async';
+
+import '../MVVM/StringBinding.dart';
+import '../MVVM/ViewModel.dart';
+import '../MVVM/Enums.dart';
 
 import '../Models/MachineModel.dart';
 
@@ -10,6 +13,11 @@ class MachineViewModel extends ViewModel
 	MachineViewModel([MachineModel model])
 	{
 		this.model = model;
+	}
+
+	dispose()
+	{
+		model = null;
 	}
 
 	MachineModel _model;
@@ -26,8 +34,20 @@ class MachineViewModel extends ViewModel
 		}
 		else
 		{
-			name.setter = (String text) { value.name = text; };
+			name.setter = (String text) 
+			{ 
+				value.name = text; 
+				modified();
+			};
 			name.getter = () => value.name;
 		}
+		loaded();
 	}
+
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
+	{
+		return SaveResult.notsaved;
+	}
+
+	String toString() => _model.toString() + ' view model';
 }

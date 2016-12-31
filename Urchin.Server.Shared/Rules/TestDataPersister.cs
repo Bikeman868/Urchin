@@ -206,6 +206,12 @@ namespace Urchin.Server.Shared.Rules
             ruleVersion.Name = newName;
         }
 
+        public string GetVersionName(int version)
+        {
+            var ruleVersion = _rules.FirstOrDefault(r => r.Version == version);
+            return ruleVersion == null ? null : ruleVersion.Name;
+        }
+
         public void DeleteVersion(int version)
         {
             _rules.RemoveAll(r => r.Version == version);

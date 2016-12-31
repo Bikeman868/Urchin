@@ -1,4 +1,4 @@
-﻿import '../DataBinding/Model.dart';
+﻿import '../MVVM/Model.dart';
 
 class VariableModel extends Model
 {
@@ -9,4 +9,6 @@ class VariableModel extends Model
   
 	String get value => getProperty('value');
 	set value(String value) { setProperty('value', value); }
+
+	String toString() => name + ' variable';
 }

@@ -1,4 +1,4 @@
-﻿import '../DataBinding/Model.dart';
+﻿import '../MVVM/Model.dart';
 
 class MachineModel extends Model
 {
@@ -6,4 +6,6 @@ class MachineModel extends Model
 
 	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }
+
+	String toString() => 'machine ' + name;
 }

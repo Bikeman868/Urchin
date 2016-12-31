@@ -1,4 +1,4 @@
-﻿import '../DataBinding/Model.dart';
+﻿import '../MVVM/Model.dart';
 import '../Models/VariableModel.dart';
 
 class RuleModel extends Model
@@ -25,5 +25,7 @@ class RuleModel extends Model
 
 	List<VariableModel> get variables => getList('variables', (json) => new VariableModel(json));
 	set variables(List<VariableModel> value) { setList('variables', value); }
+
+	String toString() => name + ' rule';
 }
 

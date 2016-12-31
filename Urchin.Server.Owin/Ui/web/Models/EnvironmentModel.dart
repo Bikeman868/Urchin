@@ -1,4 +1,4 @@
-﻿import '../DataBinding/Model.dart';
+﻿import '../MVVM/Model.dart';
 
 import '../Models/SecurityRuleModel.dart';
 import '../Models/MachineModel.dart';
@@ -18,5 +18,7 @@ class EnvironmentModel extends Model
 
 	List<SecurityRuleModel> get securityRules => getList('securityRules', (json) => new SecurityRuleModel(json));
 	set securityRules(List<SecurityRuleModel> value) { setList('securityRules', value); }
+
+	String toString() => name + ' environment';
 }
 

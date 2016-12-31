@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Urchin.Client.Interfaces;
@@ -38,6 +37,12 @@ namespace Urchin.Client.Data
         private ConfigNode _config = new ConfigNode();
         private IConfigurationValidator _validator;
         private IErrorLogger _errorLogger;
+
+        public ConfigurationStore()
+        {
+            _validator = new DefaultValidator();
+            _errorLogger = new DefaultErrorLogger();
+        }
 
         public IConfigurationStore Initialize(
             IConfigurationValidator validator = null,

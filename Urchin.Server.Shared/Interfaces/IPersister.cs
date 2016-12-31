@@ -13,6 +13,7 @@ namespace Urchin.Server.Shared.Interfaces
 
         List<int> GetVersionNumbers();
         void SetVersionName(int version, string newName);
+        string GetVersionName(int version);
         void DeleteVersion(int version);
 
         IEnumerable<string> GetRuleNames(int version);

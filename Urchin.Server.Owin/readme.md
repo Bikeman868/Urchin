@@ -47,11 +47,14 @@ These are the steps to making a production build:
 
 1. Download the source code from GitHub (required).
 2. Compile the Visual Studio solution (required).
-3. Compile the Dart code to JavaScript (required for the management UI).
+3. Compile the Dart code to JavaScript (optional - for the management UI).
 4. Copy the files to a folder on your web server (required).
-5. Copy dlls from Urchin.Server.Persistence.Prius (required for database persistence).
+5. Copy dlls from Urchin.Server.Persistence.Prius (optional  - for database persistence).
 6. Configure a new web site in IIS to point to the new folder (required).
 7. Alter urchin.json file to match your system (required).
+
+> Note that there is a known issue with the database persistence. It is strongly recommended
+> that you use the default file persistence mechanism instead.
 
 #### Downloading the source code from GitHub
 

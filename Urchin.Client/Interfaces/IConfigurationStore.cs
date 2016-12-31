@@ -5,6 +5,19 @@ namespace Urchin.Client.Interfaces
     public interface IConfigurationStore
     {
         /// <summary>
+        /// Defines the required behavior of the configuration store. If you do not initialize it then
+        /// it will have a default behavior.
+        /// </summary>
+        /// <param name="validator">Specifies how configuration data should be validated prior
+        /// to applying it to the application. If you pass null then the default behavior is
+        /// to check that the configuration is valid JSON containing an object with at least
+        /// one property</param>
+        /// <param name="errorLogger">Specifies the error logging bahaviour. If you pass null
+        /// then the default behaviour is to write error meesages to System.Diagnostics.Trace</param>
+        /// <returns></returns>
+        IConfigurationStore Initialize(IConfigurationValidator validator = null, IErrorLogger errorLogger = null);
+
+         /// <summary>
         /// Replaces the current configuration with a new one, finds all the configuration
         /// changes, and for each change, notifies anyone that registered for these notifications.
         /// </summary>

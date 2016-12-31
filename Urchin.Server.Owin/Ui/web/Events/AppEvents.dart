@@ -1,14 +1,20 @@
 import 'dart:async';
 
-import '../DataLayer/Data.dart';
-import '../Events/SubscriptionEvent.dart';
+import '../MVVM/Events.dart';
 import '../ViewModels/EnvironmentViewModel.dart';
+import '../ViewModels/VersionViewModel.dart';
+import '../ViewModels/RuleViewModel.dart';
 
 class RuleSelectedEvent
 {
-	int version;
-	String ruleName;
-	RuleSelectedEvent(this.version, this.ruleName);
+	RuleViewModel rule;
+	RuleSelectedEvent(this.rule);
+}
+
+class RuleEditEvent
+{
+	RuleViewModel rule;
+	RuleEditEvent(this.rule);
 }
 
 class EnvironmentSelectedEvent
@@ -19,7 +25,7 @@ class EnvironmentSelectedEvent
 
 class VersionSelectedEvent
 {
-	int version;
+	VersionViewModel version;
 	VersionSelectedEvent(this.version);
 }
 
@@ -37,20 +43,12 @@ class UserChangedEvent
 	UserChangedEvent(this.isLoggedOn, this.userName, this.ipAddress);
 }
 
-class DataEvent
-{
-	Data data;
-	DataEvent(this.data);
-}
-
 class AppEvents
 {
 	static SubscriptionEvent<RuleSelectedEvent> ruleSelected = new SubscriptionEvent<RuleSelectedEvent>();
+	static SubscriptionEvent<RuleEditEvent> ruleEdit = new SubscriptionEvent<RuleEditEvent>();
 	static SubscriptionEvent<EnvironmentSelectedEvent> environmentSelected = new SubscriptionEvent<EnvironmentSelectedEvent>();
 	static SubscriptionEvent<VersionSelectedEvent> versionSelected = new SubscriptionEvent<VersionSelectedEvent>();
 	static SubscriptionEvent<TabChangedEvent> tabChanged = new SubscriptionEvent<TabChangedEvent>();
 	static SubscriptionEvent<UserChangedEvent> userChanged = new SubscriptionEvent<UserChangedEvent>();
-	static SubscriptionEvent<DataEvent> dataLoadedEvent = new SubscriptionEvent<DataEvent>();
-	static SubscriptionEvent<DataEvent> dataSavedEvent = new SubscriptionEvent<DataEvent>();
-	static SubscriptionEvent<DataEvent> dataModifiedEvent = new SubscriptionEvent<DataEvent>();
 }

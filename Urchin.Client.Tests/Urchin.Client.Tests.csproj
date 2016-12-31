@@ -68,9 +68,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Urchin.Client\Urchin.Client.csproj">
+    <ProjectReference Include="..\Urchin.Client\Urchin.Client.Net40.csproj">
       <Project>{169ca82f-7924-47ee-9705-f333932110f4}</Project>
-      <Name>Urchin.Client</Name>
+      <Name>Urchin.Client.Net40</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

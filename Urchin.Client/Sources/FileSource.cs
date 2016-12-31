@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using Urchin.Client.Interfaces;
 
 namespace Urchin.Client.Sources

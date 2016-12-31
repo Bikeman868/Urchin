@@ -1,8 +1,10 @@
-import 'dart:html';
-import 'HtmlBuilder.dart';
+﻿import 'dart:html';
+import '../MVVM/HtmlBuilder.dart';
 
 class JsonHighlighter
 {
+	// TODO: Highlight variables ($variable$) in a different style
+
 	static displayIn(Element div, String json)
 	{
 		div.children.clear();
@@ -76,12 +78,12 @@ class JsonHighlighter
 				if (propertyName)
 				{
 					if (endOfLine) lineBreak();
-					newSpan(className: 'jsonName');
+					newSpan(className: 'json-name');
 				}
 				else
 				{
 					append(c);
-					newSpan(className: 'jsonString');
+					newSpan(className: 'json-string');
 				}
 				quote = c;
 			}

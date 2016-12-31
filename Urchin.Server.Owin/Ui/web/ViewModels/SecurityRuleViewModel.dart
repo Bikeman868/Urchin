@@ -1,5 +1,8 @@
-﻿import '../DataBinding/StringBinding.dart';
-import '../DataBinding/ViewModel.dart';
+﻿import 'dart:async';
+
+import '../MVVM/StringBinding.dart';
+import '../MVVM/ViewModel.dart';
+import '../MVVM/Enums.dart';
 
 import '../Models/SecurityRuleModel.dart';
 
@@ -11,6 +14,11 @@ class SecurityRuleViewModel extends ViewModel
 	SecurityRuleViewModel([SecurityRuleModel model])
 	{
 		this.model = model;
+	}
+
+	dispose()
+	{
+		model = null;
 	}
 
 	SecurityRuleModel _model;
@@ -36,5 +44,13 @@ class SecurityRuleViewModel extends ViewModel
 			endIp.setter = (String text) { value.endIp = text; };
 			endIp.getter = () => value.endIp;
 		}
+		loaded();
 	}
+
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
+	{
+		return SaveResult.notsaved;
+	}
+
+	String toString() => _model.toString() + ' view model';
 }

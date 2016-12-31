@@ -1,8 +1,11 @@
-﻿import '../DataBinding/StringBinding.dart';
-import '../DataBinding/IntBinding.dart';
-import '../DataBinding/ListBinding.dart';
-import '../DataBinding/ViewModel.dart';
-import '../DataBinding/ChangeState.dart';
+﻿import 'dart:html';
+import 'dart:async';
+
+import '../MVVM/StringBinding.dart';
+import '../MVVM/IntBinding.dart';
+import '../MVVM/ModelList.dart';
+import '../MVVM/ViewModel.dart';
+import '../MVVM/Enums.dart';
 
 import '../Models/EnvironmentModel.dart';
 import '../Models/MachineModel.dart';
@@ -15,35 +18,32 @@ class EnvironmentViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
-    ListBinding<MachineModel, MachineViewModel> machines;
-    ListBinding<SecurityRuleModel, SecurityRuleViewModel> rules;
+    ModelList<MachineModel, MachineViewModel> machines;
+    ModelList<SecurityRuleModel, SecurityRuleViewModel> securityRules;
 
 	EnvironmentViewModel([EnvironmentModel model])
 	{
 		name = new StringBinding();
 		version = new IntBinding();
 
-		machines = new ListBinding<MachineModel, MachineViewModel>(
+		machines = new ModelList<MachineModel, MachineViewModel>(
 			(Map json) => new MachineModel(new Map()..['name']='MACHINE'), 
 			(MachineModel m) => new MachineViewModel(m));
 
-		rules = new ListBinding<SecurityRuleModel, SecurityRuleViewModel>(
+		securityRules = new ModelList<SecurityRuleModel, SecurityRuleViewModel>(
 			(Map json) => new SecurityRuleModel(new Map()..['startIp']='127.0.0.1'..['endIp']='127.0.0.1'), 
 			(SecurityRuleModel m) => new SecurityRuleViewModel(m));
 
 		this.model = model;
 	}
 
-	EnvironmentModel _model;
-	EnvironmentModel get model
+	dispose()
 	{
-		if (_model != null)
-		{
-			_model.machines = machines.models;
-			_model.securityRules = rules.models;
-		}
-		return _model;
+		model = null;
 	}
+
+	EnvironmentModel _model;
+	EnvironmentModel get model => _model;
 
 	void set model(EnvironmentModel value)
 	{
@@ -58,7 +58,7 @@ class EnvironmentViewModel extends ViewModel
 			version.getter = null;
 
 			machines.models = null;
-			rules.models = null;
+			securityRules.models = null;
 		}
 		else
 		{
@@ -77,23 +77,20 @@ class EnvironmentViewModel extends ViewModel
 			version.getter = () => value.version;
 
 			machines.models = value.machines;
-			rules.models = value.securityRules;
+			securityRules.models = value.securityRules;
 		}
+		loaded();
 	}
 
-	ChangeState getState()
+	List<ModelList> getModelLists()
 	{
-		var state = super.getState();
-		if (state != ChangeState.unmodified)
-			return state;
-
-		if (machines.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
-
-		if (rules.getState() != ChangeState.unmodified)
-			return ChangeState.modified;
-
-		return ChangeState.unmodified;
+		return [machines, securityRules];
 	}
 
+	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
+	{
+		return SaveResult.notsaved;
+	}
+
+	String toString() => _model.toString() + ' view model';
 }

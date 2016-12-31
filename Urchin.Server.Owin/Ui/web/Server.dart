@@ -6,7 +6,8 @@ import 'Models/ClientCredentialsModel.dart';
 import 'Models/EnvironmentModel.dart';
 import 'Models/PostResponseModel.dart';
 import 'Models/RuleModel.dart';
-import 'Models/RuleVersionModel.dart';
+import 'Models/VersionModel.dart';
+import 'Models/VersionNameModel.dart';
 import 'Models/SecurityRuleModel.dart';
 import 'Models/VariableModel.dart';
 
@@ -15,35 +16,63 @@ class Server
 //
 //-- Version related server methods -----------------------------------------------------------------
 //
-	static Future<List<RuleVersionModel>> getVersions() async
+	static Future<List<VersionModel>> getVersions() async
 	{
 		String response = await HttpRequest.getString('/versions');
 		List<Map> versionsJson = JSON.decode(response);
 
-		var versions = new List<RuleVersionModel>();
+		var versions = new List<VersionModel>();
 		for (Map versionJson in versionsJson)
 		{
-			versions.add(new RuleVersionModel(versionJson, false));
+			versions.add(new VersionModel(versionJson, false));
 		}
 		return versions;
 	}
 
-	static Future<HttpRequest> deleteOldVersions()
-		=> HttpRequest.request(
+	static Future<PostResponseModel> deleteOldVersions() async
+	{
+		var request = await HttpRequest.request(
 			'/versions', 
 			method: 'DELETE');
 
-	static Future<HttpRequest> updateVersion(int version, RuleVersionModel versionDto)  async
-		=> HttpRequest.request(
+		if (request.status != 200)
+			throw 'Failed to delete old versions. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+	static Future<PostResponseModel> updateVersion(int version, VersionModel versionDto) async
+	{
+		var versionName = new VersionNameModel(null);
+		versionName.name = versionDto.name;
+		versionName.version = versionDto.version;
+
+		var request = await HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'PUT',
-			sendData: JSON.encode(versionDto),
+			sendData: JSON.encode(versionName.json),
 			mimeType: 'application/json');
+
+		if (request.status != 200)
+			throw 'Failed to update version ' + version.toString() + '. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
   
-	static Future<HttpRequest> deleteVersion(int version)
-		=> HttpRequest.request(
+	static Future<PostResponseModel> deleteVersion(int version) async
+	{
+		var request = await HttpRequest.request(
 			'/version/' + version.toString(), 
 			method: 'DELETE');
+
+		if (request.status != 200)
+			throw 'Failed to delete version ' + version.toString() + '. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
 //
 //-- Rule related server methods -------------------------------------------------------------------
 //
@@ -59,54 +88,101 @@ class Server
 		return JSON.decode(response);
 	}
   
-	static Future<RuleVersionModel> getRules(int version)  async
+	static Future<VersionModel> getRules(int version)  async
 	{
 		String response = await HttpRequest.getString('/rules/' + version.toString());
-		return new RuleVersionModel(JSON.decode(response), true);
+		return new VersionModel(JSON.decode(response), true);
 	}
 
-	static Future<RuleVersionModel> getDraftRules() async
+	static Future<VersionModel> getDraftRules() async
 	{
 		String response = await HttpRequest.getString('/rules');
-		return new RuleVersionModel(JSON.decode(response), true);
+		return new VersionModel(JSON.decode(response), true);
 	}
 
-	static Future<HttpRequest> addRules(int version, List<RuleModel> rules) 
-		=> HttpRequest.request(
+	static Future<PostResponseModel> addRules(int version, List<RuleModel> rules) async
+	{
+		var requestBody = rules.map((RuleModel m) => m.json).toList();
+		var request = await HttpRequest.request(
 			'/rules/' + version.toString(), 
 			method: 'POST',
-			sendData: JSON.encode(rules),
+			sendData: JSON.encode(requestBody),
 			mimeType: 'application/json');
 
-	static Future<HttpRequest> updateRules(int version, List<RuleModel> rules) 
-		=> HttpRequest.request(
+		if (request.status != 200)
+			throw 'Failed to add rules. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+	static Future<PostResponseModel> updateRules(int version, List<RuleModel> rules) async
+	{
+		var requestBody = rules.map((RuleModel m) => m.json).toList();
+		var request = await HttpRequest.request(
 			'/rules/' + version.toString(), 
 			method: 'PUT',
-			sendData: JSON.encode(rules),
+			sendData: JSON.encode(requestBody),
 			mimeType: 'application/json');
 
-	static Future<String> getRule(int version, String ruleName) 
-		=> HttpRequest.getString(
-			'/rule/' + version.toString() + '/' + ruleName);
+		if (request.status != 200)
+			throw 'Failed to update rules. ' + request.statusText;
 
-	static Future<HttpRequest> updateRenameRule(int version, String oldName, RuleModel rule) 
-		=> HttpRequest.request(
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+	static Future<RuleModel> getRule(int version, String ruleName) async
+	{
+		String response = await HttpRequest.getString('/rule/' + version.toString() + '/' + ruleName);
+		return new RuleModel(JSON.decode(response));
+	}
+
+	static Future<PostResponseModel> updateRenameRule(int version, String oldName, RuleModel rule) async
+	{
+		var request = await HttpRequest.request(
 			'/rule/' + version.toString() + '/' + oldName, 
 			method: 'PUT',
-			sendData: JSON.encode(rule),
+			sendData: JSON.encode(rule.json),
 			mimeType: 'application/json');
 
-	static Future<HttpRequest> addRule(int version, RuleModel rule) 
-		=> HttpRequest.request(
+		if (request.status != 200)
+			throw 'Failed to rename version ' + version.toString() + ' of ' 
+				+ oldName + ' to ' + rule.name + '. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+	static Future<PostResponseModel> addRule(int version, RuleModel rule) async
+	{
+		var request = await HttpRequest.request(
 			'/rule/' + version.toString(), 
 			method: 'POST',
-			sendData: JSON.encode(rule),
+			sendData: JSON.encode(rule.json),
 			mimeType: 'application/json');
 
-	static Future<HttpRequest> deleteRule(int version, String ruleName) 
-		=> HttpRequest.request(
+		if (request.status != 200)
+			throw 'Failed to add version ' + version.toString() + ' rule ' 
+				+ rule.name + '. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+	static Future<PostResponseModel> deleteRule(int version, String ruleName) async
+	{
+		var request = await HttpRequest.request(
 			'/rule/' + version.toString() + '/' + ruleName, 
 			method: 'DELETE');
+
+		if (request.status != 200)
+			throw 'Failed to delete version ' + version.toString() + ' rule ' 
+				+ ruleName + '. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
 //
 //-- Environment ------------------------------------------------------------------------------
 //
@@ -123,34 +199,45 @@ class Server
 		return environments;
 	}
 
-	static Future<String> replaceEnvironments(List<EnvironmentModel> environments) async
+	static Future<PostResponseModel> replaceEnvironments(List<EnvironmentModel> environments) async
 	{
 		var requestBody = environments.map((EnvironmentModel m) => m.json).toList();
-		var httpResponse = await HttpRequest.request(
+		var request = await HttpRequest.request(
 			'/environments',
 			method: 'PUT',
 			sendData: JSON.encode(requestBody),
 			mimeType: 'application/json',
 			responseType: 'application/json');
-		Map responseJson = JSON.decode(httpResponse.responseText);
-		if (responseJson['success']) return null;
-		return responseJson['error'];
+
+		if (request.status != 200)
+			throw 'Failed to replace environments. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
 	}
 
 	static Future<String> getDefaultEnvironment()
 		=> HttpRequest.getString('/environment/default');
 
-	static Future<HttpRequest> setDefaultEnvironment(String environmentName)
-		=> HttpRequest.request(
+	static Future<PostResponseModel> setDefaultEnvironment(String environmentName) async
+	{
+		var request = await HttpRequest.request(
 			'/environment/default',
 			method: 'PUT',
 			sendData: '"' + environmentName + '"',
 			mimeType: 'application/json');
 
+		if (request.status != 200)
+			throw 'Failed to set default environment to ' + environmentName + '. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
 //
 //-- Application config related server methods --------------------------------------------------
 //
-	static Future<String> getConfig(String machine, String application, String environment, String instance) async
+	static Future<String> getConfig(String machine, String application, String environment, String instance)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -169,7 +256,7 @@ class Server
 		return HttpRequest.getString(url);
 	}
 
-	static Future<String> traceConfig(String machine, String application, String environment, String instance) async
+	static Future<String> traceConfig(String machine, String application, String environment, String instance)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -188,7 +275,7 @@ class Server
 		return HttpRequest.getString(url);
 	}
 
-	static Future<String> testConfig(int version, String machine, String application, String environment, String instance) async
+	static Future<String> testConfig(int version, String machine, String application, String environment, String instance)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -216,16 +303,32 @@ class Server
 		return new ClientCredentialsModel(JSON.decode(response));
 	}
 
-	static Future<HttpRequest> logon(String userName, String password)
-		=> HttpRequest.request(
+	static Future<PostResponseModel> logon(String userName, String password) async
+	{
+		var request = HttpRequest.request(
 			'/logon', 
 			method: 'POST',
 			sendData: '{"username": "' + userName + '","password": "' + password + '"}',
 			mimeType: 'application/json',
 			responseType: 'application/json');
 
-	static Future<HttpRequest> logoff()
-		=> HttpRequest.request(
+		if (request.status != 200)
+			throw 'Failed to log on as ' + userName + '. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+	static Future<PostResponseModel> logoff() async
+	{
+		var request = HttpRequest.request(
 			'/logoff',
 			method: 'POST');
+
+		if (request.status != 200)
+			throw 'Failed to log off. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
 }
