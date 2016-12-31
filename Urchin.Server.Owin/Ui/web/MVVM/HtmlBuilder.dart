@@ -300,7 +300,7 @@ class HtmlBuilder
 		return _addElement(button, classNames, className, parent);
 	}
   
-	Element addInput(
+	InputElement addInput(
 		{
 		  List<String> classNames, 
 		  String className, 
@@ -311,7 +311,7 @@ class HtmlBuilder
 		return _addElement(input, classNames, className, parent);
 	}
 
-	Element addTextArea(
+	TextAreaElement addTextArea(
 		{
 		  List<String> classNames, 
 		  String className, 
@@ -322,7 +322,7 @@ class HtmlBuilder
 		return _addElement(input, classNames, className, parent);
 	}
 
-	Element addPassword(
+	PasswordInputElement addPassword(
 		{
 			List<String> classNames, 
 			String className, 
@@ -366,7 +366,7 @@ class HtmlBuilder
 		return dataField;
 	}
 
-	Element addLabeledEdit(Element form, String label,
+	InputElement addLabeledEdit(Element form, String label,
 		{
 			String className
 		})

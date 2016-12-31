@@ -5,6 +5,7 @@ import '../../MVVM/BoundLabel.dart';
 import '../../MVVM/BoundFormatter.dart';
 import '../../MVVM/BoundList.dart';
 import '../../MVVM/BoundTextInput.dart';
+import '../../MVVM/BoundTextArea.dart';
 
 import '../../Models/RuleModel.dart';
 import '../../Models/VariableModel.dart';
@@ -25,7 +26,7 @@ class RuleEditView extends View
 	BoundTextInput<String> _applicationInput;
 	BoundTextInput<String> _machineInput;
 	BoundTextInput<String> _environmentInput;
-	BoundTextInput<String> _configInput;
+	BoundTextArea<String> _configInput;
 	BoundList<VariableModel, VariableViewModel, VariableEditView> _variablesList;
 
 	RuleEditView([RuleViewModel viewModel])
@@ -59,7 +60,7 @@ class RuleEditView extends View
 		addHR();
 		addHeading(3, 'Configuration JSON');
 
-		_configInput = new BoundTextInput<String>(addTextArea(className: 'rule-config'));
+		_configInput = new BoundTextArea<String>(addTextArea(className: 'rule-config'));
 
 		this.viewModel = viewModel;
 	}

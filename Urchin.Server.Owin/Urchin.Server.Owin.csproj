@@ -192,6 +192,7 @@
     <Content Include="Ui\web\MVVM\Events.dart" />
     <Content Include="Ui\web\Models\VersionNameModel.dart" />
     <Content Include="Ui\web\MVVM\readme.md" />
+    <Content Include="Ui\web\MVVM\BoundTextArea.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>

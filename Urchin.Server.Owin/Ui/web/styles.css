@@ -393,6 +393,7 @@ span.button
 
 .input-field 
 {
+    vertical-align: top;
     display: inline;
     font-weight: bold;
     width: 150px;
@@ -485,4 +486,11 @@ textarea.rule-config
 div.variable-list div.variable
 {
     margin-bottom: 10px;   
+}
+
+div.rule-filter .input-field 
+{
+    width: 100px;
+    margin-left: 5px;
+    margin-right: 5px;
 }

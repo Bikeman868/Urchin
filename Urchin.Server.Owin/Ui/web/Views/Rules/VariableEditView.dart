@@ -2,6 +2,7 @@ import 'dart:html';
 
 import '../../MVVM/View.dart';
 import '../../MVVM/BoundTextInput.dart';
+import '../../MVVM/BoundTextArea.dart';
 
 import '../../Models/VariableModel.dart';
 
@@ -10,14 +11,14 @@ import '../../ViewModels/VariableViewModel.dart';
 class VariableEditView extends View
 {
 	BoundTextInput<String> _nameInput;
-	BoundTextInput<String> _valueInput;
+	BoundTextArea<String> _valueInput;
 
 	VariableEditView([VariableViewModel viewModel])
 	{
 		var div = addDiv(className: 'variable-edit');
 
 		_nameInput = new BoundTextInput<String>(addInput(classNames: ['variable-name', 'input-field'], parent: div));
-		_valueInput = new BoundTextInput<String>(addTextArea(classNames: ['variable-value', 'input-field'], parent: div));
+		_valueInput = new BoundTextArea<String>(addTextArea(classNames: ['variable-value', 'input-field'], parent: div));
 
 		this.viewModel = viewModel;
 	}
