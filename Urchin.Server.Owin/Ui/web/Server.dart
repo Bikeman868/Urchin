@@ -305,7 +305,7 @@ class Server
 
 	static Future<PostResponseModel> logon(String userName, String password) async
 	{
-		var request = HttpRequest.request(
+		var request = await HttpRequest.request(
 			'/logon', 
 			method: 'POST',
 			sendData: '{"username": "' + userName + '","password": "' + password + '"}',
@@ -321,7 +321,7 @@ class Server
 
 	static Future<PostResponseModel> logoff() async
 	{
-		var request = HttpRequest.request(
+		var request = await HttpRequest.request(
 			'/logoff',
 			method: 'POST');
 
