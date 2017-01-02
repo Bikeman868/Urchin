@@ -51,6 +51,7 @@ class RuleListView extends View
 
 		var filterButtonBar = addContainer(className: 'button-bar');
 		addButton("Apply", _applyFilterClicked, parent: filterButtonBar);
+		addButton("Clear", _clearFilterClicked, parent: filterButtonBar);
 
 		addHR();
 		addHeading(3, 'Rules');
@@ -98,6 +99,16 @@ class RuleListView extends View
 		_environmentFilter = environmentFilter.value;
 
 		_rulesBinding.refresh();
+	}
+
+	void _clearFilterClicked(MouseEvent e)
+	{
+		instanceFilter.value = '';
+		applicationFilter.value = '';
+		machineFilter.value = '';
+		environmentFilter.value = '';
+
+		_applyFilterClicked(e);
 	}
 
 	void _newClicked(MouseEvent e)
