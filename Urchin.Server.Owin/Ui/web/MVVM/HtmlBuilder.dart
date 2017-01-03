@@ -311,6 +311,17 @@ class HtmlBuilder
 		return _addElement(input, classNames, className, parent);
 	}
 
+	CheckboxInputElement addCheckbox(
+		{
+		  List<String> classNames, 
+		  String className, 
+		  Element parent
+		})
+	{
+		var input = new CheckboxInputElement();
+		return _addElement(input, classNames, className, parent);
+	}
+
 	TextAreaElement addTextArea(
 		{
 		  List<String> classNames, 
@@ -377,6 +388,19 @@ class HtmlBuilder
 		var dataField = addInput(parent: row, className: 'input-field');
 
 		return dataField;
+	}
+
+	CheckboxInputElement addLabeledCheckbox(Element form, String label,
+		{
+			String className
+		})
+	{
+		var row = addContainer(parent: form, classNames: ['data-row', className]);
+
+		var labelField = addInlineText(label, parent: row, className: 'data-label');
+		var checkbox = addCheckbox(parent: row, className: 'input-field');
+
+		return checkbox;
 	}
 
 	/******************************************************************************/

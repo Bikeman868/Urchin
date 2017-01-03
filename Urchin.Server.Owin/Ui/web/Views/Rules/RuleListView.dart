@@ -26,11 +26,13 @@ class RuleListView extends View
 	InputElement applicationFilter;
 	InputElement machineFilter;
 	InputElement environmentFilter;
+	CheckboxInputElement inclusiveCheckBox;
 
 	String _instanceFilter = '';
 	String _applicationFilter = '';
 	String _machineFilter = '';
 	String _environmentFilter = '';
+	bool _inclusiveFilter;
 
 	RuleListView([VersionViewModel viewModel])
 	{
@@ -48,6 +50,7 @@ class RuleListView extends View
 		applicationFilter = addLabeledEdit(filterForm, 'Application');
 		machineFilter = addLabeledEdit(filterForm, 'Machine');
 		environmentFilter = addLabeledEdit(filterForm, 'Environment');
+		inclusiveCheckBox = addLabeledCheckbox(filterForm, 'Inclusive');
 
 		var filterButtonBar = addContainer(className: 'button-bar');
 		addButton("Apply", _applyFilterClicked, parent: filterButtonBar);
@@ -83,10 +86,15 @@ class RuleListView extends View
 
 	bool matchesFilter(String s, StringBinding b)
 	{
-		if (s == null || b == null || s.length == 0) return true;
+		if (s == null || s.length == 0) 
+			return true;
+
+		if (b == null) 
+			return _inclusiveFilter;
 
 		String v = b.getProperty();
-		if (v == null || v.length == 0) return true;
+		if (v == null || v.length == 0) 
+			return _inclusiveFilter;
 
 		return s.toUpperCase() == v.toUpperCase();
 	}
@@ -97,6 +105,7 @@ class RuleListView extends View
 		_applicationFilter = applicationFilter.value;
 		_machineFilter = machineFilter.value;
 		_environmentFilter = environmentFilter.value;
+		_inclusiveFilter = inclusiveCheckBox.checked;
 
 		_rulesBinding.refresh();
 	}
