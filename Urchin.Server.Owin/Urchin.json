@@ -1,51 +1,114 @@
 ﻿{
-  "urchin":
-  {
-    "server":
-	  {
-	    "version":1,
-	    "persister":
-	    {
-	      "filePath":"c:\\temp\\rules.txt",
-		  "repository":"urchin"
-        },
-	    "ui":
-	    {
-	      "url":"/ui",
-	      "physicalPath":"~/ui/web",
-		  "faviconUrl":"/favicon.ico",
-		  "cache": false
-	    },
-	    "logon":
-	    {
-	      "administratorPassword":"password",
-		  "sessionExpiry":"00:45:00",
-		  "cookieName":"session_token"
-	    }
-	  }
-  },
+    "urchin": {
+        "server": {
+            "version": 1,
+            "persister": {
+                "filePath": "c:\\temp\\rules.txt",
+                "repository": "urchin"
+            },
+            "ui": {
+                "dart": {
+                    "dartUiRootUrl": "/ui",
+                    "defaultDocument": "index.html",
+                    "documentationRootUrl": "/ops/ui",
+                    "rootDartDirectory": "~\\ui\\web",
+                    "rootBuildDirectory": "~\\ui\\build\\web",
+                    "enabled": true,
+                    "version": 1,
+                    "maximumFileSizeToCache": 50000,
+                    "maximumCacheTime": "01:00:00",
+                    "requiredPermission": "",
+                    "fileExtensions": [
+                        {
+                            "extension": ".gif",
+                            "mimeType": "image/gif",
+                            "processing": "None",
+                            "expiry": "7.00:00:00"
+                        },
+                        {
+                            "extension": ".ico",
+                            "mimeType": "image/ico",
+                            "processing": "None",
+                            "expiry": "7.00:00:00"
+                        },
+                        {
+                            "extension": ".html",
+                            "mimeType": "text/html",
+                            "processing": "Html",
+                            "expiry": "7.00:00:00"
+                        },
+                        {
+                            "extension": ".css",
+                            "mimeType": "text/css",
+                            "processing": "Less",
+                            "expiry": "7.00:00:00"
+                        },
+                        {
+                            "extension":".js",
+                            "mimeType":"application/javascript",
+                            "processing":"JavaScript",
+                            "expiry":"01:00:00"
+                        },
+                        {
+                            "extension":".dart",
+                            "mimeType":"application/dart",
+                            "processing":"Dart",
+                            "expiry":"01:00:00"
+                        }
+                    ]
+                },
+                "outputCache": {
+                    "maximumCacheTime": "01:00:00"
+                }
+            },
+            "logon": {
+                "administratorPassword": "password",
+                "sessionExpiry": "00:45:00",
+                "cookieName": "session_token"
+            },
+            "notFound": {
+            },
+            "exceptionReporter": {
+                "localhost": true,
+                "emailAddress": "bitbucket@mailinator.com",
+                "subject": "Urchin unhandled exception"
+            },
+            "endpointDocumenter": {
+                "path": "/ops/endpoints",
+                "enabled": true,
+                "requiredPermission": ""
+            },
+            "analysisReporter": {
+                "path": "/ops/analytics",
+                "enabled": true,
+                "requiredPermission": "",
+                "defaultFormat": "text/html"
+            },
+            "visualizer": {
+                "path": "/ops/pipeline",
+                "enabled": true,
+                "requiredPermission": ""
+            },
+        }
+    },
 
-  "prius":
-  {
-    "databases":
-	  [ 
-	    {
-	      "name":"urchin", 
-		  "type":"MySql", 
-		  "connectionString":"Server=localhost;Port=3306;Uid=urchin;Pwd=password;Database=Urchin",
-		  "enabled":true
-	    } 
-	  ],
-	  "fallbackPolicies":
-	  [ 
-	    { "name":"dontFailover", "allowedFailurePercent":100 }
-	  ],
-	  "repositories":
-	  [
-	    {
-	      "name":"urchin", 
-		  "clusters":[ { "databases":["urchin"], "fallbackPolicy":"dontFailover" } ]
-	    }
-	  ]
-  }
+    "prius": {
+        "databases": [
+            {
+                "name": "urchin",
+                "type": "MySql",
+                "connectionString": "Server=localhost;Port=3306;Uid=urchin;Pwd=password;Database=Urchin",
+                "enabled": true
+            }
+        ],
+        "fallbackPolicies": [
+            { "name": "dontFailover", "allowedFailurePercent": 100 }
+        ],
+        "repositories": [
+            {
+                "name": "urchin",
+                "clusters": [ { "databases": [ "urchin" ], "fallbackPolicy": "dontFailover" } ]
+            }
+        ]
+    }
 }

@@ -10,10 +10,11 @@ using Newtonsoft.Json;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.Interfaces;
 using Urchin.Server.Shared.Rules;
+using OwinFramework.Interfaces.Builder;
 
 namespace Urchin.Server.Owin.Middleware
 {
-    public class ConfigEndpoint: ApiBase
+    public class ConfigEndpoint : ApiBase, IMiddleware<object>
     {
         private readonly IRuleData _ruleData;
         private readonly PathString _path;
@@ -25,7 +26,7 @@ namespace Urchin.Server.Owin.Middleware
             _path = new PathString("/config");
         }
 
-        public Task Invoke(IOwinContext context, Func<Task> next)
+        public override Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
             if (request.Method != "GET" || !_path.IsWildcardMatch(request.Path))

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
+using OwinFramework.Interfaces.Builder;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
@@ -15,7 +16,7 @@ using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
-    public class TestEndpoint: ApiBase
+    public class TestEndpoint : ApiBase, IMiddleware<object>
     {
         private readonly IRuleData _ruleData;
         private readonly PathString _draftVersionPath;
@@ -29,7 +30,7 @@ namespace Urchin.Server.Owin.Middleware
             _versionPath = new PathString("/test/{version}");
         }
 
-        public Task Invoke(IOwinContext context, Func<Task> next)
+        public override Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
             if (request.Method != "GET")

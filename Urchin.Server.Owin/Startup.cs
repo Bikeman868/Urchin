@@ -7,9 +7,19 @@ using Microsoft.Owin;
 using Microsoft.Owin.BuilderProperties;
 using Microsoft.Practices.Unity;
 using Owin;
+using OwinFramework.AnalysisReporter;
+using OwinFramework.Builder;
+using OwinFramework.Dart;
+using OwinFramework.Documenter;
+using OwinFramework.ExceptionReporter;
+using OwinFramework.Interfaces.Routing;
+using OwinFramework.RouteVisualizer;
 using Urchin.Client.Interfaces;
 using Urchin.Client.Sources;
 using Urchin.Server.Owin;
+using OwinFramework.Interfaces.Builder;
+using OwinFramework.NotFound;
+using OwinFramework.OutputCache;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -17,19 +27,22 @@ namespace Urchin.Server.Owin
 {
     public class Startup
     {
+
+        private static IDisposable _configurationFileSource;
+
         public void Configuration(IAppBuilder app)
         {
             try
             {
                 var iocContainer = ConfigureUnity();
-                var configSource = ConfigureUrchinClient(iocContainer);
+                _configurationFileSource = ConfigureUrchinClient(iocContainer);
                 ConfigureMiddleware(app, iocContainer);
 
                 var properties = new AppProperties(app.Properties);
                 var token = properties.OnAppDisposing;
                 token.Register(() =>
                 {
-                    configSource.Dispose();
+                    _configurationFileSource.Dispose();
                     iocContainer.Dispose();
                 });
             }
@@ -79,28 +92,118 @@ namespace Urchin.Server.Owin
         {
             try
             {
-                // This must be the first endpoint because it establishes client credentials
-                app.Use(unityContainer.Resolve<Middleware.LogonEndpoint>().Invoke);
+                var config = unityContainer.Resolve<IConfiguration>();
+                var builder = unityContainer.Resolve<IBuilder>();
 
-                // These endpoints are called by production servers
-                app.Use(unityContainer.Resolve<Middleware.ConfigEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.HelloEndpoint>().Invoke);
+                // Define routes through the OWIN pipeline
 
-                // These endpoints are for administration only and have very low throughput
-                app.Use(unityContainer.Resolve<Middleware.UiEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.TraceEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.VersionEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.VersionsEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.RuleEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.RulesEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.RuleNamesEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.PostRuleEndpoint>().Invoke);
-                app.Use(unityContainer.Resolve<Middleware.TestEndpoint>().Invoke);
+                var configPath = new PathString("/config");
+                var opsPath = new PathString("/ops");
+                var uiPath = new PathString("/ui");
 
-                // This must be the last endpoint because it always returns a 404
-                app.Use(unityContainer.Resolve<Middleware.NotFoundMiddleware>().Invoke);
+                builder.Register(unityContainer.Resolve<IRouter>())
+                    .AddRoute("Config", c => c.Request.Path.StartsWithSegments(configPath))
+                    .AddRoute("Ops", c => c.Request.Path.StartsWithSegments(opsPath))
+                    .AddRoute("Ui", c => c.Request.Path.StartsWithSegments(uiPath))
+                    .AddRoute("Admin", c => true)
+                    .As("Router");
+                
+                // The logon middleware establishes the cllient ientity and must
+                // run on all routes before any other middleware
+                builder.Register(unityContainer.Resolve<Middleware.LogonEndpoint>())
+                    .As("Logon")
+                    .RunFirst()
+                    .RunAfter("Exception reporter")
+                    .ConfigureWith(config, "/urchin/server/logon");
+
+                builder.Register(unityContainer.Resolve<Middleware.ConfigEndpoint>())
+                    .As("Config")
+                    .RunOnRoute("Config");
+
+                builder.Register(unityContainer.Resolve<Middleware.HelloEndpoint>())
+                    .As("Hello")
+                    .RunOnRoute("Ops");
+
+                builder.Register(unityContainer.Resolve<Middleware.TraceEndpoint>())
+                    .As("Trace")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.DefaultEnvironmentEndpoint>())
+                    .As("Default environment")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.EnvironmentsEndpoint>())
+                    .As("Environments")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.VersionEndpoint>())
+                    .As("Version")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.VersionsEndpoint>())
+                    .As("Versions")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.RuleEndpoint>())
+                    .As("Rule")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.RulesEndpoint>())
+                    .As("Rules")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.RuleNamesEndpoint>())
+                    .As("RuleNames")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.PostRuleEndpoint>())
+                    .As("Post rule")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<Middleware.TestEndpoint>())
+                    .As("Test")
+                    .RunOnRoute("Admin");
+
+                builder.Register(unityContainer.Resolve<DartMiddleware>())
+                    .As("Dart UI")
+                    .RunOnRoute("UI")
+                    .RunOnRoute("Ops")
+                    .RunAfter("UI output cache")
+                    .ConfigureWith(config, "/urchin/server/ui/dart");
+
+                builder.Register(unityContainer.Resolve<OutputCacheMiddleware>())
+                    .As("UI output cache")
+                    .RunOnRoute("UI")
+                    .ConfigureWith(config, "/urchin/server/ui/outputCache");
+
+                builder.Register(unityContainer.Resolve<NotFoundMiddleware>())
+                    .As("Not found")
+                    .RunLast()
+                    .RunOnRoute("Ops")
+                    .RunOnRoute("Admin")
+                    .ConfigureWith(config, "/urchin/server/notFound");
+
+                builder.Register(unityContainer.Resolve<ExceptionReporterMiddleware>())
+                    .As("Exception reporter")
+                    .RunFirst()
+                    .ConfigureWith(config, "/urchin/server/exceptionReporter");
+             
+                builder.Register(unityContainer.Resolve<DocumenterMiddleware>())
+                    .As("Endpoint documenter")
+                    .RunOnRoute("Ops")
+                    .ConfigureWith(config, "/urchin/server/endpointDocumenter");
+
+                builder.Register(unityContainer.Resolve<AnalysisReporterMiddleware>())
+                    .As("Analysis reporter")
+                    .RunOnRoute("Ops")
+                    .ConfigureWith(config, "/urchin/server/analysisReporter");
+
+                builder.Register(unityContainer.Resolve<RouteVisualizerMiddleware>())
+                    .As("Route visualizer")
+                    .RunOnRoute("Ops")
+                    .ConfigureWith(config, "/urchin/server/visualizer");
+            
+                app.UseBuilder(builder);
             }
             catch (Exception ex)
             {

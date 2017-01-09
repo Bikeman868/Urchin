@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Newtonsoft.Json.Linq;
+using OwinFramework.Interfaces.Builder;
 using Urchin.Client.Interfaces;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
@@ -13,7 +14,7 @@ using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
-    public class LogonEndpoint: ApiBase, IDisposable
+    public class LogonEndpoint: ApiBase, IDisposable, IMiddleware<object>
     {
         private readonly IDisposable _configChangeNotifier;
         private readonly PathString _logonPath;
@@ -39,7 +40,7 @@ namespace Urchin.Server.Owin.Middleware
             _configChangeNotifier.Dispose();
         }
 
-        public Task Invoke(IOwinContext context, Func<Task> next)
+        public override Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
 

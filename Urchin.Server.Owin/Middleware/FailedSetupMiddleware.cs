@@ -14,7 +14,7 @@ namespace Urchin.Server.Owin.Middleware
             _exception = exception;
         }
 
-        public Task Invoke(IOwinContext context, Func<Task> next)
+        public override Task Invoke(IOwinContext context, Func<Task> next)
         {
             var content = new StringBuilder();
             content.Append("The Urchin Server failed to initialize correctly on ");

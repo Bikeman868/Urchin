@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
+using OwinFramework.Interfaces.Builder;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
@@ -15,7 +16,7 @@ using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
-    public class PostRuleEndpoint: ApiBase
+    public class PostRuleEndpoint : ApiBase, IMiddleware<object>
     {
         private readonly IRuleData _ruleData;
         private readonly PathString _path;
@@ -27,7 +28,7 @@ namespace Urchin.Server.Owin.Middleware
             _path = new PathString("/rule/{version}");
         }
 
-        public Task Invoke(IOwinContext context, Func<Task> next)
+        public override Task Invoke(IOwinContext context, Func<Task> next)
         {
             var request = context.Request;
             if (!_path.IsWildcardMatch(request.Path) || request.Method != "POST")
