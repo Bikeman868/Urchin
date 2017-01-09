@@ -9,9 +9,9 @@ These models are mostly there to allow easy serialization and deserialization of
 
 Model classes should extend `Model` and add properties that map to elements of JSON like this:
 
-import 'Model.dart';
-
 ```
+    import 'Model.dart';
+
     class VersionNameModel extends Model
     {
     	VersionNameModel(Map json) : super(json);
@@ -73,7 +73,7 @@ Models can contain lists of other models. For example:
     }
 ```
 
-In this case the serialization and deserialization to/from the server is slighty more involved. For example:
+In this case the serialization and deserialization to/from the server is slightly more involved. For example:
 
 ```
     static Future<List<EnvironmentModel>> getEnvironments() async
@@ -162,7 +162,7 @@ To create a view model, write a class that extends `ViewModel`, for example:
 
 This example view model accepts a `MachineModel` in its constructor then provides a bindable
 `name` property that will get/set the `name` property of the model, and maintain a `ChangeState`
-that alows us to check is the model was modified.
+that allows us to check is the model was modified.
 
 This example uses the `StringBinding` class to provide the two-way binding to the `name` property
 of the model. There are also:
@@ -215,8 +215,8 @@ class MachineNameView extends View
 ```
 
 This example constructs a `span` tag that is bound to the `name` property of a `MachineViewModel`. In this
-example it also appends a space to the end of the machine name so that you can use this view in a repeater,
-and it adds the css class name `machine-name` to the span so that it can be styled.
+example it also appends a space to the end of the machine name so that you can use this view in a repeater.
+It also adds the css class name `machine-name` to the span so that it can be styled.
 
 ### Binding HTML in views
 
@@ -237,18 +237,18 @@ property needs to be expanded into a complex nested html fragment.
 list by constructing a view for each view model in the bound list. When items are added or removed from the list
 the `BoundRepeater` will add and remove views from the UI.
 
-`BoundList` is similar to `BoundRepeater` except that it wraps each view in a `li` and attatches `onCllick` handlers
+`BoundList` is similar to `BoundRepeater` except that it wraps each view in a `li` and attaches `onCllick` handlers
 to allow the user to choose items from the list. It can also render add/remove buttons that allow the user to
 create new models with corresponding view models.
 
 `BoundGrid` is similar to `BoundRepeater` except that it wraps each view in a `div` decorated with css classes
-that can make the divs tile. It also attatches `onCllick` handlers to allow the user to choose items from the grid. 
+that can make the divs tile. It also attaches `onCllick` handlers to allow the user to choose items from the grid. 
 
-`BoundTextInput` provides two-way bidning of the `value` attribute of an `input` element to a bindable property
+`BoundTextInput` provides two-way binding of the `value` attribute of an `input` element to a bindable property
 of a view model.
 
 ### Constructing HTML
 
 The example above calls the `addSpan()` method that it inherited from the `HtmlBuilder` class. In your views you
-can use these methods, or any other standard Dart technique for constructing HTML elements, or finding HTML elements
-in HTML templates installed with your application.
+can use these methods, or any other standard Dart technique for constructing HTML elements, or you can deploy HTML
+templates and use standard Dart libraries to find elements in the page, and pass those to the bound control class.
