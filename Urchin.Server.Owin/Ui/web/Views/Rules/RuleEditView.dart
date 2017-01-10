@@ -33,7 +33,7 @@ class RuleEditView extends View
 	{
 		_headingLabel = new BoundLabel<String>(
 			addHeading(2, 'Rule Details'), 
-			formatMethod: (s) => 'Version ' + _viewModel.version.toString() + ' of ' + s);
+			formatMethod: (s) => 'Edit Version ' + _viewModel.version.toString() + ' of ' + s +  ' Rule');
 
 		var form1 = addForm();
 		_nameInput = new BoundTextInput<String>(addLabeledEdit(form1, 'Unique rule name', className: 'rule-name'));

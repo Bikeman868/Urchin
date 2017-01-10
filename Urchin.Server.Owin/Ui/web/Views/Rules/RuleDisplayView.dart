@@ -32,7 +32,7 @@ class RuleDisplayView extends View
 	{
 		_ruleName = new BoundLabel<String>(
 			addHeading(2, 'Rule Details'), 
-			formatMethod: (s) => 'Version ' + _viewModel.version.toString() + ' of ' + s);
+			formatMethod: (s) => 'Version ' + _viewModel.version.toString() + ' of ' + s + ' Rule');
 
 		addInlineText('This rule applies to');
 

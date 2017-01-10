@@ -85,11 +85,11 @@ void _tabChanged(TabChangedEvent e)
 
 	if (e.tabName == 'Rules')
 	{
-		_displayVersionList(_leftDiv);
+		_displayVersionList(_leftDiv, 'Rule Versions');
 		_currentView = 'Rules';
 	}
 	else if (e.tabName == 'Environments') _displayEnvironmentList(_leftDiv);
-	else if (e.tabName == 'Versions') _displayVersionList(_leftDiv);
+	else if (e.tabName == 'Versions') _displayVersionList(_leftDiv, 'Edit Versions');
 }
 
 String _currentView;
@@ -226,13 +226,14 @@ void _displayRuleConfig(RuleViewModel rule, Element panel)
 
 VersionListView _versionListView;
 
-void _displayVersionList(Element panel)
+void _displayVersionList(Element panel, String title)
 {
 	_currentView = 'Versions';
 
 	if (_versionListView == null)
 		_versionListView = new VersionListView(_dataViewModel.versionList);
 
+	_versionListView.Title = title;
 	_versionListView.displayIn(panel);
 }
 

@@ -18,7 +18,7 @@ class EnvironmentListView extends View
 
 	EnvironmentListView([EnvironmentListViewModel viewModel])
 	{
-		addHeading(3, 'Environments');
+		addHeading(3, 'Edit Environments');
 
 		_environmentsBinding = new BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
 			(vm) => new EnvironmentNameView(vm), 

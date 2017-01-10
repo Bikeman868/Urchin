@@ -20,7 +20,7 @@ class VersionListView extends View
 
 	VersionListView([VersionListViewModel viewModel])
 	{
-		addHeading(3, 'Versions');
+		_heading = addHeading(3, 'Edit Versions');
 
 		_versionsBinding = new BoundList<VersionModel, VersionViewModel, VersionListElementView>(
 			(vm) => new VersionListElementView(vm), 
@@ -34,6 +34,13 @@ class VersionListView extends View
 		addButton("Get Draft", _draftClicked, parent: buttonBar);
 
 		this.viewModel = viewModel;
+	}
+
+	Element _heading;
+	void set Title (String value)
+	{
+		if (_heading != null)
+			_heading.innerHtml = value;
 	}
 
 	void _saveClicked(MouseEvent e)

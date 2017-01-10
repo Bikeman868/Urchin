@@ -1,7 +1,6 @@
 ﻿{
     "urchin": {
         "server": {
-            "version": 1,
             "persister": {
                 "filePath": "c:\\temp\\rules.txt",
                 "repository": "urchin"
@@ -58,7 +57,7 @@
                     ]
                 },
                 "outputCache": {
-                    "maximumCacheTime": "01:00:00"
+                    "maximumCacheTime": "00:01:00"
                 }
             },
             "logon": {

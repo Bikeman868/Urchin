@@ -38,12 +38,12 @@ class RuleListView extends View
 	{
 		_versionLabel = new BoundLabel<int>(
 			addHeading(3, 'Version Details'), 
-			formatMethod: (s) => 'Version ' + s);
+			formatMethod: (s) => 'Version ' + s + ' Rules');
 
 		_nameLabel = new BoundLabel<String>(addDiv());
 
 		addHR();
-		addHeading(3, 'Rule filter');
+		addHeading(3, 'Show only these rules');
 
 		var filterForm = addForm(className: 'rule-filter');
 		instanceFilter = addLabeledEdit(filterForm, 'Instance');
@@ -53,11 +53,11 @@ class RuleListView extends View
 		inclusiveCheckBox = addLabeledCheckbox(filterForm, 'Inclusive');
 
 		var filterButtonBar = addContainer(className: 'button-bar');
-		addButton("Apply", _applyFilterClicked, parent: filterButtonBar);
-		addButton("Clear", _clearFilterClicked, parent: filterButtonBar);
+		addButton("Apply Filter", _applyFilterClicked, parent: filterButtonBar);
+		addButton("Clear Filter", _clearFilterClicked, parent: filterButtonBar);
 
 		addHR();
-		addHeading(3, 'Rules');
+		addHeading(3, 'Filtered list of rules');
 
 		_rulesBinding = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
 			(vm) => new RuleNameView(vm), 
@@ -67,7 +67,7 @@ class RuleListView extends View
 			viewModelFilter: _ruleFilter);
 
 		var buttonBar = addContainer(className: 'button-bar');
-		addButton("New", _newClicked, parent: buttonBar);
+		addButton("New Rule", _newClicked, parent: buttonBar);
 		addButton("Save", _saveClicked, parent: buttonBar);
 		addButton("Discard", _discardClicked, parent: buttonBar);
 
