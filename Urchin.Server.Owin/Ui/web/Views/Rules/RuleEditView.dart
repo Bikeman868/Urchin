@@ -35,11 +35,13 @@ class RuleEditView extends View
 			addHeading(2, 'Rule Details'), 
 			formatMethod: (s) => 'Edit Version ' + _viewModel.version.toString() + ' of ' + s +  ' Rule');
 
+		addBlockText('Each rule must have a name that is unique within this version', className: 'help-note');
+
 		var form1 = addForm();
 		_nameInput = new BoundTextInput<String>(addLabeledEdit(form1, 'Unique rule name', className: 'rule-name'));
 
 		addHR();
-		addBlockText('Choose where to apply this rule. Leave blank to apply to all.');
+		addBlockText('Choose where to apply this rule. Leave boxes blank to apply to all.<br>The save button will just save this specific version of this rule.', className: 'help-note');
 
 		var form2 = addForm();
 		_instanceInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to instance', className: 'rule-instance'));
@@ -53,12 +55,16 @@ class RuleEditView extends View
 		addHR();
 		addHeading(3, 'Variables');
 
+		addBlockText(r'Variables can be referenced within the configuration JSON using ($variable$).<br>Note that rules are evaluated twice, once to set all the variables and a second time to merge<br>all the configuration JSON after the variables have all been set.', className: 'help-note');
+
 		_variablesList = new BoundList<VariableModel, VariableViewModel, VariableEditView>(
 			(vm) => new VariableEditView(vm), 
 			addContainer(className: 'rule-variables'));
 
 		addHR();
 		addHeading(3, 'Configuration JSON');
+
+		addBlockText('This JSON will be send to the application to configure it.<br>Where multiple rules apply the JSON is merged with more specific rules replacing less specific ones.', className: 'help-note');
 
 		_configInput = new BoundTextArea<String>(addTextArea(className: 'rule-config'));
 

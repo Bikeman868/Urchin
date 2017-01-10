@@ -32,14 +32,16 @@ class VersionEditView extends View
 	{
 		_versionLabel1 = new BoundLabel<int>(
 			addHeading(2, 'Version Details'), 
-			formatMethod: (s) => 'Version ' + s);
+			formatMethod: (s) => 'Edit Version ' + s);
 
 		var form = addForm();
 		_nameInput = new BoundTextInput<String>(addLabeledEdit(form, 'Version name'));
 
 		_versionLabel2 = new BoundLabel<int>(
 			addHeading(3, 'Environments'), 
-			formatMethod: (s) => 'Environments Using Version ' + s + ' Rules');
+			formatMethod: (s) => 'Environments using version ' + s + ' rules');
+
+		addBlockText('Editing this version of the rules could impact the environments listed below:', className: 'help-note');
 
 		_environmentsList = new BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
 			(vm) => new EnvironmentNameView(vm), 
@@ -56,6 +58,8 @@ class VersionEditView extends View
 		_versionLabel3 = new BoundLabel<int>(
 			addHeading(3, 'Rules'), 
 			formatMethod: (s) => 'Version ' + s + ' Rules');
+
+		addBlockText('These are the rules defined in this version', className: 'help-note');
 
 		_rulesList = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
 			(vm) => new RuleNameView(vm), 

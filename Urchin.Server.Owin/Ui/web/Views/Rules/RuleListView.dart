@@ -44,6 +44,7 @@ class RuleListView extends View
 
 		addHR();
 		addHeading(3, 'Show only these rules');
+		addBlockText('You can use this filter to find the rules that you want to modify', className: 'help-note');
 
 		var filterForm = addForm(className: 'rule-filter');
 		instanceFilter = addLabeledEdit(filterForm, 'Instance');
@@ -58,6 +59,7 @@ class RuleListView extends View
 
 		addHR();
 		addHeading(3, 'Filtered list of rules');
+		addBlockText('Choose which rule you want to modify. You can also create and delete rules. The save button will save all changes to this version of the rules.', className: 'help-note');
 
 		_rulesBinding = new BoundList<RuleModel, RuleViewModel, RuleNameView>(
 			(vm) => new RuleNameView(vm), 

@@ -27,8 +27,9 @@ class EnvironmentEditView extends View
 	EnvironmentEditView([EnvironmentViewModel viewModel])
 	{
 		_titleBinding1 = new BoundLabel<String>(
-			addHeading(1, 'Environment Details'), 
-			formatMethod: (s) => s + ' Environment');
+			addHeading(2, 'Environment Details'), 
+			formatMethod: (s) => 'Edit ' + s + ' Environment');
+		addBlockText('Rules can be restricted to only the software running in a specific environment. Each environment uses a specific version of the rules.', className: 'help-note');
 
 		var form = addForm();
 		_nameBinding = new BoundTextInput<String>(addLabeledEdit(form, 'Environment name'));
@@ -41,8 +42,9 @@ class EnvironmentEditView extends View
 		addHR();
 
 		_titleBinding2 = new BoundLabel<String>(
-			addHeading(2, 'Environment Computers'), 
-			formatMethod: (s) => s + ' Computers');
+			addHeading(3, 'Environment Computers'), 
+			formatMethod: (s) => s + ' environment computers');
+		addBlockText('These computers will use this environment\'s configuration by default', className: 'help-note');
 
 		_machinesBinding = new BoundList<MachineModel, MachineViewModel, MachineEditView>(
 			(vm) => new MachineEditView(vm), 
@@ -50,7 +52,8 @@ class EnvironmentEditView extends View
 
 		addHR();
 
-		addHeading(2, 'Allowed IP Address Ranges');
+		addHeading(3, 'Allowed IP Address Ranges');
+		addBlockText('Only computers with allowed IP addresses will be able to retrieve configuration for this environment', className: 'help-note');
 			
 		_securityRulesBinding = new BoundList<SecurityRuleModel, SecurityRuleViewModel, SecurityRuleEditView>(
 			(vm) => new SecurityRuleEditView(vm), 

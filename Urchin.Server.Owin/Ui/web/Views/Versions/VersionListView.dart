@@ -21,6 +21,7 @@ class VersionListView extends View
 	VersionListView([VersionListViewModel viewModel])
 	{
 		_heading = addHeading(3, 'Edit Versions');
+		_helpText = addBlockText('Choose a version to edit from the list below', className: 'help-note');
 
 		_versionsBinding = new BoundList<VersionModel, VersionViewModel, VersionListElementView>(
 			(vm) => new VersionListElementView(vm), 
@@ -41,6 +42,13 @@ class VersionListView extends View
 	{
 		if (_heading != null)
 			_heading.innerHtml = value;
+	}
+
+	Element _helpText;
+	void set Description (String value)
+	{
+		if (_helpText != null)
+			_helpText.innerHtml = value;
 	}
 
 	void _saveClicked(MouseEvent e)

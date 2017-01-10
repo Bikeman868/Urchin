@@ -85,11 +85,22 @@ void _tabChanged(TabChangedEvent e)
 
 	if (e.tabName == 'Rules')
 	{
-		_displayVersionList(_leftDiv, 'Rule Versions');
+		_displayVersionList(
+			_leftDiv, 'Rule Versions', 
+			'Choose which version of the rules you want to edit or create a draft version which is not used by any environment.');
+
 		_currentView = 'Rules';
 	}
-	else if (e.tabName == 'Environments') _displayEnvironmentList(_leftDiv);
-	else if (e.tabName == 'Versions') _displayVersionList(_leftDiv, 'Edit Versions');
+	else if (e.tabName == 'Environments') 
+	{
+		_displayEnvironmentList(_leftDiv);
+	}
+	else if (e.tabName == 'Versions') 
+	{
+		_displayVersionList(
+			_leftDiv, 'Edit Versions', 
+			'Choose a version to edit. You can also delete old versions here, or create a new draft version that can be modified safely. The save button will save changes to all versions.');
+	}
 }
 
 String _currentView;
@@ -131,6 +142,11 @@ void _ruleEdit(RuleEditEvent e)
 }
 
 /*************************************************************************/
+
+void clearPanel(Element panel)
+{
+	panel.children.clear();
+}
 
 EnvironmentListView _environmentListView;
 
@@ -226,7 +242,7 @@ void _displayRuleConfig(RuleViewModel rule, Element panel)
 
 VersionListView _versionListView;
 
-void _displayVersionList(Element panel, String title)
+void _displayVersionList(Element panel, String title, String description)
 {
 	_currentView = 'Versions';
 
@@ -234,6 +250,8 @@ void _displayVersionList(Element panel, String title)
 		_versionListView = new VersionListView(_dataViewModel.versionList);
 
 	_versionListView.Title = title;
+	_versionListView.Description = description;
+
 	_versionListView.displayIn(panel);
 }
 
