@@ -64,7 +64,11 @@ class RuleEditView extends View
 		addHR();
 		addHeading(3, 'Configuration JSON');
 
-		addBlockText('This JSON will be send to the application to configure it.<br>Where multiple rules apply the JSON is merged with more specific rules replacing less specific ones.', className: 'help-note');
+		addBlockText(r'This JSON will be send to the application to configure it.' +
+			r'<br>Where multiple rules apply the JSON is merged with more specific rules replacing less specific ones.' +
+			r'<br>The value of variables can be inserted by putting the variable name in like this ($variable$).' +
+			r'<br>These variables are pre-defined and always available ($machine$) ($application$) ($instance$) ($environment$)', 
+			className: 'help-note');
 
 		_configInput = new BoundTextArea<String>(addTextArea(className: 'rule-config'));
 
