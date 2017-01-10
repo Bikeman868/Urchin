@@ -501,5 +501,18 @@ div.help-note
 {
     font-weight: lighter;
     font-size: smaller;
+    font-style: italic;
+    color: #00254d;
     margin-bottom: 10px;   
+}
+
+div.environment-list
+{
+    margin-left: 10px;
+}
+
+div.environment-list span.environment-name
+{
+    display: block;
+    margin-bottom: 3px;
 }

@@ -87,7 +87,7 @@ void _tabChanged(TabChangedEvent e)
 	{
 		_displayVersionList(
 			_leftDiv, 'Rule Versions', 
-			'Choose which version of the rules you want to edit or create a draft version which is not used by any environment.');
+			'Choose which version of the rules you want to edit, or create a draft version which is not used by any environment.');
 
 		_currentView = 'Rules';
 	}
@@ -99,7 +99,7 @@ void _tabChanged(TabChangedEvent e)
 	{
 		_displayVersionList(
 			_leftDiv, 'Edit Versions', 
-			'Choose a version to edit. You can also delete old versions here, or create a new draft version that can be modified safely. The save button will save changes to all versions.');
+			'Choose a version to edit. You can also delete old versions here, or create a new draft version that can be modified safely.<br>The save button will save changes to all versions.');
 	}
 }
 

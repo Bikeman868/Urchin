@@ -34,6 +34,12 @@ class VersionEditView extends View
 			addHeading(2, 'Version Details'), 
 			formatMethod: (s) => 'Edit Version ' + s);
 
+		addBlockText('You can name your versions here to make them easier to manage.' +
+			'<br>Saving changes to a version that is live for an environment will immediately' +
+			'<br>change the configuration of software in that environment.' +
+			'<br>The save button will save all changes to this version including rule changes.'
+			, className: 'help-note');
+
 		var form = addForm();
 		_nameInput = new BoundTextInput<String>(addLabeledEdit(form, 'Version name'));
 
@@ -41,11 +47,11 @@ class VersionEditView extends View
 			addHeading(3, 'Environments'), 
 			formatMethod: (s) => 'Environments using version ' + s + ' rules');
 
-		addBlockText('Editing this version of the rules could impact the environments listed below:', className: 'help-note');
+		addBlockText('These are the environments that are using this version of the rules.', className: 'help-note');
 
 		_environmentsList = new BoundRepeater<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
 			(vm) => new EnvironmentNameView(vm), 
-			addContainer(),
+			addContainer(className: 'environment-list'),
 			viewModelFilter: (vm) => _viewModel != null && vm.version.getProperty() == _viewModel.version.getProperty());
 
 		var buttonBar = addContainer(className: 'button-bar');

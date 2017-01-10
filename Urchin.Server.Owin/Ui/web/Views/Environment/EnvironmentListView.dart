@@ -19,7 +19,11 @@ class EnvironmentListView extends View
 	EnvironmentListView([EnvironmentListViewModel viewModel])
 	{
 		addHeading(3, 'Edit Environments');
-		addBlockText('Choose an environment to edit. You can also create new environments and delete environments here. The Save button will save all changes to all environments', className: 'help-note');
+
+		addBlockText('Choose an environment to edit.' + 
+			'<br>You can also create new environments and delete environments here.' +
+			'<br>The Save button will save all changes to all environments'
+			, className: 'help-note');
 
 		_environmentsBinding = new BoundList<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
 			(vm) => new EnvironmentNameView(vm), 
