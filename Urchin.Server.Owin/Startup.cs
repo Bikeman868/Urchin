@@ -143,7 +143,7 @@ namespace Urchin.Server.Owin
                     .As("Config");
 
                 /******************************************************************************
-                 * Middleware to help the ops team to troubleshoot issues
+                 * Middleware to help the ops team to manage the Urchin service
                  *****************************************************************************/
 
                 builder.Register(unityContainer.Resolve<Middleware.HelloEndpoint>())
