@@ -7,54 +7,54 @@
             },
             "ui": {
                 "dart": {
-                    "dartUiRootUrl": "/ui",
+                    "uiRootUrl": "/ui",
                     "defaultDocument": "index.html",
                     "documentationRootUrl": "/ops/ui",
-                    "rootDartDirectory": "~\\ui\\web",
-                    "rootBuildDirectory": "~\\ui\\build\\web",
-                    "enabled": true,
-                    "version": 1,
+                    "dartUiRoot": "/ui/web",
+                    "compiledUiRootUrl": "/ui/build/web"
+                },
+                "less": {
+                    "rootUrl": "/ui",
+                    "rootDirectory": "~\\ui",
+                    "documentationRootUrl": "/ops/less"
+                },
+                "staticFiles": {
+                    "staticFilesRootUrl": "/ui",
+                    "rootDirectory": "~\\ui",
+                    "documentationRootUrl": "/ops/staticFiles",
                     "maximumFileSizeToCache": 50000,
                     "maximumCacheTime": "01:00:00",
-                    "requiredPermission": "",
                     "fileExtensions": [
                         {
                             "extension": ".gif",
-                            "mimeType": "image/gif",
-                            "processing": "None",
-                            "expiry": "7.00:00:00"
+                            "mimeType": "image/gif"
                         },
                         {
                             "extension": ".ico",
-                            "mimeType": "image/ico",
-                            "processing": "None",
-                            "expiry": "7.00:00:00"
+                            "mimeType": "image/ico"
                         },
                         {
                             "extension": ".html",
-                            "mimeType": "text/html",
-                            "processing": "Html",
-                            "expiry": "7.00:00:00"
+                            "mimeType": "text/html"
                         },
                         {
                             "extension": ".css",
-                            "mimeType": "text/css",
-                            "processing": "Less",
-                            "expiry": "7.00:00:00"
+                            "mimeType": "text/css"
                         },
                         {
                             "extension":".js",
-                            "mimeType":"application/javascript",
-                            "processing":"JavaScript",
-                            "expiry":"01:00:00"
+                            "mimeType":"application/javascript"
                         },
                         {
                             "extension":".dart",
-                            "mimeType":"application/dart",
-                            "processing":"Dart",
-                            "expiry":"01:00:00"
+                            "mimeType":"application/dart"
                         }
                     ]
+                },
+                "versioning": {
+                    "version": 1,
+                    "mimeTypes": ["text/html", "text/css", "application/javascript", "application/dart"],
+                    "fileExtensions": [".css", ".html", ".ico", ".gif", ".js", ".dart"]
                 },
                 "outputCache": {
                     "maximumCacheTime": "00:01:00"
