@@ -23,7 +23,8 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
 			this.allowAdd : true,
 			this.allowRemove : true,
 			this.showDeleted : false,
-			this.viewModelFilter : null
+			this.viewModelFilter : null,
+			this.staticListItems : null
 		}) 
 		: super(viewFactory, listContainer, selectionMethod: selectionMethod)
     {
@@ -33,6 +34,7 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
 	bool allowRemove;
 	bool showDeleted;
 	Filter<TVM> viewModelFilter;
+	List<View> staticListItems;
 
     void initializeContainer(Element container)
     {
@@ -46,6 +48,15 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
         if (container == null) return;
 
 		var builder = new HtmlBuilder();
+
+		if (staticListItems != null)
+		{
+			for (var view in staticListItems)
+			{
+				var listItem = builder.addListElement(className:'bound-list-item');
+				view.addTo(listItem);
+			}
+		}
 
         if (binding != null && binding.viewModels != null)
         {

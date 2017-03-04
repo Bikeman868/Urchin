@@ -18,6 +18,9 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 	
 	// Defines how to create new view models
 	ViewModelFactory<TM, TVM> viewModelFactory;
+
+	// Defines how to update a view model with new data
+	ViewModelUpdater<TM, TVM> viewModelUpdater;
   
 	// Raised after a new model is added to the list
 	SubscriptionEvent<ListEvent> onAdd = new SubscriptionEvent<ListEvent>();
@@ -38,7 +41,7 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 	List<TM> _models;
 	List<TM> get models => _models;
 
-	ModelList(this.modelFactory, this.viewModelFactory, [List<TM> models])
+	ModelList(this.modelFactory, this.viewModelFactory, [List<TM> models, this.viewModelUpdater])
 	{
 		_viewModels = new List<TVM>();
 		this.models = models;
@@ -55,6 +58,26 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 			_models.forEach((TM m) => _viewModels.add(viewModelFactory(m)));
 
 		onListChanged.raise(new ListEvent(-1));
+	}
+
+	void replaceModels(List<TM> models)
+	{
+		if (
+			_models == null || 
+			models == null || 
+			_models.length != models.length ||
+			viewModelUpdater == null)
+		{
+			this.models = models;
+		}
+		else
+		{
+			_models = models;
+			for(var i = 0; i < models.length; i++)
+			{
+				viewModelUpdater(_viewModels[i], models[i]);
+			}
+		}
 	}
 
 	// Call this to indicate that the list of models was reloaded from the server
@@ -121,13 +144,11 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 	// Call this to make all the view models on this list save themselves back to the server
 	Future<SaveResult> saveChanges() async
 	{
-		print('==> ModelList.SaveChanges(' + toString() + ')');
 		SaveResult result = SaveResult.saved;
 
 		int index = 1;
 		for (ViewModel vm in _viewModels)
 		{
-			print(index.toString() + '. Saving changes in ' + vm.toString());
 			index++;
 
 			ChangeState vmState = vm.getState();
@@ -136,7 +157,6 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 				result = vmResult;
 		}
 
-		print('<== ModelList.SaveChanges(' + toString() + ') = ' + result.toString());
 		return result;
 	}
 
@@ -147,7 +167,6 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 	// modles in place until after the save is complete.
 	void removeDeleted()
 	{
-		print('==> RemoveDeleted(' + toString() + ')');
 		if (_models != null)
 		{
 			for (var index = _models.length - 1; index >= 0; index--)
@@ -165,7 +184,6 @@ class ModelList<TM extends Model, TVM extends ViewModel>
 				}
 			}
 		}
-		print('<== RemoveDeleted(' + toString() + ')');
 	}
 
 	// Call this ater saving changes to mark all the view models as saved

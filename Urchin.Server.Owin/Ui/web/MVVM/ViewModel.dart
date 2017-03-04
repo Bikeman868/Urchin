@@ -101,7 +101,6 @@ abstract class ViewModel
 	{
 		try
 		{
-			print('==> Save(' + toString() + ')');
 			var state = getState();
 
 			if (state == ChangeState.unmodified)
@@ -117,7 +116,6 @@ abstract class ViewModel
 			if (result == SaveResult.saved)
 				saved();
 
-			print('<== Save(' + toString() + ') = ' + result.toString());
 			return result;
 		}
 		catch (e)
@@ -132,8 +130,6 @@ abstract class ViewModel
 	// remove the deleted view models after saving it complete
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
 	{
-		print('==> ViewModel.SaveChanges(' + toString() + ')');
-
 		SaveResult result = SaveResult.saved;
 
 		List<ViewModel> children = getChildViewModels();
@@ -189,8 +185,6 @@ abstract class ViewModel
 			else if (result == SaveResult.unmodified)
 				window.alert('No changes to ' + toString() + ' to save');
 		}
-
-		print('<== ViewModel.SaveChanges(' + toString() + ') = ' + result.toString());
 		return result;
 	}
 
@@ -202,18 +196,14 @@ abstract class ViewModel
 	// Gets the current state of this view model and all of its children
 	ChangeState getState()
 	{
-		print('  Getting state of ' + toString());
-
 		if (_state != ChangeState.unmodified)
 		{
-			print('  ' + toString() + ' is ' + _state.toString());
 			return _state;
 		}
 
 		List<ViewModel> children = getChildViewModels();
 		if (children != null && children.length > 0)
 		{
-			print('    Getting state of ' + toString() + ' children');
 			for (ViewModel child in children)
 			{
 				if (child != null)
@@ -221,7 +211,6 @@ abstract class ViewModel
 					ChangeState childState = child.getState();
 					if (childState != ChangeState.unmodified)
 					{
-						print('    ' + toString() + ' child was ' + childState.toString());
 						return ChangeState.modified;
 					}
 				}
@@ -231,7 +220,6 @@ abstract class ViewModel
 		List<ModelList> modelLists = getModelLists();
 		if (modelLists != null && modelLists.length > 0)
 		{
-			print('    Getting state of ' + toString() + ' model lists');
 			for (ModelList modelList in modelLists)
 			{
 				if (modelList != null)
@@ -239,14 +227,12 @@ abstract class ViewModel
 					ChangeState listState = modelList.getState();
 					if (listState != ChangeState.unmodified)
 					{
-						print('    ' + toString() + ' model list was ' + listState.toString());
 						return ChangeState.modified;
 					}
 				}
 			}
 		}
 
-		print('  ' + toString() + ' was not modified');
 		return ChangeState.unmodified;
 	}
 

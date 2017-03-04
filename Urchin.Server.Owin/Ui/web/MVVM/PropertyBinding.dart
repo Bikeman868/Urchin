@@ -4,7 +4,7 @@ import 'Types.dart';
 // Provides two-way data binding with parsing and formatting
 // The binding is associated with a single data value in a model
 // and many UI elements. A view model is basically a collection
-// of these Binding<T> objects that connect the views to the models.
+// of these PropertyBinding<T> objects.
 class PropertyBinding<T>
 {
 	SubscriptionEvent<String> onChange;
