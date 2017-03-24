@@ -138,8 +138,13 @@ built into future versions of the UI.
 ## Next Steps
 If you want to contribute to this project, these are the next most important tasks
 
+* Fix issues with the database persistence package
 * Write scripts to create databases for Microsoft SQL Server and Postgresql.
-* Add the ability to modify rules and environments via the UI.
+* Add user accounts and granular permissions.
+* Add UI functionallity to move/copy rules between versions.
+* Add UI functionallity to test rule changes before saving them.
+* Maintain an audit trail of who changed what when.
+* Add an alternate UI view which is based around config values rather than rules. In this paradigm the rules would be maintained behind the scenes.
 
 ## FAQ
 
