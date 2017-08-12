@@ -138,6 +138,7 @@ built into future versions of the UI.
 ## Next Steps
 If you want to contribute to this project, these are the next most important tasks
 
+* Add support for multiple datacenters
 * Fix issues with the database persistence package
 * Write scripts to create databases for Microsoft SQL Server and Postgresql.
 * Add user accounts and granular permissions.
