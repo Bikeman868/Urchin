@@ -60,7 +60,8 @@ namespace Urchin.Server.Owin.Middleware
                     throw new HttpException((int)HttpStatusCode.BadRequest, "The version must be a whole number " + _versionPath.Value);
                 version = versionNumber;
             }
-            
+
+            var datacenter = request.Query["datacenter"];
             var environment = request.Query["environment"];
             var machine = request.Query["machine"];
             var application = request.Query["application"];
@@ -72,12 +73,13 @@ namespace Urchin.Server.Owin.Middleware
             if (string.IsNullOrWhiteSpace(application))
                 throw new HttpException((int)HttpStatusCode.BadRequest, "Application parameter is required");
 
-            return TestRules(context, version, environment, machine, application, instance);
+            return TestRules(context, version, datacenter, environment, machine, application, instance);
         }
 
         private Task TestRules(
             IOwinContext context, 
             int? version, 
+            string datacenter,
             string environment, 
             string machine, 
             string application, 
@@ -85,7 +87,7 @@ namespace Urchin.Server.Owin.Middleware
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-            var config = _ruleData.TestConfig(clientCredentials, version, environment, machine, application, instance);
+            var config = _ruleData.TestConfig(clientCredentials, version, datacenter, environment, machine, application, instance);
 
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(config.ToString(Formatting.Indented));

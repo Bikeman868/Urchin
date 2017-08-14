@@ -32,6 +32,7 @@ namespace Urchin.Server.Owin.Middleware
             if (request.Method != "GET" || !_path.IsWildcardMatch(request.Path))
                 return next.Invoke();
 
+            var datacenter = request.Query["datacenter"];
             var environment = request.Query["environment"];
             var machine = request.Query["machine"];
             var application = request.Query["application"];
@@ -46,7 +47,7 @@ namespace Urchin.Server.Owin.Middleware
             try
             {
                 var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-                var config = _ruleData.GetConfig(clientCredentials, environment, machine, application, instance);
+                var config = _ruleData.GetConfig(clientCredentials, datacenter, environment, machine, application, instance);
 
                 context.Response.ContentType = "application/json";
                 return context.Response.WriteAsync(config.ToString(Formatting.None));

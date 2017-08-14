@@ -26,7 +26,7 @@ namespace Urchin.Server.Tests
         [Test]
         public void Should_return_simple_configuration()
         {
-            var config = _ruleData.GetConfig(null, null, "myMachine", "myApp", null);
+            var config = _ruleData.GetConfig(null, null, null, "myMachine", "myApp", null);
 
             Assert.IsNotNull(config);
             Assert.IsTrue(config["debug"].Value<bool>());
@@ -93,12 +93,12 @@ namespace Urchin.Server.Tests
             });
 
 
-            var web1Config = _ruleData.GetConfig(null, null, "web1", "web", null);
-            var web2Config = _ruleData.GetConfig(null, null, "web2", "web", null);
-            var test1Config = _ruleData.GetConfig(null, null, "test1", "web", null);
-            var test2Config = _ruleData.GetConfig(null, null, "test2", "web", null);
-            var dev1Config = _ruleData.GetConfig(null, null, "devmachine", "web", null);
-            var dev2Config = _ruleData.GetConfig(null, "prod", "devmachine", "web", null);
+            var web1Config = _ruleData.GetConfig(null, null, null, "web1", "web", null);
+            var web2Config = _ruleData.GetConfig(null, null, null, "web2", "web", null);
+            var test1Config = _ruleData.GetConfig(null, null, null, "test1", "web", null);
+            var test2Config = _ruleData.GetConfig(null, null, null, "test2", "web", null);
+            var dev1Config = _ruleData.GetConfig(null, null, null, "devmachine", "web", null);
+            var dev2Config = _ruleData.GetConfig(null, null, "prod", "devmachine", "web", null);
 
             Assert.IsNotNull(web1Config);
             Assert.IsNotNull(web2Config);
@@ -199,10 +199,10 @@ namespace Urchin.Server.Tests
                 }
             });
 
-            var configApp1Prod = _ruleData.GetConfig(null, "Prod", "WEB1", "Application1", null);
-            var configApp2Prod = _ruleData.GetConfig(null, "Prod", "WEB2", "Application2", null);
-            var configApp1Test = _ruleData.GetConfig(null, "Test", "WEB3", "Application1", null);
-            var configApp2Test = _ruleData.GetConfig(null, "Test", "WEB4", "Application2", null);
+            var configApp1Prod = _ruleData.GetConfig(null, null, "Prod", "WEB1", "Application1", null);
+            var configApp2Prod = _ruleData.GetConfig(null, null, "Prod", "WEB2", "Application2", null);
+            var configApp1Test = _ruleData.GetConfig(null, null, "Test", "WEB3", "Application1", null);
+            var configApp2Test = _ruleData.GetConfig(null, null, "Test", "WEB4", "Application2", null);
 
             Assert.AreEqual("Database", configApp1Prod["log"]["method"].Value<string>());
             Assert.AreEqual("Database", configApp2Prod["log"]["method"].Value<string>());
@@ -373,17 +373,17 @@ namespace Urchin.Server.Tests
             var stagingClient = new ClientCredentials { IpAddress = "192.168.1.99" };
             var developmentClient = new ClientCredentials { IpAddress = "192.168.2.161" };
 
-            var web1Production = _ruleData.GetConfig(productionClient, "", "web1", "myApp", "");
-            var web1Staging = _ruleData.GetConfig(stagingClient, "", "web1", "myApp", "");
-            var web1Development = _ruleData.GetConfig(developmentClient, "", "web1", "myApp", "");
+            var web1Production = _ruleData.GetConfig(productionClient, "", "", "web1", "myApp", "");
+            var web1Staging = _ruleData.GetConfig(stagingClient, "", "", "web1", "myApp", "");
+            var web1Development = _ruleData.GetConfig(developmentClient, "", "", "web1", "myApp", "");
 
-            var stage2Production = _ruleData.GetConfig(productionClient, "", "stage2", "myApp", "");
-            var stage2Staging = _ruleData.GetConfig(stagingClient, "", "stage2", "myApp", "");
-            var stage2Development = _ruleData.GetConfig(developmentClient, "", "stage2", "myApp", "");
+            var stage2Production = _ruleData.GetConfig(productionClient, "", "", "stage2", "myApp", "");
+            var stage2Staging = _ruleData.GetConfig(stagingClient, "", "", "stage2", "myApp", "");
+            var stage2Development = _ruleData.GetConfig(developmentClient, "", "", "stage2", "myApp", "");
 
-            var dev1Production = _ruleData.GetConfig(productionClient, "", "dev1", "myApp", "");
-            var dev1Staging = _ruleData.GetConfig(stagingClient, "", "dev1", "myApp", "");
-            var dev1Development = _ruleData.GetConfig(developmentClient, "", "dev1", "myApp", "");
+            var dev1Production = _ruleData.GetConfig(productionClient, "", "", "dev1", "myApp", "");
+            var dev1Staging = _ruleData.GetConfig(stagingClient, "", "", "dev1", "myApp", "");
+            var dev1Development = _ruleData.GetConfig(developmentClient, "", "", "dev1", "myApp", "");
 
             const string emptyConfig = "{}";
 
@@ -593,12 +593,12 @@ namespace Urchin.Server.Tests
             _ruleData.UnitTest_Clear();
             SetupVersionedEnvironments();
 
-            var web1Config = _ruleData.GetConfig(null, null, "web1", "web", null);
-            var web2Config = _ruleData.GetConfig(null, null, "web2", "web", null);
-            var stage1Config = _ruleData.GetConfig(null, null, "stage1", "web", null);
-            var stage2Config = _ruleData.GetConfig(null, null, "stage2", "web", null);
-            var dev1Config = _ruleData.GetConfig(null, null, "devmachine", "web", null);
-            var dev2Config = _ruleData.GetConfig(null, "production", "devmachine", "web", null);
+            var web1Config = _ruleData.GetConfig(null, null, "", "web1", "web", null);
+            var web2Config = _ruleData.GetConfig(null, null, "", "web2", "web", null);
+            var stage1Config = _ruleData.GetConfig(null, null, "", "stage1", "web", null);
+            var stage2Config = _ruleData.GetConfig(null, null, "", "stage2", "web", null);
+            var dev1Config = _ruleData.GetConfig(null, null, "", "devmachine", "web", null);
+            var dev2Config = _ruleData.GetConfig(null, "", "production", "devmachine", "web", null);
 
             Assert.IsNotNull(web1Config);
             Assert.IsNotNull(web2Config);
