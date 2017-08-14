@@ -27,5 +27,16 @@ namespace Urchin.Server.Shared.Interfaces
         IEnumerable<EnvironmentDto> GetAllEnvironments();
         void DeleteEnvironment(string name);
         void InsertOrUpdateEnvironment(EnvironmentDto environment);
+
+        IEnumerable<string> GetApplicationNames();
+        IEnumerable<ApplicationDto> GetApplications();
+        void ReplaceApplications(IEnumerable<ApplicationDto> applications);
+
+        IEnumerable<string> GetDatacenterNames();
+        IEnumerable<DatacenterDto> GetDatacenters();
+        void ReplaceDatacenters(IEnumerable<DatacenterDto> datacenters);
+
+        IEnumerable<DatacenterRuleDto> GetDatacenterRules();
+        void ReplaceDatacenterRules(IEnumerable<DatacenterRuleDto> datacenterRules);
     }
 }

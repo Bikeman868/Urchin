@@ -41,6 +41,10 @@ namespace Urchin.Server.Owin
 
         public void Configuration(IAppBuilder app)
         {
+#if DEBUG_STARTUP
+            while (!System.Diagnostics.Debugger.IsAttached)
+                System.Threading.Thread.Sleep(50);
+#endif
             try
             {
                 var iocContainer = ConfigureUnity();

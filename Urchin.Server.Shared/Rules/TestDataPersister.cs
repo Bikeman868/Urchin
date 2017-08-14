@@ -9,7 +9,10 @@ namespace Urchin.Server.Shared.Rules
     public class TestDataPersister: IPersister
     {
         private readonly List<EnvironmentDto> _environments;
-        private readonly List<RuleVersionDto> _rules; 
+        private readonly List<RuleVersionDto> _rules;
+        private readonly List<ApplicationDto> _applications;
+        private readonly List<DatacenterDto> _datacenters;
+        private readonly List<DatacenterRuleDto> _datacenterRules; 
 
         private string _defaultEnvironment;
 
@@ -108,6 +111,55 @@ namespace Urchin.Server.Shared.Rules
                     Version = 2,
                     Machines = new List<MachineDto>(),
                     SecurityRules = new List<SecurityRuleDto>{}
+                }
+            };
+
+            _applications = new List<ApplicationDto>
+            {
+                new ApplicationDto { Name = "Application-1" },
+                new ApplicationDto { Name = "Application-2" },
+                new ApplicationDto { Name = "Application-3" }
+            };
+
+            _datacenters = new List<DatacenterDto>
+            {
+                new DatacenterDto { Name = "localhost" },
+                new DatacenterDto { Name = "mycompany:london" },
+                new DatacenterDto { Name = "mycompany:new-york" },
+                new DatacenterDto { Name = "aws:us-east-1" },
+                new DatacenterDto { Name = "aws:us-west-1" }
+            };
+
+            _datacenterRules = new List<DatacenterRuleDto>
+            {
+                new DatacenterRuleDto
+                {
+                    DatacenterName = "mycompany:new-york"
+                },
+                new DatacenterRuleDto
+                {
+                    Environment = "Development",
+                    DatacenterName = "localhost"
+                },
+                new DatacenterRuleDto
+                {
+                    Environment = "Production",
+                    Application = "Application-1",
+                    DatacenterName = "mycompany:london"
+                },
+                new DatacenterRuleDto
+                {
+                    Environment = "Production",
+                    Application = "Application-2",
+                    Instance = "east",
+                    DatacenterName = "aws:us-east-1"
+                },
+                new DatacenterRuleDto
+                {
+                    Environment = "Production",
+                    Application = "Application-2",
+                    Instance = "west",
+                    DatacenterName = "aws:us-west-1"
                 }
             };
         }
@@ -215,6 +267,49 @@ namespace Urchin.Server.Shared.Rules
         public void DeleteVersion(int version)
         {
             _rules.RemoveAll(r => r.Version == version);
+        }
+
+        public IEnumerable<string> GetApplicationNames()
+        {
+            return _applications.Select(a => a.Name);
+        }
+
+        public IEnumerable<ApplicationDto> GetApplications()
+        {
+            return _applications;
+        }
+
+        public void ReplaceApplications(IEnumerable<ApplicationDto> applications)
+        {
+            _applications.Clear();
+            _applications.AddRange(applications);
+        }
+
+        public IEnumerable<string> GetDatacenterNames()
+        {
+            return _datacenters.Select(a => a.Name);
+        }
+
+        public IEnumerable<DatacenterDto> GetDatacenters()
+        {
+            return _datacenters;
+        }
+
+        public void ReplaceDatacenters(IEnumerable<DatacenterDto> datacenters)
+        {
+            _datacenters.Clear();
+            _datacenters.AddRange(datacenters);
+        }
+
+        public IEnumerable<DatacenterRuleDto> GetDatacenterRules()
+        {
+            return _datacenterRules;
+        }
+
+        public void ReplaceDatacenterRules(IEnumerable<DatacenterRuleDto> datacenterRules)
+        {
+            _datacenterRules.Clear();
+            _datacenterRules.AddRange(datacenterRules);
         }
     }
 }

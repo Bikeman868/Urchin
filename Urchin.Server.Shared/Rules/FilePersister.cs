@@ -18,12 +18,18 @@ namespace Urchin.Server.Shared.Rules
         private string _defaultEnvironmentName;
         private List<EnvironmentDto> _environments;
         private List<RuleVersionDto> _ruleVersions;
+        private List<ApplicationDto> _applications;
+        private List<DatacenterDto> _datacenters;
+        private List<DatacenterRuleDto> _datacenterRules;
 
         public FilePersister(IConfigurationStore configurationStore)
         {
             _defaultEnvironmentName = "Development";
             _environments = new List<EnvironmentDto>();
             _ruleVersions = new List<RuleVersionDto>();
+            _applications = new List<ApplicationDto>();
+            _datacenters = new List<DatacenterDto>();
+            _datacenterRules = new List<DatacenterRuleDto>();
 
             _configNotifier = configurationStore.Register("/urchin/server/persister/filePath", SetFilePath, "rules.txt");
         }
@@ -34,6 +40,8 @@ namespace Urchin.Server.Shared.Rules
             content.AppendLine("File persister using file '" + _filePath + "'.");
             content.AppendLine("File contains " + GetVersionNumbers().Count + " versions of the rules.");
             content.AppendLine("File defines " + String.Join(", ", GetEnvironmentNames()) + " environments.");
+            content.AppendLine("File defines " + String.Join(", ", GetApplicationNames()) + " applications.");
+            content.AppendLine("File defines " + String.Join(", ", GetDatacenterNames()) + " datacenters.");
             return content.ToString();
         }
 
@@ -171,6 +179,76 @@ namespace Urchin.Server.Shared.Rules
             SaveChanges();
         }
         
+        #region Applications
+
+        public IEnumerable<string> GetApplicationNames()
+        {
+            CheckForUpdate();
+
+            return _applications.Select(a => a.Name).ToList();
+        }
+
+        public IEnumerable<ApplicationDto> GetApplications()
+        {
+            CheckForUpdate();
+
+            return _applications.ToList();
+        }
+
+        public void ReplaceApplications(IEnumerable<ApplicationDto> applications)
+        {
+            CheckForUpdate();
+
+            _applications = applications.ToList();
+
+            SaveChanges();
+        }
+
+        #endregion
+
+        #region Datacenters
+
+        public IEnumerable<string> GetDatacenterNames()
+        {
+            CheckForUpdate();
+
+            return _datacenters.Select(a => a.Name).ToList();
+        }
+
+        public IEnumerable<DatacenterDto> GetDatacenters()
+        {
+            CheckForUpdate();
+
+            return _datacenters.ToList();
+        }
+
+        public void ReplaceDatacenters(IEnumerable<DatacenterDto> datacenters)
+        {
+            CheckForUpdate();
+
+            _datacenters = datacenters.ToList();
+
+            SaveChanges();
+        }
+
+        public IEnumerable<DatacenterRuleDto> GetDatacenterRules()
+        {
+            CheckForUpdate();
+
+            return _datacenterRules.ToList();
+        }
+
+        public void ReplaceDatacenterRules(IEnumerable<DatacenterRuleDto> datacenterRules)
+        {
+            CheckForUpdate();
+
+            _datacenterRules = datacenterRules.ToList();
+
+            SaveChanges();
+        }
+
+        #endregion
+
         #region Private methods
 
         private void SetFilePath(string filePath)
@@ -212,13 +290,61 @@ namespace Urchin.Server.Shared.Rules
             if (fileContents == null)
             {
                 _defaultEnvironmentName = "Development";
-                _environments = new List<EnvironmentDto>();
-                _ruleVersions = new List<RuleVersionDto>();
+                _environments = new List<EnvironmentDto>
+                {
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Development",
+                        Version = 1
+                    },
+                    new EnvironmentDto
+                    {
+                        EnvironmentName = "Production",
+                        Version = 1
+                    },
+                };
+                _ruleVersions = new List<RuleVersionDto>
+                {
+                    new RuleVersionDto
+                    {
+                        Name = "Initial version",
+                        Version = 1,
+                        Rules = new List<RuleDto>
+                        {
+                            new RuleDto
+                            {
+                                RuleName = "root",
+                                ConfigurationData = 
+                                    "{\n" +
+                                    "  \"environment\":\"($environment$)\",\n" + 
+                                    "  \"datacenter\":\"($datacenter$)\",\n" + 
+                                    "  \"application\":\"($application$)\",\n" + 
+                                    "  \"instance\":\"($instance$)\",\n" + 
+                                    "  \"machine\":\"($machine$)\",\n" + 
+                                    "  \"myCompany\":{\n" +
+                                    "    \"myApplication\":{\n" +
+                                    "      \"appSetting1\":\"value1\"\n" +
+                                    "      \"appSetting2\":\"value2\"\n" +
+                                    "    }\n" +
+                                    "  }\n" +
+                                    "}",
+                                Variables = new List<VariableDeclarationDto>()
+                            }
+                        }
+                    }
+                };
+                _datacenters = new List<DatacenterDto>();
+                _applications = new List<ApplicationDto>();
+                _datacenterRules = new List<DatacenterRuleDto>();
             }
             else
             {
                 _defaultEnvironmentName = fileContents.DefaultEnvironmentName;
                 _environments = fileContents.Environments ?? new List<EnvironmentDto>();
+                _applications = fileContents.Applications ?? new List<ApplicationDto>();
+                _datacenters = fileContents.Datacenters ?? new List<DatacenterDto>();
+                _datacenterRules = fileContents.DatacenterRules ?? new List<DatacenterRuleDto>();
+
                 if (fileContents.RuleVersions == null || fileContents.RuleVersions.Count == 0)
                 {
                     _ruleVersions = new List<RuleVersionDto>();
@@ -262,7 +388,10 @@ namespace Urchin.Server.Shared.Rules
             {
                 DefaultEnvironmentName = _defaultEnvironmentName,
                 Environments = _environments,
-                RuleVersions = _ruleVersions
+                RuleVersions = _ruleVersions,
+                Applications = _applications,
+                Datacenters = _datacenters,
+                DatacenterRules = _datacenterRules
             };
             var content = JsonConvert.SerializeObject(fileContents, Formatting.Indented);
 
@@ -319,6 +448,9 @@ namespace Urchin.Server.Shared.Rules
             public List<EnvironmentDto> Environments { get; set; }
             public List<RuleVersionDto> RuleVersions { get; set; }
             public List<RuleDto> Rules { get; set; }
+            public List<ApplicationDto> Applications { get; set; }
+            public List<DatacenterDto> Datacenters { get; set; }
+            public List<DatacenterRuleDto> DatacenterRules { get; set; }
         }
     }
 }
