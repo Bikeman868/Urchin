@@ -56,8 +56,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\DatacenterDto.cs" />
     <Compile Include="DataContracts\ConfigPropertyDto.cs" />
     <Compile Include="DataContracts\ConfigNodeDto.cs" />
+    <Compile Include="DataContracts\ApplicationDto.cs" />
+    <Compile Include="DataContracts\DatacenterRuleDto.cs" />
     <Compile Include="DataContracts\RuleVersionDto.cs" />
     <Compile Include="DataContracts\MachineDto.cs" />
     <Compile Include="DataContracts\SecurityRuleDto.cs" />

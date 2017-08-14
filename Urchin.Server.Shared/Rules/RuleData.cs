@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Urchin.Client.Data;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
 
@@ -61,7 +60,7 @@ namespace Urchin.Server.Shared.Rules
 
         #region Querying for application config
 
-        public JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
+        public JObject GetConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -86,7 +85,7 @@ namespace Urchin.Server.Shared.Rules
             return MergeRules(applicableRules, environmentDto, machine, application, instance);
         }
 
-        public JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance)
+        public JObject TraceConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance)
         {
             var response = new JObject();
 
@@ -130,7 +129,7 @@ namespace Urchin.Server.Shared.Rules
             return response;
         }
 
-        public JObject TestConfig(IClientCredentials clientCredentials, int? version, string environment, string machine, string application, string instance)
+        public JObject TestConfig(IClientCredentials clientCredentials, int? version, string datacenter, string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -544,6 +543,44 @@ namespace Urchin.Server.Shared.Rules
 
         #endregion
 
+        #region Application administration
+
+        public List<ApplicationDto> GetApplications(IClientCredentials clientCredentials)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetApplications(IClientCredentials clientCredentials, List<ApplicationDto> applications)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Datacenter administration
+
+        public List<DatacenterDto> GetDatacenters(IClientCredentials clientCredentials)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<DatacenterRuleDto> GetDatacenterRules(IClientCredentials clientCredentials)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDatacenters(IClientCredentials clientCredentials, List<DatacenterDto> datecenters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetDatacenterRules(IClientCredentials clientCredentials, List<DatacenterRuleDto> datacenterRules)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region Private methods
 
         private int GetDraftVersion()
@@ -861,6 +898,5 @@ namespace Urchin.Server.Shared.Rules
                 return string.Compare(x.EvaluationOrder, y.EvaluationOrder, StringComparison.Ordinal);
             }
         }
-
     }
 }

@@ -12,20 +12,20 @@ namespace Urchin.Server.Shared.Interfaces
         /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing.
         /// </summary>
-        JObject GetConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
+        JObject GetConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance);
 
         /// <summary>
         /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing, and returns information
         /// about how that configuration was arrived at.
         /// </summary>
-        JObject TraceConfig(IClientCredentials clientCredentials, string environment, string machine, string application, string instance);
+        JObject TraceConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance);
 
         /// <summary>
         /// Tests a version of the rules by supplying a query, and returning the config
         /// that would be returned if these rules were saved.
         /// </summary>
-        JObject TestConfig(IClientCredentials clientCredentials, int? version, string environment, string machine, string application, string instance);
+        JObject TestConfig(IClientCredentials clientCredentials, int? version, string datacenter, string environment, string machine, string application, string instance);
 
         #endregion
 
@@ -105,6 +105,49 @@ namespace Urchin.Server.Shared.Interfaces
         /// </summary>
         void DeleteOldVersions();
 
+        #endregion
+
+        #region Application administration
+
+        /// <summary>
+        /// Retrieves a list of all applications. This is only used to populate drop-down
+        /// lists to make the UI more convenient
+        /// </summary>
+        List<ApplicationDto> GetApplications(IClientCredentials clientCredentials);
+
+        /// <summary>
+        /// Overwrites the list of applications that are used in drop-down lists
+        /// </summary>
+        void SetApplications(IClientCredentials clientCredentials, List<ApplicationDto> applications);
+
+        #endregion
+
+        #region Datacenter administration
+
+        /// <summary>
+        /// Returns a list of the datacenters for use in drop-down lists
+        /// </summary>
+        List<DatacenterDto> GetDatacenters(IClientCredentials clientCredentials);
+
+        /// <summary>
+        /// Gets a list of the rules used to identify the datacenter when the application
+        /// does not provide one in the request. If applications always supply the
+        /// datacenter in the URL then this list can be empty.
+        /// </summary>
+        List<DatacenterRuleDto> GetDatacenterRules(IClientCredentials clientCredentials);
+
+        /// <summary>
+        /// Overwrites the list of datacenters that are used in drop-down lists
+        /// </summary>
+        void SetDatacenters(IClientCredentials clientCredentials, List<DatacenterDto> datecenters);
+
+        /// <summary>
+        /// Overwrites the list of rules that are used to identify the datacenter that an
+        /// application is running in when the application does not provide it in the URL.
+        /// If applications always supply the datacenter in the URL then this list can be empty.
+        /// </summary>
+        void SetDatacenterRules(IClientCredentials clientCredentials, List<DatacenterRuleDto> datacenterRules);
+        
         #endregion
     }
 }
