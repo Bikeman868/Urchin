@@ -253,6 +253,7 @@ namespace Urchin.Server.Owin
                 builder.Register(unityContainer.Resolve<VersioningMiddleware>())
 #if ROUTING
                     .RunOnRoute("UI")
+                    .RunOnRoute("Ops")
 #endif
                     .As("Versioning")
                     .ConfigureWith(config, "/urchin/server/ui/versioning");
@@ -260,6 +261,7 @@ namespace Urchin.Server.Owin
                 builder.Register(unityContainer.Resolve<DartMiddleware>())
 #if ROUTING
                     .RunOnRoute("UI")
+                    .RunOnRoute("Ops")
 #endif
                     .As("Dart")
                     .ConfigureWith(config, "/urchin/server/ui/dart");
@@ -267,6 +269,7 @@ namespace Urchin.Server.Owin
                 builder.Register(unityContainer.Resolve<LessMiddleware>())
 #if ROUTING
                     .RunOnRoute("UI")
+                    .RunOnRoute("Ops")
 #endif
                     .As("Less")
                     .RunAfter("Dart")
@@ -275,6 +278,7 @@ namespace Urchin.Server.Owin
                 builder.Register(unityContainer.Resolve<StaticFilesMiddleware>())
 #if ROUTING
                     .RunOnRoute("UI")
+                    .RunOnRoute("Ops")
 #endif
                     .As("Static files")
                     .RunAfter("Dart")
