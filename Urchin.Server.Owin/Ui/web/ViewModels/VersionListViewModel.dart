@@ -40,11 +40,11 @@ class VersionListViewModel extends ViewModel
 		loaded();
 	}
 
-	EnvironmentListViewModel _environmentListViewModel;
+	// EnvironmentListViewModel _environmentListViewModel;
 	void set environmentViewModels(EnvironmentListViewModel value)
 	{
-		_environmentListViewModel = value;
-		environments.models  = value.models;
+		// _environmentListViewModel = value;
+		// versions.models  = value.models;
 	}
 
 	List<ModelList> getModelLists()

@@ -2,15 +2,12 @@ import 'dart:html';
 
 import '../../MVVM/Mvvm.dart';
 
-import '../../Models/RuleModel.dart';
 import '../../Models/VariableModel.dart';
 
 import '../../ViewModels/RuleViewModel.dart';
 import '../../ViewModels/VariableViewModel.dart';
 
 import '../../Views/Rules/VariableEditView.dart';
-
-import '../../Events/AppEvents.dart';
 
 
 class RuleEditView extends View
@@ -21,6 +18,7 @@ class RuleEditView extends View
 	BoundTextInput<String> _applicationInput;
 	BoundTextInput<String> _machineInput;
 	BoundTextInput<String> _environmentInput;
+	BoundTextInput<String> _datacenterInput;
 	BoundTextArea<String> _configInput;
 	BoundList<VariableModel, VariableViewModel, VariableEditView> _variablesList;
 
@@ -43,6 +41,7 @@ class RuleEditView extends View
 		_applicationInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to application', className: 'rule-application'));
 		_machineInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to machine', className: 'rule-machine'));
 		_environmentInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to environment', className: 'rule-environment'));
+		_datacenterInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to datacenter', className: 'rule-datacenter'));
 
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("Save", _saveClicked, parent: buttonBar);
@@ -85,6 +84,7 @@ class RuleEditView extends View
 			_applicationInput.binding = null;
 			_machineInput.binding = null;
 			_environmentInput.binding = null;
+			_datacenterInput.binding = null;
 			_variablesList.binding = null;
 			_configInput.binding = null;
 		}
@@ -96,6 +96,7 @@ class RuleEditView extends View
 			_applicationInput.binding = value.application;
 			_machineInput.binding = value.machine;
 			_environmentInput.binding = value.environment;
+			_datacenterInput.binding = value.datacenter;
 			_variablesList.binding = value.variables;
 			_configInput.binding = value.config;
 		}

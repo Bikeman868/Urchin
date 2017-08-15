@@ -17,6 +17,7 @@ class RuleViewModel extends ViewModel
     StringBinding machine = new StringBinding();
     StringBinding application = new StringBinding();
     StringBinding environment = new StringBinding();
+    StringBinding datacenter = new StringBinding();
     StringBinding instance = new StringBinding();
     StringBinding config = new StringBinding();
     ModelList<VariableModel, VariableViewModel> variables;
@@ -29,6 +30,7 @@ class RuleViewModel extends ViewModel
 		machine = new StringBinding();
 		application = new StringBinding();
 		environment = new StringBinding();
+		datacenter = new StringBinding();
 		instance = new StringBinding();
 		config = new StringBinding();
 
@@ -67,6 +69,9 @@ class RuleViewModel extends ViewModel
 
 			environment.setter = null;
 			environment.getter = null;
+
+			datacenter.setter = null;
+			datacenter.getter = null;
 
 			instance.setter = null;
 			instance.getter = null;
@@ -108,6 +113,13 @@ class RuleViewModel extends ViewModel
 				modified();
 			};
 			environment.getter = () => value.environment;
+
+			datacenter.setter = (String text) 
+			{ 
+				value.datacenter = text;
+				modified();
+			};
+			datacenter.getter = () => value.datacenter;
 
 			instance.setter = (String text) 
 			{ 

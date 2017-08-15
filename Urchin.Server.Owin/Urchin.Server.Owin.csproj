@@ -188,9 +188,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="Ui\web\images\add.gif" />
+    <Content Include="Ui\web\images\delete.gif" />
     <Content Include="Ui\web\images\download.gif" />
     <Content Include="Ui\web\images\logo.gif" />
     <Content Include="Ui\web\images\upload.gif" />
+    <Content Include="Ui\web\images\upload_disabled.gif" />
     <Content Include="Urchin.json" />
     <Content Include="Ui\web\favicon.ico" />
     <Content Include="Ui\web\index.html" />

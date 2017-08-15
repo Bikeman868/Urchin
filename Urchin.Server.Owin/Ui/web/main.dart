@@ -69,7 +69,7 @@ void _initialView()
 	_logonView = new LogonView(_dataViewModel.user);
 	_logonView.displayIn(_userDiv);
 
-	_displayEnvironmentList(_leftDiv);
+	_tabChanged(new TabChangedEvent('Rules'));
 }
 
 /*************************************************************************/

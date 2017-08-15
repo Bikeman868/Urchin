@@ -1,10 +1,8 @@
 import 'dart:html';
-
 import '../../MVVM/Mvvm.dart';
 
 import '../../Html/JsonHighlighter.dart';
 
-import '../../Models/RuleModel.dart';
 import '../../Models/VariableModel.dart';
 
 import '../../ViewModels/RuleViewModel.dart';
@@ -20,6 +18,7 @@ class RuleDisplayView extends View
 	BoundLabel<String> _ruleName;
 	BoundLabel<String> _machine;
 	BoundLabel<String> _environment;
+	BoundLabel<String> _datacenter;
 	BoundLabel<String> _instance;
 	BoundLabel<String> _application;
 	BoundFormatter _config;
@@ -65,6 +64,14 @@ class RuleDisplayView extends View
 				return ' in the ' + s + ' environment';
 			});
 
+		_datacenter = new BoundLabel<String>(addSpan(), 
+			formatMethod: (s)
+			{
+				if (s == null || s.length == 0)
+					return ' in any datacenter';
+				return ' in the ' + s + ' datacenter';
+			});
+
 		addHeading(3, 'Variables');
 
 		_variablesBinding = new BoundRepeater<VariableModel, VariableViewModel, VariableNameView>(
@@ -94,6 +101,7 @@ class RuleDisplayView extends View
 			_ruleName.binding = null;
 			_machine.binding = null;
 			_environment.binding = null;
+			_datacenter.binding = null;
 			_instance.binding = null;
 			_application.binding = null;
 			_config.binding = null;
@@ -104,6 +112,7 @@ class RuleDisplayView extends View
 			_ruleName.binding = value.name;
 			_machine.binding = value.machine;
 			_environment.binding = value.environment;
+			_datacenter.binding = value.datacenter;
 			_instance.binding = value.instance;
 			_application.binding = value.application;
 			_config.binding = value.config;

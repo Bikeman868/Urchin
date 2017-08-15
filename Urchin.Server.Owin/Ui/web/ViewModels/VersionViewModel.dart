@@ -133,7 +133,7 @@ class VersionViewModel extends ViewModel
 			alertMessage = 'No changes to version ' + version.getProperty() + ' to save';
 		}
 
-		if (alert) window.alert(alertMessage);
+		if (alert) MvvmEvents.alert.raise(alertMessage);
 
 		return result;
 	}

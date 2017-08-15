@@ -1,10 +1,6 @@
-import 'dart:html';
-
 import '../../MVVM/Mvvm.dart';
-
 import '../../Html/JsonHighlighter.dart';
 
-import '../../Models/RuleModel.dart';
 import '../../Models/VariableModel.dart';
 
 import '../../ViewModels/RuleViewModel.dart';
@@ -12,14 +8,12 @@ import '../../ViewModels/VariableViewModel.dart';
 
 import '../../Views/Rules/VariableDisplayView.dart';
 
-import '../../Events/AppEvents.dart';
-
-
 class RuleConfigView extends View
 {
 	BoundLabel<String> _ruleNameLabel;
 	BoundLabel<String> _machineLabel;
 	BoundLabel<String> _environmentLabel;
+	BoundLabel<String> _datacenterLabel;
 	BoundLabel<String> _instanceLabel;
 	BoundLabel<String> _applicationLabel;
 	BoundFormatter _formattedConfig;
@@ -65,6 +59,14 @@ class RuleConfigView extends View
 				return ' in the ' + s + ' environment';
 			});
 
+		_datacenterLabel = new BoundLabel<String>(addSpan(), 
+			formatMethod: (s)
+			{
+				if (s == null || s.length == 0)
+					return ' in any datacenter';
+				return ' in the ' + s + ' datacenter';
+			});
+
 		_formattedConfig = new BoundFormatter(addDiv(), (s, e) => JsonHighlighter.displayIn(e, s));
 
 		_variablesList = new BoundRepeater<VariableModel, VariableViewModel, VariableDisplayView>(
@@ -85,6 +87,7 @@ class RuleConfigView extends View
 			_ruleNameLabel.binding = null;
 			_machineLabel.binding = null;
 			_environmentLabel.binding = null;
+			_datacenterLabel.binding = null;
 			_instanceLabel.binding = null;
 			_applicationLabel.binding = null;
 			_formattedConfig.binding = null;
@@ -95,6 +98,7 @@ class RuleConfigView extends View
 			_ruleNameLabel.binding = value.name;
 			_machineLabel.binding = value.machine;
 			_environmentLabel.binding = value.environment;
+			_datacenterLabel.binding = value.datacenter;
 			_instanceLabel.binding = value.instance;
 			_applicationLabel.binding = value.application;
 			_formattedConfig.binding = value.config;

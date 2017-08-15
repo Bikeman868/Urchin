@@ -1,9 +1,9 @@
 ﻿import '../MVVM/Mvvm.dart';
 import '../Models/VariableModel.dart';
 
-class RuleModel extends Model
+class DatacenterRuleModel extends Model
 {
-	RuleModel(Map json) : super(json);
+	DatacenterRuleModel(Map json) : super(json);
 
 	String get name => getProperty('name');
 	set name(String value) { setProperty('name', value); }
@@ -17,18 +17,12 @@ class RuleModel extends Model
 	String get environment => getProperty('environment');
 	set environment(String value) { setProperty('environment', value); }
   
-	String get datacenter => getProperty('datacenter');
-	set datacenter(String value) { setProperty('datacenter', value); }
-  
 	String get instance => getProperty('instance');
 	set instance(String value) { setProperty('instance', value); }
 
-	String get config => getProperty('config');
-	set config(String value) { setProperty('config', value); }
+	String get datacenterName => getProperty('datacenterName');
+	set datacenterName(String value) { setProperty('datacenterName', value); }
 
-	List<VariableModel> get variables => getList('variables', (json) => new VariableModel(json));
-	set variables(List<VariableModel> value) { setList('variables', value); }
-
-	String toString() => name + ' rule';
+	String toString() => name + ' datacenter rule';
 }
 

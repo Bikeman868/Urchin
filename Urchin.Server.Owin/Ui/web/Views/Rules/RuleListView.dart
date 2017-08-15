@@ -1,12 +1,9 @@
 import 'dart:html';
-
 import '../../MVVM/Mvvm.dart';
 
 import '../../Events/AppEvents.dart';
 
 import '../../Models/RuleModel.dart';
-
-import '../../Events/AppEvents.dart';
 
 import '../../ViewModels/VersionViewModel.dart';
 import '../../ViewModels/RuleViewModel.dart';
@@ -23,12 +20,14 @@ class RuleListView extends View
 	InputElement applicationFilter;
 	InputElement machineFilter;
 	InputElement environmentFilter;
+	InputElement datacenterFilter;
 	CheckboxInputElement inclusiveCheckBox;
 
 	String _instanceFilter = '';
 	String _applicationFilter = '';
 	String _machineFilter = '';
 	String _environmentFilter = '';
+	String _datacenterFilter = '';
 	bool _inclusiveFilter;
 
 	RuleListView([VersionViewModel viewModel])
@@ -48,6 +47,7 @@ class RuleListView extends View
 		applicationFilter = addLabeledEdit(filterForm, 'Application');
 		machineFilter = addLabeledEdit(filterForm, 'Machine');
 		environmentFilter = addLabeledEdit(filterForm, 'Environment');
+		datacenterFilter = addLabeledEdit(filterForm, 'Datacenter');
 		inclusiveCheckBox = addLabeledCheckbox(filterForm, 'Inclusive');
 
 		var filterButtonBar = addContainer(className: 'button-bar');
@@ -79,6 +79,7 @@ class RuleListView extends View
 		if (!matchesFilter(_applicationFilter, rule.application)) return false;
 		if (!matchesFilter(_machineFilter, rule.machine)) return false;
 		if (!matchesFilter(_environmentFilter, rule.environment)) return false;
+		if (!matchesFilter(_datacenterFilter, rule.datacenter)) return false;
 
 		return true;
 	}
@@ -104,6 +105,7 @@ class RuleListView extends View
 		_applicationFilter = applicationFilter.value;
 		_machineFilter = machineFilter.value;
 		_environmentFilter = environmentFilter.value;
+		_datacenterFilter = datacenterFilter.value;
 		_inclusiveFilter = inclusiveCheckBox.checked;
 
 		_rulesBinding.refresh();
@@ -115,6 +117,7 @@ class RuleListView extends View
 		applicationFilter.value = '';
 		machineFilter.value = '';
 		environmentFilter.value = '';
+		datacenterFilter.value = '';
 
 		_applyFilterClicked(e);
 	}
@@ -124,14 +127,16 @@ class RuleListView extends View
 		if (viewModel != null)
 		{
 			String name = '';
+			if (_datacenterFilter.length > 0)
+				name = name + _datacenterFilter + ' ';
 			if (_environmentFilter.length > 0)
-				name = name + 'Env ' + _environmentFilter + ' ';
+				name = name + _environmentFilter + ' ';
 			if (_machineFilter.length > 0)
-				name = name + 'Svr ' + _machineFilter + ' ';
+				name = name + _machineFilter + ' ';
 			if (_applicationFilter.length > 0)
 				name = name + 'App ' + _applicationFilter + ' ';
 			if (_instanceFilter.length > 0)
-				name = name + 'Ins ' + _instanceFilter + ' ';
+				name = name + _instanceFilter + ' ';
 
 			if (name.length == 0) 
 				name = 'Root';
@@ -144,6 +149,7 @@ class RuleListView extends View
 			ruleJson['application'] = _applicationFilter;
 			ruleJson['machine'] = _machineFilter;
 			ruleJson['environment'] = _environmentFilter;
+			ruleJson['datacenter'] = _datacenterFilter;
 
 			viewModel.rules.addModel(new RuleModel(ruleJson));
 		}

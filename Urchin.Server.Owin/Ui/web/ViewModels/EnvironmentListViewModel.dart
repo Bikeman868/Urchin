@@ -51,7 +51,7 @@ class EnvironmentListViewModel extends ViewModel
 	{
 		Server.getEnvironments()
 			.then((List<EnvironmentModel> m) => models = m)
-			.catchError((Error error) => window.alert(error.toString()));
+			.catchError((Error error) => MvvmEvents.alert.raise(error.toString()));
 	}
 
 	Future<SaveResult> saveChanges(ChangeState state, bool alert) async
@@ -71,11 +71,11 @@ class EnvironmentListViewModel extends ViewModel
 		if (response.success)
 		{
 			viewModels.forEach((EnvironmentViewModel vm) => vm.saved());
-			if (alert) window.alert('Environments saved succesfully');
+			if (alert) MvvmEvents.alert.raise('Environments saved succesfully');
 			return SaveResult.saved;
 		}
 
-		window.alert('Environments were not saved. ' + response.error);
+		MvvmEvents.alert.raise('Environments were not saved. ' + response.error);
 		return SaveResult.failed;
 	}
 

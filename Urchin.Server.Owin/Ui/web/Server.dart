@@ -8,8 +8,9 @@ import 'Models/PostResponseModel.dart';
 import 'Models/RuleModel.dart';
 import 'Models/VersionModel.dart';
 import 'Models/VersionNameModel.dart';
-import 'Models/SecurityRuleModel.dart';
-import 'Models/VariableModel.dart';
+import 'Models/ApplicationModel.dart';
+import 'Models/DatacenterModel.dart';
+import 'Models/DatacenterRuleModel.dart';
 
 class Server
 {
@@ -235,9 +236,108 @@ class Server
 	}
 
 //
+//-- Applications ------------------------------------------------------------------------------
+//
+	static Future<List<ApplicationModel>> getApplications() async
+	{
+		String response = await HttpRequest.getString('/applications');
+		List<Map> applicationsJson = JSON.decode(response);
+
+		var applications = new List<ApplicationModel>();
+		for (Map applicationJson in applicationsJson)
+		{
+			applications.add(new ApplicationModel(applicationJson));
+		}
+		return applications;
+	}
+
+	static Future<PostResponseModel> replaceApplications(List<ApplicationModel> applications) async
+	{
+		var requestBody = applications.map((ApplicationModel m) => m.json).toList();
+		var request = await HttpRequest.request(
+			'/applications',
+			method: 'PUT',
+			sendData: JSON.encode(requestBody),
+			mimeType: 'application/json',
+			responseType: 'application/json');
+
+		if (request.status != 200)
+			throw 'Failed to replace applications. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+//
+//-- Datacenters ------------------------------------------------------------------------------
+//
+	static Future<List<DatacenterModel>> getDatacenters() async
+	{
+		String response = await HttpRequest.getString('/datacenters');
+		List<Map> datacentersJson = JSON.decode(response);
+
+		var datacenters = new List<DatacenterModel>();
+		for (Map datacenterJson in datacentersJson)
+		{
+			datacenters.add(new DatacenterModel(datacenterJson));
+		}
+		return datacenters;
+	}
+
+	static Future<PostResponseModel> replaceDatacenters(List<DatacenterModel> datacenters) async
+	{
+		var requestBody = datacenters.map((DatacenterModel m) => m.json).toList();
+		var request = await HttpRequest.request(
+			'/datacenters',
+			method: 'PUT',
+			sendData: JSON.encode(requestBody),
+			mimeType: 'application/json',
+			responseType: 'application/json');
+
+		if (request.status != 200)
+			throw 'Failed to replace datacenters. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+//
+//-- Datacenter rules ------------------------------------------------------------------------------
+//
+	static Future<List<DatacenterRuleModel>> getDatacenterRules() async
+	{
+		String response = await HttpRequest.getString('/datacenterrules');
+		List<Map> datacenterRulesJson = JSON.decode(response);
+
+		var datacenterRules = new List<DatacenterRuleModel>();
+		for (Map datacenterRuleJson in datacenterRulesJson)
+		{
+			datacenterRules.add(new DatacenterRuleModel(datacenterRuleJson));
+		}
+		return datacenterRules;
+	}
+
+	static Future<PostResponseModel> replaceDatacenterRules(List<DatacenterRuleModel> datacenterRules) async
+	{
+		var requestBody = datacenterRules.map((DatacenterRuleModel m) => m.json).toList();
+		var request = await HttpRequest.request(
+			'/datacenterrules',
+			method: 'PUT',
+			sendData: JSON.encode(requestBody),
+			mimeType: 'application/json',
+			responseType: 'application/json');
+
+		if (request.status != 200)
+			throw 'Failed to replace datacenter rules. ' + request.statusText;
+
+		Map json = JSON.decode(request.responseText);
+		return new PostResponseModel(json);
+	}
+
+//
 //-- Application config related server methods --------------------------------------------------
 //
-	static Future<String> getConfig(String machine, String application, String environment, String instance)
+	static Future<String> getConfig(String machine, String application, String environment, String instance, String datacenter)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -247,6 +347,9 @@ class Server
 
 		var url = '/config?machine=' + machine + '&application=' + application;
 
+		if (datacenter != null && datacenter.isNotEmpty)
+			url = url + '&datacenter=' + datacenter;
+
 		if (environment != null && !environment.isEmpty)
 			url = url + '&environment=' + environment;
 
@@ -256,7 +359,7 @@ class Server
 		return HttpRequest.getString(url);
 	}
 
-	static Future<String> traceConfig(String machine, String application, String environment, String instance)
+	static Future<String> traceConfig(String machine, String application, String environment, String instance, String datacenter)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -266,6 +369,9 @@ class Server
 
 		var url = '/trace?machine=' + machine + '&application=' + application;
 
+		if (datacenter != null && datacenter.isNotEmpty)
+			url = url + '&datacenter=' + datacenter;
+
 		if (environment != null && !environment.isEmpty)
 			url = url + '&environment=' + environment;
 
@@ -275,7 +381,7 @@ class Server
 		return HttpRequest.getString(url);
 	}
 
-	static Future<String> testConfig(int version, String machine, String application, String environment, String instance)
+	static Future<String> testConfig(int version, String machine, String application, String environment, String instance, String datacenter)
 	{
 		if (machine == null || machine.isEmpty)
 			throw 'Machine name can not be empty';
@@ -284,6 +390,9 @@ class Server
 			throw 'Application name can not be empty';
 
 		var url = '/test/' + version.toString() + '?machine=' + machine + '&application=' + application;
+
+		if (datacenter != null && datacenter.isNotEmpty)
+			url = url + '&datacenter=' + datacenter;
 
 		if (environment != null && !environment.isEmpty)
 			url = url + '&environment=' + environment;

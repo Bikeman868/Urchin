@@ -1,12 +1,11 @@
-﻿import 'dart:async';
-
-import '../MVVM/Mvvm.dart';
+﻿import '../MVVM/Mvvm.dart';
 
 import '../ViewModels/EnvironmentListViewModel.dart';
 import '../ViewModels/VersionListViewModel.dart';
+import '../ViewModels/ApplicationListViewModel.dart';
+//import '../ViewModels/DatacenterListViewModel.dart';
+//import '../ViewModels/DatacenterRuleListViewModel.dart';
 import '../ViewModels/UserViewModel.dart';
-
-import '../Events/AppEvents.dart';
 
 class DataViewModel extends ViewModel
 {
@@ -38,6 +37,15 @@ class DataViewModel extends ViewModel
 			_environmentList = new EnvironmentListViewModel();
 
 		return _environmentList;
+	}
+
+	ApplicationListViewModel _applicationList;
+	ApplicationListViewModel get applicationList
+	{
+		if (_applicationList == null)
+			_applicationList = new ApplicationListViewModel();
+
+		return _applicationList;
 	}
 
 	VersionListViewModel _versionList;
