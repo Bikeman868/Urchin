@@ -13,8 +13,11 @@ namespace Urchin.Server.Shared.Rules
     public class FilePersister: IPersister
     {
         private readonly IDisposable _configNotifier;
+
         private string _filePath;
         private DateTime _lastFileTime;
+        private bool _initialLoad = true;
+
         private string _defaultEnvironmentName;
         private List<EnvironmentDto> _environments;
         private List<RuleVersionDto> _ruleVersions;
@@ -256,9 +259,10 @@ namespace Urchin.Server.Shared.Rules
             _filePath = filePath;
 
             var fileInfo = new FileInfo(filePath);
-            if (fileInfo.Exists)
+            if (fileInfo.Exists || _initialLoad)
             {
                 Reload();
+                _initialLoad = false;
             }
             else
             {
@@ -323,7 +327,7 @@ namespace Urchin.Server.Shared.Rules
                                     "  \"machine\":\"($machine$)\",\n" + 
                                     "  \"myCompany\":{\n" +
                                     "    \"myApplication\":{\n" +
-                                    "      \"appSetting1\":\"value1\"\n" +
+                                    "      \"appSetting1\":\"value1\",\n" +
                                     "      \"appSetting2\":\"value2\"\n" +
                                     "    }\n" +
                                     "  }\n" +

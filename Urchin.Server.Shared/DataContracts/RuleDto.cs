@@ -17,6 +17,9 @@ namespace Urchin.Server.Shared.DataContracts
         [JsonProperty("environment")]
         public string Environment { get; set; }
 
+        [JsonProperty("datacenter")]
+        public string Datacenter { get; set; }
+
         [JsonProperty("instance")]
         public string Instance { get; set; }
 

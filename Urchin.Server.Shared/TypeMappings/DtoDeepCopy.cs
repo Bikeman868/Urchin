@@ -53,6 +53,12 @@ namespace Urchin.Server.Shared.TypeMappings
             CreateMap<SecurityRuleDto, SecurityRuleDto>();
 
             CreateMap<VariableDeclarationDto, VariableDeclarationDto>();
+
+            CreateMap<ApplicationDto, ApplicationDto>();
+
+            CreateMap<DatacenterDto, DatacenterDto>();
+
+            CreateMap<DatacenterRuleDto, DatacenterRuleDto>();
         }
     }
 

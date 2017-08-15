@@ -42,7 +42,8 @@ namespace Urchin.Server.Owin
         public void Configuration(IAppBuilder app)
         {
 #if DEBUG_STARTUP
-            while (!System.Diagnostics.Debugger.IsAttached)
+            var debugTimeout = DateTime.UtcNow.AddSeconds(30);
+            while (!System.Diagnostics.Debugger.IsAttached && DateTime.UtcNow < debugTimeout)
                 System.Threading.Thread.Sleep(50);
 #endif
             try
@@ -207,6 +208,24 @@ namespace Urchin.Server.Owin
                     .RunOnRoute("Admin")
 #endif
                     .As("Environments");
+
+                builder.Register(unityContainer.Resolve<Middleware.ApplicationsEndpoint>())
+#if ROUTING
+                    .RunOnRoute("Admin")
+#endif
+                    .As("Applications");
+
+                builder.Register(unityContainer.Resolve<Middleware.DatacentersEndpoint>())
+#if ROUTING
+                    .RunOnRoute("Admin")
+#endif
+                    .As("Datacenters");
+
+                builder.Register(unityContainer.Resolve<Middleware.DatacenterRulesEndpoint>())
+#if ROUTING
+                    .RunOnRoute("Admin")
+#endif
+                    .As("Datacenter rules");
 
                 builder.Register(unityContainer.Resolve<Middleware.VersionEndpoint>())
 #if ROUTING

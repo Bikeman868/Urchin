@@ -201,6 +201,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Middleware\ApiBase.cs" />
+    <Compile Include="Middleware\DatacenterRulesEndpoint.cs" />
+    <Compile Include="Middleware\DatacentersEndpoint.cs" />
+    <Compile Include="Middleware\ApplicationsEndpoint.cs" />
     <Compile Include="Middleware\FailedSetupMiddleware.cs" />
     <Compile Include="Middleware\LogonEndpoint.cs" />
     <Compile Include="Middleware\RuleNamesEndpoint.cs" />

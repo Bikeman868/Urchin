@@ -15,7 +15,7 @@ namespace Urchin.Server.Shared.DataContracts
         public List<ApplicationDto> Applications { get; set; }
 
         [JsonProperty("datacenters")]
-        public List<ApplicationDto> Datacenters { get; set; }
+        public List<DatacenterDto> Datacenters { get; set; }
 
         [JsonProperty("rules")]
         public RuleVersionDto RuleVersion { get; set; }
