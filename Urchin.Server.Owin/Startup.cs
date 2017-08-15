@@ -110,6 +110,10 @@ namespace Urchin.Server.Owin
                 var config = unityContainer.Resolve<IConfiguration>();
                 var builder = unityContainer.Resolve<IBuilder>();
 
+#if DEBUG
+                builder.EnableTracing();
+#endif
+
                 // Define routes through the OWIN pipeline
 
 #if ROUTING

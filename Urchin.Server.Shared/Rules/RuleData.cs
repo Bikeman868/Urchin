@@ -78,7 +78,12 @@ namespace Urchin.Server.Shared.Rules
             if (environmentDto == null)
                 return new JObject();
 
-            var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
+            if (string.IsNullOrEmpty(datacenter))
+            {
+                var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
+                if (datacenterDto != null)
+                    datacenter = datacenterDto.Name;
+            }
 
             var ruleVersion = EnsureVersion(environmentDto.Version, false);
 
@@ -92,8 +97,8 @@ namespace Urchin.Server.Shared.Rules
                     return new JObject();
             }
 
-            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, datacenterDto, machine, application, instance);
-            return MergeRules(applicableRules, environmentDto, datacenterDto, machine, application, instance);
+            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, datacenter, machine, application, instance);
+            return MergeRules(applicableRules, environmentDto, datacenter, machine, application, instance);
         }
 
         public JObject TraceConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance)
@@ -111,7 +116,12 @@ namespace Urchin.Server.Shared.Rules
             }
             var ruleVersion = EnsureVersion(environmentDto.Version, false);
 
-            var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
+            if (string.IsNullOrEmpty(datacenter))
+            {
+                var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
+                if (datacenterDto != null)
+                    datacenter = datacenterDto.Name;
+            }
 
             if (ruleVersion == null || ruleVersion.Rules == null || ruleVersion.Rules.Count == 0)
                 return response;
@@ -128,17 +138,14 @@ namespace Urchin.Server.Shared.Rules
 
             var serializedEnvironment = JsonConvert.SerializeObject(environmentDto);
 
-            var serializedDatacenter = datacenterDto == null ? "null" : JsonConvert.SerializeObject(datacenterDto);
-
-            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, datacenterDto, machine, application, instance);
+            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, datacenter, machine, application, instance);
             var serializedRules = JsonConvert.SerializeObject(applicableRules);
 
-            var variables = MergeVariables(applicableRules, environmentDto, datacenterDto, machine, application, instance);
+            var variables = MergeVariables(applicableRules, environmentDto, datacenter, machine, application, instance);
             var serializedVariables = JsonConvert.SerializeObject(variables);
 
-            response["config"] = MergeRules(applicableRules, environmentDto, datacenterDto, machine, application, instance);
+            response["config"] = MergeRules(applicableRules, environmentDto, datacenter, machine, application, instance);
             response["environment"] = JToken.Parse(serializedEnvironment);
-            response["datacenter"] = JToken.Parse(serializedDatacenter);
             response["variables"] = JToken.Parse(serializedVariables);
             response["matchingRules"] = JToken.Parse(serializedRules);
 
@@ -154,7 +161,12 @@ namespace Urchin.Server.Shared.Rules
             if (environmentDto == null)
                 return new JObject();
 
-            var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
+            if (string.IsNullOrEmpty(datacenter))
+            {
+                var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
+                if (datacenterDto != null)
+                    datacenter = datacenterDto.Name;
+            }
 
             if (!version.HasValue) version = GetDraftVersion();
             var ruleVersion = EnsureVersion(version.Value, false);
@@ -169,8 +181,8 @@ namespace Urchin.Server.Shared.Rules
                     return new JObject();
             }
 
-            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, datacenterDto, machine, application, instance);
-            return MergeRules(applicableRules, environmentDto, datacenterDto, machine, application, instance);
+            var applicableRules = GetApplicableRules(ruleVersion, environmentDto, datacenter, machine, application, instance);
+            return MergeRules(applicableRules, environmentDto, datacenter, machine, application, instance);
         }
 
         #endregion
@@ -680,7 +692,7 @@ namespace Urchin.Server.Shared.Rules
         private JObject MergeRules(
             IList<RuleDto> rules,
             EnvironmentDto environment,
-            DatacenterDto datacenter,
+            string datacenter,
             string machine,
             string application,
             string instance)
@@ -707,7 +719,7 @@ namespace Urchin.Server.Shared.Rules
         private Dictionary<string, string> MergeVariables(
             IEnumerable<RuleDto> rules,
             EnvironmentDto environment,
-            DatacenterDto datacenter,
+            string datacenter,
             string machine,
             string application,
             string instance)
@@ -718,7 +730,7 @@ namespace Urchin.Server.Shared.Rules
                 {"machine", machine == null ? string.Empty : machine.ToLower()},
                 {"application", application == null ? string.Empty : application.ToLower()},
                 {"instance", instance == null ? string.Empty : instance.ToLower()},
-                {"datacenter", datacenter == null ? string.Empty : datacenter.Name.ToLower()}
+                {"datacenter", datacenter == null ? string.Empty : datacenter.ToLower()}
             };
 
             foreach (var rule in rules)
@@ -738,7 +750,7 @@ namespace Urchin.Server.Shared.Rules
         private List<RuleDto> GetApplicableRules(
             RuleVersionDto ruleVersion,
             EnvironmentDto environment,
-            DatacenterDto datacenter,
+            string datacenter,
             string machine,
             string application,
             string instance)
@@ -812,7 +824,7 @@ namespace Urchin.Server.Shared.Rules
             return _datacenters.FirstOrDefault(d => string.Equals(d.Name, datacenterName, StringComparison.OrdinalIgnoreCase));
         }
 
-        private bool RuleApplies(RuleDto rule, EnvironmentDto environment, DatacenterDto datacenter, string machine, string application, string instance)
+        private bool RuleApplies(RuleDto rule, EnvironmentDto environment, string datacenter, string machine, string application, string instance)
         {
             if (!string.IsNullOrEmpty(rule.Application))
             {
@@ -836,7 +848,7 @@ namespace Urchin.Server.Shared.Rules
             }
             if (!string.IsNullOrEmpty(rule.Datacenter))
             {
-                if (!string.Equals(datacenter.Name, rule.Datacenter, StringComparison.InvariantCultureIgnoreCase))
+                if (!string.Equals(datacenter, rule.Datacenter, StringComparison.InvariantCultureIgnoreCase))
                     return false;
             }
             return true;
