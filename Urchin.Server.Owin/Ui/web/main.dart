@@ -8,6 +8,9 @@ import 'ViewModels/DataViewModel.dart';
 import 'ViewModels/EnvironmentViewModel.dart';
 import 'ViewModels/VersionViewModel.dart';
 import 'ViewModels/RuleViewModel.dart';
+import 'ViewModels/ApplicationViewModel.dart';
+import 'ViewModels/DatacenterViewModel.dart';
+import 'ViewModels/DatacenterRuleViewModel.dart';
 
 import 'Events/AppEvents.dart';
 
@@ -26,6 +29,10 @@ import 'Views/Rules/RuleDisplayView.dart';
 import 'Views/Rules/RuleEditView.dart';
 import 'Views/Rules/RuleListView.dart';
 import 'Views/Rules/RuleConfigView.dart';
+
+import 'Views/Application/ApplicationListView.dart';
+import 'Views/Application/ApplicationEditView.dart';
+import 'Views/Application/ApplicationDisplayView.dart';
 
 Element _leftDiv;
 Element _centreDiv;
@@ -77,10 +84,14 @@ void _initialView()
 void _attachEvents()
 {
 	AppEvents.tabChanged.listen(_tabChanged);
+	AppEvents.ruleEdit.listen(_ruleEdit);
+
 	AppEvents.environmentSelected.listen(_environmentSelected);
 	AppEvents.versionSelected.listen(_versionSelected);
 	AppEvents.ruleSelected.listen(_ruleSelected);
-	AppEvents.ruleEdit.listen(_ruleEdit);
+	AppEvents.applicationSelected.listen(_applicationSelected);
+	AppEvents.datacenterSelected.listen(_datacenterSelected);
+	AppEvents.datacenterRuleSelected.listen(_datacenterRuleSelected);
 }
 
 void _tabChanged(TabChangedEvent e)
@@ -104,6 +115,10 @@ void _tabChanged(TabChangedEvent e)
 		_displayVersionList(
 			_leftDiv, 'Edit Versions', 
 			'Choose a version to edit. You can also delete old versions here, or create a new draft version that can be modified safely.<br>The save button will save changes to all versions.');
+	}
+	else if (e.tabName == 'Applications') 
+	{
+		_displayApplicationList(_leftDiv);
 	}
 }
 
@@ -140,6 +155,22 @@ void _ruleSelected(RuleSelectedEvent e)
 		_displayRuleDisplay(e.rule, _rightDiv);
 }
 
+void _applicationSelected(ApplicationSelectedEvent e)
+{
+	if (_currentView == 'Applications')
+		_displayApplicationEdit(e.application, _centreDiv);
+	else 
+		_displayApplicationDisplay(e.application, _rightDiv);
+}
+
+void _datacenterSelected(DatacenterSelectedEvent e)
+{
+}
+
+void _datacenterRuleSelected(DatacenterRuleSelectedEvent e)
+{
+}
+
 void _ruleEdit(RuleEditEvent e)
 {
 	_displayRuleEdit(e.rule, _centreDiv);
@@ -151,6 +182,8 @@ void clearPanel(Element panel)
 {
 	panel.children.clear();
 }
+
+/*************************************************************************/
 
 EnvironmentListView _environmentListView;
 
@@ -292,3 +325,44 @@ void _displayVersionDisplay(VersionViewModel version, Element panel)
 				_versionDisplayView.displayIn(panel);
 			});
 }
+
+/*************************************************************************/
+
+ApplicationListView _applicationListView;
+
+void _displayApplicationList(Element panel)
+{
+	_currentView = 'Applications';
+
+	if (_applicationListView == null)
+		_applicationListView = new ApplicationListView(_dataViewModel.applicationList);
+
+	_applicationListView.displayIn(panel);
+}
+
+ApplicationEditView _applicationEditView;
+
+void _displayApplicationEdit(ApplicationViewModel application, Element panel)
+{
+	if (_applicationEditView == null)
+		_applicationEditView = new ApplicationEditView(application);
+	else
+		_applicationEditView.viewModel = application;
+
+	_applicationEditView.displayIn(panel);
+}
+
+ApplicationDisplayView _applicationDisplayView;
+
+void _displayApplicationDisplay(ApplicationViewModel application, Element panel)
+{
+	if (_applicationDisplayView == null)
+		_applicationDisplayView = new ApplicationDisplayView(application);
+	else
+		_applicationDisplayView.viewModel = application;
+
+	_applicationDisplayView.displayIn(panel);
+}
+
+/*************************************************************************/
+

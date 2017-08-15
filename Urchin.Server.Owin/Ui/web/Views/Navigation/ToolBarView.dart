@@ -1,15 +1,14 @@
 ﻿import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
 
 import '../../MVVM/Mvvm.dart';
-
 import '../../Events/AppEvents.dart';
 
 class ToolBarView extends View
 {
 	ToolBarView()
 	{
+		_addButton('Datacenters');
+		_addButton('Applications');
 		_addButton('Environments');
 		_addButton('Versions');
 		_addButton('Rules');

@@ -1,10 +1,11 @@
-import 'dart:async';
-
 import '../MVVM/Mvvm.dart';
 
 import '../ViewModels/EnvironmentViewModel.dart';
 import '../ViewModels/VersionViewModel.dart';
 import '../ViewModels/RuleViewModel.dart';
+import '../ViewModels/ApplicationViewModel.dart';
+import '../ViewModels/DatacenterViewModel.dart';
+import '../ViewModels/DatacenterRuleViewModel.dart';
 
 class RuleSelectedEvent
 {
@@ -22,6 +23,24 @@ class EnvironmentSelectedEvent
 {
 	EnvironmentViewModel environment;
 	EnvironmentSelectedEvent(this.environment);
+}
+
+class ApplicationSelectedEvent
+{
+	ApplicationViewModel application;
+	ApplicationSelectedEvent(this.application);
+}
+
+class DatacenterSelectedEvent
+{
+	DatacenterViewModel datacenter;
+	DatacenterSelectedEvent(this.datacenter);
+}
+
+class DatacenterRuleSelectedEvent
+{
+	DatacenterRuleViewModel datacenterRule;
+	DatacenterRuleSelectedEvent(this.datacenterRule);
 }
 
 class VersionSelectedEvent
@@ -47,9 +66,13 @@ class UserChangedEvent
 class AppEvents
 {
 	static SubscriptionEvent<RuleSelectedEvent> ruleSelected = new SubscriptionEvent<RuleSelectedEvent>();
-	static SubscriptionEvent<RuleEditEvent> ruleEdit = new SubscriptionEvent<RuleEditEvent>();
 	static SubscriptionEvent<EnvironmentSelectedEvent> environmentSelected = new SubscriptionEvent<EnvironmentSelectedEvent>();
 	static SubscriptionEvent<VersionSelectedEvent> versionSelected = new SubscriptionEvent<VersionSelectedEvent>();
+	static SubscriptionEvent<ApplicationSelectedEvent> applicationSelected = new SubscriptionEvent<ApplicationSelectedEvent>();
+	static SubscriptionEvent<DatacenterSelectedEvent> datacenterSelected = new SubscriptionEvent<DatacenterSelectedEvent>();
+	static SubscriptionEvent<DatacenterRuleSelectedEvent> datacenterRuleSelected = new SubscriptionEvent<DatacenterRuleSelectedEvent>();
+
+	static SubscriptionEvent<RuleEditEvent> ruleEdit = new SubscriptionEvent<RuleEditEvent>();
 	static SubscriptionEvent<TabChangedEvent> tabChanged = new SubscriptionEvent<TabChangedEvent>();
 	static SubscriptionEvent<UserChangedEvent> userChanged = new SubscriptionEvent<UserChangedEvent>();
 }
