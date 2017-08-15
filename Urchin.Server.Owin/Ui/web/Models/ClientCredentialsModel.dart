@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:async';
 
-import '../MVVM/Model.dart';
+import '../MVVM/Mvvm.dart';
 
 class ClientCredentialsModel extends Model
 {

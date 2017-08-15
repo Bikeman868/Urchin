@@ -4,9 +4,7 @@ import 'dart:async';
 
 import '../Server.dart';
 
-import '../MVVM/ViewModel.dart';
-import '../MVVM/StringBinding.dart';
-import '../MVVM/Enums.dart';
+import '../MVVM/Mvvm.dart';
 
 import '../Models/ClientCredentialsModel.dart';
 import '../Models/PostResponseModel.dart';

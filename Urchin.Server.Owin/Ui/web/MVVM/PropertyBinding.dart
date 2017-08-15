@@ -1,5 +1,4 @@
-﻿import 'Events.dart';
-import 'Types.dart';
+﻿part of mvvm;
 
 // Provides two-way data binding with parsing and formatting
 // The binding is associated with a single data value in a model

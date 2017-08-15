@@ -1,8 +1,6 @@
 ﻿import 'dart:html';
 
-import '../../MVVM/Events.dart';
-import '../../MVVM/View.dart';
-import '../../MVVM/BoundTextInput.dart';
+import '../../MVVM/Mvvm.dart';
 
 import '../../Events/AppEvents.dart';
 import '../../Models/SecurityRuleModel.dart';

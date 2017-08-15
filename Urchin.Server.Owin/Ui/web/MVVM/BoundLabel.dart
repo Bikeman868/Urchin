@@ -1,9 +1,4 @@
-﻿import 'dart:html';
-import 'dart:async';
-
-import 'BoundElement.dart';
-import 'Events.dart';
-import 'Types.dart';
+﻿part of mvvm;
 
 // Provides one-way binding of a view model property to the inner html of a UI element
 

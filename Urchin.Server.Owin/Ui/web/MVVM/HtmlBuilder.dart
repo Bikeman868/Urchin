@@ -1,14 +1,25 @@
-import 'dart:html';
+part of mvvm;
 
 class HtmlBuilder
 {
+	static String imagesUrl = '{_images-url_}';
+	static String version = "";
+
+	static Initialize()
+	{
+		InputElement imagesUrlElement = querySelector('#images-url');
+		if (imagesUrlElement != null)
+			imagesUrl = imagesUrlElement.value;
+
+		InputElement versionElement = querySelector('#version');
+		if (versionElement != null)
+			version = versionElement.value;
+	}
+
 	List<Element> _elements;
 
 	HtmlBuilder()
 	{
-		InputElement version = querySelector('#version');
-		_version = version.value;
-
 		clear();
 	}
 
@@ -29,13 +40,18 @@ class HtmlBuilder
 			container.children.add(e);
 	}
 
-	/******************************************************************************/
+	HtmlBuilder merge(HtmlBuilder other)
+	{
+		for (var e in other._elements)
+			_elements.add(e);
+		return other;
+	}
 
-	String _version;
+	/******************************************************************************/
 
 	String versioned(String url)
 	{
-		return url.replaceAll(r'{_v_}', _version);
+		return url.replaceAll(r'{_v_}', version);
 	}
 
 	/******************************************************************************/
@@ -175,7 +191,7 @@ class HtmlBuilder
 		})
 	{
 		var img = new ImageElement();
-		if (url != null) img.src = url.replaceAll(r'{_v_}', _version);
+		if (url != null) img.src = url.replaceAll(r'{_v_}', version);
 		if (onClick != null) img.onClick.listen(onClick);
 		if (altText != null) img.alt = altText;
 		return _addElement(img, classNames, className, parent);
@@ -390,6 +406,19 @@ class HtmlBuilder
 		return dataField;
 	}
 
+	TextAreaElement addLabeledTextArea(Element form, String label,
+		{
+			String className
+		})
+	{
+		var row = addContainer(parent: form, classNames: ['data-row', className]);
+
+		var labelField = addInlineText(label, parent: row, className: 'data-label');
+		var dataField = addTextArea(parent: row, className: 'input-field');
+
+		return dataField;
+	}
+
 	CheckboxInputElement addLabeledCheckbox(Element form, String label,
 		{
 			String className
@@ -425,6 +454,33 @@ class HtmlBuilder
 		})
 	{
 		var listElement = new LIElement();
+		if (html != null)
+			listElement.innerHtml = html;
+		return _addElement(listElement, classNames, className, parent);
+	}
+
+	/******************************************************************************/
+
+	SelectElement addDropdownList(
+		{
+			List<String> classNames, 
+			String className, 
+			Element parent
+		})
+	{
+		var list = new SelectElement();
+		return _addElement(list, classNames, className, parent);
+	}
+
+	Element addDropdownListElement(
+		{
+			String html, 
+			Element parent,
+			List<String> classNames, 
+			String className
+		})
+	{
+		var listElement = new OptionElement();
 		if (html != null)
 			listElement.innerHtml = html;
 		return _addElement(listElement, classNames, className, parent);

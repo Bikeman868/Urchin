@@ -1,4 +1,4 @@
-﻿import '../MVVM/Model.dart';
+﻿import '../MVVM/Mvvm.dart';
 
 class PostResponseModel extends Model
 {

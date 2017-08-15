@@ -114,9 +114,10 @@ namespace Urchin.Server.Owin
                 builder.EnableTracing();
 #endif
 
-                // Define routes through the OWIN pipeline
 
 #if ROUTING
+                // Define routes through the OWIN pipeline
+
                 var configPath = new PathString("/config");
                 var opsPath = new PathString("/ops");
                 var uiPath = new PathString("/ui");

@@ -1,5 +1,4 @@
-﻿import 'dart:async';
-
+﻿part of mvvm;
 
 // This is used to notify subscribers when items are added and removed from lists
 class ListEvent
@@ -22,4 +21,9 @@ class SubscriptionEvent<E>
 	{
 		return _controller.stream.listen(handler);
 	}
+}
+
+class MvvmEvents
+{
+	static SubscriptionEvent<String>alert = new SubscriptionEvent<String>();
 }

@@ -1,11 +1,6 @@
 import 'dart:html';
 
-import '../../MVVM/View.dart';
-import '../../MVVM/BoundLabel.dart';
-import '../../MVVM/BoundFormatter.dart';
-import '../../MVVM/BoundList.dart';
-import '../../MVVM/BoundTextInput.dart';
-import '../../MVVM/BoundTextArea.dart';
+import '../../MVVM/Mvvm.dart';
 
 import '../../Models/RuleModel.dart';
 import '../../Models/VariableModel.dart';

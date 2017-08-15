@@ -1,8 +1,4 @@
-﻿import 'dart:html';
-import 'dart:async';
-
-import 'BoundElement.dart';
-import 'Events.dart';
+﻿part of mvvm;
 
 // Provides one-way binding of a view model property containing a URL
 // to the src url of an iframe.

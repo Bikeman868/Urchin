@@ -1,12 +1,4 @@
-﻿import 'dart:html';
-import 'dart:async';
-
-import 'View.dart';
-import 'Model.dart';
-import 'ViewModel.dart';
-import 'Types.dart';
-import 'ModelList.dart';
-import 'Events.dart';
+﻿part of mvvm;
 
 // Abstract base class for components that bind to a list of view models.
 // * Subscribes to events from add/remove actions when bound to a list

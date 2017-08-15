@@ -2,9 +2,7 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
-import '../../MVVM/View.dart';
-import '../../MVVM/BoundTextInput.dart';
-import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/Mvvm.dart';
 
 import '../../ViewModels/UserViewModel.dart';
 

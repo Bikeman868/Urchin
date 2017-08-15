@@ -1,4 +1,4 @@
-﻿import '../MVVM/Model.dart';
+﻿import '../MVVM/Mvvm.dart';
 
 class MachineModel extends Model
 {

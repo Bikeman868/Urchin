@@ -1,8 +1,4 @@
-import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
-
-import 'Types.dart';
+part of mvvm;
 
 class Model
 {

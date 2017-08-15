@@ -1,4 +1,4 @@
-﻿import '../MVVM/Model.dart';
+﻿import '../MVVM/Mvvm.dart';
 import '../Models/VariableModel.dart';
 
 class RuleModel extends Model

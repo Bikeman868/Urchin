@@ -1,5 +1,5 @@
 ﻿import 'dart:html';
-import '../MVVM/HtmlBuilder.dart';
+import '../MVVM/Mvvm.dart';
 
 class JsonHighlighter
 {

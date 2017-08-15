@@ -9,7 +9,7 @@ These models are mostly there to allow easy serialization and deserialization of
 
 Model classes should extend `Model` and add properties that map to elements of JSON like this:
 
-```
+```dart
     import 'Model.dart';
 
     class VersionNameModel extends Model
@@ -27,7 +27,7 @@ Model classes should extend `Model` and add properties that map to elements of J
 In Dart when you make an HTTP request you will receive a `Map` as the result. Pass this map to the
 model constructor to deserialize the JSON into a strongly typed object. For example:
 
-```
+```dart
     static Future<VersionNameModel> getVersionName(int version)  async
     {
     	String response = await HttpRequest.getString('/version/name/' + version.toString());
@@ -38,7 +38,7 @@ model constructor to deserialize the JSON into a strongly typed object. For exam
 When you want to serialize a model to pass it back to the server, the `json` property of `Model` is a `Map` that
 you can pass to the `JSON.encode()` method of the Dart libraries to turn it into a `String`. For example:
 
-```
+```dart
 	static Future<HttpRequest> addRule(RuleModel rule)
 	{
 		return HttpRequest.request('/rule', 
@@ -50,7 +50,7 @@ you can pass to the `JSON.encode()` method of the Dart libraries to turn it into
 
 Models can contain lists of other models. For example:
 
-```
+```dart
     import 'Model.dart';
     
     class MachineModel extends Model
@@ -75,7 +75,7 @@ Models can contain lists of other models. For example:
 
 In this case the serialization and deserialization to/from the server is slightly more involved. For example:
 
-```
+```dart
     static Future<List<EnvironmentModel>> getEnvironments() async
     {
     	String response = await HttpRequest.getString('/environments');
@@ -120,7 +120,7 @@ The View model should:
 
 To create a view model, write a class that extends `ViewModel`, for example:
 
-```
+```dart
     import 'StringBinding.dart';
     import 'ViewModel.dart';
     import 'MachineModel.dart';
@@ -178,7 +178,7 @@ of the model. There are also:
 Views produce HTML that is bound to a view model. When the bound properties of the view model
 change the HTML elements are updated with the new value and visa versa. For example:
 
-```
+```dart
 import 'View.dart';
 import 'BoundLabel.dart';
 import 'MachineViewModel.dart';
@@ -252,3 +252,32 @@ of a view model.
 The example above calls the `addSpan()` method that it inherited from the `HtmlBuilder` class. In your views you
 can use these methods, or any other standard Dart technique for constructing HTML elements, or you can deploy HTML
 templates and use standard Dart libraries to find elements in the page, and pass those to the bound control class.
+
+## Configuration
+
+There are a couple of things you need to configure.
+
+### Location of images
+
+The `BoundList` displays ad and delete buttons called `add.gif` and `delete.gif` and it needs to know the
+relative path to these assets. The `HtmlBuilder` class contains a static variable called `imagesUrl` that
+contains the root. This is initially set to `{_images-url_}` so that you can find and replace it in the 
+dart code or compiled JavaScript. Alternatively you can call `HtmlBuilder.Initialize()` which will look
+for an input element on the page with the id of `images-url` and take its value.
+
+This means that you have two options:
+
+1. Search and replace `{_images-url_}` in the JavaScript.
+
+2. Add an input to the page similar to `<input type="hidden" id="images-url" value="/authorizationUi/images" />`
+
+### Versioning of assets
+
+If you use the Owin Framework Versioning middleware, it will intercept the output and replace `{_v_}` markers
+in various response types with the current version number. To carry this through to this MVVM library you must
+call `HtmlBuilder.Initialize()` once at startup, and you must add an imput field to the page defining the 
+version number. The value of the input field can be a hard coded version number or the `{_v_}` marker if you are
+using the Owin Framework versioning middleware.
+
+The input should be something like `<input type="hidden" id="version" value="{_v_}" />` or 
+'<input type="hidden" id="version" value="_v3" />'.

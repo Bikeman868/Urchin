@@ -1,4 +1,4 @@
-﻿import 'PropertyBinding.dart';
+﻿part of mvvm;
 
 class IntBinding extends PropertyBinding<int>
 {

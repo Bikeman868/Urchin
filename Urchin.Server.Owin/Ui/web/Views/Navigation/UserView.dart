@@ -1,8 +1,6 @@
 ﻿import 'dart:html';
 
-import '../../MVVM/Events.dart';
-import '../../MVVM/View.dart';
-import '../../MVVM/BoundLabel.dart';
+import '../../MVVM/Mvvm.dart';
 
 import '../../Events/AppEvents.dart';
 import '../../ViewModels/UserViewModel.dart';

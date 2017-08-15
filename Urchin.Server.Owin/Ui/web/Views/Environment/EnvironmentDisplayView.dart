@@ -1,9 +1,6 @@
 ﻿import 'dart:html';
 
-import '../../MVVM/View.dart';
-import '../../MVVM/BoundLabel.dart';
-import '../../MVVM/BoundList.dart';
-import '../../MVVM/BoundRepeater.dart';
+import '../../MVVM/Mvvm.dart';
 
 import '../../Models/MachineModel.dart';
 import '../../Models/SecurityRuleModel.dart';

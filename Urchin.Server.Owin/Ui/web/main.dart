@@ -2,6 +2,8 @@ import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
 
+import 'MVVM/Mvvm.dart';
+
 import 'ViewModels/DataViewModel.dart';
 import 'ViewModels/EnvironmentViewModel.dart';
 import 'ViewModels/VersionViewModel.dart';
@@ -37,6 +39,8 @@ LogonView _logonView;
 
 main()
 { 
+	HtmlBuilder.Initialize();
+
 	_bindHtml();
 	_initialView();
 	_attachEvents();

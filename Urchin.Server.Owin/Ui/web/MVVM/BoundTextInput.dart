@@ -1,9 +1,4 @@
-﻿import 'dart:html';
-import 'dart:async';
-
-import 'PropertyBinding.dart';
-import 'BoundElement.dart';
-import 'Events.dart';
+﻿part of mvvm;
 
 // Provides two-way binding of UI elements that have a 'value' property
 // and an 'onBlur' event.

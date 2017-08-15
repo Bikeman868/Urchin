@@ -244,7 +244,6 @@
     <Content Include="Ui\web\MVVM\BoundList.dart" />
     <Content Include="Ui\web\MVVM\BoundRepeater.dart" />
     <Content Include="Ui\web\MVVM\BoundTextInput.dart" />
-    <Content Include="Ui\web\MVVM\Enums.dart" />
     <Content Include="Ui\web\MVVM\HtmlBuilder.dart" />
     <Content Include="Ui\web\MVVM\IntBinding.dart" />
     <Content Include="Ui\web\MVVM\ModelList.dart" />
@@ -261,6 +260,8 @@
     <Content Include="Ui\web\Models\VersionNameModel.dart" />
     <Content Include="Ui\web\MVVM\readme.md" />
     <Content Include="Ui\web\MVVM\BoundTextArea.dart" />
+    <Content Include="Ui\web\MVVM\BoundSelect.dart" />
+    <Content Include="Ui\web\MVVM\Mvvm.dart" />
     <None Include="Ui\web\ViewModels\EnvironmentViewModel.dart" />
   </ItemGroup>
   <ItemGroup>

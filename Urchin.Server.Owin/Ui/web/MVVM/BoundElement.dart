@@ -1,8 +1,4 @@
-﻿import 'dart:async';
-import 'dart:html';
-
-import 'PropertyBinding.dart';
-import 'Events.dart';
+﻿part of mvvm;
 
 // Base class for UI elements that bind to a view model property
 // * Provides two way binding between a view model property and the UI element

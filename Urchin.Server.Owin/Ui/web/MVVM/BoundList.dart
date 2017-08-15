@@ -1,14 +1,6 @@
-﻿import 'dart:html';
+﻿part of mvvm;
 
-import 'HtmlBuilder.dart';
-import 'View.dart';
-import 'Model.dart';
-import 'ViewModel.dart';
-import 'Types.dart';
-import 'BoundContainer.dart';
-import 'Enums.dart';
-
-// Provides tw-way binding of a list of view models to a list of views
+// Provides two-way binding of a list of view models to a list of views
 // * Generates <li> elements and adds them to the list container
 // * Wraps each view in a container that provides a list selection mechanism
 // * Can optionally display add/remove buttons to manage the list
@@ -80,7 +72,7 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
 					if (allowRemove)
 					{
 						var deleteButton = builder.addImage(
-							'ui/images/delete{_v_}.gif',
+							HtmlBuilder.imagesUrl + '/delete{_v_}.gif',
 							altText: 'Delete',
 							classNames: ['bound-list-delete','image-button'],
 							parent: listItem,
@@ -95,7 +87,7 @@ class BoundList<TM extends Model, TVM extends ViewModel, TV extends View> extend
 				var listItem = builder.addListElement(className:'list-item');
 				var viewContainer = builder.addContainer(className:'list-view', parent: listItem);
 				var addButton = builder.addImage(
-					'ui/images/add{_v_}.gif',
+					HtmlBuilder.imagesUrl + '/add{_v_}.gif',
 					altText: 'New',
 					classNames: ['bound-list-add','image-button'],
 					parent: listItem,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import '../MVVM/Events.dart';
+import '../MVVM/Mvvm.dart';
+
 import '../ViewModels/EnvironmentViewModel.dart';
 import '../ViewModels/VersionViewModel.dart';
 import '../ViewModels/RuleViewModel.dart';
