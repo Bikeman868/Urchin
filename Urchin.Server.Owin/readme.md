@@ -1,5 +1,25 @@
 ﻿# Urchin Server
 
+## What does it do
+The Urchin server allows you to retrieve configuration files via HTTP(S) requests that are tailored 
+to each combination of application, instance, machine and environment. Application software can make
+an HTTP request to Urchin at startup to get a configuration that is specific to the application instance,
+the machine it is running on and the environment it is running in.
+
+You only have to configure the settings that are specific to each environment, each application etc and 
+Urchin will merge these settings together into one configuration file that is right for the specific
+combination of application, instance, machine and environment.
+
+For instance if you add a rule that says "all applications running in the integration environment should
+store log files in c:\Logfiles" this change will be merged into the configuration files of all
+applications running in the integration environment, there is no need to update individual configuration
+files for each application.
+
+Rules can be very general such as "all applications running in the integration environment" or very specific
+for example "the content server application running on machine CONTENT1 in the development environment". More
+general rules are evaluated before more specific ones so that the more specific settings overide more general
+ones.
+
 ## Installation
 There is no installer application for the server yet. Please download the source code and compile
 it using Visual Studio and the Dart SDK. To install the server you just need to copy a few files 

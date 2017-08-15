@@ -129,14 +129,23 @@ you can edit the file and the changes will be picked up and applied by the serve
 the Prius persister to save changes to a database, and you edit the database directly, you will have
 to recycle the IIS app pool to pick up the changes.
 
-A UI for managing rules is in development, so far you can view the rules and environments, and run 
-test queries, but the rules can not be edited via the UI.
+A UI for managing rules is in development. The editor is a single page application written in the 
+Dart programming language. It allows you to manage all of the rules, versions and environments, but
+has limited funtionallity in the areas of: testing rules before applying changes, duplicating rules,
+copying rules between versions, user accounts and granular permissions. These features will be
+built into future versions of the UI.
 
 ## Next Steps
 If you want to contribute to this project, these are the next most important tasks
 
+* Add support for multiple datacenters
+* Fix issues with the database persistence package
 * Write scripts to create databases for Microsoft SQL Server and Postgresql.
-* Add the ability to modify rules and environments via the UI.
+* Add user accounts and granular permissions.
+* Add UI functionallity to move/copy rules between versions.
+* Add UI functionallity to test rule changes before saving them.
+* Maintain an audit trail of who changed what when.
+* Add an alternate UI view which is based around config values rather than rules. In this paradigm the rules would be maintained behind the scenes.
 
 ## FAQ
 
@@ -153,15 +162,15 @@ A: To get started with the client only using IoC and a local configuration file:
    1. Install the NuGet package for `Urchin.Client`.
    2. In your IoC register a mapping to the `ConfigurationStore` class from the
       `IConfigurationStore` interface as a singleton. Note that if you integrate
-	  the `Ioc.Modules` NuGet package into application you can skip this step.
+      the `Ioc.Modules` NuGet package into application you can skip this step.
    3. Create a configuration file in JSON format. Structure the JSON however you
       want including different data types, arrays and objects within objects.
    4. Construct an instance of `Urchin.Client.Sources.FileSource` and initialize
       it with the location of your file. You will have to pass an
-	  `IConfigurationStore` instance to the constructor - you can let IoC do this
-	  for you! You need to keep a reference to the `FileSource` for it to notice 
-	  config changes. When you `Dispose()` of the `FileSource` it will stop 
-	  watching the configuration file for changes.
+      `IConfigurationStore` instance to the constructor - you can let IoC do this
+      for you! You need to keep a reference to the `FileSource` for it to notice 
+      config changes. When you `Dispose()` of the `FileSource` it will stop 
+      watching the configuration file for changes.
    5. Inject `IConfigurationStore` into classes in your application that need 
       access to configuration data.
    6. Call the `Register<T>()` method of `IConfigurationStore` to get notified 
