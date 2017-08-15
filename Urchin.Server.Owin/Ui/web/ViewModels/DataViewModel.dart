@@ -3,8 +3,8 @@
 import '../ViewModels/EnvironmentListViewModel.dart';
 import '../ViewModels/VersionListViewModel.dart';
 import '../ViewModels/ApplicationListViewModel.dart';
-//import '../ViewModels/DatacenterListViewModel.dart';
-//import '../ViewModels/DatacenterRuleListViewModel.dart';
+import '../ViewModels/DatacenterListViewModel.dart';
+import '../ViewModels/DatacenterRuleListViewModel.dart';
 import '../ViewModels/UserViewModel.dart';
 
 class DataViewModel extends ViewModel
@@ -57,9 +57,27 @@ class DataViewModel extends ViewModel
 		return _versionList;
 	}
 
+	DatacenterListViewModel _datacenterList;
+	DatacenterListViewModel get datacenterList
+	{
+		if (_datacenterList == null)
+			_datacenterList = new DatacenterListViewModel();
+
+		return _datacenterList;
+	}
+
+	DatacenterRuleListViewModel _datacenterRuleList;
+	DatacenterRuleListViewModel get datacenterRuleList
+	{
+		if (_datacenterRuleList == null)
+			_datacenterRuleList = new DatacenterRuleListViewModel();
+
+		return _datacenterRuleList;
+	}
+
 	List<ViewModel> getChildViewModels()
 	{
-		return [_environmentList, _versionList];
+		return [_environmentList, _versionList, _applicationList];
 	}
 
 	String toString() => 'data view model';

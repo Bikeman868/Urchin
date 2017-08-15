@@ -34,6 +34,14 @@ import 'Views/Application/ApplicationListView.dart';
 import 'Views/Application/ApplicationEditView.dart';
 import 'Views/Application/ApplicationDisplayView.dart';
 
+import 'Views/Datacenter/DatacenterListView.dart';
+import 'Views/Datacenter/DatacenterEditView.dart';
+import 'Views/Datacenter/DatacenterDisplayView.dart';
+
+import 'Views/DatacenterRule/DatacenterRuleDisplayView.dart';
+import 'Views/DatacenterRule/DatacenterRuleEditView.dart';
+import 'Views/DatacenterRule/DatacenterRuleListView.dart';
+
 Element _leftDiv;
 Element _centreDiv;
 Element _rightDiv;
@@ -120,6 +128,10 @@ void _tabChanged(TabChangedEvent e)
 	{
 		_displayApplicationList(_leftDiv);
 	}
+	else if (e.tabName == 'Datacenters') 
+	{
+		_displayDatacenterRuleList(_leftDiv);
+	}
 }
 
 String _currentView;
@@ -165,15 +177,28 @@ void _applicationSelected(ApplicationSelectedEvent e)
 
 void _datacenterSelected(DatacenterSelectedEvent e)
 {
+	if (_currentView == 'Datacenters')
+		_displayDatacenterEdit(e.datacenter, _centreDiv);
+	else 
+		_displayDatacenterDisplay(e.datacenter, _rightDiv);
 }
 
 void _datacenterRuleSelected(DatacenterRuleSelectedEvent e)
 {
+	if (_currentView == 'DatacenterRules')
+		_displayDatacenterRuleEdit(e.datacenterRule, _centreDiv);
+	else 
+		_displayDatacenterRuleDisplay(e.datacenterRule, _rightDiv);
 }
 
 void _ruleEdit(RuleEditEvent e)
 {
 	_displayRuleEdit(e.rule, _centreDiv);
+}
+
+void _datacenterRuleEdit(DatacenterRuleEditEvent e)
+{
+	_displayDatacenterRuleEdit(e.rule, _centreDiv);
 }
 
 /*************************************************************************/
@@ -362,6 +387,82 @@ void _displayApplicationDisplay(ApplicationViewModel application, Element panel)
 		_applicationDisplayView.viewModel = application;
 
 	_applicationDisplayView.displayIn(panel);
+}
+
+/*************************************************************************/
+
+DatacenterListView _datacenterListView;
+
+void _displayDatacenterList(Element panel)
+{
+	_currentView = 'Datacenters';
+
+	if (_datacenterListView == null)
+		_datacenterListView = new DatacenterListView(_dataViewModel.datacenterList);
+
+	_datacenterListView.displayIn(panel);
+}
+
+DatacenterEditView _datacenterEditView;
+
+void _displayDatacenterEdit(DatacenterViewModel datacenter, Element panel)
+{
+	if (_datacenterEditView == null)
+		_datacenterEditView = new DatacenterEditView(datacenter);
+	else
+		_datacenterEditView.viewModel = datacenter;
+
+	_datacenterEditView.displayIn(panel);
+}
+
+DatacenterDisplayView _datacenterDisplayView;
+
+void _displayDatacenterDisplay(DatacenterViewModel datacenter, Element panel)
+{
+	if (_datacenterDisplayView == null)
+		_datacenterDisplayView = new DatacenterDisplayView(datacenter);
+	else
+		_datacenterDisplayView.viewModel = datacenter;
+
+	_datacenterDisplayView.displayIn(panel);
+}
+
+/*************************************************************************/
+
+DatacenterRuleListView _datacenterRuleListView;
+
+void _displayDatacenterRuleList(Element panel)
+{
+	_currentView = 'DatacenterRules';
+
+	if (_datacenterRuleListView == null)
+		_datacenterRuleListView = new DatacenterRuleListView(_dataViewModel.datacenterRuleList);
+
+	_datacenterRuleListView.displayIn(panel);
+}
+
+DatacenterRuleEditView _datacenterRuleEditView;
+
+void _displayDatacenterRuleEdit(DatacenterRuleViewModel datacenterRule, Element panel)
+{
+	if (_datacenterRuleEditView == null)
+		_datacenterRuleEditView = new DatacenterRuleEditView(datacenterRule);
+	else
+		_datacenterRuleEditView.viewModel = datacenterRule;
+
+	_datacenterRuleEditView.displayIn(panel);
+}
+
+DatacenterRuleDisplayView _datacenterRuleDisplayView;
+
+void _displayDatacenterRuleDisplay(DatacenterRuleViewModel datacenterRule, Element panel)
+{
+	if (_datacenterRuleDisplayView == null)
+		_datacenterRuleDisplayView = new DatacenterRuleDisplayView(datacenterRule);
+	else
+		_datacenterRuleDisplayView.viewModel = datacenterRule;
+
+	_datacenterRuleDisplayView.displayIn(panel);
 }
 
 /*************************************************************************/

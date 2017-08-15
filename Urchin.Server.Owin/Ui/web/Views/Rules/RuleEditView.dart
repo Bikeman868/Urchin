@@ -1,5 +1,4 @@
 import 'dart:html';
-
 import '../../MVVM/Mvvm.dart';
 
 import '../../Models/VariableModel.dart';

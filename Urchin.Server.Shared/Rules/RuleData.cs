@@ -79,11 +79,7 @@ namespace Urchin.Server.Shared.Rules
                 return new JObject();
 
             if (string.IsNullOrEmpty(datacenter))
-            {
-                var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
-                if (datacenterDto != null)
-                    datacenter = datacenterDto.Name;
-            }
+                datacenter = LookupDatacenter(environmentDto, machine, application, instance);
 
             var ruleVersion = EnsureVersion(environmentDto.Version, false);
 
@@ -117,11 +113,7 @@ namespace Urchin.Server.Shared.Rules
             var ruleVersion = EnsureVersion(environmentDto.Version, false);
 
             if (string.IsNullOrEmpty(datacenter))
-            {
-                var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
-                if (datacenterDto != null)
-                    datacenter = datacenterDto.Name;
-            }
+                datacenter = LookupDatacenter(environmentDto, machine, application, instance);
 
             if (ruleVersion == null || ruleVersion.Rules == null || ruleVersion.Rules.Count == 0)
                 return response;
@@ -162,11 +154,7 @@ namespace Urchin.Server.Shared.Rules
                 return new JObject();
 
             if (string.IsNullOrEmpty(datacenter))
-            {
-                var datacenterDto = LookupDatacenter(environmentDto, machine, application, instance);
-                if (datacenterDto != null)
-                    datacenter = datacenterDto.Name;
-            }
+                datacenter = LookupDatacenter(environmentDto, machine, application, instance);
 
             if (!version.HasValue) version = GetDraftVersion();
             var ruleVersion = EnsureVersion(version.Value, false);
@@ -809,7 +797,7 @@ namespace Urchin.Server.Shared.Rules
             return environments.FirstOrDefault(e => string.Equals(e.EnvironmentName, _defaultEnvironmentName, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        private DatacenterDto LookupDatacenter(EnvironmentDto environment, string machine, string application, string instance)
+        private string LookupDatacenter(EnvironmentDto environment, string machine, string application, string instance)
         {
             var datacenterRules = _datacenterRules;
             if (datacenterRules == null) return null;
@@ -821,7 +809,7 @@ namespace Urchin.Server.Shared.Rules
                     datacenterName = datacenterRule.DatacenterName;
             }
 
-            return _datacenters.FirstOrDefault(d => string.Equals(d.Name, datacenterName, StringComparison.OrdinalIgnoreCase));
+            return datacenterName;
         }
 
         private bool RuleApplies(RuleDto rule, EnvironmentDto environment, string datacenter, string machine, string application, string instance)

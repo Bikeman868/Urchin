@@ -43,6 +43,12 @@ class DatacenterRuleSelectedEvent
 	DatacenterRuleSelectedEvent(this.datacenterRule);
 }
 
+class DatacenterRuleEditEvent
+{
+	DatacenterRuleViewModel datacenterRule;
+	DatacenterRuleEditEvent(this.datacenterRule);
+}
+
 class VersionSelectedEvent
 {
 	VersionViewModel version;
@@ -73,6 +79,8 @@ class AppEvents
 	static SubscriptionEvent<DatacenterRuleSelectedEvent> datacenterRuleSelected = new SubscriptionEvent<DatacenterRuleSelectedEvent>();
 
 	static SubscriptionEvent<RuleEditEvent> ruleEdit = new SubscriptionEvent<RuleEditEvent>();
+	static SubscriptionEvent<DatacenterRuleEditEvent> datacenterRuleEdit = new SubscriptionEvent<DatacenterRuleEditEvent>();
+	
 	static SubscriptionEvent<TabChangedEvent> tabChanged = new SubscriptionEvent<TabChangedEvent>();
 	static SubscriptionEvent<UserChangedEvent> userChanged = new SubscriptionEvent<UserChangedEvent>();
 }
