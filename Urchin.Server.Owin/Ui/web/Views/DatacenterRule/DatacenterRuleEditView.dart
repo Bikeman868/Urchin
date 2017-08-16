@@ -1,6 +1,4 @@
-﻿import 'dart:html';
-import '../../MVVM/Mvvm.dart';
-
+﻿import '../../MVVM/Mvvm.dart';
 import '../../ViewModels/DatacenterRuleViewModel.dart';
 
 class DatacenterRuleEditView extends View
@@ -37,9 +35,6 @@ class DatacenterRuleEditView extends View
 		var form2 = addForm();
 		_datacenterInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Datacenter', className: 'rule-datacenter'));
 
-		var buttonBar = addContainer(className: 'button-bar');
-		addButton("Save", _saveClicked, parent: buttonBar);
-
 		this.viewModel = viewModel;
 	}
 
@@ -65,11 +60,5 @@ class DatacenterRuleEditView extends View
 			_environmentInput.binding = value.environment;
 			_datacenterInput.binding = value.datacenter;
 		}
-	}
-
-	void _saveClicked(MouseEvent e)
-	{
-		if (viewModel != null)
-			viewModel.save();
 	}
 }

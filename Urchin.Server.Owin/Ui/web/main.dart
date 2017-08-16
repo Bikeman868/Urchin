@@ -91,6 +91,8 @@ void _initialView()
 
 void _attachEvents()
 {
+	MvvmEvents.alert.listen((message) => alert(message));
+
 	AppEvents.tabChanged.listen(_tabChanged);
 	AppEvents.ruleEdit.listen(_ruleEdit);
 
@@ -100,6 +102,11 @@ void _attachEvents()
 	AppEvents.applicationSelected.listen(_applicationSelected);
 	AppEvents.datacenterSelected.listen(_datacenterSelected);
 	AppEvents.datacenterRuleSelected.listen(_datacenterRuleSelected);
+}
+
+alert(String message)
+{
+	window.alert(message);
 }
 
 void _tabChanged(TabChangedEvent e)
