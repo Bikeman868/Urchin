@@ -2,13 +2,13 @@
 
 ## What does it do
 The Urchin server allows you to retrieve configuration files via HTTP(S) requests that are tailored 
-to each combination of application, instance, machine and environment. Application software can make
+to each combination of application, instance, machine, datacenter and environment. Application software can make
 an HTTP request to Urchin at startup to get a configuration that is specific to the application instance,
-the machine it is running on and the environment it is running in.
+the machine it is running on and the environment/datacenter it is running in.
 
 You only have to configure the settings that are specific to each environment, each application etc and 
 Urchin will merge these settings together into one configuration file that is right for the specific
-combination of application, instance, machine and environment.
+combination of application, instance, machine, datacenter and environment.
 
 For instance if you add a rule that says "all applications running in the integration environment should
 store log files in c:\Logfiles" this change will be merged into the configuration files of all
@@ -239,6 +239,7 @@ The query string parameters are:
 | machine     | required  | The name of the computer running the application. Can be obtained from System.Environment.MachineName |
 | application | required  | The name of the application. You can use the executable file name or any naming convention you choose |
 | environment | optional  | The name of the environment, for example development, staging, integration, prod. If this parameter is not provided, the environment will be determined from the machine name |
+| datacenter  | optional  | The name of the datacenter, for example localhost, mycompany:london or aws:us-east-1. If this parameter is not provided, the datacenter will be determined from the datacenter rules |
 | instance    | optional  | If you have multiple instances of the same application running on one machine, you can use this parameter to send them different configuration data |
 
 #### The `/trace` endpoint
@@ -285,6 +286,12 @@ You can also use these endpoints in your own software to query or modify the rul
 | PUT    | /environments           |              | http://localhost/urchin/environments        |
 | GET    | /environment/default    |              | http://localhost/urchin/environment/default |
 | PUT    | /environment/default    |              | http://localhost/urchin/environment/default |
+| GET    | /applications           |              | http://localhost/urchin/applications        |
+| PUT    | /applications           |              | http://localhost/urchin/applications        |
+| GET    | /datacenters            |              | http://localhost/urchin/datacenters         |
+| PUT    | /datacenters            |              | http://localhost/urchin/datacenters         |
+| GET    | /datacenterRules        |              | http://localhost/urchin/datacenterRules     |
+| PUT    | /datacenterRules        |              | http://localhost/urchin/datacenterRules     |
 
 
 #### The `/versions` Endpoint
@@ -359,6 +366,28 @@ an environment when it requests configuration data.
 #### The `/rulenames/{version}` Endpoint
 Retrievs a list of all of the rules in a specific version. This allows you to retrieve the rule
 details by making a GET request to `/rule/{version}/{name}` later.
+
+#### The `/applications` Endpoint
+When you GET this endpoint, the server returns a list of the applications. In the current version
+this list is only used for convenience to select application names from drop-down lists.
+
+When you PUT with the same format of data, all of the application data on the server is overwritten
+with whatever you PUT.
+
+#### The `/datacenters` Endpoint
+When you GET this endpoint, the server returns a list of the datacenters. In the current version
+this list is only used for convenience to select datacenter names from drop-down lists.
+
+When you PUT with the same format of data, all of the datacenters on the server is overwritten
+with whatever you PUT.
+
+#### The `/datacenterRules` Endpoint
+When you GET this endpoint, the server returns a list of the datacenter ruless. These rules
+are used to figure out which datacenter the application is running in when no datacenter
+is provided in the query string
+
+When you PUT with the same format of data, all of the datacenter rules on the server is overwritten
+with whatever you PUT.
 
 ## Recommended best practice for rule configuration
 There are many ways you can organize your rules. If you are new to Urchin, I recommend you try this
