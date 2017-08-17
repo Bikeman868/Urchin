@@ -135,14 +135,14 @@ class Server
 
 	static Future<RuleModel> getRule(int version, String ruleName) async
 	{
-		String response = await HttpRequest.getString('/rule/' + version.toString() + '/' + ruleName);
+		String response = await HttpRequest.getString('/rule/' + version.toString() + '/' + Uri.encodeComponent(ruleName));
 		return new RuleModel(JSON.decode(response));
 	}
 
 	static Future<PostResponseModel> updateRenameRule(int version, String oldName, RuleModel rule) async
 	{
 		var request = await HttpRequest.request(
-			'/rule/' + version.toString() + '/' + oldName, 
+			'/rule/' + version.toString() + '/' + Uri.encodeComponent(oldName), 
 			method: 'PUT',
 			sendData: JSON.encode(rule.json),
 			mimeType: 'application/json');
@@ -174,7 +174,7 @@ class Server
 	static Future<PostResponseModel> deleteRule(int version, String ruleName) async
 	{
 		var request = await HttpRequest.request(
-			'/rule/' + version.toString() + '/' + ruleName, 
+			'/rule/' + version.toString() + '/' + Uri.encodeComponent(ruleName), 
 			method: 'DELETE');
 
 		if (request.status != 200)
@@ -345,16 +345,16 @@ class Server
 		if (application == null || application.isEmpty)
 			throw 'Application name can not be empty';
 
-		var url = '/config?machine=' + machine + '&application=' + application;
+		var url = '/config?machine=' + machine + '&application=' + Uri.encodeComponent(application);
 
 		if (datacenter != null && datacenter.isNotEmpty)
-			url = url + '&datacenter=' + datacenter;
+			url = url + '&datacenter=' + Uri.encodeComponent(datacenter);
 
 		if (environment != null && !environment.isEmpty)
-			url = url + '&environment=' + environment;
+			url = url + '&environment=' + Uri.encodeComponent(environment);
 
 		if (instance != null && !instance.isEmpty)
-			url = url + '&instance=' + instance;
+			url = url + '&instance=' + Uri.encodeComponent(instance);
 
 		return HttpRequest.getString(url);
 	}
@@ -367,16 +367,16 @@ class Server
 		if (application == null || application.isEmpty)
 			throw 'Application name can not be empty';
 
-		var url = '/trace?machine=' + machine + '&application=' + application;
+		var url = '/trace?machine=' + machine + '&application=' + Uri.encodeComponent(application);
 
 		if (datacenter != null && datacenter.isNotEmpty)
-			url = url + '&datacenter=' + datacenter;
+			url = url + '&datacenter=' + Uri.encodeComponent(datacenter);
 
 		if (environment != null && !environment.isEmpty)
-			url = url + '&environment=' + environment;
+			url = url + '&environment=' + Uri.encodeComponent(environment);
 
 		if (instance != null && !instance.isEmpty)
-			url = url + '&instance=' + instance;
+			url = url + '&instance=' + Uri.encodeComponent(instance);
 
 		return HttpRequest.getString(url);
 	}
@@ -389,16 +389,17 @@ class Server
 		if (application == null || application.isEmpty)
 			throw 'Application name can not be empty';
 
-		var url = '/test/' + version.toString() + '?machine=' + machine + '&application=' + application;
+		var url = '/test/' + version.toString() + '?machine=' + 
+			Uri.encodeComponent(machine) + '&application=' + Uri.encodeComponent(application);
 
 		if (datacenter != null && datacenter.isNotEmpty)
-			url = url + '&datacenter=' + datacenter;
+			url = url + '&datacenter=' + Uri.encodeComponent(datacenter);
 
 		if (environment != null && !environment.isEmpty)
-			url = url + '&environment=' + environment;
+			url = url + '&environment=' + Uri.encodeComponent(environment);
 
 		if (instance != null && !instance.isEmpty)
-			url = url + '&instance=' + instance;
+			url = url + '&instance=' + Uri.encodeComponent(instance);
 
 		return HttpRequest.getString(url);
 	}

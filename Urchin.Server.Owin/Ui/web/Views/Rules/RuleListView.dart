@@ -139,7 +139,7 @@ class RuleListView extends View
 				name = name + _instanceFilter + ' ';
 
 			if (name.length == 0) 
-				name = 'Root';
+				name = 'New rule';
 			else
 				name = name.substring(0, name.length - 1);
 

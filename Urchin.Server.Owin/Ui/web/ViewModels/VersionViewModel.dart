@@ -1,5 +1,4 @@
-﻿import 'dart:html';
-import 'dart:async';
+﻿import 'dart:async';
 
 import '../MVVM/Mvvm.dart';
 
@@ -15,7 +14,7 @@ class VersionViewModel extends ViewModel
 {
     StringBinding name;
     IntBinding version;
-	ModelList<RuleModel, RuleViewModel> rules;
+		ModelList<RuleModel, RuleViewModel> rules;
 
 	VersionViewModel([VersionModel model]) : super(false)
 	{
@@ -147,7 +146,7 @@ class VersionViewModel extends ViewModel
 			{
 				this.model = model;
 			})
-			.catchError((e) => window.alert(e.toString()));
+			.catchError((e) => MvvmEvents.alert.raise(e.toString()));
 	}
 
 	String toString() => _model.toString() + ' view model';

@@ -24,7 +24,7 @@ class RuleViewModel extends ViewModel
 
 	String _originalName;
 
-	RuleViewModel([int version, RuleModel model]) : super(false)
+	RuleViewModel([int version, RuleModel model]) : super(true)
 	{
 		name = new StringBinding();
 		machine = new StringBinding();
@@ -156,8 +156,10 @@ class RuleViewModel extends ViewModel
 		SaveResult result = SaveResult.unmodified;
 		String alertMessage = 'There are no changes to version ' + version.toString() + ' of ' + model.name;
 
+		variables.removeDeleted();
+
 		if (state == ChangeState.modified)
-		{
+		{		
 			PostResponseModel response;
 			if (name.getProperty() == _originalName)
 				response = await Server.updateRules(version, [model]);
@@ -208,7 +210,7 @@ class RuleViewModel extends ViewModel
 		}
 
 		if (alert || result == SaveResult.failed) 
-			window.alert(alertMessage);
+			MvvmEvents.alert.raise(alertMessage);
 
 		return result;
 	}

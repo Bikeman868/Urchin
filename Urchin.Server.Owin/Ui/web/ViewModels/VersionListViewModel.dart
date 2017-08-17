@@ -67,7 +67,7 @@ class VersionListViewModel extends ViewModel
 	{
 		Server.getVersions()
 			.then((List<VersionModel> m) => models = m)
-			.catchError((Error error) => window.alert(error.toString()));
+			.catchError((Error error) => MvvmEvents.alert.raise(error.toString()));
 	}
 
 	Future<VersionViewModel> getDraftVersion() async

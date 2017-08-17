@@ -137,7 +137,7 @@ class LogonView extends View
 				})
 			.catchError((Error error)
 				{
-					window.alert(error.toString());
+					MvvmEvents.alert.raise(error.toString());
 				});
 	}
 

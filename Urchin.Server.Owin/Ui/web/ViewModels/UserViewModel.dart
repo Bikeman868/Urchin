@@ -47,7 +47,7 @@ class UserViewModel extends ViewModel
 		}
 		else
 		{
-			window.alert(response.error);
+			MvvmEvents.alert.raise(response.error);
 		}
 		return false;
 	}

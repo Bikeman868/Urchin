@@ -85,6 +85,17 @@ void _initialView()
 	_logonView.displayIn(_userDiv);
 
 	_tabChanged(new TabChangedEvent('Rules'));
+
+/* This was a nice idea, but it won't work because the data is filled asynchronously
+
+	var versionList = new List<VersionViewModel>();
+	 _dataViewModel.versionList.versions.viewModels.forEach((v) => versionList.add(v));
+	versionList.sort((a,b) => a.versionNumber > b.versionNumber);
+	var latestVersion = versionList[0];
+
+	_versionSelected(new VersionSelectedEvent(latestVersion));
+*/
+
 }
 
 /*************************************************************************/

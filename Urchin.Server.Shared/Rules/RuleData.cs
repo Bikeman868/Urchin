@@ -573,7 +573,7 @@ namespace Urchin.Server.Shared.Rules
 
         public void SetApplications(IClientCredentials clientCredentials, List<ApplicationDto> applications)
         {
-            _applications = applications;
+            _applications = applications.OrderBy(a => a.Name).ToList();
             _persister.ReplaceApplications(applications);
         }
 
@@ -999,7 +999,10 @@ namespace Urchin.Server.Shared.Rules
             {
                 if (x.EvaluationOrder.Length < y.EvaluationOrder.Length) return -1;
                 if (x.EvaluationOrder.Length > y.EvaluationOrder.Length) return 1;
-                return string.Compare(x.EvaluationOrder, y.EvaluationOrder, StringComparison.Ordinal);
+                var result = string.Compare(x.EvaluationOrder, y.EvaluationOrder, StringComparison.Ordinal);
+                if (result == 0)
+                    result = string.Compare(x.RuleName, y.RuleName, StringComparison.Ordinal);
+                return result;
             }
         }
 
