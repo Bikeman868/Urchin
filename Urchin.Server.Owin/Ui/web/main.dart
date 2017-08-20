@@ -1,16 +1,18 @@
 import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
 
 import 'MVVM/Mvvm.dart';
 
 import 'ViewModels/DataViewModel.dart';
 import 'ViewModels/EnvironmentViewModel.dart';
+import 'ViewModels/EnvironmentListViewModel.dart';
 import 'ViewModels/VersionViewModel.dart';
 import 'ViewModels/RuleViewModel.dart';
 import 'ViewModels/ApplicationViewModel.dart';
+import 'ViewModels/ApplicationListViewModel.dart';
 import 'ViewModels/DatacenterViewModel.dart';
+import 'ViewModels/DatacenterListViewModel.dart';
 import 'ViewModels/DatacenterRuleViewModel.dart';
+import 'ViewModels/DatacenterRuleListViewModel.dart';
 
 import 'Events/AppEvents.dart';
 
@@ -169,7 +171,12 @@ void _versionSelected(VersionSelectedEvent e)
 	else
 	{
 		if (_currentView == 'Rules')
-			_displayRuleList(e.version, _leftDiv);
+			_displayRuleList(
+				_dataViewModel.applicationList, 
+				_dataViewModel.environmentList,
+				_dataViewModel.datacenterList,
+				e.version, 
+				_leftDiv);
 		_displayVersionDisplay(e.version, _rightDiv);
 	}
 }
@@ -216,7 +223,7 @@ void _ruleEdit(RuleEditEvent e)
 
 void _datacenterRuleEdit(DatacenterRuleEditEvent e)
 {
-	_displayDatacenterRuleEdit(e.rule, _centreDiv);
+	_displayDatacenterRuleEdit(e.datacenterRule, _centreDiv);
 }
 
 /*************************************************************************/
@@ -268,13 +275,18 @@ void _displayEnvironmentDisplay(EnvironmentViewModel environment, Element panel)
 
 RuleListView _ruleListView;
 
-void _displayRuleList(VersionViewModel version, Element panel)
+void _displayRuleList(
+	ApplicationListViewModel applications, 
+	EnvironmentListViewModel environments,
+	DatacenterListViewModel datacenters,
+	VersionViewModel version, 
+	Element panel)
 {
 	_dataViewModel.versionList.ensureRules(version)
 		.then((Null n)
 		{
 			if (_ruleListView == null)
-				_ruleListView = new RuleListView(version);
+				_ruleListView = new RuleListView(applications, environments, datacenters, version);
 			else
 				_ruleListView.viewModel = version;
 

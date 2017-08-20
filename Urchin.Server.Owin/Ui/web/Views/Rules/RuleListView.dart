@@ -1,26 +1,37 @@
 import 'dart:html';
 import '../../MVVM/Mvvm.dart';
-
 import '../../Events/AppEvents.dart';
-
 import '../../Models/RuleModel.dart';
-
+import '../../Models/ApplicationModel.dart';
+import '../../Models/EnvironmentModel.dart';
+import '../../Models/DatacenterModel.dart';
 import '../../ViewModels/VersionViewModel.dart';
 import '../../ViewModels/RuleViewModel.dart';
-
+import '../../ViewModels/ApplicationViewModel.dart';
+import '../../ViewModels/ApplicationListViewModel.dart';
+import '../../ViewModels/EnvironmentViewModel.dart';
+import '../../ViewModels/EnvironmentListViewModel.dart';
+import '../../ViewModels/DatacenterListViewModel.dart';
+import '../../ViewModels/DatacenterViewModel.dart';
 import '../../Views/Rules/RuleNameView.dart';
+import '../../Views/Application/ApplicationNameView.dart';
+import '../../Views/Environment/EnvironmentNameView.dart';
+import '../../Views/Datacenter/DatacenterNameView.dart';
 
 class RuleListView extends View
 {
 	BoundLabel<int> _versionLabel;
 	BoundLabel<String> _nameLabel;
 	BoundList<RuleModel, RuleViewModel, RuleNameView> _rulesBinding;
+	BoundSelect<ApplicationModel, ApplicationViewModel, ApplicationNameView> _applicationsBinding;
+	BoundSelect<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView> _environmentsBinding;
+	BoundSelect<DatacenterModel, DatacenterViewModel, DatacenterNameView> _datacentersBinding;
 
 	InputElement instanceFilter;
-	InputElement applicationFilter;
+	SelectElement applicationDropdown;
 	InputElement machineFilter;
-	InputElement environmentFilter;
-	InputElement datacenterFilter;
+	SelectElement environmentDropdown;
+	SelectElement datacenterDropdown;
 	CheckboxInputElement inclusiveCheckBox;
 
 	String _instanceFilter = '';
@@ -30,7 +41,11 @@ class RuleListView extends View
 	String _datacenterFilter = '';
 	bool _inclusiveFilter;
 
-	RuleListView([VersionViewModel viewModel])
+	RuleListView(
+		ApplicationListViewModel applicationList, 
+		EnvironmentListViewModel environmentList,
+		DatacenterListViewModel datacenterList,
+		[VersionViewModel viewModel])
 	{
 		_versionLabel = new BoundLabel<int>(
 			addHeading(3, 'Version Details'), 
@@ -43,12 +58,36 @@ class RuleListView extends View
 		addBlockText('You can use this filter to find the rules that you want to modify', className: 'help-note');
 
 		var filterForm = addForm(className: 'rule-filter');
-		instanceFilter = addLabeledEdit(filterForm, 'Instance');
-		applicationFilter = addLabeledEdit(filterForm, 'Application');
 		machineFilter = addLabeledEdit(filterForm, 'Machine');
-		environmentFilter = addLabeledEdit(filterForm, 'Environment');
-		datacenterFilter = addLabeledEdit(filterForm, 'Datacenter');
+		instanceFilter = addLabeledEdit(filterForm, 'Instance');
+		applicationDropdown = addLabeledDropdownList(filterForm, 'Application');
+		environmentDropdown = addLabeledDropdownList(filterForm, 'Environment');
+		datacenterDropdown = addLabeledDropdownList(filterForm, 'Datacenter');
 		inclusiveCheckBox = addLabeledCheckbox(filterForm, 'Inclusive');
+
+		_applicationsBinding = new BoundSelect<ApplicationModel, ApplicationViewModel, ApplicationNameView>(
+			(vm) => new ApplicationNameView(vm),
+			applicationDropdown,
+			(vm) { _applicationFilter = vm == null ? null : vm.name.getProperty(); },
+			staticListItems: [new View()]
+		);
+		_applicationsBinding.binding = applicationList.applications;
+
+		_environmentsBinding = new BoundSelect<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
+			(vm) => new EnvironmentNameView(vm),
+			environmentDropdown,
+			(vm) { _environmentFilter = vm == null ? null : vm.name.getProperty(); },
+			staticListItems: [new View()]
+		);
+		_environmentsBinding.binding = environmentList.environments;
+
+		_datacentersBinding = new BoundSelect<DatacenterModel, DatacenterViewModel, DatacenterNameView>(
+			(vm) => new DatacenterNameView(vm),
+			datacenterDropdown,
+			(vm) { _datacenterFilter = vm == null ? null : vm.name.getProperty(); },
+			staticListItems: [new View()]
+		);
+		_datacentersBinding.binding = datacenterList.datacenters;
 
 		var filterButtonBar = addContainer(className: 'button-bar');
 		addButton("Apply Filter", _applyFilterClicked, parent: filterButtonBar);
@@ -102,10 +141,7 @@ class RuleListView extends View
 	void _applyFilterClicked(MouseEvent e)
 	{
 		_instanceFilter = instanceFilter.value;
-		_applicationFilter = applicationFilter.value;
 		_machineFilter = machineFilter.value;
-		_environmentFilter = environmentFilter.value;
-		_datacenterFilter = datacenterFilter.value;
 		_inclusiveFilter = inclusiveCheckBox.checked;
 
 		_rulesBinding.refresh();
@@ -114,10 +150,11 @@ class RuleListView extends View
 	void _clearFilterClicked(MouseEvent e)
 	{
 		instanceFilter.value = '';
-		applicationFilter.value = '';
 		machineFilter.value = '';
-		environmentFilter.value = '';
-		datacenterFilter.value = '';
+
+		applicationDropdown.selectedIndex = 0;
+		environmentDropdown.selectedIndex = 0;
+		datacenterDropdown.selectedIndex = 0;
 
 		_applyFilterClicked(e);
 	}

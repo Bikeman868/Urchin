@@ -51,6 +51,18 @@ textarea
     height: 100px;
 }
 
+select
+{
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+option
+{
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
 #topDiv
 {
     background: gray;
@@ -105,7 +117,7 @@ textarea
     background: aliceblue;
     display:inline-block;
     vertical-align: top;
-    width: 220px;
+    width: 260px;
     border: 1px solid navy;
     padding: 4px;
     margin: 1px;
@@ -186,6 +198,13 @@ textarea
     position: relative;
     padding: 4px 4px 4px 4px;
     font-size: 14px;
+}
+
+select.selection-list
+{
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
 }
 
 .bound-list:after
@@ -492,7 +511,7 @@ div.variable-list div.variable
 
 div.rule-filter .input-field 
 {
-    width: 100px;
+    width: 140px;
     margin-left: 5px;
     margin-right: 5px;
 }
