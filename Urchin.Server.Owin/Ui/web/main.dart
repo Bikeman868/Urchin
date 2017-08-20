@@ -87,17 +87,6 @@ void _initialView()
 	_logonView.displayIn(_userDiv);
 
 	_tabChanged(new TabChangedEvent('Rules'));
-
-/* This was a nice idea, but it won't work because the data is filled asynchronously
-
-	var versionList = new List<VersionViewModel>();
-	 _dataViewModel.versionList.versions.viewModels.forEach((v) => versionList.add(v));
-	versionList.sort((a,b) => a.versionNumber > b.versionNumber);
-	var latestVersion = versionList[0];
-
-	_versionSelected(new VersionSelectedEvent(latestVersion));
-*/
-
 }
 
 /*************************************************************************/
@@ -117,7 +106,7 @@ void _attachEvents()
 	AppEvents.datacenterRuleSelected.listen(_datacenterRuleSelected);
 }
 
-alert(String message)
+void alert(String message)
 {
 	window.alert(message);
 }
@@ -150,7 +139,7 @@ void _tabChanged(TabChangedEvent e)
 	}
 	else if (e.tabName == 'Datacenters') 
 	{
-		_displayDatacenterRuleList(_leftDiv);
+		_displayDatacenterList(_leftDiv);
 	}
 }
 
@@ -203,7 +192,7 @@ void _applicationSelected(ApplicationSelectedEvent e)
 void _datacenterSelected(DatacenterSelectedEvent e)
 {
 	if (_currentView == 'Datacenters')
-		_displayDatacenterEdit(e.datacenter, _centreDiv);
+		_displayDatacenterEdit(_dataViewModel.datacenterRuleList, e.datacenter, _centreDiv);
 	else 
 		_displayDatacenterDisplay(e.datacenter, _rightDiv);
 }
@@ -212,6 +201,8 @@ void _datacenterRuleSelected(DatacenterRuleSelectedEvent e)
 {
 	if (_currentView == 'DatacenterRules')
 		_displayDatacenterRuleEdit(e.datacenterRule, _centreDiv);
+	else if (_currentView == 'Datacenters')
+		_displayDatacenterRuleEdit(e.datacenterRule, _rightDiv);
 	else 
 		_displayDatacenterRuleDisplay(e.datacenterRule, _rightDiv);
 }
@@ -435,10 +426,13 @@ void _displayDatacenterList(Element panel)
 
 DatacenterEditView _datacenterEditView;
 
-void _displayDatacenterEdit(DatacenterViewModel datacenter, Element panel)
+void _displayDatacenterEdit(
+	DatacenterRuleListViewModel datacenterRules,
+	DatacenterViewModel datacenter, 
+	Element panel)
 {
 	if (_datacenterEditView == null)
-		_datacenterEditView = new DatacenterEditView(datacenter);
+		_datacenterEditView = new DatacenterEditView(datacenterRules, datacenter);
 	else
 		_datacenterEditView.viewModel = datacenter;
 

@@ -149,12 +149,16 @@ class RuleListView extends View
 
 	void _clearFilterClicked(MouseEvent e)
 	{
-		instanceFilter.value = '';
-		machineFilter.value = '';
-
 		applicationDropdown.selectedIndex = 0;
 		environmentDropdown.selectedIndex = 0;
 		datacenterDropdown.selectedIndex = 0;
+
+		instanceFilter.value = '';
+		machineFilter.value = '';
+		
+		_applicationFilter = null;
+		_environmentFilter = null;
+		_datacenterFilter = null;
 
 		_applyFilterClicked(e);
 	}

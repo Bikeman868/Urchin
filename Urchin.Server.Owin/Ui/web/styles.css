@@ -237,6 +237,7 @@ select.selection-list
 {
     display: block;
     float: left;
+    max-width: 250px;
 }
 
 .list-view 
@@ -417,7 +418,6 @@ span.button
     vertical-align: top;
     display: inline;
     font-weight: bold;
-    width: 150px;
     margin-left: 10px;
     margin-right: 10px;
 }
