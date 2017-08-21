@@ -161,9 +161,7 @@ void _versionSelected(VersionSelectedEvent e)
 	{
 		if (_currentView == 'Rules')
 			_displayRuleList(
-				_dataViewModel.applicationList, 
-				_dataViewModel.environmentList,
-				_dataViewModel.datacenterList,
+				_dataViewModel, 
 				e.version, 
 				_leftDiv);
 		_displayVersionDisplay(e.version, _rightDiv);
@@ -267,9 +265,7 @@ void _displayEnvironmentDisplay(EnvironmentViewModel environment, Element panel)
 RuleListView _ruleListView;
 
 void _displayRuleList(
-	ApplicationListViewModel applications, 
-	EnvironmentListViewModel environments,
-	DatacenterListViewModel datacenters,
+	DataViewModel data, 
 	VersionViewModel version, 
 	Element panel)
 {
@@ -277,7 +273,7 @@ void _displayRuleList(
 		.then((Null n)
 		{
 			if (_ruleListView == null)
-				_ruleListView = new RuleListView(applications, environments, datacenters, version);
+				_ruleListView = new RuleListView(data, version);
 			else
 				_ruleListView.viewModel = version;
 

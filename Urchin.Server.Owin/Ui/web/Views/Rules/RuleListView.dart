@@ -5,13 +5,11 @@ import '../../Models/RuleModel.dart';
 import '../../Models/ApplicationModel.dart';
 import '../../Models/EnvironmentModel.dart';
 import '../../Models/DatacenterModel.dart';
+import '../../ViewModels/DataViewModel.dart';
 import '../../ViewModels/VersionViewModel.dart';
 import '../../ViewModels/RuleViewModel.dart';
 import '../../ViewModels/ApplicationViewModel.dart';
-import '../../ViewModels/ApplicationListViewModel.dart';
 import '../../ViewModels/EnvironmentViewModel.dart';
-import '../../ViewModels/EnvironmentListViewModel.dart';
-import '../../ViewModels/DatacenterListViewModel.dart';
 import '../../ViewModels/DatacenterViewModel.dart';
 import '../../Views/Rules/RuleNameView.dart';
 import '../../Views/Application/ApplicationNameView.dart';
@@ -42,9 +40,7 @@ class RuleListView extends View
 	bool _inclusiveFilter;
 
 	RuleListView(
-		ApplicationListViewModel applicationList, 
-		EnvironmentListViewModel environmentList,
-		DatacenterListViewModel datacenterList,
+		DataViewModel data, 
 		[VersionViewModel viewModel])
 	{
 		_versionLabel = new BoundLabel<int>(
@@ -71,7 +67,7 @@ class RuleListView extends View
 			(vm) { _applicationFilter = vm == null ? null : vm.name.getProperty(); },
 			staticListItems: [new View()]
 		);
-		_applicationsBinding.binding = applicationList.applications;
+		_applicationsBinding.binding = data.applicationList.applications;
 
 		_environmentsBinding = new BoundSelect<EnvironmentModel, EnvironmentViewModel, EnvironmentNameView>(
 			(vm) => new EnvironmentNameView(vm),
@@ -79,7 +75,7 @@ class RuleListView extends View
 			(vm) { _environmentFilter = vm == null ? null : vm.name.getProperty(); },
 			staticListItems: [new View()]
 		);
-		_environmentsBinding.binding = environmentList.environments;
+		_environmentsBinding.binding = data.environmentList.environments;
 
 		_datacentersBinding = new BoundSelect<DatacenterModel, DatacenterViewModel, DatacenterNameView>(
 			(vm) => new DatacenterNameView(vm),
@@ -87,7 +83,7 @@ class RuleListView extends View
 			(vm) { _datacenterFilter = vm == null ? null : vm.name.getProperty(); },
 			staticListItems: [new View()]
 		);
-		_datacentersBinding.binding = datacenterList.datacenters;
+		_datacentersBinding.binding = data.datacenterList.datacenters;
 
 		var filterButtonBar = addContainer(className: 'button-bar');
 		addButton("Apply Filter", _applyFilterClicked, parent: filterButtonBar);
@@ -106,7 +102,7 @@ class RuleListView extends View
 
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("New Rule", _newClicked, parent: buttonBar);
-		addButton("Save", _saveClicked, parent: buttonBar);
+		addButton("Save Rules", _saveClicked, parent: buttonBar);
 		addButton("Discard", _discardClicked, parent: buttonBar);
 
 		this.viewModel = viewModel;

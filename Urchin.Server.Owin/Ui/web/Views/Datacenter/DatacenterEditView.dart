@@ -63,7 +63,7 @@ class DatacenterEditView extends View
 
 		var buttonBar = addContainer(className: 'button-bar');
 		addButton("New Rule", _newRuleClicked, parent: buttonBar);
-		addButton("Save", _saveRulesClicked, parent: buttonBar);
+		addButton("Save Rules", _saveRulesClicked, parent: buttonBar);
 		addButton("Discard", _discardRulesClicked, parent: buttonBar);
 
 		this.viewModel = viewModel;

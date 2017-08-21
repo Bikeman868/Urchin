@@ -36,9 +36,9 @@ class RuleEditView extends View
 		addBlockText('Choose where to apply this rule. Leave boxes blank to apply to all.<br>The save button will just save this specific version of this rule.', className: 'help-note');
 
 		var form2 = addForm();
+		_machineInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to machine', className: 'rule-machine'));
 		_instanceInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to instance', className: 'rule-instance'));
 		_applicationInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to application', className: 'rule-application'));
-		_machineInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to machine', className: 'rule-machine'));
 		_environmentInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to environment', className: 'rule-environment'));
 		_datacenterInput = new BoundTextInput<String>(addLabeledEdit(form2, 'Applies to datacenter', className: 'rule-datacenter'));
 

@@ -2,7 +2,6 @@
 
 import 'dart:html';
 import 'dart:async';
-import 'dart:convert';
 
 part 'Types.dart';
 part 'Events.dart';
