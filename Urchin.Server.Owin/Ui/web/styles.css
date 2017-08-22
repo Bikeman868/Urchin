@@ -237,7 +237,7 @@ select.selection-list
 {
     display: block;
     float: left;
-    max-width: 250px;
+    max-width: 480px;
 }
 
 .list-view 
@@ -496,7 +496,7 @@ textarea.variable-value
 textarea.rule-config
 {
     width: 500px;
-    height: 150px;
+    height: 400px;
 }
 
 .input-field
