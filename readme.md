@@ -43,7 +43,7 @@ This is the quickest way to get up and running.
 > the Urchin server. The Urchin server provides centralized rules-based configuration management system.
 
 > Note that IoC.Modules supports the most popular IoC containers and is very easy to integrate with any other
-> IoC. This example uses Ninject, switching this to any other IoC is a trivial change. See the readme for `Ioc.Modules` 
+> IoC. This example uses Ninject but switching to any other IoC is a trivial change. See the readme for `Ioc.Modules` 
 > for details on how to do this.
 
 * Anywhere in your application where you need configuration data, add a dependency on the Urchin `IConfigurationStore` 
@@ -78,11 +78,13 @@ interface and call its methods to get configuration data. For example:
 > Newtonsoft Json package to hydrate this class from this section of the config file.
 
 ## Server Features
-* Rules based configuration based on environment, machine, application and instance.
+* Rules based configuration based on environment, datacenter, machine, application and instance.
 * Centralized configuration management with REST API and configuration mananagement UI.
 * Urchin Client can pull config by polling the server at a URL that includes query
-  string parameters to specify machine, application, environment and instance.
+  string parameters to specify machine, datacenter, application, environment and instance.
 * Rules for determining environment from machine so that this is an optional parameter.
+* Rules for determining datacenter from environment, machine, application and instance so that
+  this parameter is optional.
 * Variable declaration and substitution.
 * IP based security with administrator logon to override.
 * Versioning of rules with different versions active in each environment.
@@ -138,8 +140,8 @@ built into future versions of the UI.
 ## Next Steps
 If you want to contribute to this project, these are the next most important tasks
 
-* Add support for multiple datacenters
-* Fix issues with the database persistence package
+* Change input boxes for application, environment and datacenter to drop-down lists.
+* Fix issues with the database persistence package.
 * Write scripts to create databases for Microsoft SQL Server and Postgresql.
 * Add user accounts and granular permissions.
 * Add UI functionallity to move/copy rules between versions.
