@@ -6,7 +6,7 @@
     <title>Urchin.Client</title>
     <authors>Martin Halliday</authors>
     <owners>Martin Halliday</owners>
-    <licenseUrl>http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</licenseUrl>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/Bikeman868/Urchin/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
