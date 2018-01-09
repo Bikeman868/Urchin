@@ -418,14 +418,14 @@ namespace Urchin.Server.Tests
             Assert.AreEqual(2, stagingRules.Rules.Count);
             Assert.AreEqual(1, developmentRules.Rules.Count);
 
-            Assert.AreEqual("Production Environment", productionRules.Rules[2].RuleName);
-            Assert.AreEqual("Staging Environment", productionRules.Rules[1].RuleName);
-            Assert.AreEqual("Development Environment", productionRules.Rules[0].RuleName);
+            Assert.IsTrue(productionRules.Rules.Any(r => r.RuleName == "Production Environment"));
+            Assert.IsTrue(productionRules.Rules.Any(r => r.RuleName == "Staging Environment"));
+            Assert.IsTrue(productionRules.Rules.Any(r => r.RuleName == "Development Environment"));
 
-            Assert.AreEqual("Staging Environment", stagingRules.Rules[1].RuleName);
-            Assert.AreEqual("Development Environment", stagingRules.Rules[0].RuleName);
+            Assert.IsTrue(stagingRules.Rules.Any(r => r.RuleName == "Staging Environment"));
+            Assert.IsTrue(stagingRules.Rules.Any(r => r.RuleName == "Development Environment"));
 
-            Assert.AreEqual("Development Environment", developmentRules.Rules[0].RuleName);
+            Assert.IsTrue(developmentRules.Rules.Any(r => r.RuleName == "Development Environment"));
         }
 
         [Test]
@@ -633,6 +633,7 @@ namespace Urchin.Server.Tests
                             },
                         SecurityRules = new List<SecurityRuleDto>
                         {
+                            // Allow only production to access
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.0.255"}
                         }
                     },
@@ -648,6 +649,7 @@ namespace Urchin.Server.Tests
                             },
                         SecurityRules = new List<SecurityRuleDto>
                         {
+                            // Allow both production and staging to access
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.1.255"}
                         }
                     },
@@ -703,6 +705,7 @@ namespace Urchin.Server.Tests
                             },
                         SecurityRules = new List<SecurityRuleDto>
                         {
+                            // Allow only production to access
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.0.255"}
                         }
                     },
@@ -718,6 +721,7 @@ namespace Urchin.Server.Tests
                             },
                         SecurityRules = new List<SecurityRuleDto>
                         {
+                            // Allow both production and staging to access
                             new SecurityRuleDto{AllowedIpStart = "192.168.0.1", AllowedIpEnd = "192.168.1.255"}
                         }
                     },

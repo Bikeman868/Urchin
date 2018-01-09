@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using OwinFramework.Interfaces.Builder;
 using Urchin.Server.Owin.Extensions;
-using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
-using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {

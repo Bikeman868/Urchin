@@ -26,6 +26,7 @@ namespace Urchin.Client.Sources
 
             _thread = new Thread(ThresdEntry);
             _thread.IsBackground = true;
+
             _isPolling = true;
             _thread.Start();
 

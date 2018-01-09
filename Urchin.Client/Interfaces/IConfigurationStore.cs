@@ -14,8 +14,17 @@ namespace Urchin.Client.Interfaces
         /// one property</param>
         /// <param name="errorLogger">Specifies the error logging bahaviour. If you pass null
         /// then the default behaviour is to write error meesages to System.Diagnostics.Trace</param>
-        /// <returns></returns>
-        IConfigurationStore Initialize(IConfigurationValidator validator = null, IErrorLogger errorLogger = null);
+        /// <param name="decryptor">Specified how to decrypt the received configuration file
+        /// before parsing as JSON. This allows configuration files to be stored or transmitted
+        /// in an encrypted form and decrypted by the Urchin client. If you do not provide an
+        /// implementation then the Urchin client will assume that the configuration files
+        /// are stored/transmitted in plain text</param>
+        /// <returns>A store of configuration data. Application modules can register to be
+        /// notified when specific areas of the configuration data are changed.</returns>
+        IConfigurationStore Initialize(
+            IConfigurationValidator validator = null, 
+            IErrorLogger errorLogger = null,
+            IDecryptor decryptor = null);
 
          /// <summary>
         /// Replaces the current configuration with a new one, finds all the configuration
@@ -48,7 +57,8 @@ namespace Urchin.Client.Interfaces
         /// <summary>
         /// Retrieves the current value of an element in the configuration.
         /// This is very slow, and should only be called once at initialization.
-        /// If you need to know when the configuration changes, register instead.
+        /// If you need to know when the configuration changes, DO NOT POLL, register 
+        /// for changes instead.
         /// </summary>
         /// <typeparam name="T">The type to return. If the 'path' parameter identifies
         /// a string, number or boolean in the JSON then this type should be a value 

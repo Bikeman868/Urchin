@@ -71,10 +71,13 @@
     <Compile Include="DataContracts\EnvironmentDto.cs" />
     <Compile Include="DataContracts\VersionNameDto.cs" />
     <Compile Include="Interfaces\IClientCredentials.cs" />
+    <Compile Include="Interfaces\IEncryptor.cs" />
     <Compile Include="Interfaces\IFactory.cs" />
     <Compile Include="Interfaces\IMapper.cs" />
     <Compile Include="Interfaces\IPersister.cs" />
+    <Compile Include="Package.cs" />
     <Compile Include="Rules\ClientCredentialsDto.cs" />
+    <Compile Include="Rules\Encryptor.cs" />
     <Compile Include="Rules\RuleData.cs" />
     <Compile Include="Interfaces\IRuleData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

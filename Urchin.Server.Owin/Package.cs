@@ -10,21 +10,14 @@ namespace Urchin.Server.Owin
     [Package]
     public class Package : IPackage
     {
-        public string Name { get { return "Urchin"; } }
+        public string Name { get { return "Urchin on OWIN"; } }
         public IList<IocRegistration> IocRegistrations { get; private set; }
 
         public Package()
         {
             IocRegistrations = new List<IocRegistration>
             {
-                new IocRegistration().Init<IRuleData, RuleData>(),
-                new IocRegistration().Init<IMapper, Mapper>(),
                 new IocRegistration().Init<ILogManager, LogManager>(),
-
-                // Register the default persister. If you include the DLLs from any
-                // other persister, it will override this registration and become the 
-                // persister for your installation.
-                new IocRegistration().Init<IPersister, FilePersister>(),
             };
         }
     }

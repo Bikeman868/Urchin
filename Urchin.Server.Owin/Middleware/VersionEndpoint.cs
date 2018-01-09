@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OwinFramework.Interfaces.Builder;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;

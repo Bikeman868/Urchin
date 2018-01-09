@@ -1,6 +1,5 @@
-﻿using Microsoft.Owin;
-using System;
-using System.Linq;
+﻿using System;
+using Microsoft.Owin;
 
 namespace Urchin.Server.Owin.Extensions
 {

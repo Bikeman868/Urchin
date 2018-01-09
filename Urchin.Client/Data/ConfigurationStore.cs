@@ -28,7 +28,7 @@ namespace Urchin.Client.Data
     /// configuration changes and update them in this store.
     /// 
     /// When an application registers for notifications, these notification
-    /// callbacks will happen on the thread that calls LoadConfiguration()
+    /// callbacks will happen on the thread that calls UpdateConfiguration()
     /// </remarks>
     public class ConfigurationStore: IConfigurationStore
     {
@@ -37,19 +37,23 @@ namespace Urchin.Client.Data
         private ConfigNode _config = new ConfigNode();
         private IConfigurationValidator _validator;
         private IErrorLogger _errorLogger;
+        private IDecryptor _decryptor;
 
         public ConfigurationStore()
         {
             _validator = new DefaultValidator();
             _errorLogger = new DefaultErrorLogger();
+            _decryptor = new DefaultDecryptor();
         }
 
         public IConfigurationStore Initialize(
             IConfigurationValidator validator = null,
-            IErrorLogger errorLogger = null)
+            IErrorLogger errorLogger = null,
+            IDecryptor decryptor = null)
         {
             _validator = validator ?? new DefaultValidator();
             _errorLogger = errorLogger ?? new DefaultErrorLogger();
+            _decryptor = decryptor ?? new DefaultDecryptor();
             return this;
         }
 
@@ -156,7 +160,18 @@ namespace Urchin.Client.Data
             if (string.IsNullOrWhiteSpace(jsonText)) return;
             if (jsonText == _originalJsonText) return;
 
-            var json = JToken.Parse(jsonText);
+            JToken json;
+            try
+            {
+                var decryptedText = _decryptor == null ? jsonText : _decryptor.Decrypt(jsonText);
+                json = JToken.Parse(decryptedText);
+            }
+            catch (Exception ex)
+            {
+                LogError("Exception thrown whilst decrypting and parsing configuration: " + ex.Message);
+                return;
+            }
+
             if (_validator != null)
             {
                 if (!_validator.IsValidConfiguration(json))
@@ -372,6 +387,14 @@ namespace Urchin.Client.Data
             public void LogError(string errorMessage)
             {
                 Trace.WriteLine("Urchin configuration store: " + errorMessage);
+            }
+        }
+
+        private class DefaultDecryptor : IDecryptor
+        {
+            public string Decrypt(string original)
+            {
+                return original;
             }
         }
     }

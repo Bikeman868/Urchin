@@ -12,7 +12,6 @@ using OwinFramework.Interfaces.Builder;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
 using Urchin.Server.Shared.Interfaces;
-using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
