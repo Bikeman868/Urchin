@@ -57,8 +57,8 @@
       <HintPath>..\packages\DotlessClientOnly.1.5.2\lib\dotless.ClientOnly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ioc.Modules, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ioc.Modules.1.2.0\lib\net40\Ioc.Modules.dll</HintPath>
+    <Reference Include="Ioc.Modules, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.1.2.1\lib\net40\Ioc.Modules.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ioc.Modules.Unity, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -181,8 +181,8 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="Urchin.Client, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Urchin.Client.1.2.0\lib\net40\Urchin.Client.dll</HintPath>
+    <Reference Include="Urchin.Client, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Urchin.Client.1.2.1\lib\net40\Urchin.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

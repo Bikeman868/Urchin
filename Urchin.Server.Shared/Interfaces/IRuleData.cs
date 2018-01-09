@@ -12,20 +12,20 @@ namespace Urchin.Server.Shared.Interfaces
         /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing.
         /// </summary>
-        JObject GetConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance);
+        JObject GetConfig(IClientCredentials clientCredentials, ref string datacenter, ref string environment, string machine, string application, string instance);
 
         /// <summary>
         /// Gets the configuration of an application using the current configuration version
         /// for the environment in which the application is executing, and returns information
         /// about how that configuration was arrived at.
         /// </summary>
-        JObject TraceConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance);
+        JObject TraceConfig(IClientCredentials clientCredentials, ref string datacenter, ref string environment, string machine, string application, string instance);
 
         /// <summary>
         /// Tests a version of the rules by supplying a query, and returning the config
         /// that would be returned if these rules were saved.
         /// </summary>
-        JObject TestConfig(IClientCredentials clientCredentials, int? version, string datacenter, string environment, string machine, string application, string instance);
+        JObject TestConfig(IClientCredentials clientCredentials, int? version, ref string datacenter, ref string environment, string machine, string application, string instance);
 
         #endregion
 

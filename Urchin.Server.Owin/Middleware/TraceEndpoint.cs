@@ -14,11 +14,14 @@ namespace Urchin.Server.Owin.Middleware
     {
         private readonly IRuleData _ruleData;
         private readonly PathString _path;
+        private readonly IEncryptor _encryptor;
 
         public TraceEndpoint(
-            IRuleData ruleData)
+            IRuleData ruleData,
+            IEncryptor encryptor)
         {
             _ruleData = ruleData;
+            _encryptor = encryptor;
             _path = new PathString("/trace");
         }
 
@@ -44,10 +47,12 @@ namespace Urchin.Server.Owin.Middleware
             {
                 var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-                var config = _ruleData.TraceConfig(clientCredentials, datacenter, environment, machine, application, instance);
+                var config = _ruleData.TraceConfig(clientCredentials, ref datacenter, ref environment, machine, application, instance);
+                var configJson = config.ToString(Formatting.Indented);
+                var encryptedJson = _encryptor.Encrypt(datacenter, environment, configJson);
 
                 context.Response.ContentType = "application/json";
-                return context.Response.WriteAsync(config.ToString(Formatting.Indented));
+                return context.Response.WriteAsync(encryptedJson);
             }
             catch (Exception ex)
             {

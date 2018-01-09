@@ -16,11 +16,14 @@ namespace Urchin.Server.Owin.Middleware
         private readonly IRuleData _ruleData;
         private readonly PathString _draftVersionPath;
         private readonly PathString _versionPath;
+        private readonly IEncryptor _encryptor;
 
         public TestEndpoint(
-            IRuleData ruleData)
+            IRuleData ruleData, 
+            IEncryptor encryptor)
         {
             _ruleData = ruleData;
+            _encryptor = encryptor;
             _draftVersionPath = new PathString("/test");
             _versionPath = new PathString("/test/{version}");
         }
@@ -82,10 +85,12 @@ namespace Urchin.Server.Owin.Middleware
         {
             var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
 
-            var config = _ruleData.TestConfig(clientCredentials, version, datacenter, environment, machine, application, instance);
+            var config = _ruleData.TestConfig(clientCredentials, version, ref datacenter, ref environment, machine, application, instance);
+            var configJson = config.ToString(Formatting.Indented);
+            var encryptedJson = _encryptor.Encrypt(datacenter, environment, configJson);
 
             context.Response.ContentType = "application/json";
-            return context.Response.WriteAsync(config.ToString(Formatting.Indented));
+            return context.Response.WriteAsync(encryptedJson);
         }
     }
 }

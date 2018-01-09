@@ -13,12 +13,15 @@ namespace Urchin.Server.Owin.Middleware
     public class ConfigEndpoint : ApiBase, IMiddleware<object>
     {
         private readonly IRuleData _ruleData;
+        private readonly IEncryptor _encryptor;
         private readonly PathString _path;
 
         public ConfigEndpoint(
-            IRuleData ruleData)
+            IRuleData ruleData,
+            IEncryptor encryptor)
         {
             _ruleData = ruleData;
+            _encryptor = encryptor;
             _path = new PathString("/config");
         }
 
@@ -43,10 +46,12 @@ namespace Urchin.Server.Owin.Middleware
             try
             {
                 var clientCredentials = context.Get<IClientCredentials>("ClientCredentials");
-                var config = _ruleData.GetConfig(clientCredentials, datacenter, environment, machine, application, instance);
+                var config = _ruleData.GetConfig(clientCredentials, ref datacenter, ref environment, machine, application, instance);
+                var configJson = config.ToString(Formatting.None);
+                var encryptedJson = _encryptor.Encrypt(datacenter, environment, configJson);
 
                 context.Response.ContentType = "application/json";
-                return context.Response.WriteAsync(config.ToString(Formatting.None));
+                return context.Response.WriteAsync(encryptedJson);
             }
             catch (Exception ex)
             {

@@ -69,7 +69,7 @@ namespace Urchin.Server.Shared.Rules
 
         #region Querying for application config
 
-        public JObject GetConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance)
+        public JObject GetConfig(IClientCredentials clientCredentials, ref string datacenter, ref string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -77,6 +77,7 @@ namespace Urchin.Server.Shared.Rules
             var environmentDto = LookupEnvironment(environment, machine);
             if (environmentDto == null)
                 return new JObject();
+            environment = environmentDto.EnvironmentName;
 
             if (string.IsNullOrEmpty(datacenter))
                 datacenter = LookupDatacenter(environmentDto, machine, application, instance);
@@ -97,7 +98,7 @@ namespace Urchin.Server.Shared.Rules
             return MergeRules(applicableRules, environmentDto, datacenter, machine, application, instance);
         }
 
-        public JObject TraceConfig(IClientCredentials clientCredentials, string datacenter, string environment, string machine, string application, string instance)
+        public JObject TraceConfig(IClientCredentials clientCredentials, ref string datacenter, ref string environment, string machine, string application, string instance)
         {
             var response = new JObject();
 
@@ -110,6 +111,7 @@ namespace Urchin.Server.Shared.Rules
                 response["error"] = "There is no such environment configured";
                 return response;
             }
+            environment = environmentDto.EnvironmentName;
             var ruleVersion = EnsureVersion(environmentDto.Version, false);
 
             if (string.IsNullOrEmpty(datacenter))
@@ -144,7 +146,7 @@ namespace Urchin.Server.Shared.Rules
             return response;
         }
 
-        public JObject TestConfig(IClientCredentials clientCredentials, int? version, string datacenter, string environment, string machine, string application, string instance)
+        public JObject TestConfig(IClientCredentials clientCredentials, int? version, ref string datacenter, ref string environment, string machine, string application, string instance)
         {
             if (string.IsNullOrWhiteSpace(machine) || string.IsNullOrWhiteSpace(application))
                 return new JObject();
@@ -152,6 +154,7 @@ namespace Urchin.Server.Shared.Rules
             var environmentDto = LookupEnvironment(environment, machine);
             if (environmentDto == null)
                 return new JObject();
+            environment = environmentDto.EnvironmentName;
 
             if (string.IsNullOrEmpty(datacenter))
                 datacenter = LookupDatacenter(environmentDto, machine, application, instance);

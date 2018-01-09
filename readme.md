@@ -11,6 +11,7 @@ A rules based centralized enterprise configuration management solution for .Net
 * Sections of the configuration can be deserialized to object graphs with no setup.
 * Configuration can be stored in a file, or at a URI.
 * Migration path from exiting .Net ConfigurationManager implementation.
+* Configuration data can be encrypted using a plug-in encryption mechanism.
 
 ## Quick start
 This is the quickest way to get up and running.
@@ -87,6 +88,7 @@ interface and call its methods to get configuration data. For example:
   this parameter is optional.
 * Variable declaration and substitution.
 * IP based security with administrator logon to override.
+* Support for optional plug-in to encrypt configuration data.
 * Versioning of rules with different versions active in each environment.
 
 ## Things that Urchin does _not_ do
@@ -323,7 +325,10 @@ Q: Can I specify default values in my application so that I only need to configu
 
 A: Yes, when you call the `Register<T>()` method of `IConfigurationStore` you can optionally
    pass a default value which will apply when there is no value specified in the
-   configuration data.
+   configuration data. The recommended best practice is to create a class with properties
+   for each of your configuration options, and set these properties to the default values
+   in the default public constructor. When you register for configuration changes, construct
+   an instance of this class as the default value you pass.
 
 ---
 
@@ -408,3 +413,11 @@ A: I recommend that you have 2 or three levels deep, with the application name o
         }
     }
 ```
+
+Q: Can I pass encrypted configuration data for additional security?
+
+A: Both the Urchin client and the Urchin server provide hooks where you can plug in your encryption scheme.
+   On the cllient side you need to call the `Initialize()` method of the `ConfigurationStore` passing
+   your custom implementation of the IDecryptor interface.
+   On the server side you need to deploy an assembly to the bin folder that includes an `Ioc.Modules` 
+   `Package` to register an implementation of `IEncryptor` with the IoC container.
