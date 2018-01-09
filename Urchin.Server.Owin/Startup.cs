@@ -1,5 +1,5 @@
 ﻿#define ROUTING
-//#define BREAK_ON_STARTUP
+#define _BREAK_ON_STARTUP
 
 using System;
 using System.IO;
@@ -20,7 +20,6 @@ using OwinFramework.Interfaces.Builder;
 using OwinFramework.Interfaces.Utility;
 using OwinFramework.Less;
 using OwinFramework.NotFound;
-using OwinFramework.OutputCache;
 using OwinFramework.RouteVisualizer;
 using OwinFramework.StaticFiles;
 using OwinFramework.Versioning;
@@ -47,6 +46,7 @@ namespace Urchin.Server.Owin
             var debugTimeout = DateTime.UtcNow.AddSeconds(30);
             while (!System.Diagnostics.Debugger.IsAttached && DateTime.UtcNow < debugTimeout)
                 System.Threading.Thread.Sleep(50);
+            System.Diagnostics.Debugger.Break();
 #endif
             try
             {
@@ -155,12 +155,6 @@ namespace Urchin.Server.Owin
                     .RunFirst()
                     .RunAfter("Exception reporter")
                     .ConfigureWith(config, "/urchin/server/logon");
-
-                builder.Register(unityContainer.Resolve<OutputCacheMiddleware>())
-                    .As("Output cache")
-                    .RunFirst()
-                    .RunAfter("Logon")
-                    .ConfigureWith(config, "/urchin/server/ui/outputCache");
 
                 /******************************************************************************
                  * The Config middleware is called very frequently by all applications in
@@ -336,12 +330,6 @@ namespace Urchin.Server.Owin
                     .As("Not found")
                     .RunLast()
                     .ConfigureWith(config, "/urchin/server/notFound");
-
-#if BREAK_ON_STARTUP
-                while (!System.Diagnostics.Debugger.IsAttached)
-                    System.Threading.Thread.Sleep(50);
-                System.Diagnostics.Debugger.Break();
-#endif
 
                 app.UseBuilder(builder);
             }
