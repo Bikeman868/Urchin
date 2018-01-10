@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
@@ -10,15 +10,15 @@
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Added versioning of rules with different versions in each environment</releaseNotes>
-    <copyright>Copyright 2015</copyright>
+    <releaseNotes>Added support for custom encryption plug-in modules</releaseNotes>
+    <copyright>Copyright 2018</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
     <summary>Allows you to build an Urchin server into your application or web site. If you want a 
     stand-alone Urchin server instead, then you can get the source code from GitHub and compile
     Urchin.Server.Owin in Visual Studio.</summary>
   </metadata>
   <files>
-    <file src="..\license.txt" target="" />
+    <file src="..\LICENSE*" target="" />
     <file src="*.md" target="" />
   </files>
 </package>

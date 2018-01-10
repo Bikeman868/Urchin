@@ -74,7 +74,8 @@ namespace Urchin.Server.Owin
             var packageLocator = new PackageLocator();
 
             // Explicitly load this assemblies packages first so that
-            // these IoC mappings override those found through probing
+            // these IoC mappings can be overriden by those found through 
+            // probing the bin folder assemblies
             packageLocator
                 .Add(typeof(IConfigurationStore).Assembly)
                 .Add(typeof(IRuleData).Assembly)

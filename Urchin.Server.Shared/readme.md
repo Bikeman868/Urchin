@@ -10,6 +10,7 @@ A rules based centralized enterprise configuration management solution for .Net
 * Supports all JSON data types including arrays, strings, numbers, boolean and objects.
 * Sections of the configuration can be deserialized to object graphs with no setup.
 * Configuration can be stored in a file, or at a URI.
+* Configuration data can be decrypted using an application provided implementation.
 * Migration path from exiting .Net ConfigurationManager implementation.
 
 ## Server Features
@@ -19,6 +20,8 @@ A rules based centralized enterprise configuration management solution for .Net
   string parameters to specify machine, application, environment and instance.
 * Rules for determining environment from machine so that this is an optional parameter.
 * Variable declaration and substitution.
+* The integrator can add an assembly to the `bin` folder to provide a custom encryption
+  of the configuration data that is sent to the client.
 
 ## Urchin.Server.Shared Assembly
 This assembly is used by Urchin.Server.Owin, which is a self contained Urchin web service.
