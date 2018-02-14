@@ -78,6 +78,11 @@ interface and call its methods to get configuration data. For example:
 > in your `config.json` file under the path `/myApp/logging`. Urchin will use the
 > Newtonsoft Json package to hydrate this class from this section of the config file.
 
+> Note that you do not have to add anything to the config.json file. If there is no configuration
+> at `/myApp/logging` then the default value is used. In this example the default is passed as
+> `new LoggingConfig()` and in this example the constructor sets the default values. This is the 
+> recommended best practice.
+
 ## Server Features
 * Rules based configuration based on environment, datacenter, machine, application and instance.
 * Centralized configuration management with REST API and configuration mananagement UI.
@@ -156,7 +161,8 @@ If you want to contribute to this project, these are the next most important tas
 Q: Do I need to use the server component?
 
 A: No, you can use the client stand alone with a configuration file, or a URI 
-   that returns the configuration data.
+   that returns the configuration data. You can also get the configuration JSON
+   from any other source and pass it to Urchin when it changes.
 
 ---
 
@@ -166,19 +172,19 @@ A: To get started with the client only using IoC and a local configuration file:
    1. Install the NuGet package for `Urchin.Client`.
    2. In your IoC register a mapping to the `ConfigurationStore` class from the
       `IConfigurationStore` interface as a singleton. Note that if you integrate
-      the `Ioc.Modules` NuGet package into application you can skip this step.
+      the `Ioc.Modules` NuGet package into your application you can skip this step.
    3. Create a configuration file in JSON format. Structure the JSON however you
       want including different data types, arrays and objects within objects.
    4. Construct an instance of `Urchin.Client.Sources.FileSource` and initialize
-      it with the location of your file. You will have to pass an
+      it with the location of your JSON configuration file. You will have to pass an
       `IConfigurationStore` instance to the constructor - you can let IoC do this
       for you! You need to keep a reference to the `FileSource` for it to notice 
-      config changes. When you `Dispose()` of the `FileSource` it will stop 
-      watching the configuration file for changes.
+      configuration file changes. When you `Dispose()` of the `FileSource` it will 
+	  stop watching the configuration file for changes.
    5. Inject `IConfigurationStore` into classes in your application that need 
       access to configuration data.
    6. Call the `Register<T>()` method of `IConfigurationStore` to get notified 
-      of the initial config values, and whenever config changes later.
+      of the initial configuration values, and whenever configuration changes later.
 
 ---
 
