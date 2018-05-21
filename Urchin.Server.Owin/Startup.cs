@@ -151,11 +151,27 @@ namespace Urchin.Server.Owin
                     .RunFirst()
                     .ConfigureWith(config, "/urchin/server/exceptionReporter");
 
-                builder.Register(unityContainer.Resolve<LogonEndpoint>())
-                    .As("Logon")
+                builder.Register(unityContainer.Resolve<OwinFramework.Session.InProcessSessionMidleware>())
+                    .As("Session")
                     .RunFirst()
                     .RunAfter("Exception reporter")
                     .ConfigureWith(config, "/urchin/server/logon");
+
+                builder.Register(unityContainer.Resolve<LogonEndpoint>())
+                    .As("Logon")
+                    .RunFirst()
+                    .RunAfter("Session")
+                    .ConfigureWith(config, "/urchin/server/logon");
+
+                builder.Register(unityContainer.Resolve<AddClientCredentials>())
+                    .As("Add client credentials")
+                    .RunFirst()
+                    .RunAfter("Logon");
+
+                builder.Register(unityContainer.Resolve<GetUserEndpoint>())
+                    .As("Get user")
+                    .RunFirst()
+                    .RunAfter("Logon");
 
                 /******************************************************************************
                  * The Config middleware is called very frequently by all applications in

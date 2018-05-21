@@ -1,38 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Newtonsoft.Json.Linq;
+using OwinFramework.Builder;
 using OwinFramework.Interfaces.Builder;
-using Urchin.Client.Interfaces;
+using OwinFramework.InterfacesV1.Capability;
+using OwinFramework.InterfacesV1.Middleware;
+using OwinFramework.InterfacesV1.Upstream;
+using OwinFramework.MiddlewareHelpers.Identification;
 using Urchin.Server.Owin.Extensions;
 using Urchin.Server.Shared.DataContracts;
-using Urchin.Server.Shared.Rules;
 
 namespace Urchin.Server.Owin.Middleware
 {
-    public class LogonEndpoint: ApiBase, IDisposable, IMiddleware<object>
+    public class LogonEndpoint: 
+        ApiBase, 
+        IDisposable, 
+        IConfigurable,
+        IMiddleware<IIdentification>, 
+        IUpstreamCommunicator<IUpstreamSession>
     {
-        private readonly IDisposable _configChangeNotifier;
         private readonly PathString _logonPath;
         private readonly PathString _logoffPath;
-        private readonly PathString _userPath;
-        private readonly IDictionary<string, SessionToken> _sessionTokens;
 
+        private readonly IDictionary<string, Identification> _loggedOnUsers = new Dictionary<string, Identification>();
+        private IDisposable _configChangeNotifier;
         private Config _config;
-        private TimeSpan _sessionTimeout;
 
-        public LogonEndpoint(IConfigurationStore configurationStore)
+        private const string SessionVariableName = "LogonId";
+
+        public LogonEndpoint()
         {
-            _configChangeNotifier = configurationStore.Register("/urchin/server/logon", SetConfig, new Config());
-
             _logonPath = new PathString("/logon");
             _logoffPath = new PathString("/logoff");
-            _userPath = new PathString("/user");
-            _sessionTokens = new Dictionary<string, SessionToken>();
+
+            ConfigurationChanged(new Config());
+
+            this.RunAfter<ISession>();
         }
 
         public void Dispose()
@@ -40,125 +47,200 @@ namespace Urchin.Server.Owin.Middleware
             _configChangeNotifier.Dispose();
         }
 
+        public void Configure(IConfiguration configuration, string path)
+        {
+            _configChangeNotifier = configuration.Register(path, ConfigurationChanged, new Config());
+        }
+
+        private void ConfigurationChanged(Config config)
+        {
+            _config = config;
+        }
+
+        public Task RouteRequest(IOwinContext context, Func<Task> next)
+        {
+            // Tell the session middleware that a session must be established for 
+            // the request if the request is routed through this logon middleware
+            var upstreamSession = context.GetFeature<IUpstreamSession>();
+            if (upstreamSession != null)
+            {
+                if (upstreamSession.EstablishSession())
+                    IdentifyUser(context);
+            }
+
+            // Continue routing the request
+            return next();
+        }
+
         public override Task Invoke(IOwinContext context, Func<Task> next)
         {
+            var session = context.GetFeature<ISession>();
+            if (session == null)
+            {
+                UserIsAnonymous(context, null);
+                return next();
+            }
+
             var request = context.Request;
 
-            var clientCredentials = new ClientCredentialsDto 
+            if (request.Method == "POST")
             {
-                IpAddress = context.Request.RemoteIpAddress
-            };
-            if (clientCredentials.IpAddress == "::1")
-                clientCredentials.IpAddress = "127.0.0.1";
+                if (_logonPath.IsWildcardMatch(request.Path))
+                    return HandleLogon(context, request, session);
 
-            context.Set("ClientCredentials", clientCredentials);
-
-            SessionToken sessionToken = null;
-            var sessionCookie = request.Cookies[_config.CookieName];
-            if (sessionCookie != null)
-            {
-                lock(_sessionTokens)
-                {
-                    if (_sessionTokens.TryGetValue(sessionCookie, out sessionToken))
-                    {
-                        if (DateTime.UtcNow > sessionToken.Expiry)
-                        {
-                            _sessionTokens.Remove(sessionCookie);
-                        }
-                        else
-                        {
-                            clientCredentials.IsLoggedOn = true;
-                            clientCredentials.Username = sessionToken.Username;
-                            clientCredentials.IsAdministrator = string.Equals(sessionToken.IpAddress, clientCredentials.IpAddress, StringComparison.Ordinal);
-                        }
-                    }
-                }
+                if (_logoffPath.IsWildcardMatch(request.Path))
+                    return HandleLogoff(context, session);
             }
 
-            if (request.Method == "GET" && _userPath.IsWildcardMatch(request.Path))
-            {
-                return Json(context, clientCredentials);
-            }
-
-            if (request.Method != "POST")
-                return next.Invoke();
-
-            if (_logonPath.IsWildcardMatch(request.Path))
-            {
-                JToken requestBody;
-                try
-                {
-                    using (var sr = new StreamReader(request.Body, Encoding.UTF8))
-                        requestBody = JToken.Parse(sr.ReadToEnd());
-                }
-                catch (Exception ex)
-                {
-                    return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
-                }
-                var bodyJson = requestBody as JObject;
-                if (bodyJson == null)
-                    return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Request body is not in the expected format." });
-                var userName = bodyJson["username"];
-                var password = bodyJson["password"];
-
-                if (userName == null || password == null)
-                    return Json(context, new PostResponseDto { Success = false, ErrorMessage = "username and password are required for logon." });
-
-                if (string.Equals(password.Value<string>(), _config.AdministratorPassword, StringComparison.Ordinal))
-                {
-                    var cookie = NewSession(clientCredentials.IpAddress, userName.Value<string>());
-                    context.Response.Cookies.Append(_config.CookieName, cookie);
-                    return Json(context, new PostResponseDto { Success = true, Id = cookie });
-                }
-                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Logon failed for user " + userName.Value<string>() });
-            }
-            if (_logoffPath.IsWildcardMatch(request.Path))
-            {
-                if (sessionToken != null)
-                {
-                    context.Response.Cookies.Delete(sessionToken.Token);
-                    lock (_sessionTokens)
-                        _sessionTokens.Remove(sessionToken.Token);
-                }
-                return Json(context, new PostResponseDto { Success = true });
-            }
+            var identification = context.GetFeature<IIdentification>();
+            if (identification == null) IdentifyUser(context);
 
             return next.Invoke();
         }
 
-        private void SetConfig(Config config)
+        private void IdentifyUser(IOwinContext context)
         {
-            _config = config;
+            Identification identification;
 
-            int days;
-            if (int.TryParse(config.SessionExpiry, out days))
-                _sessionTimeout = TimeSpan.FromDays(days);
-            else if (!TimeSpan.TryParseExact(config.SessionExpiry, "c", CultureInfo.InvariantCulture, out _sessionTimeout))
-                _sessionTimeout = TimeSpan.FromHours(1);
-        }
-
-        private string NewSession(string ipAddress, string userName)
-        {
-            var token = new SessionToken
+            var session = context.GetFeature<ISession>();
+            if (session == null || session.HasSession == false)
             {
-                Expiry = DateTime.UtcNow + _sessionTimeout,
-                IpAddress = ipAddress,
-                Token = Guid.NewGuid().ToString("n"),
-                Username = userName
-            };
-            lock (_sessionTokens)
-            {
-                _sessionTokens.Add(token.Token, token);
+                UserIsAnonymous(context, null);
+                return;
             }
-            return token.Token;
+
+            var logonId = session.Get<string>(SessionVariableName);
+            if (string.IsNullOrEmpty(logonId))
+            {
+                logonId = Guid.NewGuid().ToShortString();
+                session.Set(SessionVariableName, logonId);
+            }
+
+            lock (_loggedOnUsers)
+            {
+                if (!_loggedOnUsers.TryGetValue(logonId, out identification))
+                {
+                    identification = UserIsAnonymous(context, logonId);
+                    _loggedOnUsers.Add(logonId, identification);
+                }
+            }
+
+            context.SetFeature<IIdentification>(identification);
         }
-    
-        private class SessionToken
+
+        Identification UserIsAnonymous(IOwinContext context, string identity)
         {
-            public string Token { get; set; }
-            public string IpAddress { get; set; }
-            public DateTime Expiry { get; set; }
-            public string Username { get; set; }
+            var identification = new Identification
+            {
+                Identity = identity,
+                Claims = new List<IIdentityClaim>
+                    {
+                        new IdentityClaim 
+                        { 
+                            Name = "ip-address", 
+                            Value = context.Request.RemoteIpAddress, 
+                            Status = ClaimStatus.Verified
+                        }
+                    },
+                IsAnonymous = true
+            };
+            context.SetFeature<IIdentification>(identification);
+            return identification;
+        }
+
+        private Task HandleLogon(IOwinContext context, IOwinRequest request, ISession session)
+        {
+            JToken requestBody;
+            try
+            {
+                using (var sr = new StreamReader(request.Body, Encoding.UTF8))
+                    requestBody = JToken.Parse(sr.ReadToEnd());
+            }
+            catch (Exception ex)
+            {
+                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Failed to read request body. " + ex.Message });
+            }
+
+            var bodyJson = requestBody as JObject;
+            if (bodyJson == null)
+                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Request body is not in the expected format." });
+
+            var usernameElement = bodyJson["username"];
+            var passwordElement = bodyJson["password"];
+
+            if (usernameElement == null || passwordElement == null)
+                return Json(context, new PostResponseDto { Success = false, ErrorMessage = "username and password are required for logon." });
+
+            var username = usernameElement.Value<string>();
+            var password = passwordElement.Value<string>();
+
+            if (string.Equals(password, _config.AdministratorPassword, StringComparison.Ordinal))
+            {
+                var logonId = Logon(context, session, username);
+                return Json(context, new PostResponseDto { Success = true, Id = logonId });
+            }
+            return Json(context, new PostResponseDto { Success = false, ErrorMessage = "Logon failed for user " + username });
+        }
+
+        private Task HandleLogoff(IOwinContext context, ISession session)
+        {
+            Logoff(session);
+            session.Set(SessionVariableName, string.Empty);
+            return Json(context, new PostResponseDto { Success = true });
+        }
+
+        private string Logon(IOwinContext context, ISession session, string username)
+        {
+            var logonId = session.Get<string>(SessionVariableName);
+            if (string.IsNullOrEmpty(logonId))
+            {
+                logonId = Guid.NewGuid().ToShortString();
+                session.Set(SessionVariableName, logonId);
+            }
+
+            Identification identification;
+
+            lock (_loggedOnUsers)
+            {
+                if (!_loggedOnUsers.TryGetValue(logonId, out identification))
+                {
+                    identification = new Identification();
+                    _loggedOnUsers.Add(logonId, identification);
+                }
+            }
+
+            identification.IsAnonymous = false;
+            identification.Identity = logonId;
+            identification.Claims = new List<IIdentityClaim>
+                {
+                    new IdentityClaim {Name = "username", Value = username, Status = ClaimStatus.Verified},
+                    new IdentityClaim {Name = "ip-address", Value = context.Request.RemoteIpAddress, Status = ClaimStatus.Verified}
+                };
+            identification.Purposes = null;
+
+            return logonId;
+        }
+
+        private void Logoff(ISession session)
+        {
+            var logonId = session.Get<string>(SessionVariableName);
+
+            if (!string.IsNullOrEmpty(logonId))
+            {
+                lock (_loggedOnUsers)
+                {
+                    _loggedOnUsers.Remove(logonId);
+                }
+            }
+        }
+
+        private class Identification: IIdentification, IUpstreamIdentification
+        {
+            public IList<IIdentityClaim> Claims { get; set; }
+            public string Identity { get; set; }
+            public bool IsAnonymous { get; set; }
+            public IList<string> Purposes { get; set; }
+            public bool AllowAnonymous { get; set; }
         }
 
         public class Config
@@ -166,12 +248,10 @@ namespace Urchin.Server.Owin.Middleware
             public Config()
             {
                 AdministratorPassword = "administrator";
-                SessionExpiry = TimeSpan.FromMinutes(30).ToString("c");
                 CookieName = "urchin_session";
             }
 
             public string AdministratorPassword { get; set; }
-            public string SessionExpiry { get; set; }
             public string CookieName { get; set; }
         }
     }
