@@ -27,6 +27,7 @@ using Urchin.Client.Interfaces;
 using Urchin.Client.Sources;
 using Urchin.Server.Owin;
 using Urchin.Server.Owin.Middleware;
+using Urchin.Server.Owin.Prius;
 using Urchin.Server.Shared.Interfaces;
 #if ROUTING
 using OwinFramework.Interfaces.Routing;
@@ -92,6 +93,9 @@ namespace Urchin.Server.Owin
             var unityContainer = new UnityContainer();
             unityContainer.RegisterInstance<IFactory>(new UnityFactory(unityContainer));
             Registrar.Register(packageLocator, unityContainer);
+
+            // Prius needs a mechanism for mapping interfaces onto concrete data contracts
+            PriusFactory.Unity = unityContainer;
 
             return unityContainer;
         }

@@ -57,12 +57,12 @@
       <HintPath>..\packages\DotlessClientOnly.1.5.2\lib\dotless.ClientOnly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ioc.Modules, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ioc.Modules.1.2.1\lib\net40\Ioc.Modules.dll</HintPath>
+    <Reference Include="Ioc.Modules, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.1.3.0\lib\net40\Ioc.Modules.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ioc.Modules.Unity, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ioc.Modules.Unity.1.1.3\lib\net40\Ioc.Modules.Unity.dll</HintPath>
+    <Reference Include="Ioc.Modules.Unity, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ioc.Modules.Unity.1.3.0\lib\net40\Ioc.Modules.Unity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -104,6 +104,18 @@
     </Reference>
     <Reference Include="OwinFramework.AnalysisReporter, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.Framework.AnalysisReporter.2.5.1\lib\net40\OwinFramework.AnalysisReporter.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OwinFramework.Authorization, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.Framework.Authorization.1.0.9\lib\net40\OwinFramework.Authorization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OwinFramework.Authorization.Core, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.Framework.Authorization.Core.1.0.9\lib\net40\OwinFramework.Authorization.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OwinFramework.Authorization.Prius, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.Framework.Authorization.Prius.1.0.9\lib\net40\OwinFramework.Authorization.Prius.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="OwinFramework.Configuration.Urchin, Version=2.6.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -148,6 +160,14 @@
     </Reference>
     <Reference Include="OwinFramework.Versioning, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.Framework.Versioning.2.5.1\lib\net40\OwinFramework.Versioning.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Prius.Contracts, Version=2.0.5.24, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prius.2.0.5\lib\net40\Prius.Contracts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Prius.Orm, Version=2.0.5.24, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Prius.2.0.5\lib\net40\Prius.Orm.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Svg, Version=2.2.1.39233, Culture=neutral, PublicKeyToken=12a0bac221edeae2, processorArchitecture=MSIL">
@@ -225,6 +245,8 @@
     <Compile Include="Middleware\HelloEndpoint.cs" />
     <Compile Include="Package.cs" />
     <Compile Include="Permissions.cs" />
+    <Compile Include="Prius\PriusErrorReporter.cs" />
+    <Compile Include="Prius\PriusFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\OwinExtensions.cs" />
     <Compile Include="Startup.cs" />

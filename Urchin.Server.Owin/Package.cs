@@ -18,6 +18,8 @@ namespace Urchin.Server.Owin
             IocRegistrations = new List<IocRegistration>
             {
                 new IocRegistration().Init<ILogManager, LogManager>(),
+                new IocRegistration().Init<global::Prius.Contracts.Interfaces.External.IFactory, Prius.PriusFactory>(),
+                new IocRegistration().Init<global::Prius.Contracts.Interfaces.External.IErrorReporter, Prius.PriusErrorReporter>(),
             };
         }
     }
