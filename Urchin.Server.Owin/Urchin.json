@@ -91,7 +91,7 @@
           ]
         }
       },
-      "logon": {
+      "identification": {
         "administratorPassword": "password",
         "sessionExpiry": "00:45:00",
         "cookieName": "session_token"

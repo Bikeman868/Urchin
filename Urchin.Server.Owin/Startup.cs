@@ -18,6 +18,7 @@ using OwinFramework.Documenter;
 using OwinFramework.ExceptionReporter;
 using OwinFramework.Interfaces.Builder;
 using OwinFramework.Interfaces.Utility;
+using OwinFramework.InterfacesV1.Middleware;
 using OwinFramework.Less;
 using OwinFramework.NotFound;
 using OwinFramework.RouteVisualizer;
@@ -71,7 +72,6 @@ namespace Urchin.Server.Owin
 
         private UnityContainer ConfigureUnity()
         {
-
             var packageLocator = new PackageLocator();
 
             // Explicitly load this assemblies packages first so that
@@ -82,12 +82,17 @@ namespace Urchin.Server.Owin
                 .Add(typeof(IRuleData).Assembly)
                 .Add(Assembly.GetExecutingAssembly());
 
+            // Explicitly load the Owin Framework authorization assemblies so that
+            // they can be overriden by a custom authorization scheme
+            packageLocator
+                .Add(typeof (OwinFramework.Authorization.Prius.DataLayer.DataLayerConfiguration).Assembly)
+                .Add(typeof (OwinFramework.Authorization.AuthorizationMiddleware).Assembly);
+
             // Probe the bin folder for any application specific implementations.
             // Note that in IocModules last one in wins, so probing the bin folder
             // after explicitly adding the Urchin assemblies allows integrators
             // to supply custom implementations of any interfaces registerd with IoC
-            packageLocator
-                .ProbeBinFolderAssemblies();
+            packageLocator.ProbeBinFolderAssemblies();
 
             // Construct and initialize a Unity container from the Ioc packages
             var unityContainer = new UnityContainer();
@@ -161,11 +166,10 @@ namespace Urchin.Server.Owin
                     .RunAfter("Exception reporter")
                     .ConfigureWith(config, "/urchin/server/logon");
 
-                builder.Register(unityContainer.Resolve<LogonEndpoint>())
+                builder.Register(unityContainer.Resolve<IMiddleware<IIdentification>>())
                     .As("Logon")
                     .RunFirst()
-                    .RunAfter("Session")
-                    .ConfigureWith(config, "/urchin/server/logon");
+                    .ConfigureWith(config, "/urchin/server/identification");
 
                 builder.Register(unityContainer.Resolve<AddClientCredentials>())
                     .As("Add client credentials")

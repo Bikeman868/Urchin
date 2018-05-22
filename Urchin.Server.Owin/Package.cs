@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Common.Logging;
 using Ioc.Modules;
-using Urchin.Server.Shared.Interfaces;
-using Urchin.Server.Shared.Rules;
-using Urchin.Server.Shared.TypeMappings;
+using OwinFramework.Interfaces.Builder;
+using OwinFramework.InterfacesV1.Middleware;
+using Urchin.Server.Owin.Middleware;
 
 namespace Urchin.Server.Owin
 {
@@ -17,6 +17,7 @@ namespace Urchin.Server.Owin
         {
             IocRegistrations = new List<IocRegistration>
             {
+                new IocRegistration().Init<IMiddleware<IIdentification>, LogonEndpoint>(),
                 new IocRegistration().Init<ILogManager, LogManager>(),
                 new IocRegistration().Init<global::Prius.Contracts.Interfaces.External.IFactory, Prius.PriusFactory>(),
                 new IocRegistration().Init<global::Prius.Contracts.Interfaces.External.IErrorReporter, Prius.PriusErrorReporter>(),
