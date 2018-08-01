@@ -435,6 +435,8 @@ namespace Urchin.Server.Shared.Rules
             rules.RemoveAll(r => string.Compare(r.RuleName, oldName, StringComparison.InvariantCultureIgnoreCase) == 0);
             rules.RemoveAll(r => string.Compare(r.RuleName, rule.RuleName, StringComparison.InvariantCultureIgnoreCase) == 0);
 
+            rule.Variables = rule.Variables.OrderBy(v => v.VariableName).ToList();
+
             _persister.InsertOrUpdateRule(version, rule);
 
             rules.Add(rule);
