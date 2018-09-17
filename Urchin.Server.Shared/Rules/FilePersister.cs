@@ -293,53 +293,7 @@ namespace Urchin.Server.Shared.Rules
 
             if (fileContents == null)
             {
-                _defaultEnvironmentName = "Development";
-                _environments = new List<EnvironmentDto>
-                {
-                    new EnvironmentDto
-                    {
-                        EnvironmentName = "Development",
-                        Version = 1
-                    },
-                    new EnvironmentDto
-                    {
-                        EnvironmentName = "Production",
-                        Version = 1
-                    },
-                };
-                _ruleVersions = new List<RuleVersionDto>
-                {
-                    new RuleVersionDto
-                    {
-                        Name = "Initial version",
-                        Version = 1,
-                        Rules = new List<RuleDto>
-                        {
-                            new RuleDto
-                            {
-                                RuleName = "root",
-                                ConfigurationData = 
-                                    "{\n" +
-                                    "  \"environment\":\"($environment$)\",\n" + 
-                                    "  \"datacenter\":\"($datacenter$)\",\n" + 
-                                    "  \"application\":\"($application$)\",\n" + 
-                                    "  \"instance\":\"($instance$)\",\n" + 
-                                    "  \"machine\":\"($machine$)\",\n" + 
-                                    "  \"myCompany\":{\n" +
-                                    "    \"myApplication\":{\n" +
-                                    "      \"appSetting1\":\"value1\",\n" +
-                                    "      \"appSetting2\":\"value2\"\n" +
-                                    "    }\n" +
-                                    "  }\n" +
-                                    "}",
-                                Variables = new List<VariableDeclarationDto>()
-                            }
-                        }
-                    }
-                };
-                _datacenters = new List<DatacenterDto>();
-                _applications = new List<ApplicationDto>();
-                _datacenterRules = new List<DatacenterRuleDto>();
+                SetupDefaultRules();
             }
             else
             {
@@ -351,28 +305,105 @@ namespace Urchin.Server.Shared.Rules
 
                 if (fileContents.RuleVersions == null || fileContents.RuleVersions.Count == 0)
                 {
-                    _ruleVersions = new List<RuleVersionDto>();
-                    if (fileContents.Rules != null && fileContents.Rules.Count > 0)
-                    {
-                        // This is here for backward compatibility with old file format before versioning
-                        _ruleVersions.Add(new RuleVersionDto
-                        {
-                            Version = 1,
-                            Name = "First version",
-                            Rules = fileContents.Rules
-                        });
-                        foreach (var environment in _environments)
-                            environment.Version = 1;
-                    }
+                    MigrateToVersions(fileContents);
                 }
                 else
                 {
                     _ruleVersions = fileContents.RuleVersions;
+
                     foreach (var ruleVersion in _ruleVersions)
                         if (string.IsNullOrEmpty(ruleVersion.Name))
                             ruleVersion.Name = "Version " + ruleVersion.Version;
+
+                    if (fileContents.FileFormatVersion == 0 && _ruleVersions.Count > 1)
+                    {
+                        // There was a bug in this version where new versions of the rules only
+                        // contain changed rules, not copies of the unchanged rules!!
+
+                        var orderedVersions = _ruleVersions.OrderBy(rv => rv.Version).ToList();
+                        for (var i = 1; i < orderedVersions.Count; i++)
+                        {
+                            var priorVersion = orderedVersions[i - 1];
+                            var currentVersion = orderedVersions[i];
+                            foreach (var priorRule in priorVersion.Rules)
+                            {
+                                if (currentVersion.Rules.Any(r => string.Equals(r.RuleName, priorRule.RuleName, StringComparison.OrdinalIgnoreCase)))
+                                    continue;
+                                currentVersion.Rules.Add(priorRule);
+                            }
+                        }
+
+                        SaveChanges();
+                    }
                 }
             }
+        }
+
+        private void MigrateToVersions(FileContents fileContents)
+        {
+            _ruleVersions = new List<RuleVersionDto>();
+            if (fileContents.Rules != null && fileContents.Rules.Count > 0)
+            {
+                _ruleVersions.Add(new RuleVersionDto
+                {
+                    Version = 1,
+                    Name = "First version",
+                    Rules = fileContents.Rules
+                });
+                foreach (var environment in _environments)
+                    environment.Version = 1;
+            }
+        }
+
+        private void SetupDefaultRules()
+        {
+            _defaultEnvironmentName = "Development";
+            _environments = new List<EnvironmentDto>
+            {
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Development",
+                    Version = 1
+                },
+                new EnvironmentDto
+                {
+                    EnvironmentName = "Production",
+                    Version = 1
+                },
+            };
+            _ruleVersions = new List<RuleVersionDto>
+            {
+                new RuleVersionDto
+                {
+                    Name = "Initial version",
+                    Version = 1,
+                    Rules = new List<RuleDto>
+                    {
+                        new RuleDto
+                        {
+                            RuleName = "root",
+                            ConfigurationData =
+                                "{\n" +
+                                "  \"environment\":\"($environment$)\",\n" +
+                                "  \"datacenter\":\"($datacenter$)\",\n" +
+                                "  \"application\":\"($application$)\",\n" +
+                                "  \"instance\":\"($instance$)\",\n" +
+                                "  \"machine\":\"($machine$)\",\n" +
+                                "  \"myCompany\":{\n" +
+                                "    \"myApplication\":{\n" +
+                                "      \"appSetting1\":\"value1\",\n" +
+                                "      \"appSetting2\":\"value2\"\n" +
+                                "    }\n" +
+                                "  }\n" +
+                                "}",
+                            Variables = new List<VariableDeclarationDto>()
+                        }
+                    }
+                }
+            };
+            _datacenters = new List<DatacenterDto>();
+            _applications = new List<ApplicationDto>();
+            _datacenterRules = new List<DatacenterRuleDto>();
         }
 
         private void CheckForUpdate()
@@ -390,6 +421,7 @@ namespace Urchin.Server.Shared.Rules
 
             var fileContents = new FileContents
             {
+                FileFormatVersion = 1,
                 DefaultEnvironmentName = _defaultEnvironmentName,
                 Environments = _environments,
                 RuleVersions = _ruleVersions,
@@ -427,11 +459,23 @@ namespace Urchin.Server.Shared.Rules
                 ruleVersion = _ruleVersions.FirstOrDefault(r => r.Version == version);
                 if (ruleVersion == null)
                 {
+                    List<RuleDto> newRules;
+                    if (_ruleVersions.Count > 0)
+                    {
+                        var latestVersionNumber = _ruleVersions.Max(rv => rv.Version);
+                        var latestVersion = _ruleVersions.First(r => r.Version == latestVersionNumber);
+                        newRules = latestVersion.Rules.ToList();
+                    }
+                    else
+                    {
+                        newRules = new List<RuleDto>();
+                    }
+
                     ruleVersion = new RuleVersionDto
                     {
                         Name = "Version " + version,
                         Version = version,
-                        Rules = new List<RuleDto>()
+                        Rules = newRules
                     };
                     _ruleVersions.Add(ruleVersion);
                 }
@@ -448,6 +492,7 @@ namespace Urchin.Server.Shared.Rules
 
         private class FileContents
         {
+            public int FileFormatVersion { get; set; }
             public string DefaultEnvironmentName { get; set; }
             public List<EnvironmentDto> Environments { get; set; }
             public List<RuleVersionDto> RuleVersions { get; set; }
