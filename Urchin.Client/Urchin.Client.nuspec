@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Urchin.Client</id>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <title>Urchin.Client</title>
     <authors>Martin Halliday</authors>
     <owners>Martin Halliday</owners>
@@ -11,7 +11,7 @@
     <iconUrl>https://raw.githubusercontent.com/Bikeman868/Urchin/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Strongly typed configuration management system with change notification</description>
-    <releaseNotes>Added support for encrypted configuration data</releaseNotes>
+    <releaseNotes>Fixed a bug with changing case on JSON configuration when getting nodes as string</releaseNotes>
     <copyright>Copyright 2018</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
     <summary>Simple application configurtion management. Strong typing and default values. Change notifications

@@ -32,7 +32,7 @@ namespace Urchin.Client.Data
     /// </remarks>
     public class ConfigurationStore: IConfigurationStore
     {
-        private readonly Dictionary<string, Registration>  _registrations = new Dictionary<string, Registration>();
+        private readonly Dictionary<string, Registration> _registrations = new Dictionary<string, Registration>(StringComparer.OrdinalIgnoreCase);
         private string _originalJsonText;
         private ConfigNode _config = new ConfigNode();
         private IConfigurationValidator _validator;
@@ -97,7 +97,6 @@ namespace Urchin.Client.Data
             }
 
             var segments = path
-                .ToLower()
                 .Replace("_", "")
                 .Split(new []{'/'}, StringSplitOptions.RemoveEmptyEntries);
 
@@ -195,7 +194,7 @@ namespace Urchin.Client.Data
 
             foreach (var registration in activeRegistrations)
             {
-                if (changedPaths.Contains(registration.Path))
+                if (changedPaths.Contains(registration.Path, StringComparer.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -220,7 +219,7 @@ namespace Urchin.Client.Data
             if (nodeA != null && nodeA.Children != null)
                 childNames.AddRange(nodeA.Children.Values.Select(n => n.Name));
             if (nodeB != null && nodeB.Children != null)
-                childNames.AddRange(nodeB.Children.Values.Select(n => n.Name).Where(n => !childNames.Contains(n)));
+                childNames.AddRange(nodeB.Children.Values.Select(n => n.Name).Where(n => !childNames.Contains(n, StringComparer.OrdinalIgnoreCase)));
 
             foreach (var childName in childNames)
             {
@@ -283,11 +282,11 @@ namespace Urchin.Client.Data
                 Name = name;
                 if (value.Type == JTokenType.Object)
                 {
-                    Children = new Dictionary<string, ConfigNode>();
+                    Children = new Dictionary<string, ConfigNode>(StringComparer.OrdinalIgnoreCase);
                     var jobject = (JObject) value;
                     foreach (var property in jobject.Properties())
                     {
-                        var childName = property.Name.ToLower();
+                        var childName = property.Name;
                         Children.Add(childName, new ConfigNode(childName, property.Value));
                     }
                 }

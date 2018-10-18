@@ -111,6 +111,46 @@ namespace Urchin.Client.Tests
         }
 
         [Test]
+        public void Should_be_case_insensitive()
+        {
+            var configurationStore = new ConfigurationStore().Initialize();
+
+            configurationStore.UpdateConfiguration("{Child1:{field1:1,Field2:2},child2:{field1:99,field2:98}}");
+            var root = configurationStore.Get<TestClassB>("/");
+            var child1 = configurationStore.Get<TestClassA>("/child1");
+            var child2 = configurationStore.Get<TestClassA>("/child2");
+
+            Assert.IsNotNull(root);
+            Assert.IsNotNull(root.Child1);
+            Assert.IsNotNull(root.Child2);
+            Assert.AreEqual(1, root.Child1.Field1);
+            Assert.AreEqual(2, root.Child1.Field2);
+            Assert.AreEqual(99, root.Child2.Field1);
+            Assert.AreEqual(98, root.Child2.Field2);
+
+            Assert.IsNotNull(child1);
+            Assert.AreEqual(1, child1.Field1);
+            Assert.AreEqual(2, child1.Field2);
+
+            Assert.IsNotNull(child2);
+            Assert.AreEqual(99, child2.Field1);
+            Assert.AreEqual(98, child2.Field2);
+        }
+
+        [Test]
+        public void Should_not_alter_caseing_of_original_json()
+        {
+            var configurationStore = new ConfigurationStore().Initialize();
+
+            configurationStore.UpdateConfiguration("{Child1:{field1:1,Field2:2},child2:{field1:99,field2:98}}");
+            var child1 = configurationStore.Get<string>("/child1");
+            var child2 = configurationStore.Get<string>("/child2");
+
+            Assert.AreEqual("{\"field1\":1,\"Field2\":2}", child1);
+            Assert.AreEqual("{\"field1\":99,\"field2\":98}", child2);
+        }
+
+        [Test]
         public void Should_notify_only_changed_values()
         {
             var configurationStore = new ConfigurationStore().Initialize();
