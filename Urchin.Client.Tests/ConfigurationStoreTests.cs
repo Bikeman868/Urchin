@@ -221,7 +221,7 @@ namespace Urchin.Client.Tests
             var child2Field1Changed = false;
             var child2Field2Changed = false;
 
-            configurationStore.Register("", (string json) => rootChanged = true);
+            configurationStore.Register("/", (string json) => rootChanged = true);
             configurationStore.Register("/child1", (TestClassA child) => child1Changed = true);
             configurationStore.Register("/child1/field1", (int v) => child1Field1Changed = true);
             configurationStore.Register("/child1/field2", (int v) => child1Field2Changed = true);

@@ -62,12 +62,14 @@ namespace Urchin.Client.Data
             if (onChangeAction == null) return null;
 
             if (string.IsNullOrWhiteSpace(path)) 
-                path = "";
+                path = string.Empty;
             else
             {
                 path = path.ToLower().Replace("_", "");
                 if (!path.StartsWith("/")) path = "/" + path;
             }
+
+            if (path == "/") path = string.Empty;
 
             var key = Guid.NewGuid().ToString("N");
             var registration = new Registration<T>(this).Initialize(key, path, onChangeAction, defaultValue);
