@@ -138,6 +138,9 @@ namespace Urchin.Client.Data
                     if (typeof(T) == typeof(TimeSpan))
                         return (T)(object)TimeSpan.Parse(jValue.Value.ToString());
 
+                    if (typeof(T).IsEnum)
+                        return (T) Enum.Parse(typeof(T), jValue.Value.ToString());
+
                     return (T)Convert.ChangeType(jValue.Value, resultType);
                 }
 
