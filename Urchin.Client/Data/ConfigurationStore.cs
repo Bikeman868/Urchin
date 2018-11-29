@@ -139,7 +139,7 @@ namespace Urchin.Client.Data
                         return (T)(object)TimeSpan.Parse(jValue.Value.ToString());
 
                     if (typeof(T).IsEnum)
-                        return (T) Enum.Parse(typeof(T), jValue.Value.ToString());
+                        return (T) Enum.Parse(typeof(T), jValue.Value.ToString(), true);
 
                     return (T)Convert.ChangeType(jValue.Value, resultType);
                 }
