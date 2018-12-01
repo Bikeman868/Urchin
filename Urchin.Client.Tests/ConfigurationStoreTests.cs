@@ -33,6 +33,19 @@ namespace Urchin.Client.Tests
         }
 
         [Test]
+        public void Should_get_value_as_enum_configuration()
+        {
+            var validator = new Validator { IsValid = true };
+            var configurationStore = new ConfigurationStore().Initialize(validator);
+
+            const SomeEnum testValue = SomeEnum.SecondValue;
+            configurationStore.UpdateConfiguration($"{{someEnum:\"{testValue.ToString()}\"}}");
+            var root = configurationStore.Get<SomeEnum>("someEnum");
+
+            Assert.AreEqual(testValue, root);
+        }
+
+        [Test]
         public void Should_get_array_configuration()
         {
             var validator = new Validator { IsValid = true };
@@ -319,7 +332,8 @@ namespace Urchin.Client.Tests
     doubleValue:1.56,
     stringValue:'my string',
     dateTimeValue:'2015-08-17T15:45:12',
-    timespanValue:'3:30:00'
+    timespanValue:'3:30:00',
+    enumValue:1
 }";
 
             configurationStore.UpdateConfiguration(config);
@@ -331,6 +345,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(true, root.BooleanValue);
             Assert.AreEqual(DateTime.Parse("2015-08-17T15:45:12"), root.DateTimeValue);
             Assert.AreEqual(TimeSpan.Parse("3:30:00"), root.TimeSpanValue);
+            Assert.AreEqual(SomeEnum.SecondValue, root.EnumValue);
 
             Assert.IsNotNull(root.Children);
             Assert.AreEqual(2, root.Children.Count);
@@ -346,6 +361,7 @@ namespace Urchin.Client.Tests
             Assert.AreEqual(true, configurationStore.Get<bool>("/booleanValue"));
             Assert.AreEqual(DateTime.Parse("2015-08-17T15:45:12"), configurationStore.Get<DateTime>("/dateTimeValue"));
             Assert.AreEqual(TimeSpan.Parse("3:30:00"), configurationStore.Get<TimeSpan>("/timespanValue"));
+            Assert.AreEqual(SomeEnum.SecondValue, configurationStore.Get<SomeEnum>("/enumValue"));
         }
 
         [Test]
@@ -470,6 +486,13 @@ namespace Urchin.Client.Tests
             public TimeSpan TimeSpanValue { get; set; }
             public string StringValue { get; set; }
             public List<TestClassA> Children { get; set; }
+            public SomeEnum EnumValue { get; set; }
+        }
+
+        public enum SomeEnum
+        {
+            FirstValue = 0,
+            SecondValue = 1
         }
     }
 }
