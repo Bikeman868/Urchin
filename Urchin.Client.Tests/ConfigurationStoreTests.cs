@@ -39,7 +39,7 @@ namespace Urchin.Client.Tests
             var configurationStore = new ConfigurationStore().Initialize(validator);
 
             const SomeEnum testValue = SomeEnum.SecondValue;
-            configurationStore.UpdateConfiguration($"{{someEnum:\"{testValue.ToString()}\"}}");
+            configurationStore.UpdateConfiguration("{someEnum:\"" + testValue + "\"}");
             var root = configurationStore.Get<SomeEnum>("someEnum");
 
             Assert.AreEqual(testValue, root);
