@@ -25,9 +25,16 @@ namespace Urchin.Client.Sources
         protected override void Poll(IConfigurationStore configurationStore)
         {
             string content;
-            using (var webClient = new WebClient())
+            try
             {
-                content = webClient.DownloadString(_uri);
+                using (var webClient = new WebClient())
+                {
+                    content = webClient.DownloadString(_uri);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception downloading Urchin configuration from '" + _uri + "'", ex);
             }
             configurationStore.UpdateConfiguration(content);
         }
