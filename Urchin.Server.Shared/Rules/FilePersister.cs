@@ -429,6 +429,11 @@ namespace Urchin.Server.Shared.Rules
                 Datacenters = _datacenters,
                 DatacenterRules = _datacenterRules
             };
+
+            fileContents.RuleVersions = fileContents.RuleVersions.OrderBy(v => v.Version).ToList();
+            foreach (var version in fileContents.RuleVersions)
+                version.Rules = version.Rules.OrderBy(r => r.RuleName).ToList();
+
             var content = JsonConvert.SerializeObject(fileContents, Formatting.Indented);
 
             try
