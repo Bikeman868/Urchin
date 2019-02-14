@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Strongly typed configuration management system with change notification</description>
     <releaseNotes>Exception messages contain URI when configuration download fails</releaseNotes>
-    <copyright>Copyright 2018</copyright>
+    <copyright>Copyright Martin Halliday 2015-2019</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
     <summary>Simple application configurtion management. Strong typing and default values. Change notifications
     for any node in the configuration heirachy. Optional server component provides rules-based centralized
