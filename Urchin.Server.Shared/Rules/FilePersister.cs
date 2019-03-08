@@ -143,6 +143,7 @@ namespace Urchin.Server.Shared.Rules
 
         public void DeleteEnvironment(string name)
         {
+            CheckForUpdate();
             _environments.RemoveAll(e => string.Equals(e.EnvironmentName, name, StringComparison.InvariantCultureIgnoreCase));
             SaveChanges();
         }
@@ -278,17 +279,7 @@ namespace Urchin.Server.Shared.Rules
             if (fileInfo.Exists)
             {
                 _lastFileTime = fileInfo.LastWriteTimeUtc;
-
-                string content;
-                using (var stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    using (var streamReader = new StreamReader(stream))
-                    {
-                        content = streamReader.ReadToEnd();
-                    }
-                }
-
-                fileContents = JsonConvert.DeserializeObject<FileContents>(content);
+                fileContents = LoadFileAs<FileContents>(fileInfo);
             }
 
             if (fileContents == null)
@@ -335,6 +326,21 @@ namespace Urchin.Server.Shared.Rules
 
                         SaveChanges();
                     }
+
+                    // Rule versions are stored in separate files when fileContents.FileFormatVersion > 1
+                    foreach (var ruleVersion in _ruleVersions)
+                    {
+                        var versionFileName = GetVersionFileName(ruleVersion.Version);
+                        var versionFileInfo = new FileInfo(versionFileName);
+                        if (versionFileInfo.Exists)
+                        {
+                            var versionFileContents = LoadFileAs<VersionFileContents>(versionFileInfo);
+                            if (versionFileContents != null && versionFileContents.RuleVersion != null)
+                            {
+                                ruleVersion.Rules = versionFileContents.RuleVersion.Rules;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -353,6 +359,28 @@ namespace Urchin.Server.Shared.Rules
                 foreach (var environment in _environments)
                     environment.Version = 1;
             }
+        }
+
+        private T LoadFileAs<T>(FileInfo fileInfo)
+        {
+            string content;
+            using (var stream = fileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var streamReader = new StreamReader(stream))
+                {
+                    content = streamReader.ReadToEnd();
+                }
+            }
+
+            return JsonConvert.DeserializeObject<T>(content);
+        }
+
+        private string GetVersionFileName(int version)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(_filePath) + version.ToString("D5") + Path.GetExtension(_filePath);
+            var path = Path.GetDirectoryName(_filePath);
+            var fullPath = Path.Combine(path, fileName);
+            return fullPath;
         }
 
         private void SetupDefaultRules()
@@ -421,18 +449,22 @@ namespace Urchin.Server.Shared.Rules
 
             var fileContents = new FileContents
             {
-                FileFormatVersion = 1,
+                FileFormatVersion = 2,
                 DefaultEnvironmentName = _defaultEnvironmentName,
                 Environments = _environments,
-                RuleVersions = _ruleVersions,
+                RuleVersions = _ruleVersions
+                    .Select(
+                        rv => new RuleVersionDto 
+                        { 
+                            Version = rv.Version, 
+                            Name = rv.Name
+                        })
+                    .OrderBy(rv => rv.Version)
+                    .ToList(),
                 Applications = _applications,
                 Datacenters = _datacenters,
                 DatacenterRules = _datacenterRules
             };
-
-            fileContents.RuleVersions = fileContents.RuleVersions.OrderBy(v => v.Version).ToList();
-            foreach (var version in fileContents.RuleVersions)
-                version.Rules = version.Rules.OrderBy(r => r.RuleName).ToList();
 
             var content = JsonConvert.SerializeObject(fileContents, Formatting.Indented);
 
@@ -450,6 +482,39 @@ namespace Urchin.Server.Shared.Rules
             }
             catch
             {
+            }
+
+            foreach (var ruleVersion in _ruleVersions)
+            {
+                var versionFileContent = new VersionFileContents
+                {
+                    FileFormatVersion = 1,
+                    RuleVersion = new RuleVersionDto
+                    {
+                        Version = ruleVersion.Version,
+                        Name = ruleVersion.Name,
+                        Rules = ruleVersion.Rules.OrderBy(r => r.RuleName).ToList()
+                    }
+                };
+
+                var versionContent = JsonConvert.SerializeObject(versionFileContent, Formatting.Indented);
+
+                try
+                {
+                    var fileName = GetVersionFileName(ruleVersion.Version);
+                    var fileInfo = new FileInfo(fileName);
+                    using (var stream = fileInfo.Open(FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        using (var streamWriter = new StreamWriter(stream))
+                        {
+                            streamWriter.Write(versionContent);
+                        }
+                    }
+                }
+                catch
+                {
+                }
+
             }
         }
 
@@ -495,16 +560,76 @@ namespace Urchin.Server.Shared.Rules
 
         #endregion
 
+        /// <summary>
+        /// This is serialized intoa file to save the rules
+        /// </summary>
         private class FileContents
         {
+            /// <summary>
+            /// When the structure of the file changes this number is incremented
+            /// </summary>
             public int FileFormatVersion { get; set; }
+
+            /// <summary>
+            /// The name of the environment to use for machines that do not match
+            /// any of the environment rules
+            /// </summary>
             public string DefaultEnvironmentName { get; set; }
+
+            /// <summary>
+            /// A list of the environments used within this organization
+            /// </summary>
             public List<EnvironmentDto> Environments { get; set; }
+
+            /// <summary>
+            /// Depreciated - used to contain all of the rules for all
+            /// of the versions. Now the versions are stored in separate files
+            /// </summary>
             public List<RuleVersionDto> RuleVersions { get; set; }
+
+            /// <summary>
+            /// This is a list of the versions. Each version is stored in a
+            /// separate file an deserialized into a VersionFileContents instance
+            /// </summary>
+            public List<VersionNameDto> Versions { get; set; }
+
+            /// <summary>
+            /// Deprciated - this used to be in the file format before versioning
+            /// was introduced.
+            /// </summary>
             public List<RuleDto> Rules { get; set; }
+
+            /// <summary>
+            /// A list of the applications that this orginization needs to manage
+            /// configuration data for
+            /// </summary>
             public List<ApplicationDto> Applications { get; set; }
+
+            /// <summary>
+            /// A list of this organizations datacenters
+            /// </summary>
             public List<DatacenterDto> Datacenters { get; set; }
+
+            /// <summary>
+            /// Rules to determine which datacenter a machine runs in
+            /// </summary>
             public List<DatacenterRuleDto> DatacenterRules { get; set; }
+        }
+
+        /// <summary>
+        /// This is serialized into a file for a specific version of the rules
+        /// </summary>
+        private class VersionFileContents
+        {
+            /// <summary>
+            /// When the structure of the file changes this number is incremented
+            /// </summary>
+            public int FileFormatVersion { get; set; }
+
+            /// <summary>
+            /// A specific version of the rules
+            /// </summary>
+            public RuleVersionDto RuleVersion { get; set; }
         }
     }
 }
