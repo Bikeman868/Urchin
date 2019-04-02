@@ -151,6 +151,13 @@ namespace Urchin.Client.Tests
         }
 
         [Test]
+        public void Should_throw_on_duplicate_property_names()
+        {
+            var configurationStore = new ConfigurationStore().Initialize();
+            Assert.Throws<Exception>(() => configurationStore.UpdateConfiguration("{Child1:{field1:1,Field1:2},child2:{field1:99,field2:98}}"));
+        }
+
+        [Test]
         public void Should_not_alter_caseing_of_original_json()
         {
             var configurationStore = new ConfigurationStore().Initialize();

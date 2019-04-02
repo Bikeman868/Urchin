@@ -185,7 +185,16 @@ namespace Urchin.Client.Data
                 }
             }
 
-            var newConfig = new ConfigNode(json);
+            ConfigNode newConfig;
+            try
+            {
+                newConfig = new ConfigNode(json);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex.Message);
+                throw;
+            }
 
             var changedPaths = new List<string>();
             AddChangedPaths(changedPaths, "", newConfig, _config);
@@ -197,6 +206,8 @@ namespace Urchin.Client.Data
             lock(_registrations)
                 activeRegistrations = _registrations.Values.ToList();
 
+            var exceptions = new List<Exception>();
+
             foreach (var registration in activeRegistrations)
             {
                 if (changedPaths.Contains(registration.Path, StringComparer.OrdinalIgnoreCase))
@@ -207,10 +218,17 @@ namespace Urchin.Client.Data
                     }
                     catch (Exception ex)
                     {
+                        exceptions.Add(ex);
                         LogError("Exception thrown when notifying application of configuration change in '" + registration.Path + "'. " + ex.Message);
                     }
                 }
             }
+
+            if (exceptions.Count == 1)
+                throw (new Exception("One exeption was thrown whilst applying configuration changes", exceptions[0]));
+
+            if (exceptions.Count > 1)
+                throw new AggregateException("Multiple exceptions were thrown whilst applying configuration changes", exceptions);
         }
 
         private bool AddChangedPaths(List<string> paths, string path, ConfigNode nodeA, ConfigNode nodeB)
@@ -292,6 +310,11 @@ namespace Urchin.Client.Data
                     foreach (var property in jobject.Properties())
                     {
                         var childName = property.Name;
+
+                        if (Children.ContainsKey(childName))
+                            throw new Exception("The Urchin configuration contains a duplicate property name '" + 
+                                childName + "' for element '" + name + "'");
+
                         Children.Add(childName, new ConfigNode(childName, property.Value));
                     }
                 }

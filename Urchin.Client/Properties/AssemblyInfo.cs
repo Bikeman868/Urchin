@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Strongly typed configuration management system with change notification")]
 [assembly: AssemblyCompany("Martin Halliday")]
 [assembly: AssemblyProduct("Urchin")]
-[assembly: AssemblyCopyright("Copyright ©Martin Halliday 2018")]
+[assembly: AssemblyCopyright("Copyright ©Martin Halliday 2015-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.2.5")]
-[assembly: AssemblyFileVersion("1.2.5")]
+[assembly: AssemblyVersion("1.2.6")]
+[assembly: AssemblyFileVersion("1.2.6")]

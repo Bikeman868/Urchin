@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Urchin.Client.Interfaces;
@@ -68,8 +69,9 @@ namespace Urchin.Client.Sources
                 {
                     return;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Trace.WriteLine("Exception polling Urchin source: " + ex.Message);
                 }
             }
         }
