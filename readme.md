@@ -52,11 +52,11 @@ interface and call its methods to get configuration data. For example:
 ````
     public class LoggingConfig
     {
-        public string Path { get; set; }
+        public string LogPath { get; set; }
 
         public LoggingConfig()
         {
-            Path = "C:\\Temp\\Logs";
+            LogPath = "C:\\Temp\\Logs";
         }
     }
 
@@ -82,6 +82,45 @@ interface and call its methods to get configuration data. For example:
 > at `/myApp/logging` then the default value is used. In this example the default is passed as
 > `new LoggingConfig()` and in this example the constructor sets the default values. This is the 
 > recommended best practice.
+
+If your configuration is designed to be always at the same place in the configuration file
+you should capture that in your code by modofying the example above to the one shown below. The
+one below also includes a `Sanitize` method that ensures that the configuration is in the format
+expected by the application:
+````
+    public class LoggingConfig
+    {
+        [JsonProperty("logPath")]
+        public string LogPath { get; set; }
+	
+	public const string ConfigPath = "/myApp/logging";
+	
+	public LoggingConfig Sanitize()
+	{
+	    if (string.IsNullOrWhiteSpace(LogPath))
+	        LogPath = "C:\\Temp\\Logs";
+		
+	    if (LogPath.Length > 1 && LogPath.EndsWith("\\"))
+	        LogPath = LogPath.SubString(0, LogPath.Length - 1));
+		
+	    return this;
+	}
+    }
+
+    public class MyApplicationClass
+    {
+        private LoggingConfig _loggingConfig;
+        private IDisposable _loggingConfigChangeNotification;
+
+        public MyApplicationClass(IConfigurationStore configurationStore)
+        {
+            _loggingConfigChangeNotification = configurationStore.Register(
+                LoggingConfig.ConfigPath, 
+                cfg => _loggingConfig = cfg.Sanitize(),
+                new LoggingConfig());
+        }
+    }
+````
 
 ## Server Features
 * Rules based configuration based on environment, datacenter, machine, application and instance.
