@@ -21,7 +21,7 @@ This is the quickest way to get up and running.
    {
       "myApp":{
         "logging":{
-          "path":"C:\\temp"
+          "logPath":"C:\\temp"
         }
       }
    }
@@ -84,9 +84,9 @@ interface and call its methods to get configuration data. For example:
 > recommended best practice.
 
 If your configuration is designed to be always at the same place in the configuration file
-you should capture that in your code by modofying the example above to the one shown below. The
-one below also includes a `Sanitize` method that ensures that the configuration is in the format
-expected by the application:
+you should capture that in your code by modifying the example above to make the path a string
+constant within the configuration class as in the example below. The example below also includes
+a `Sanitize` method that ensures that the configuration is in the format expected by the application:
 ````
     public class LoggingConfig
     {
@@ -120,6 +120,57 @@ expected by the application:
                 new LoggingConfig());
         }
     }
+````
+
+Taking it one step further, if you want to inject your configuration using IoC then more work
+is required, but this might fit your use case. Here is an example of that pattern:
+````
+    public interface IHtmlConfiguration
+    {
+        HtmlFormat HtmlFormat { get; }
+        bool IncludeComments { get; }
+        bool Indented { get; }
+    }
+
+    internal class HtmlConfiguration : IHtmlConfiguration
+    {
+        [JsonProperty("htmlFormat")]
+        public HtmlFormat HtmlFormat { get; set; }
+
+        [JsonProperty("includeComments")]
+        public bool IncludeComments { get; set; }
+
+        [JsonProperty("indented")]
+        public bool Indented { get; set; }
+
+        public const string ConfigPath = "/owinFramework/pages/html";
+        private readonly IDisposable _changeNotifier;
+
+        public HtmlConfiguration()
+        {
+            HtmlFormat = HtmlFormat.Html;
+            IncludeComments = true;
+            Indented = true;
+        }
+
+        public HtmlConfiguration(IConfigurationStore configurationStore)
+        {
+            _changeNotifier = configurationStore.Register(
+                ConfigPath,
+                c =>
+                {
+                    c = c.Sanitize();
+                    HtmlFormat = c.HtmlFormat;
+                    IncludeComments = c.IncludeComments;
+                    Indented = c.Indented;
+                },
+                new HtmlConfiguration());
+        }
+
+        public HtmlConfiguration Sanitize()
+        {
+            return this;
+        }
 ````
 
 ## Server Features
