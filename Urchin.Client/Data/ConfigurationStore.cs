@@ -81,10 +81,13 @@ namespace Urchin.Client.Data
             catch (Exception ex)
             {
                 LogError("Exception thrown when notifying application of configuration change in '" + registration.Path + "'. " + ex.Message);
+                throw;
             }
-
-            lock(_registrations)
-                _registrations.Add(key, registration);
+            finally
+            {
+                lock (_registrations)
+                    _registrations.Add(key, registration);
+            }
 
             return registration;
         }
