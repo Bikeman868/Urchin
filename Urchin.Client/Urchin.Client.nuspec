@@ -2,13 +2,12 @@
 <package >
   <metadata>
     <id>Urchin.Client</id>
-    <version>1.2.7</version>
+    <version>1.3.0</version>
     <title>Urchin.Client</title>
     <authors>Martin Halliday</authors>
     <owners>Martin Halliday</owners>
-    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <license type="expression">Apache-2.0</license>
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/Bikeman868/Urchin/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Strongly typed configuration management system with change notification</description>
     <releaseNotes>When calling the Register method if the configuration change handler throws an exception this is propagated</releaseNotes>
@@ -18,7 +17,7 @@
     for any node in the configuration heirachy. Optional server component provides rules-based centralized
     repository for the whole enterprise.</summary>
     <dependencies>
-      <dependency id="Ioc.Modules" version="1.2.1" />
+      <dependency id="Ioc.Modules" version="1.4.1" />
       <dependency id="Newtonsoft.Json" version="7.0.1" />
     </dependencies>
   </metadata>
