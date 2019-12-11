@@ -17,7 +17,7 @@
     for any node in the configuration heirachy. Optional server component provides rules-based centralized
     repository for the whole enterprise.</summary>
     <dependencies>
-      <dependency id="Ioc.Modules" version="1.4.1" />
+      <dependency id="Ioc.Modules.Contract" version="1.4.1" />
       <dependency id="Newtonsoft.Json" version="7.0.1" />
     </dependencies>
   </metadata>
