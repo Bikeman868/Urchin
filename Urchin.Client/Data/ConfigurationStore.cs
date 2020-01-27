@@ -11,15 +11,15 @@ namespace Urchin.Client.Data
     /// <summary>
     /// The configuration store keeps the previous config settings,
     /// calculates a diff when new configuration is supplied, and
-    /// makes notification callbacks to classes that registerd to
+    /// makes notification callbacks to classes that registered to
     /// be notified when specific elements of the config change.
     /// </summary>
     /// <remarks>
     /// This class is designed to be correct, not efficient. The
     /// assumption when building this class is that configuration changes
     /// infrequently and performance is not an issue. This class also
-    /// asumes that applications will not call the Get method every
-    /// time it wants to know the value of a node in codfig, but will
+    /// assumes that applications will not call the Get method every
+    /// time it wants to know the value of a node in config, but will
     /// register to receive notification of changes instead.
     /// Calling the Get method is very slow.
     /// 
@@ -73,6 +73,41 @@ namespace Urchin.Client.Data
 
             var key = Guid.NewGuid().ToString("N");
             var registration = new Registration<T>(this).Initialize(key, path, onChangeAction, defaultValue);
+
+            try
+            {
+                registration.Changed();
+            }
+            catch (Exception ex)
+            {
+                LogError("Exception thrown when notifying application of configuration change in '" + registration.Path + "'. " + ex.Message);
+                throw;
+            }
+            finally
+            {
+                lock (_registrations)
+                    _registrations.Add(key, registration);
+            }
+
+            return registration;
+        }
+
+        public IDisposable Register<T>(string path, Action<T> onChangeAction)
+        {
+            if (onChangeAction == null) return null;
+
+            if (string.IsNullOrWhiteSpace(path)) 
+                path = string.Empty;
+            else
+            {
+                path = path.ToLower().Replace("_", "");
+                if (!path.StartsWith("/")) path = "/" + path;
+            }
+
+            if (path == "/") path = string.Empty;
+
+            var key = Guid.NewGuid().ToString("N");
+            var registration = new Registration<T>(this).Initialize(key, path, onChangeAction);
 
             try
             {
@@ -156,6 +191,70 @@ namespace Urchin.Client.Data
             }
         }
 
+        public T Get<T>(string path)
+        {
+            var node = _config;
+            if (node == null)
+            {
+                LogError("Empty configuration with no default value for '" + path + "'");
+                throw new ConfigurationException(path, "No configuration is provided and no default value is defined");
+            }
+
+            var segments = path
+                .Replace("_", "")
+                .Split(new []{'/'}, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var segment in segments)
+            {
+                if (node.Children == null)
+                    throw new ConfigurationException(path, "The '" + node.Name + "' node has no children");
+                lock (node.Children)
+                {
+                    if (!node.Children.TryGetValue(segment, out node))
+                        throw new ConfigurationException(path, "The configuration path is not present in the configuration file");
+                }
+            }
+
+            var json = node.AsJson();
+            var jsonText = json.ToString(Formatting.None);
+
+            var resultType = typeof (T);
+
+            if (resultType == typeof (string))
+            {
+                if (json.Type == JTokenType.String)
+                    return (T)(object)json.Value<string>();
+                return (T) (object) jsonText;
+            }
+
+            try
+            {
+                if (resultType.IsValueType)
+                {
+                    var jValue = json as JValue;
+                    if (jValue == null) return default(T);
+
+                    if (typeof(T) == typeof(DateTime))
+                        return (T)(object)DateTime.Parse(jValue.Value.ToString());
+
+                    if (typeof(T) == typeof(TimeSpan))
+                        return (T)(object)TimeSpan.Parse(jValue.Value.ToString());
+
+                    if (typeof(T).IsEnum)
+                        return (T) Enum.Parse(typeof(T), jValue.Value.ToString(), true);
+
+                    return (T)Convert.ChangeType(jValue.Value, resultType);
+                }
+
+                return JsonConvert.DeserializeObject<T>(jsonText);
+            }
+            catch (Exception ex)
+            {
+                LogError("Exception getting configuration for '" + path +"' as " + resultType.FullName + ". " + ex.Message);
+                throw new ConfigurationException(path, "Can not convert '" + jsonText + "' to " + resultType.FullName, ex);
+            }
+        }
+
         private void Deregister(string key)
         {
             lock(_registrations)
@@ -228,7 +327,7 @@ namespace Urchin.Client.Data
             }
 
             if (exceptions.Count == 1)
-                throw (new Exception("One exeption was thrown whilst applying configuration changes", exceptions[0]));
+                throw (new Exception("One exception was thrown whilst applying configuration changes", exceptions[0]));
 
             if (exceptions.Count > 1)
                 throw new AggregateException("Multiple exceptions were thrown whilst applying configuration changes", exceptions);
@@ -379,6 +478,7 @@ namespace Urchin.Client.Data
         {
             private Action<T> _onChangeAction;
             private T _defaultValue;
+            private bool _hasDefault;
 
             public Registration(
                 ConfigurationStore configurationSource)
@@ -390,13 +490,31 @@ namespace Urchin.Client.Data
             {
                 _onChangeAction = onChangeAction;
                 _defaultValue = defaultValue;
+                _hasDefault = true;
+
+                return base.Initialize(key, path);
+            }
+
+            public Registration Initialize(string key, string path, Action<T> onChangeAction)
+            {
+                _onChangeAction = onChangeAction;
 
                 return base.Initialize(key, path);
             }
 
             public override void Changed()
             {
-                var config = _configurationSource.Get<T>(Path, _defaultValue);
+                T config;
+                if (_hasDefault)
+                {
+                    // Note that this version returns a default configuration on errors
+                    config = _configurationSource.Get<T>(Path, _defaultValue);
+                }
+                else
+                {
+                    // Note that this version throws an exception on configuration on errors
+                    config = _configurationSource.Get<T>(Path);
+                }
                 _onChangeAction(config);
             }
         }

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Urchin.Client</id>
-    <version>1.3.1</version>
+    <version>1.3.2</version>
     <title>Urchin.Client</title>
     <authors>Martin Halliday</authors>
     <owners>Martin Halliday</owners>
@@ -10,8 +10,8 @@
     <projectUrl>https://github.com/Bikeman868/Urchin</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Strongly typed configuration management system with change notification</description>
-    <releaseNotes>When calling the Register method if the configuration change handler throws an exception this is propagated</releaseNotes>
-    <copyright>Copyright Martin Halliday 2015-2019</copyright>
+    <releaseNotes>Added new overloads that do not take a default value, but do not apply invalid configuration changes instead. The original implementation remains unchanged, but if you were previously relying on the default value for the default value parameter, your code will pick up the new override instead.</releaseNotes>
+    <copyright>Copyright Martin Halliday 2015-2020</copyright>
     <tags>Configuration Config Enterprise Centralized StronglyTyped Typed JSON REST Notification</tags>
     <summary>Simple application configuration management. Strong typing and default values. Change notifications
     for any node in the configuration heirachy. Optional server component provides rules-based centralized

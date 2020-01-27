@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\ConfigurationException.cs" />
     <Compile Include="Data\ConfigurationStore.cs" />
     <Compile Include="Interfaces\IConfigurationStore.cs" />
     <Compile Include="Interfaces\IConfigurationValidator.cs" />
